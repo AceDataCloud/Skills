@@ -1,0 +1,40 @@
+{
+  "name": "acedatacloud-skills",
+  "owner": {
+    "name": "Ace Data Cloud",
+    "email": "dev@acedata.cloud"
+  },
+  "metadata": {
+    "description": "AI-powered data services skills for music, image, video generation, web search, and more",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "acedatacloud-ai-media",
+      "description": "AI media generation skills: music (Suno), images (Midjourney, Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Seedance)",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/suno-music",
+        "./skills/midjourney-image",
+        "./skills/flux-image",
+        "./skills/luma-video",
+        "./skills/sora-video",
+        "./skills/veo-video",
+        "./skills/seedream-image",
+        "./skills/seedance-video",
+        "./skills/nano-banana-image"
+      ]
+    },
+    {
+      "name": "acedatacloud-ai-tools",
+      "description": "AI utility skills: web search and short URLs",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google-search",
+        "./skills/short-url"
+      ]
+    }
+  ]
+}
