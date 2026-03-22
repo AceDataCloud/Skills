@@ -1,0 +1,115 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/marketplace.json'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get current version
+        id: current
+        run: |
+          version=$(python3 -c "
+          import json
+          with open('.claude-plugin/marketplace.json') as f:
+              data = json.load(f)
+          print(data['metadata']['version'])
+          ")
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Current version: $version"
+
+      - name: Get previous version
+        id: previous
+        run: |
+          version=$(git show HEAD~1:.claude-plugin/marketplace.json 2>/dev/null | python3 -c "
+          import json, sys
+          try:
+              data = json.load(sys.stdin)
+              print(data['metadata']['version'])
+          except Exception:
+              print('')
+          " 2>/dev/null || echo "")
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Previous version: $version"
+
+      - name: Check version change
+        id: check
+        run: |
+          if [ "${{ steps.current.outputs.version }}" != "${{ steps.previous.outputs.version }}" ] && [ -n "${{ steps.current.outputs.version }}" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Version changed from ${{ steps.previous.outputs.version }} to ${{ steps.current.outputs.version }}"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Version unchanged, skipping release"
+          fi
+
+      - name: Check tag exists
+        if: steps.check.outputs.changed == 'true'
+        id: tag_check
+        run: |
+          tag="v${{ steps.current.outputs.version }}"
+          if git ls-remote --tags origin "refs/tags/$tag" | grep -q "$tag"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $tag already exists, skipping release"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Count skills
+        if: steps.check.outputs.changed == 'true' && steps.tag_check.outputs.exists == 'false'
+        id: skills
+        run: |
+          count=$(ls -d skills/*/ 2>/dev/null | wc -l)
+          echo "count=$count" >> $GITHUB_OUTPUT
+
+          # Build skill list
+          list=""
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            list="$list- $skill_name\n"
+          done
+          {
+            echo "list<<EOF"
+            echo -e "$list"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create release
+        if: steps.check.outputs.changed == 'true' && steps.tag_check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.current.outputs.version }}
+          name: v${{ steps.current.outputs.version }}
+          generate_release_notes: true
+          body: |
+            ## AceDataCloud Agent Skills v${{ steps.current.outputs.version }}
+
+            📦 **${{ steps.skills.outputs.count }} skills** included in this release.
+
+            ### Included Skills
+
+            ${{ steps.skills.outputs.list }}
+
+            ### Installation
+
+            ```bash
+            # Claude Code
+            /plugin marketplace add AceDataCloud/Skills
+
+            # Other agents
+            git clone https://github.com/AceDataCloud/Skills.git
+            cp -r Skills/skills/* .agents/skills/
+            ```
+
+            ---
+            *See [CHANGELOG](https://github.com/AceDataCloud/Skills/commits/main) for detailed changes.*
