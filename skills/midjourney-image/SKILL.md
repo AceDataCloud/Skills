@@ -24,7 +24,16 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "wait": true}'
+  -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
+```
+
+This returns a `task_id` immediately. Poll for the result:
+
+```bash
+curl -X POST https://api.acedata.cloud/midjourney/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task_id": "<task_id from above>"}'
 ```
 
 ## Generation Modes
@@ -148,6 +157,18 @@ Append these to your prompt text:
 | `--seed` | `--seed 12345` | Reproducible generation |
 
 ## Task Polling
+
+Always use `callback_url` to get a `task_id` immediately without blocking:
+
+```json
+POST /midjourney/imagine
+{
+  "prompt": "...",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Then poll every 5 seconds until complete:
 
 ```json
 POST /midjourney/tasks
