@@ -167,6 +167,78 @@ mkdir -p .agents/skills
 cp -r Skills/skills/* .agents/skills/
 ```
 
+### Cursor
+
+Cursor supports skills via the `.cursor/rules/` directory:
+
+```bash
+# Copy skills into your project
+mkdir -p .cursor/rules
+cp -r Skills/skills/*/*.md .cursor/rules/
+```
+
+Alternatively, Cursor can use `.agents/skills/` with newer versions.
+
+### Windsurf
+
+```bash
+# Windsurf uses the agentskills.io standard
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+### Cline
+
+Cline supports custom instructions and can load skills from `.agents/skills/`:
+
+```bash
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+Or add skills directly in Cline's settings:
+
+1. Open Cline sidebar → Settings → Custom Instructions
+2. Paste the content from any `SKILL.md` file
+3. Cline will use the skill context in conversations
+
+### Continue.dev
+
+```bash
+# Continue supports the agentskills.io standard
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+Or configure in `.continue/config.yaml`:
+
+```yaml
+docs:
+  - title: "AceDataCloud Skills"
+    startUrl: "https://github.com/AceDataCloud/Skills"
+```
+
+### Amazon Q Developer
+
+```bash
+# Copy skills to your project
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+Amazon Q Developer can reference skills from the workspace context.
+
+### Zed
+
+Zed AI assistant can use context from workspace files:
+
+```bash
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+Skills are automatically picked up as workspace context.
+
 ### Any agentskills.io-compatible Agent
 
 The universal pattern works with all compatible agents:
