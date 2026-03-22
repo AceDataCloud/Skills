@@ -1,16 +1,18 @@
 # AceDataCloud Agent Skills
 
-[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, web search, and more.
+[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, LLM chat, web search, and more.
 
 Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **OpenHands**, **Roo Code**, **TRAE**, **Goose**, and all [agentskills.io](https://agentskills.io/)-compatible agents.
 
-## Available Skills
+## Available Skills (22)
 
-### AI Music
+### AI Music & Audio
 
 | Skill | Description |
 |-------|-------------|
 | [suno-music](skills/suno-music/) | Generate AI music, lyrics, covers, and vocal extraction with Suno |
+| [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
+| [fish-audio](skills/fish-audio/) | Text-to-speech and voice synthesis with Fish Audio |
 
 ### AI Image Generation
 
@@ -19,7 +21,9 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 | [midjourney-image](skills/midjourney-image/) | Generate, edit, blend, describe, and upscale images with Midjourney |
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
-| [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (Nano Banana) |
+| [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
+| [qr-art](skills/qr-art/) | Generate artistic AI-powered QR codes |
+| [ai-headshots](skills/ai-headshots/) | Generate professional AI headshots and portraits |
 
 ### AI Video Generation
 
@@ -27,15 +31,27 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 |-------|-------------|
 | [luma-video](skills/luma-video/) | Generate videos with Luma Dream Machine |
 | [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
-| [veo-video](skills/veo-video/) | Generate videos with Google Veo |
-| [seedance-video](skills/seedance-video/) | Generate videos with ByteDance Seedance |
+| [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
+| [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
+| [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
+| [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 
-### Web & Utilities
+### AI Chat & Tools
 
 | Skill | Description |
 |-------|-------------|
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
+| [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
+
+### Platform
+
+| Skill | Description |
+|-------|-------------|
+| [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
+| [acedatacloud-debug](skills/acedatacloud-debug/) | Debug production issues with CLS logs and trace IDs |
+| [acedatacloud-deploy](skills/acedatacloud-deploy/) | Deploy services to Kubernetes, Docker, and integrations |
 
 ## Installation
 
@@ -45,6 +61,7 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 /plugin marketplace add AceDataCloud/Skills
 /plugin install acedatacloud-ai-media@acedatacloud-skills
 /plugin install acedatacloud-ai-tools@acedatacloud-skills
+/plugin install acedatacloud-platform@acedatacloud-skills
 ```
 
 ### Claude Code (Manual)
