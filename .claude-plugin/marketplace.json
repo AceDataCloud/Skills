@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "AI-powered data services skills for music, image, video generation, web search, and more",
-    "version": "2.0.0"
+    "version": "3.0.0"
   },
   "plugins": [
     {
       "name": "acedatacloud-ai-media",
-      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Midjourney, Flux, Seedream, NanoBanana, QR Art, Headshots), video (Luma, Sora, Veo, Kling, Hailuo, Seedance)",
+      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Midjourney, Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Kling, Hailuo, Seedance)",
       "source": "./",
       "strict": false,
       "skills": [
@@ -22,8 +22,6 @@
         "./skills/flux-image",
         "./skills/seedream-image",
         "./skills/nano-banana-image",
-        "./skills/qr-art",
-        "./skills/ai-headshots",
         "./skills/luma-video",
         "./skills/sora-video",
         "./skills/veo-video",
@@ -34,25 +32,15 @@
     },
     {
       "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web search, face transform, short URLs",
+      "description": "AI utility skills: LLM chat, web search, face transform, short URLs, API guide",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/ai-chat",
         "./skills/google-search",
         "./skills/face-transform",
-        "./skills/short-url"
-      ]
-    },
-    {
-      "name": "acedatacloud-platform",
-      "description": "AceDataCloud platform skills: API usage guide, production debugging, deployment",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/acedatacloud-api",
-        "./skills/acedatacloud-debug",
-        "./skills/acedatacloud-deploy"
+        "./skills/short-url",
+        "./skills/acedatacloud-api"
       ]
     }
   ]

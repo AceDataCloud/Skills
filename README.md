@@ -4,7 +4,7 @@
 
 Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **OpenHands**, **Roo Code**, **TRAE**, **Goose**, and all [agentskills.io](https://agentskills.io/)-compatible agents.
 
-## Available Skills (22)
+## Available Skills (18)
 
 ### AI Music & Audio
 
@@ -22,8 +22,6 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
 | [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
-| [qr-art](skills/qr-art/) | Generate artistic AI-powered QR codes |
-| [ai-headshots](skills/ai-headshots/) | Generate professional AI headshots and portraits |
 
 ### AI Video Generation
 
@@ -44,14 +42,7 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
-
-### Platform
-
-| Skill | Description |
-|-------|-------------|
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
-| [acedatacloud-debug](skills/acedatacloud-debug/) | Debug production issues with CLS logs and trace IDs |
-| [acedatacloud-deploy](skills/acedatacloud-deploy/) | Deploy services to Kubernetes, Docker, and integrations |
 
 ## Installation
 
@@ -61,7 +52,6 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 /plugin marketplace add AceDataCloud/Skills
 /plugin install acedatacloud-ai-media@acedatacloud-skills
 /plugin install acedatacloud-ai-tools@acedatacloud-skills
-/plugin install acedatacloud-platform@acedatacloud-skills
 ```
 
 ### Claude Code (Manual)
