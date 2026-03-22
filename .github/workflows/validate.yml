@@ -1,0 +1,133 @@
+name: Validate Skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate SKILL.md structure
+        run: |
+          errors=0
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            skill_file="$skill_dir/SKILL.md"
+
+            # Check SKILL.md exists
+            if [ ! -f "$skill_file" ]; then
+              echo "::error::$skill_dir is missing SKILL.md"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Check YAML frontmatter exists
+            if ! head -1 "$skill_file" | grep -q '^---$'; then
+              echo "::error::$skill_file is missing YAML frontmatter"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Extract frontmatter
+            frontmatter=$(sed -n '2,/^---$/p' "$skill_file" | head -n -1)
+
+            # Check required 'name' field
+            name=$(echo "$frontmatter" | grep '^name:' | sed 's/^name: *//')
+            if [ -z "$name" ]; then
+              echo "::error::$skill_file is missing 'name' in frontmatter"
+              errors=$((errors + 1))
+            elif [ ${#name} -gt 64 ]; then
+              echo "::error::$skill_file name exceeds 64 characters: $name"
+              errors=$((errors + 1))
+            fi
+
+            # Check name matches directory
+            if [ "$name" != "$skill_name" ]; then
+              echo "::warning::$skill_file name '$name' does not match directory '$skill_name'"
+            fi
+
+            # Check required 'description' field
+            description=$(echo "$frontmatter" | grep '^description:' | sed 's/^description: *//')
+            if [ -z "$description" ]; then
+              echo "::error::$skill_file is missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            elif [ ${#description} -gt 1024 ]; then
+              echo "::error::$skill_file description exceeds 1024 characters"
+              errors=$((errors + 1))
+            fi
+
+            # Check line count (warn if >500)
+            lines=$(wc -l < "$skill_file")
+            if [ "$lines" -gt 500 ]; then
+              echo "::warning::$skill_file has $lines lines (recommended <500)"
+            fi
+
+            echo "✓ $skill_name"
+          done
+
+          if [ $errors -gt 0 ]; then
+            echo "::error::$errors validation error(s) found"
+            exit 1
+          fi
+
+          echo "All skills validated successfully"
+
+      - name: Validate marketplace.json
+        run: |
+          if [ ! -f .claude-plugin/marketplace.json ]; then
+            echo "::error::Missing .claude-plugin/marketplace.json"
+            exit 1
+          fi
+
+          # Check JSON is valid
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null 2>&1
+          if [ $? -ne 0 ]; then
+            echo "::error::marketplace.json is not valid JSON"
+            exit 1
+          fi
+
+          # Check all referenced skill paths exist
+          errors=0
+          for skill_path in $(python3 -c "
+          import json
+          with open('.claude-plugin/marketplace.json') as f:
+              data = json.load(f)
+          for plugin in data.get('plugins', []):
+              for skill in plugin.get('skills', []):
+                  print(skill.lstrip('./'))
+          "); do
+            if [ ! -d "$skill_path" ]; then
+              echo "::error::marketplace.json references non-existent path: $skill_path"
+              errors=$((errors + 1))
+            fi
+          done
+
+          if [ $errors -gt 0 ]; then
+            exit 1
+          fi
+
+          echo "marketplace.json validated successfully"
+
+      - name: Check for orphaned skills
+        run: |
+          # Find skills not referenced in marketplace.json
+          referenced=$(python3 -c "
+          import json
+          with open('.claude-plugin/marketplace.json') as f:
+              data = json.load(f)
+          for plugin in data.get('plugins', []):
+              for skill in plugin.get('skills', []):
+                  print(skill.lstrip('./'))
+          ")
+
+          for skill_dir in skills/*/; do
+            skill_path="${skill_dir%/}"
+            if ! echo "$referenced" | grep -q "^${skill_path}$"; then
+              echo "::warning::$skill_path is not referenced in marketplace.json"
+            fi
+          done

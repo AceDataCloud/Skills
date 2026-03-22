@@ -1,8 +1,15 @@
 # AceDataCloud Agent Skills
 
+<p align="center">
+  <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
+  <a href="https://platform.acedata.cloud"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
+  <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
+</p>
+
 [Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, LLM chat, web search, and more.
 
-Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **OpenHands**, **Roo Code**, **TRAE**, **Goose**, and all [agentskills.io](https://agentskills.io/)-compatible agents.
+Compatible with **15+ AI coding agents**: Claude Code, GitHub Copilot, Gemini CLI, OpenHands, Roo Code, TRAE, Goose, Mistral Vibe, and all [agentskills.io](https://agentskills.io/)-compatible tools.
 
 ## Available Skills (18)
 
@@ -44,65 +51,175 @@ Works with **Claude Code**, **GitHub Copilot (VS Code)**, **Gemini CLI**, **Open
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
 
-## Installation
+## Prerequisites
 
-### Claude Code (Plugin Marketplace)
+Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
 
-```bash
-/plugin marketplace add AceDataCloud/Skills
-/plugin install acedatacloud-ai-media@acedatacloud-skills
-/plugin install acedatacloud-ai-tools@acedatacloud-skills
-```
-
-### Claude Code (Manual)
-
-```bash
-claude --add-dir /path/to/Skills/skills
-```
-
-### GitHub Copilot / VS Code
-
-Copy the skill folders into your project:
-
-```bash
-cp -r skills/* .github/skills/
-# or
-cp -r skills/* .agents/skills/
-```
-
-### Any agentskills.io-compatible agent
-
-Clone and point your agent to the skills directory:
-
-```bash
-git clone https://github.com/AceDataCloud/Skills.git
-```
-
-## Authentication
-
-All skills require an AceDataCloud API token. Get yours at [platform.acedata.cloud](https://platform.acedata.cloud).
+1. Register an account
+2. Browse and subscribe to a service (most have free quota)
+3. Create an API credential (token)
 
 ```bash
 export ACEDATACLOUD_API_TOKEN="your-token-here"
 ```
 
-## MCP Server Integration
+## Usage by Platform
 
-Each skill works standalone via direct API calls, but for best results, pair with the corresponding [MCP server](https://platform.acedata.cloud/services) for tool-use capabilities:
+### Claude Code
 
-| Skill | MCP Server | Install |
-|-------|-----------|---------|
-| suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` |
-| midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` |
-| google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` |
-| flux-image | [mcp-flux](https://pypi.org/project/mcp-flux/) | `pip install mcp-flux` |
-| luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` |
-| sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` |
-| veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` |
-| seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` |
-| seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` |
-| nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` |
-| short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` |
+**Option A: Plugin Marketplace (recommended)**
+
+```bash
+# Add the marketplace source
+/plugin marketplace add AceDataCloud/Skills
+
+# Install skill bundles
+/plugin install acedatacloud-ai-media@acedatacloud-skills    # 13 media skills
+/plugin install acedatacloud-ai-tools@acedatacloud-skills     # 5 tool skills
+```
+
+After installation, Claude Code automatically loads relevant skills when you ask about music/image/video generation, search, etc.
+
+**Option B: Add skills directory directly**
+
+```bash
+# Clone the repo
+git clone https://github.com/AceDataCloud/Skills.git
+
+# Add all skills at once
+claude --add-dir ./Skills/skills
+
+# Or add specific skills
+claude --add-dir ./Skills/skills/suno-music
+claude --add-dir ./Skills/skills/midjourney-image
+```
+
+**Option C: Copy into your project**
+
+```bash
+# Copy skills into your project's .claude/skills/ directory
+mkdir -p .claude/skills
+cp -r Skills/skills/* .claude/skills/
+```
+
+Then Claude Code auto-discovers them when working in that project.
+
+### GitHub Copilot (VS Code)
+
+Copy skills into your project under `.github/skills/` or `.agents/skills/`:
+
+```bash
+# Option 1: .github/skills/ (GitHub Copilot native path)
+mkdir -p .github/skills
+cp -r Skills/skills/* .github/skills/
+
+# Option 2: .agents/skills/ (agentskills.io standard path)
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+GitHub Copilot in VS Code will auto-discover skills on file save and use them when relevant.
+
+### Gemini CLI
+
+Gemini CLI supports the agentskills.io format via `.agents/skills/`:
+
+```bash
+# Copy into your project
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+
+# Or point Gemini CLI to the skills directory
+gemini --add-dir ./Skills/skills
+```
+
+### OpenHands / OpenDevin
+
+```bash
+# Copy skills into your workspace
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+OpenHands auto-discovers `SKILL.md` files in `.agents/skills/`.
+
+### Roo Code
+
+```bash
+# Roo Code uses the agentskills.io standard path
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+### TRAE (ByteDance)
+
+```bash
+# TRAE supports .agents/skills/ directory
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+### Goose (Block)
+
+```bash
+# Goose follows the agentskills.io standard
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+```
+
+### Any agentskills.io-compatible Agent
+
+The universal pattern works with all compatible agents:
+
+```bash
+git clone https://github.com/AceDataCloud/Skills.git
+# Then point your agent to ./Skills/skills/
+```
+
+## Pairing Skills with MCP Servers
+
+Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers provide **tools** (executable functions the agent can call). Together they give the best experience.
+
+| Skill | MCP Server | Install | Hosted Endpoint |
+|-------|-----------|---------|-----------------|
+| suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
+| midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
+| google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
+| flux-image | [mcp-flux](https://pypi.org/project/mcp-flux/) | `pip install mcp-flux` | `https://flux.mcp.acedata.cloud/mcp` |
+| luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
+| sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
+| veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
+| seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
+| seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
+| nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
+| short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
+
+**Using hosted MCP endpoints** (no local install needed):
+
+```json
+{
+  "mcpServers": {
+    "suno": {
+      "url": "https://suno.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_TOKEN"
+      }
+    }
+  }
+}
+```
+
+## Quick Example
+
+Ask your AI agent:
+
+> "Generate a lo-fi hip hop track with rain sounds using Suno"
+
+The agent will:
+1. Read the `suno-music` skill to understand the API
+2. Call the Suno MCP server (if configured) or guide you through the API call
+3. Handle task polling until the music is ready
+4. Return the audio URL
 
 ## Contributing
 
@@ -110,8 +227,8 @@ We welcome contributions! To add a new skill:
 
 1. Create a directory under `skills/` matching the skill name
 2. Add a `SKILL.md` following the [Agent Skills specification](https://agentskills.io/specification)
-3. Optionally add `scripts/`, `references/`, and `examples/` directories
-4. Submit a pull request
+3. Use the [template](template/SKILL.md) as a starting point
+4. Submit a pull request — CI will validate your skill format
 
 ## License
 
