@@ -1,0 +1,190 @@
+name: Sync from Docs
+
+on:
+  repository_dispatch:
+    types: [docs-updated]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force sync even without detected changes"
+        required: false
+        default: "false"
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  create-sync-issue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Docs repo
+        uses: actions/checkout@v4
+        with:
+          repository: AceDataCloud/Docs
+          path: _docs
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+      - name: Gather Docs changes
+        id: changes
+        run: |
+          cd _docs
+          diff_info=$(git log -1 --pretty=format:"%h %s" 2>/dev/null || echo "unknown")
+          echo "commit_info=$diff_info" >> "$GITHUB_OUTPUT"
+
+          # Get changed services from dispatch payload or detect from diff
+          changed_services="${{ github.event.client_payload.changed_services }}"
+          if [ -z "$changed_services" ]; then
+            changed_services="all"
+          fi
+          echo "changed_services=$changed_services" >> "$GITHUB_OUTPUT"
+
+          echo "## Docs Update Summary" > /tmp/docs_context.md
+          echo "" >> /tmp/docs_context.md
+          echo "Changed services: $changed_services" >> /tmp/docs_context.md
+          echo "" >> /tmp/docs_context.md
+
+          # For each changed service, collect OpenAPI endpoint info
+          for svc in $(echo "$changed_services" | tr ',' ' '); do
+            if [ -f "openapi/$svc.json" ]; then
+              echo "### $svc — OpenAPI Endpoints" >> /tmp/docs_context.md
+              echo '```' >> /tmp/docs_context.md
+              python3 -c "
+          import json
+          with open('openapi/$svc.json') as f:
+              spec = json.load(f)
+          for path, methods in spec.get('paths', {}).items():
+              for method, op in methods.items():
+                  print(f'{method.upper()} {path}: {op.get(\"summary\", \"\")}')
+                  rb = op.get('requestBody', {})
+                  for ct, mt in rb.get('content', {}).items():
+                      props = mt.get('schema', {}).get('properties', {})
+                      if 'model' in props:
+                          print(f'  Models: {props[\"model\"].get(\"enum\", [])}')
+          " 2>/dev/null || echo "(parse error)"
+              echo '```' >> /tmp/docs_context.md
+              echo "" >> /tmp/docs_context.md
+            fi
+          done
+
+          cd ..
+          docs_context=$(cat /tmp/docs_context.md)
+          if [ ${#docs_context} -gt 8000 ]; then
+            docs_context="${docs_context:0:8000}...(truncated)"
+          fi
+          echo "$docs_context" > /tmp/docs_context_final.md
+
+      - name: Determine affected skills
+        id: skills
+        run: |
+          # Map service names to skill directory names
+          declare -A service_to_skill=(
+            ["suno"]="suno-music"
+            ["luma"]="luma-video"
+            ["sora"]="sora-video"
+            ["veo"]="veo-video"
+            ["midjourney"]="midjourney-image"
+            ["flux"]="flux-image"
+            ["nano-banana"]="nano-banana-image"
+            ["seedream"]="seedream-image"
+            ["seedance"]="seedance-video"
+            ["serp"]="google-search"
+            ["hailuo"]="hailuo-video"
+            ["kling"]="kling-video"
+            ["shorturl"]="short-url"
+            ["fish"]="fish-audio"
+            ["producer"]="producer-music"
+          )
+
+          changed="${{ steps.changes.outputs.changed_services }}"
+          affected=""
+          if [ "$changed" = "all" ]; then
+            affected="all"
+          else
+            for svc in $(echo "$changed" | tr ',' ' '); do
+              skill="${service_to_skill[$svc]}"
+              if [ -n "$skill" ] && [ -d "skills/$skill" ]; then
+                affected="$affected,$skill"
+              fi
+            done
+            affected=$(echo "$affected" | sed 's/^,//')
+          fi
+          echo "affected_skills=$affected" >> "$GITHUB_OUTPUT"
+
+      - name: Check for existing open sync issue
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        run: |
+          existing=$(gh issue list --label "auto-sync" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "issue_number=$existing" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create sync issue
+        if: steps.existing.outputs.exists != 'true' && steps.skills.outputs.affected_skills != ''
+        env:
+          GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        run: |
+          docs_context=$(cat /tmp/docs_context_final.md)
+          commit_info="${{ steps.changes.outputs.commit_info }}"
+          affected="${{ steps.skills.outputs.affected_skills }}"
+
+          body=$(cat <<ISSUE_BODY
+          @claude
+
+          The upstream **Docs** repository has been updated. Please review the changes and update the affected skill files.
+
+          ## Affected Skills
+
+          \`$affected\`
+
+          ## What to Check
+
+          For each affected skill in \`skills/<name>/SKILL.md\`:
+
+          1. **Available models** — Update the model table to match the OpenAPI spec's model enum.
+          2. **API endpoints** — Add new curl examples for new endpoints, update existing ones.
+          3. **Parameters** — Document new API parameters in the workflow sections.
+          4. **Description** — Update the YAML frontmatter description if capabilities changed.
+          5. **Examples** — Update code examples to use latest models and parameters.
+
+          ## Instructions
+
+          - Only update skills for services that actually changed.
+          - If no changes are needed, close this issue with a comment explaining why.
+          - If changes are needed, create a PR with the updates.
+          - Preserve the YAML frontmatter structure (name, description, license, metadata, compatibility).
+          - Keep the skill under 500 lines.
+          ISSUE_BODY
+          )
+
+          full_body=$(printf '%s\n\n## Docs Content\n\n%s' "$body" "$docs_context")
+
+          gh issue create \
+            --title "sync: update skills from Docs ($commit_info)" \
+            --label "auto-sync" \
+            --body "$full_body"
+
+      - name: Update existing issue
+        if: steps.existing.outputs.exists == 'true' && steps.skills.outputs.affected_skills != ''
+        env:
+          GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        run: |
+          docs_context=$(cat /tmp/docs_context_final.md)
+          commit_info="${{ steps.changes.outputs.commit_info }}"
+
+          body=$(printf '@claude\n\nNew Docs update detected (%s). Please re-check and update if needed.\n\n%s' "$commit_info" "$docs_context")
+
+          gh issue comment "${{ steps.existing.outputs.issue_number }}" \
+            --body "$body"
