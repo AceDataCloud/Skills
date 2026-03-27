@@ -32,7 +32,8 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 
 | Model | Best For |
 |-------|---------|
-| `chirp-v5` | Latest, highest quality |
+| `chirp-v5-5` | Latest, highest quality |
+| `chirp-v5` | High quality |
 | `chirp-v4-5-plus` | Enhanced v4.5 |
 | `chirp-v4-5` | Good balance of quality and speed |
 | `chirp-v4` | Fast, reliable |
