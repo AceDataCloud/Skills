@@ -47,6 +47,7 @@ curl -X POST https://api.acedata.cloud/suno/tasks \
 | `chirp-v4-5` | Good balance of quality and speed |
 | `chirp-v4` | Fast, reliable |
 | `chirp-v3-5` | Legacy, stable |
+| `chirp-v3-0` | Legacy |
 
 ## Core Workflows
 
