@@ -24,7 +24,16 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a whale breaching in slow motion at golden hour", "model": "veo-3", "wait": true}'
+  -d '{"prompt": "a whale breaching in slow motion at golden hour", "model": "veo-3", "callback_url": "https://api.acedata.cloud/health"}'
+```
+
+This returns a `task_id` immediately. Poll for the result:
+
+```bash
+curl -X POST https://api.acedata.cloud/veo/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task_id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -86,6 +95,19 @@ POST /veo/videos/1080p
 | `enhance_prompt` | `true` / `false` | Let the model expand your prompt for better results |
 
 ## Task Polling
+
+Always use `callback_url` to get a `task_id` immediately without blocking:
+
+```json
+POST /veo/videos
+{
+  "prompt": "...",
+  "model": "veo-3",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Then poll every 5 seconds until complete:
 
 ```json
 POST /veo/tasks

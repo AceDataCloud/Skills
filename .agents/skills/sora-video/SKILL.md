@@ -24,7 +24,16 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/sora/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "wait": true}'
+  -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
+```
+
+This returns a `task_id` immediately. Poll for the result:
+
+```bash
+curl -X POST https://api.acedata.cloud/sora/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task_id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -87,6 +96,19 @@ POST /sora/videos
 | `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
 
 ## Task Polling
+
+Always use `callback_url` to get a `task_id` immediately without blocking:
+
+```json
+POST /sora/videos
+{
+  "prompt": "...",
+  "model": "sora-2",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Then poll every 5 seconds until complete:
 
 ```json
 POST /sora/tasks

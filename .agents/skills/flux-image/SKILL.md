@@ -24,7 +24,16 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "wait": true}'
+  -d '{"prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
+```
+
+This returns a `task_id` immediately. Poll for the result:
+
+```bash
+curl -X POST https://api.acedata.cloud/flux/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task_id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -75,6 +84,19 @@ POST /flux/images
 
 ## Task Polling
 
+Always use `callback_url` to get a `task_id` immediately without blocking:
+
+```json
+POST /flux/images
+{
+  "prompt": "...",
+  "model": "flux-dev",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Then poll every 5 seconds until complete:
+
 ```json
 POST /flux/tasks
 {"task_id": "your-task-id"}
@@ -96,4 +118,4 @@ Key tools: `flux_generate_image`, `flux_edit_image`
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - Ultra model produces highest quality but is slowest — use dev for iteration, ultra for final output
-- All generation is async — use `"wait": true` or poll `/flux/tasks`
+- All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks`

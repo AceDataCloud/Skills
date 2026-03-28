@@ -99,11 +99,11 @@ curl -X POST https://api.acedata.cloud/face/analyze \
 
 Most generation APIs (images, video, music) are asynchronous:
 
-**Step 1:** Submit request
+**Step 1:** Submit with `callback_url` to force async and get a `task_id` immediately
 
 ```json
 POST /suno/audios
-{"prompt": "a jazz song", "wait": false}
+{"prompt": "a jazz song", "callback_url": "https://api.acedata.cloud/health"}
 → {"task_id": "abc123"}
 ```
 
@@ -115,7 +115,7 @@ POST /suno/tasks
 → {"state": "succeeded", "data": [...]}
 ```
 
-**Shortcut:** Pass `"wait": true` to block until completion (simpler but longer timeout).
+Poll every 3–5 seconds until `succeeded` or `failed`. Using `callback_url` avoids long-running HTTP connections that time out.
 
 ## Error Handling
 
@@ -160,7 +160,7 @@ Error response format:
 ## Gotchas
 
 - Tokens are **service-scoped** by default — create a global token if you need cross-service access
-- Async APIs return a `task_id` — you must poll to get the result
-- `wait: true` is convenient but has a timeout limit (typically 60–120s)
+- Async APIs return a `task_id` — always use `callback_url` to get the task_id immediately, then poll for results
+- Avoid `wait: true` — it blocks for the full generation duration and will time out for video/music tasks
 - Rate limits vary by service tier — upgrade your plan if hitting limits
 - All timestamps are in UTC
