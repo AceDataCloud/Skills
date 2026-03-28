@@ -25,7 +25,7 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v4-5", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 This returns a `task_id` immediately. Poll for the result:
@@ -59,7 +59,7 @@ Generate a song from a text description. Suno creates lyrics, style, and music a
 POST /suno/audios
 {
   "prompt": "an upbeat electronic track about the future of AI",
-  "model": "chirp-v4-5",
+  "model": "chirp-v5-5",
   "instrumental": false
 }
 ```
@@ -75,7 +75,7 @@ POST /suno/audios
   "lyric": "[Verse]\nCode is poetry in motion\n[Chorus]\nWe build the future tonight",
   "title": "Digital Dreams",
   "style": "Synthwave, Electronic, Dreamy",
-  "model": "chirp-v4-5",
+  "model": "chirp-v5-5",
   "vocal_gender": "f"
 }
 ```
