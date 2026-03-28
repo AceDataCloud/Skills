@@ -24,7 +24,16 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/luma/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate", "wait": true}'
+  -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate", "callback_url": "https://api.acedata.cloud/health"}'
+```
+
+This returns a `task_id` immediately. Poll for the result:
+
+```bash
+curl -X POST https://api.acedata.cloud/luma/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"task_id": "<task_id from above>"}'
 ```
 
 ## Workflows
@@ -97,12 +106,25 @@ POST /luma/videos
 
 ## Task Polling
 
+Always use `callback_url` to get a `task_id` immediately without blocking:
+
+```json
+POST /luma/videos
+{
+  "prompt": "...",
+  "action": "generate",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Then poll every 5 seconds until complete:
+
 ```json
 POST /luma/tasks
 {"task_id": "your-task-id"}
 ```
 
-Poll every 5 seconds. States: `pending` → `completed` or `failed`.
+States: `pending` → `completed` or `failed`.
 
 ## MCP Server
 
