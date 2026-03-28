@@ -25,7 +25,7 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v4-5", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 This returns a `task_id` immediately. Poll for the result:
@@ -59,7 +59,7 @@ Generate a song from a text description. Suno creates lyrics, style, and music a
 POST /suno/audios
 {
   "prompt": "an upbeat electronic track about the future of AI",
-  "model": "chirp-v4-5",
+  "model": "chirp-v5-5",
   "instrumental": false
 }
 ```
@@ -71,11 +71,11 @@ Provide your own lyrics, title, and style for precise control.
 ```json
 POST /suno/audios
 {
-  "action": "custom",
+  "custom": true,
   "lyric": "[Verse]\nCode is poetry in motion\n[Chorus]\nWe build the future tonight",
   "title": "Digital Dreams",
   "style": "Synthwave, Electronic, Dreamy",
-  "model": "chirp-v4-5",
+  "model": "chirp-v5-5",
   "vocal_gender": "f"
 }
 ```
@@ -119,6 +119,27 @@ For best results follow this multi-step workflow:
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
 7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+
+## Available Actions
+
+| Action | Description |
+|--------|-------------|
+| `generate` | Generate from prompt (default) |
+| `extend` | Continue an existing audio from a timestamp |
+| `upload_extend` | Upload external audio, then extend it |
+| `upload_cover` | Upload external audio, then create a cover |
+| `concat` | Concatenate extended segments into one track |
+| `cover` | Copy the style of an existing audio |
+| `artist_consistency` | Generate in a custom singer's style |
+| `artist_consistency_vox` | Artist consistency with vocal focus |
+| `stems` | Separate a track into stems |
+| `all_stems` | Separate into all available stems |
+| `replace_section` | Replace a specific time range in a song |
+| `underpainting` | Add accompaniment to an uploaded song |
+| `overpainting` | Add vocals to an uploaded song |
+| `remaster` | Remaster an existing audio |
+| `mashup` | Blend multiple audio IDs together |
+| `samples` | Add samples to an uploaded song |
 
 ## Auxiliary Endpoints
 
@@ -183,6 +204,7 @@ Key tools: `suno_generate_music`, `suno_generate_custom_music`, `suno_extend_mus
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
+- `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
