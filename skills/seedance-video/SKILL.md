@@ -144,7 +144,7 @@ POST /seedance/videos
 | `last_frame` | Use image as the last frame of the video |
 | `reference_image` | Use image as a reference (not as a frame) |
 
-Note: `first_frame`, `first_frame`+`last_frame`, and `reference_image` scenarios are mutually exclusive.
+Note: `first_frame`-only, `first_frame`+`last_frame`, and `reference_image` scenarios are mutually exclusive.
 
 ## Task Polling
 
