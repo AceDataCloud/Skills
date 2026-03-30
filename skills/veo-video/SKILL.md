@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, or converting lower-resolution results to full 1080p. Supports Veo 2, Veo 3, and Veo 3.1 models.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, or upscaling to 1080p. Supports Veo 2, Veo 3, and Veo 3.1 models including fast variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -24,25 +24,29 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a whale breaching in slow motion at golden hour", "model": "veo-3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
+This returns a task ID immediately. Poll for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/veo/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
+  -d '{"id": "<task_id from above>"}'
 ```
 
 ## Models
 
-| Model | Duration | Audio | Best For |
-|-------|----------|-------|----------|
-| `veo-2` | 5–8s | No | Fast, cost-effective generation |
-| `veo-3` | 8s | Yes (native) | Full audiovisual generation |
-| `veo-3.1` | 8s | Yes (native) | Latest model, highest quality |
+| Model | Audio | Best For |
+|-------|-------|----------|
+| `veo2` | No | Cost-effective generation |
+| `veo2-fast` | No | Fast, cost-effective generation (default) |
+| `veo3` | Yes (native) | Full audiovisual generation |
+| `veo3-fast` | Yes (native) | Faster audiovisual generation |
+| `veo31` | Yes (native) | Veo 3.1, highest quality |
+| `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
+| `veo31-fast-ingredient` | Yes (native) | Veo 3.1 fast, ingredient mode |
 
 ## Workflows
 
@@ -51,36 +55,38 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 ```json
 POST /veo/videos
 {
+  "action": "text2video",
   "prompt": "cinematic aerial shot of the Northern Lights over Iceland",
-  "model": "veo-3",
-  "aspect_ratio": "16:9",
-  "duration": 8
+  "model": "veo3",
+  "resolution": "1080p"
 }
 ```
 
 ### 2. Image-to-Video
 
-Animate a still image into video.
+Animate still images into video.
 
 ```json
 POST /veo/videos
 {
+  "action": "image2video",
   "prompt": "the scene gently comes to life with wind and subtle motion",
-  "image_url": "https://example.com/landscape.jpg",
-  "model": "veo-2",
+  "image_urls": ["https://example.com/landscape.jpg"],
+  "model": "veo2",
   "aspect_ratio": "16:9"
 }
 ```
 
 ### 3. Upscale to 1080p
 
-Convert a generated video to full 1080p resolution.
+Convert a previously generated video to full 1080p resolution.
 
 ```json
-POST /veo/videos/1080p
+POST /veo/videos
 {
-  "video_url": "https://example.com/generated-video.mp4",
-  "model": "veo-3"
+  "action": "get1080p",
+  "video_id": "your-video-id",
+  "model": "veo3"
 }
 ```
 
@@ -88,21 +94,24 @@ POST /veo/videos/1080p
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"veo-2"`, `"veo-3"`, `"veo-3.1"` | Model to use |
-| `aspect_ratio` | `"16:9"`, `"9:16"` | Video aspect ratio |
-| `duration` | `5` – `8` | Duration in seconds |
-| `generate_audio` | `true` / `false` | Enable/disable audio (veo-3, veo-3.1 default to true) |
-| `enhance_prompt` | `true` / `false` | Let the model expand your prompt for better results |
+| `action` | `"text2video"`, `"image2video"`, `"get1080p"` | Generation mode |
+| `model` | see Models table | Model to use (default: `veo2-fast`) |
+| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
+| `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"`, `"4:3"`, `"3:4"` | Aspect ratio — only valid for `image2video` |
+| `image_urls` | array of strings | Reference image URLs — only for `image2video` |
+| `video_id` | string | Video to upscale — only for `get1080p` |
+| `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
 
 ## Task Polling
 
-Always use `callback_url` to get a `task_id` immediately without blocking:
+Always use `callback_url` to get a task ID immediately without blocking:
 
 ```json
 POST /veo/videos
 {
+  "action": "text2video",
   "prompt": "...",
-  "model": "veo-3",
+  "model": "veo3",
   "callback_url": "https://api.acedata.cloud/health"
 }
 ```
@@ -111,7 +120,14 @@ Then poll every 5 seconds until complete:
 
 ```json
 POST /veo/tasks
-{"task_id": "your-task-id"}
+{"id": "your-task-id"}
+```
+
+For batch polling:
+
+```json
+POST /veo/tasks
+{"ids": ["task-id-1", "task-id-2"], "action": "retrieve_batch"}
 ```
 
 States: `pending` → `succeeded` or `failed`.
@@ -124,13 +140,14 @@ pip install mcp-veo
 
 Or hosted: `https://veo.mcp.acedata.cloud/mcp`
 
-Key tools: `veo_generate_video`, `veo_generate_video_from_image`, `veo_get_1080p_video`
+Key tools: `veo_text_to_video`, `veo_image_to_video`, `veo_get_1080p`, `veo_get_task`, `veo_get_tasks_batch`
 
 ## Gotchas
 
-- Veo 3 and 3.1 generate **native audio** — use `generate_audio: false` to suppress
-- The 1080p endpoint (`/veo/videos/1080p`) only upscales previously generated videos
-- `enhance_prompt` can significantly improve results but may deviate from literal interpretation
-- Veo 2 does NOT support audio generation
-- Duration is capped at 8 seconds for all models
+- Veo 3 and 3.1 models generate **native audio** — `veo2`/`veo2-fast` do NOT support audio
+- The `get1080p` action uses `video_id` (from a prior generation), not a URL
+- `aspect_ratio` is **only valid** for the `image2video` action
+- `image_urls` accepts an array — pass one or more image URLs for image-to-video
+- `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
+- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
