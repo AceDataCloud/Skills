@@ -1,6 +1,6 @@
 ---
 name: seedream-image
-description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images with inpainting/outpainting, or working with ultra-high-resolution outputs. Supports Seedream 2.0, 2.1, 3.0, and 3.0 Turbo models.
+description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, and SeedEdit 3.0 models.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -24,17 +24,18 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/seedream/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a cyberpunk cat wearing VR goggles in a neon city", "model": "seedream-3.0"}'
+  -d '{"prompt": "a cyberpunk cat wearing VR goggles in a neon city", "model": "doubao-seedream-5-0-260128"}'
 ```
 
 ## Models
 
-| Model | Resolution | Speed | Best For |
-|-------|-----------|-------|----------|
-| `seedream-2.0` | Standard | Fast | Quick drafts |
-| `seedream-2.1` | Standard | Fast | Improved quality over 2.0 |
-| `seedream-3.0` | Up to 2048×2048 | Standard | High-quality generation (default) |
-| `seedream-3.0-turbo` | Up to 2048×2048 | Faster | Speed-optimized with near-3.0 quality |
+| Model | Version | Best For |
+|-------|---------|----------|
+| `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, highest quality (default) |
+| `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
+| `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
+| `doubao-seedream-3-0-t2i-250415` | Seedream 3.0 T2I | Text-to-image, precise prompt following |
+| `doubao-seededit-3-0-i2i-250628` | SeedEdit 3.0 | Image-to-image editing |
 
 ## Workflows
 
@@ -44,24 +45,42 @@ curl -X POST https://api.acedata.cloud/seedream/images \
 POST /seedream/images
 {
   "prompt": "a serene Japanese garden with cherry blossoms and a red bridge",
-  "model": "seedream-3.0",
-  "width": 1024,
-  "height": 1024
+  "model": "doubao-seedream-5-0-260128",
+  "size": "1K"
 }
 ```
 
-### 2. Image Editing (Inpainting / Outpainting)
+### 2. Image Editing (Image-to-Image)
 
-Edit regions of an existing image using a mask.
+Edit an existing image by providing the source image URL(s) and a descriptive prompt. Use the `doubao-seededit-3-0-i2i-250628` model for best editing results.
 
 ```json
-POST /seedream/images/edit
+POST /seedream/images
 {
-  "prompt": "replace with a golden sunset sky",
-  "image_url": "https://example.com/photo.jpg",
-  "mask_url": "https://example.com/mask.png",
-  "model": "seedream-3.0"
+  "prompt": "change the sky to a golden sunset",
+  "model": "doubao-seededit-3-0-i2i-250628",
+  "image": ["https://example.com/photo.jpg"]
 }
+```
+
+### 3. Async Generation with Task Polling
+
+Pass a `callback_url` to receive results asynchronously via webhook, or poll `/seedream/tasks` for the result:
+
+```json
+POST /seedream/images
+{
+  "prompt": "an epic fantasy landscape",
+  "model": "doubao-seedream-5-0-260128",
+  "callback_url": "https://api.acedata.cloud/health"
+}
+```
+
+Poll the returned `task_id`:
+
+```json
+POST /seedream/tasks
+{"id": "<task_id>"}
 ```
 
 ## Parameters
@@ -70,18 +89,41 @@ POST /seedream/images/edit
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"seedream-2.0"`, `"seedream-2.1"`, `"seedream-3.0"`, `"seedream-3.0-turbo"` | Model to use |
-| `width` | 512 – 2048 | Image width in pixels |
-| `height` | 512 – 2048 | Image height in pixels |
-| `seed` | integer | Seed for reproducible results |
+| `model` | see Models table | Model to use (required) |
+| `prompt` | string | Image description (required) |
+| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution (e.g. `1K`=1024px, `2K`=2048px); `3K` only for Seedream 5.0 |
+| `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I / SeedEdit 3.0 only) |
+| `guidance_scale` | number [1, 10] | Prompt adherence strength (3.0 models only; T2I default 2.5, edit default 5.5) |
+| `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
+| `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
+| `watermark` | boolean | Add AI-generated watermark (default: true) |
+| `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
+| `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
+| `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
+| `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
 
 ### Editing
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `image_url` | Yes | URL of the source image to edit |
-| `mask_url` | Yes | URL of the binary mask (white = edit region) |
-| `prompt` | Yes | Describe what to place in the masked area |
+| `image` | Yes (for editing) | Array of image URLs or base64 strings (max 10MB each) |
+| `prompt` | Yes | Describe the desired edit |
+
+## Task Polling
+
+When using `callback_url`, generation is asynchronous. Poll the task endpoint:
+
+```json
+POST /seedream/tasks
+{"id": "your-task-id"}
+```
+
+Or retrieve multiple tasks at once:
+
+```json
+POST /seedream/tasks
+{"ids": ["task-id-1", "task-id-2"], "action": "retrieve_batch"}
+```
 
 ## MCP Server
 
@@ -95,8 +137,11 @@ Key tools: `seedream_generate_image`, `seedream_edit_image`
 
 ## Gotchas
 
-- Maximum resolution is **2048×2048** — exceed this and requests fail
-- Mask images must be **binary** (black/white) with the same dimensions as the source image
-- `seedream-3.0-turbo` offers a good speed/quality trade-off for iterative workflows
-- Results return a direct image URL — no task polling needed for generation
-- Editing always requires both `image_url` and `mask_url`
+- Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
+- Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
+- `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
+- `3K` size is only supported by Seedream 5.0; `adaptive` selects the best aspect ratio automatically
+- `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
+- `guidance_scale` is only available for the 3.0-series models
+- `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
+- Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
