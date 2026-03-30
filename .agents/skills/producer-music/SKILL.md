@@ -34,12 +34,11 @@ curl -X POST https://api.acedata.cloud/producer/audios \
 | `generate` | Create a new song from prompt or custom lyrics |
 | `cover` | Create a cover version of an existing song |
 | `extend` | Continue a song from a specific timestamp |
-| `upload_cover` | Create a cover from an uploaded reference audio |
-| `upload_extend` | Extend from an uploaded reference audio |
 | `replace_section` | Replace a time range in an existing song |
 | `swap_vocals` | Extract and swap vocal tracks |
 | `swap_instrumentals` | Extract and swap instrumental tracks |
 | `variation` | Generate a variation of an existing song |
+| `stems` | Separate a song into stems |
 
 ## Workflows
 
@@ -100,14 +99,13 @@ POST /producer/audios
 }
 ```
 
-### 6. Cover from Upload
+### 6. Separate into Stems
 
 ```json
 POST /producer/audios
 {
-  "action": "upload_cover",
-  "audio_id": "uploaded-reference-id",
-  "cover_strength": 0.8
+  "action": "stems",
+  "audio_id": "existing-audio-id"
 }
 ```
 
@@ -156,7 +154,6 @@ POST /producer/upload
 | `replace_section_end` | number | End time of section to replace |
 | `lyrics_strength` | 0–1 | Lyrics adherence (default: 0.7) |
 | `sound_strength` | 0.2–1 | Sound quality weight (default: 0.7) |
-| `cover_strength` | 0.2–1 | Cover similarity (default: 1.0) |
 | `weirdness` | 0–1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
 
@@ -164,7 +161,7 @@ POST /producer/upload
 
 ```json
 POST /producer/tasks
-{"task_id": "your-task-id"}
+{"id": "your-task-id"}
 ```
 
 ## Response Structure
@@ -192,5 +189,5 @@ POST /producer/tasks
 - `continue_at` is in **seconds** — the song extends from that point
 - `replace_section_start` / `replace_section_end` define the time range to regenerate
 - `weirdness` at 0 = predictable, at 1 = highly experimental
-- Upload a reference audio first (`/producer/upload`), then use the returned ID for `upload_cover` or `upload_extend`
+- Upload a reference audio via `/producer/upload` to get an audio ID for use with `cover` or `extend`
 - WAV and video downloads are separate endpoints — call them after the main generation completes
