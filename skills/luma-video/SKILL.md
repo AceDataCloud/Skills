@@ -100,7 +100,6 @@ POST /luma/videos
 | `aspect_ratio` | string | `"16:9"` | Video aspect ratio |
 | `loop` | bool | `false` | Create seamless loop |
 | `enhancement` | bool | `true` | Enhance prompt for better results |
-| `quality` | string | `"standard"` | Quality level: `"standard"`, `"high"`, or `"ultra"` |
 | `start_image_url` | string | — | Reference image for first frame |
 | `end_image_url` | string | — | Reference image for last frame |
 | `video_id` | string | — | Required for extend action |
