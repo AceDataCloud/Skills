@@ -88,7 +88,7 @@ Replace the face in the target image with the face from the source.
 ```json
 POST /face/swap
 {
-  "image_url": "https://example.com/source-face.jpg",
+  "source_image_url": "https://example.com/source-face.jpg",
   "target_image_url": "https://example.com/target-person.jpg"
 }
 ```
@@ -111,18 +111,47 @@ POST /face/detect-live
 }
 ```
 
-## Common Parameters
+## Parameters
+
+### Common
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `image_url` | Yes | Source face image URL |
-| `target_image_url` | For swap | Target image for face replacement |
+| `image_url` | Yes (most endpoints) | Source face image URL |
+
+### `/face/swap`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `source_image_url` | Yes | URL of the face to use (replaces the face) |
+| `target_image_url` | Yes | URL of the image to put the face onto |
+| `callback_url` | No | Webhook URL for async delivery |
+| `timeout` | No | Max wait time in seconds (default: 120) |
+
+### `/face/beautify`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `image_url` | Yes | Image URL |
+| `smoothing` | No | Skin smoothing 0–100 (default: 10) |
+| `whitening` | No | Whitening 0–100 (default: 30) |
+| `face_lifting` | No | Face slimming 0–100 (default: 70) |
+| `eye_enlarging` | No | Eye enlarging 0–100 (default: 70) |
+
+### `/face/analyze`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `image_url` | Yes | Image URL |
+| `mode` | No | `0` = all faces (default), `1` = largest face only |
+| `face_model_version` | No | Algorithm version (recommended: `3.0`) |
+| `need_rotate_detection` | No | `0` = disabled (default), `1` = enabled |
 
 ## Gotchas
 
-- All face APIs are **synchronous** — no task polling needed, results return immediately
+- All face APIs return results synchronously except `/face/swap`, which supports an optional `callback_url` for async delivery
 - Face analyze returns 90+ keypoints per detected face, supporting multiple faces in one image
-- Face swap requires two images: source (the face to use) and target (the body to put it on)
+- Face swap uses `source_image_url` (the face to apply) and `target_image_url` (the body to apply it to)
 - All APIs are currently in **Alpha** stage — interfaces may evolve
 - Images should contain clearly visible, front-facing faces for best results
 - Liveness detection helps distinguish live photos from printed/screen photos

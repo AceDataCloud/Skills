@@ -24,7 +24,7 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/serp/google \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"query": "latest AI news", "search_type": "search"}'
+  -d '{"query": "latest AI news", "type": "search"}'
 ```
 
 ## Search Types
@@ -44,10 +44,10 @@ curl -X POST https://api.acedata.cloud/serp/google \
 POST /serp/google
 {
   "query": "your search query",
-  "search_type": "search",
+  "type": "search",
   "country": "us",
   "language": "en",
-  "time_range": "qdr:w",
+  "range": "qdr:w",
   "number": 10,
   "page": 1
 }
@@ -56,10 +56,10 @@ POST /serp/google
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `query` | string | Search query (required) |
-| `search_type` | string | One of: search, images, news, maps, places, videos |
+| `type` | string | One of: search, images, news, maps, places, videos |
 | `country` | string | Country code (e.g., "us", "uk", "cn", "jp") |
 | `language` | string | Language code (e.g., "en", "zh", "ja") |
-| `time_range` | string | Time filter (see below) |
+| `range` | string | Time filter (see below) |
 | `number` | int | Number of results per page |
 | `page` | int | Page number for pagination |
 
@@ -92,9 +92,9 @@ Key tool: `serp_google_search`
 
 ## Gotchas
 
-- Default search type is `"search"` (web). Always specify `search_type` for non-web searches
+- Default search type is `"search"` (web). Always specify `type` for non-web searches
 - Country and language codes affect result localization significantly
 - `number` controls results per page, not total results — use `page` for pagination
-- Time range only applies to web search and news, not images or places
+- Time range (`range`) only applies to web search and news, not images or places
 - Image search returns thumbnail and full-size URLs — use full-size for downloads
 - Places search works best with location-specific queries (e.g., "restaurants near Times Square")
