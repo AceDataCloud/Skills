@@ -1,0 +1,7 @@
+.github/
+.agents/
+.claude-plugin/
+template/
+.gitignore
+*.yml
+*.yaml

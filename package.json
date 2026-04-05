@@ -1,0 +1,55 @@
+{
+  "name": "acedatacloud-skills",
+  "version": "1.0.0",
+  "description": "Agent Skills for AceDataCloud AI services — music, image, video generation, LLM chat, web search. Compatible with Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, and 30+ AI coding agents.",
+  "keywords": [
+    "agent-skills",
+    "agentskills",
+    "mcp",
+    "claude-code",
+    "github-copilot",
+    "gemini-cli",
+    "openai-codex",
+    "ai-tools",
+    "suno",
+    "midjourney",
+    "flux",
+    "luma",
+    "sora",
+    "veo",
+    "ai-music",
+    "ai-image",
+    "ai-video",
+    "acedata-cloud"
+  ],
+  "homepage": "https://github.com/AceDataCloud/Skills",
+  "bugs": {
+    "url": "https://github.com/AceDataCloud/Skills/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AceDataCloud/Skills.git"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "dev@acedata.cloud",
+    "url": "https://platform.acedata.cloud"
+  },
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "acedatacloud-skills": "bin/cli.js"
+  },
+  "files": [
+    "skills/",
+    "bin/",
+    "index.js",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "postinstall": "node bin/postinstall.js"
+  }
+}
