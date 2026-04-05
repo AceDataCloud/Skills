@@ -102,7 +102,10 @@ POST /luma/videos
 | `enhancement` | bool | `true` | Enhance prompt for better results |
 | `start_image_url` | string | — | Reference image for first frame |
 | `end_image_url` | string | — | Reference image for last frame |
-| `video_id` | string | — | Required for extend action |
+| `video_id` | string | — | ID of the video to extend (for extend action) |
+| `video_url` | string | — | URL of the video to extend (alternative to `video_id`) |
+| `timeout` | number | `300` | Timeout in seconds for synchronous response |
+| `callback_url` | string | — | Async callback URL (returns task_id immediately) |
 
 ## Task Polling
 

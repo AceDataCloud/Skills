@@ -24,15 +24,15 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 curl -X POST https://api.acedata.cloud/fish/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Hello, this is a demonstration of AI voice synthesis."}'
+  -d '{"action": "speech", "model": "fish-tts", "prompt": "Hello, this is a demonstration of AI voice synthesis."}'
 ```
 
 ## Endpoints
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /fish/audios` | Generate audio from text or parameters |
-| `POST /fish/voices` | Voice synthesis and cloning |
+| `POST /fish/audios` | Generate audio from text |
+| `POST /fish/voices` | Register a custom voice profile |
 | `POST /fish/tasks` | Poll task status |
 
 ## Workflows
@@ -42,35 +42,54 @@ curl -X POST https://api.acedata.cloud/fish/audios \
 ```json
 POST /fish/audios
 {
-  "text": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "action": "speech",
+  "model": "fish-tts",
+  "prompt": "The quick brown fox jumps over the lazy dog.",
+  "voice_id": "d7900c21663f485ab63ebdb7e5905036"
 }
 ```
 
-### 2. Voice Synthesis with Custom Voice
+### 2. Register a Custom Voice
+
+Upload a reference audio to create a custom voice profile.
 
 ```json
 POST /fish/voices
 {
-  "text": "Welcome to our platform.",
-  "audio_url": "https://example.com/reference-voice.mp3"
+  "voice_url": "https://example.com/reference-voice.mp3",
+  "title": "My Custom Voice",
+  "description": "A custom voice profile",
+  "image_url": "https://example.com/cover.jpg"
 }
 ```
 
 ## Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `text` | string | Text to synthesize into speech |
-| `voice_id` | string | Voice model to use |
-| `audio_url` | string | Reference audio for voice cloning |
-| `speed` | number | Speech speed multiplier |
+### `/fish/audios`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | Must be `"speech"` |
+| `model` | string | Yes | Must be `"fish-tts"` |
+| `prompt` | string | Yes | Text to synthesize into speech |
+| `voice_id` | string | No | Voice model ID to use |
+| `callback_url` | string | No | Async callback URL |
+
+### `/fish/voices`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `voice_url` | string | No | Reference audio URL for voice cloning |
+| `title` | string | No | Title of the voice profile |
+| `description` | string | No | Description of the voice profile |
+| `image_url` | string | No | Cover image URL for the voice profile |
+| `callback_url` | string | No | Async callback URL |
 
 ## Task Polling
 
 ```json
 POST /fish/tasks
-{"task_id": "your-task-id"}
+{"id": "your-task-id", "action": "retrieve"}
 ```
 
 ## Response
@@ -88,4 +107,4 @@ POST /fish/tasks
 - Pricing is based on **byte count** of the generated audio
 - Voice cloning requires a clear reference audio sample
 - Text-to-speech supports multiple languages automatically
-- Use the `/fish/voices` endpoint for voice cloning workflows
+- Use the `/fish/voices` endpoint to register a voice profile before using a custom `voice_id`

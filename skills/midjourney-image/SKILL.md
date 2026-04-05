@@ -156,6 +156,35 @@ Append these to your prompt text:
 | `--no` | `--no text, watermark` | Negative prompt |
 | `--seed` | `--seed 12345` | Reproducible generation |
 
+## `/midjourney/imagine` Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `prompt` | string | — | Image description |
+| `action` | string | `"generate"` | `"generate"` or transform action (e.g. `"upscale1"`) |
+| `mode` | string | `"fast"` | Speed mode: `"fast"`, `"relax"`, `"turbo"` |
+| `version` | string | — | Midjourney version, e.g. `"8"`, `"7"`, `"6.1"` |
+| `hd` | bool | `false` | Enable 2K HD generation (V8 only, costs 4x GPU) |
+| `quality` | string | `"1"` | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` (V8 only for `"4"`) |
+| `style_reference` | bool | `false` | Prompt uses `--sref` style references (costs 4x GPU in V8) |
+| `moodboard` | bool | `false` | Prompt uses moodboard references (costs 4x GPU in V8) |
+| `translation` | bool | `false` | Auto-translate non-English prompts |
+| `split_images` | bool | `false` | Return individual images in addition to the 2x2 grid |
+| `image_id` | string | — | Image ID for transform operations |
+| `timeout` | number | `480` | Timeout in seconds for synchronous response |
+| `callback_url` | string | — | Async callback URL |
+
+## Translate Endpoint
+
+Auto-translate a prompt to English before using it with Midjourney.
+
+```json
+POST /midjourney/translate
+{
+  "content": "一座被云雾笼罩的山峰"
+}
+```
+
 ## Task Polling
 
 Always use `callback_url` to get a `task_id` immediately without blocking:

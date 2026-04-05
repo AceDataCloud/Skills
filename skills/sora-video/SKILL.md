@@ -91,9 +91,10 @@ POST /sora/videos
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
+| `version` | `"1.0"` (default), `"2.0"` | API version. Version 2.0 supports durations 4/8/10/12s and pixel-based sizes |
+| `size` | `"small"`, `"large"`, `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution (`small`/`large` for v1.0; pixel sizes for v2.0) |
+| `duration` | `4`, `8`, `10`, `12`, `15`, `25` | Duration in seconds (v1.0: 10/15 for sora-2, 10/15/25 for sora-2-pro; v2.0: 4/8/10/12) |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation (v1.0 only) |
 
 ## Task Polling
 
@@ -129,8 +130,9 @@ Key tools: `sora_generate_video`, `sora_generate_video_from_image`, `sora_genera
 
 ## Gotchas
 
-- Duration of **25 seconds** is only available with `sora-2-pro` model
+- Duration of **25 seconds** is only available with `sora-2-pro` model (v1.0)
 - `size: "large"` produces higher resolution but costs more and takes longer
 - Character-driven generation requires `character_start` and `character_end` timestamps (in seconds) from the source video
-- `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
+- `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content (v1.0 only)
+- Version 2.0 (`version: "2.0"`) supports pixel-based sizes and shorter durations (4/8/10/12s) instead of orientation
 - Task states use `"succeeded"` (not "completed") — check for this value when polling

@@ -1,6 +1,6 @@
 ---
 name: short-url
-description: Create short URLs via AceDataCloud API. Use when generating shortened links for sharing, or batch-creating multiple short URLs at once. Supports custom slugs and expiration.
+description: Create short URLs via AceDataCloud API. Use when generating shortened links for sharing. Returns a shortened URL synchronously.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -21,21 +21,20 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/short-url \
+curl -X POST https://api.acedata.cloud/shorturl \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com/very-long-url-path?with=params"}'
+  -d '{"content": "https://example.com/very-long-url-path?with=params"}'
 ```
 
 ## Workflows
 
-### 1. Create a Single Short URL
+### Create a Short URL
 
 ```json
-POST /short-url
+POST /shorturl
 {
-  "url": "https://example.com/article/2024/awesome-content",
-  "expires_in": 86400
+  "content": "https://example.com/article/2024/awesome-content"
 }
 ```
 
@@ -48,35 +47,11 @@ Response:
 }
 ```
 
-### 2. Batch Create Short URLs
-
-Create multiple short URLs in one request.
-
-```json
-POST /short-url/batch
-{
-  "urls": [
-    "https://example.com/page1",
-    "https://example.com/page2",
-    "https://example.com/page3"
-  ]
-}
-```
-
 ## Parameters
 
-### Single
-
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `url` | Yes | The original long URL to shorten |
-| `expires_in` | No | Expiration in seconds (omit for permanent) |
-
-### Batch
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `urls` | Yes | Array of URLs to shorten |
+| `content` | Yes | The original long URL to shorten |
 
 ## MCP Server
 
@@ -86,11 +61,9 @@ pip install mcp-short-url
 
 Or hosted: `https://short-url.mcp.acedata.cloud/mcp`
 
-Key tools: `create_short_url`, `batch_create_short_urls`
+Key tool: `create_short_url`
 
 ## Gotchas
 
 - Short URLs use the `acda.cc` domain
 - Results are returned synchronously — no task polling needed
-- Batch endpoint accepts an array and returns an array in the same order
-- If `expires_in` is omitted, the short URL is permanent

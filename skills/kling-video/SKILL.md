@@ -105,6 +105,8 @@ POST /kling/motion
 
 ## Parameters
 
+### `/kling/videos`
+
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
@@ -115,6 +117,20 @@ POST /kling/motion
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
 | `camera_control` | object | Camera movement parameters |
+| `element_list` | array | Reference subjects to include in the video |
+| `video_list` | array | Reference videos (MP4/MOV) to guide generation |
+| `callback_url` | string | Async callback URL |
+
+### `/kling/motion`
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `image_url` | string | Reference image URL |
+| `video_url` | string | Motion reference video URL |
+| `mode` | `"std"`, `"pro"` | Quality mode |
+| `prompt` | string | Optional text prompt |
+| `keep_original_sound` | `"yes"`, `"no"` | Whether to keep the original sound from the reference video |
+| `character_orientation` | `"image"`, `"video"` | Whether character orientation follows the image or the video |
 | `callback_url` | string | Async callback URL |
 
 ## Task Polling
