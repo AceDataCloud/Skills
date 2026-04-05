@@ -149,7 +149,7 @@ POST /face/detect-live
 
 ## Gotchas
 
-- All face APIs return results synchronously except `/face/swap`, which supports an optional `callback_url` for async delivery
+- All face APIs return results synchronously. `/face/swap` additionally supports an optional `callback_url` parameter for async delivery (pass it to receive the result via webhook instead of waiting inline)
 - Face analyze returns 90+ keypoints per detected face, supporting multiple faces in one image
 - Face swap uses `source_image_url` (the face to apply) and `target_image_url` (the body to apply it to)
 - All APIs are currently in **Alpha** stage — interfaces may evolve

@@ -91,11 +91,11 @@ POST /sora/videos
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"sora-2"`, `"sora-2-pro"` | Model to use |
+| `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
 | `size` | `"small"`, `"large"` | Video resolution |
 | `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
 | `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
-| `version` | string | API version to use (version `1.0` unlocks longer durations and character references) |
+| `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
 
 ## Task Polling
 
