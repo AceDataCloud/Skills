@@ -3,13 +3,14 @@
 <p align="center">
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
   <a href="https://platform.acedata.cloud"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
+  <a href="https://www.npmjs.com/package/acedatacloud-skills"><img src="https://img.shields.io/npm/v/acedatacloud-skills.svg" alt="npm"></a>
   <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
 </p>
 
 [Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, LLM chat, web search, and more.
 
-Compatible with **15+ AI coding agents**: Claude Code, GitHub Copilot, Gemini CLI, OpenHands, Roo Code, TRAE, Goose, Mistral Vibe, and all [agentskills.io](https://agentskills.io/)-compatible tools.
+Compatible with **15+ AI coding agents**: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, OpenHands, Roo Code, TRAE, Goose, Mistral Vibe, and all [agentskills.io](https://agentskills.io/)-compatible tools.
 
 ## Available Skills (18)
 
@@ -61,6 +62,21 @@ Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
 
 ```bash
 export ACEDATACLOUD_API_TOKEN="your-token-here"
+```
+
+## Quick Install (npm)
+
+```bash
+# Install globally
+npm install -g acedatacloud-skills
+
+# Copy all skills into your project
+acedatacloud-skills install                          # → .agents/skills/ (universal)
+acedatacloud-skills install --target .claude/skills  # → .claude/skills/ (Claude Code)
+acedatacloud-skills install --target .github/skills  # → .github/skills/ (GitHub Copilot)
+
+# Or use npx without installing
+npx acedatacloud-skills install
 ```
 
 ## Usage by Platform
@@ -132,6 +148,21 @@ cp -r Skills/skills/* .agents/skills/
 # Or point Gemini CLI to the skills directory
 gemini --add-dir ./Skills/skills
 ```
+
+### OpenAI Codex
+
+Codex supports the agentskills.io standard via `.agents/skills/` and `AGENTS.md`:
+
+```bash
+# Copy skills into your project
+mkdir -p .agents/skills
+cp -r Skills/skills/* .agents/skills/
+
+# AGENTS.md is already included in this repo for Codex discovery
+cp Skills/AGENTS.md .
+```
+
+Codex auto-discovers skills from `.agents/skills/` and reads `AGENTS.md` for context.
 
 ### OpenHands / OpenDevin
 
