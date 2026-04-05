@@ -138,10 +138,10 @@ POST /wan/videos
 | `audio` | No | boolean | Enable audio in the generated video |
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
+| `size` | No | string | The size of the generated video |
 | `duration` | No | `5`, `10`, `15` | Video duration in seconds |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
-| `timeout` | No | integer | API timeout in seconds (default: 1800) |
 
 ## Task Polling
 
@@ -170,4 +170,3 @@ Or connect to the hosted server at `https://wan.mcp.acedata.cloud/mcp`.
 - Supported durations are 5, 10, or 15 seconds only
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
-- Default API timeout is 1800 seconds (30 minutes) for long-running generations
