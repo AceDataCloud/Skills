@@ -192,3 +192,23 @@ POST /v1/chat/completions
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
+
+## Stateful Conversations Endpoint
+
+For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat/conversations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | Model name (see Available Models above) |
+| `question` | string | The prompt or question to answer |
+| `id` | string | Conversation ID — pass the same ID to continue a session |
+| `preset` | string | Preset/system prompt for the conversation |
+| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
+| `references` | array | Additional context documents to include |

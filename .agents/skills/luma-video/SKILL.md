@@ -102,7 +102,10 @@ POST /luma/videos
 | `enhancement` | bool | `true` | Enhance prompt for better results |
 | `start_image_url` | string | — | Reference image for first frame |
 | `end_image_url` | string | — | Reference image for last frame |
-| `video_id` | string | — | Required for extend action |
+| `video_id` | string | — | ID of video to extend (alternative to `video_url`) |
+| `video_url` | string | — | URL of video to extend (alternative to `video_id`) |
+| `timeout` | number | — | Timeout in seconds for the API to return data |
+| `callback_url` | string | — | Webhook URL for async notifications |
 
 ## Task Polling
 
@@ -141,6 +144,6 @@ Key tools: `luma_generate_video`, `luma_generate_video_from_image`, `luma_extend
 - `enhancement: true` (default) improves prompt quality but may alter your intent — set to `false` for literal prompts
 - Start/end image URLs must be publicly accessible
 - `loop: true` creates seamless looping video — good for backgrounds and social media
-- Extend requires the `video_id` from a previously completed generation
+- Extend requires either `video_id` or `video_url` from a previously completed generation
 - Video generation takes 1–5 minutes depending on complexity
 - Both start and end images are optional — you can use just one for partial guidance

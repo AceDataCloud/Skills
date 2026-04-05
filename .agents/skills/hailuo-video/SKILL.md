@@ -84,7 +84,6 @@ POST /hailuo/videos
 | `prompt` | Yes | string | Video description |
 | `model` | Yes | `"minimax-t2v"`, `"minimax-i2v"`, `"minimax-i2v-director"` | Model |
 | `first_image_url` | For i2v | string | Source image URL (required for image-to-video) |
-| `mirror` | No | boolean | Mirror the output |
 | `callback_url` | No | string | Async callback URL |
 
 ## Task Polling
@@ -102,4 +101,3 @@ States: `processing` → `succeed` or `failed`.
 - Director mode (`minimax-i2v-director`) provides finer camera/motion control than standard i2v
 - The `action` field currently only supports `"generate"` — no extend or edit
 - Flat pricing per generation regardless of model
-- Use `mirror: true` to horizontally flip the output if needed
