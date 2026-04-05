@@ -145,7 +145,7 @@ For best results follow this multi-step workflow:
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
-| `/suno/lyrics` | POST | Generate structured lyrics from a prompt |
+| `/suno/lyrics` | POST | Generate structured lyrics from a prompt (`model`: `"default"` or `"remi-v1"`) |
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
@@ -156,6 +156,15 @@ For best results follow this multi-step workflow:
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
+
+## Advanced Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `lyric_prompt` | string | Prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
+| `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
+| `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 
 ## Task Polling
 

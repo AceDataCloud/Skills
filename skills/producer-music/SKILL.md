@@ -27,6 +27,19 @@ curl -X POST https://api.acedata.cloud/producer/audios \
   -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads"}'
 ```
 
+## Models
+
+| Model | Notes |
+|-------|-------|
+| `FUZZ-2.0 Pro` | Default, highest quality |
+| `FUZZ-2.0` | Standard quality |
+| `FUZZ-2.0 Raw` | Raw output variant |
+| `FUZZ-1.1 Pro` | Pro v1.1 |
+| `FUZZ-1.0 Pro` | Pro v1.0 |
+| `FUZZ-1.0` | v1.0 |
+| `FUZZ-1.1` | v1.1 |
+| `FUZZ-0.8` | Legacy |
+
 ## Actions
 
 | Action | Description |

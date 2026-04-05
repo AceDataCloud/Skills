@@ -123,6 +123,7 @@ POST /seedance/videos
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `service_tier` | `"default"`, `"flex"` | Processing tier (default: default) |
+| `execution_expires_after` | number | Task timeout threshold in seconds |
 
 ## Inline Parameter Syntax
 
