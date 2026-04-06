@@ -79,4 +79,4 @@ POST /flux/images
 - Ultra model produces highest quality but is slowest — use dev for iteration, ultra for final output
 - All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks`
 
-> **MCP:** `pip install mcp-flux` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
