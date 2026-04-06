@@ -2,17 +2,29 @@
 
 All AceDataCloud APIs use Bearer token authentication.
 
+## Get Your Token
+
+1. Register at [platform.acedata.cloud](https://platform.acedata.cloud)
+2. Subscribe to a service (most include free quota)
+3. Go to your service's **Credentials** page and create an API token
+
 ## Setup
 
+Create a `.env` file in your project root:
+
 ```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
+ACEDATACLOUD_API_TOKEN=your_token_here
 ```
 
-Get your token at [platform.acedata.cloud](https://platform.acedata.cloud):
+Then load it before making API calls:
 
-1. Register an account
-2. Browse and subscribe to a service (most include free quota)
-3. Create an API credential (token)
+```bash
+source .env
+```
+
+> **Agent usage:** If you're running skills through Claude Code or another AI agent, the agent will automatically `source .env` from the project root before calling any API.
+
+> **Important:** Add `.env` to your `.gitignore` — never commit tokens to version control.
 
 ## Usage
 
@@ -23,9 +35,14 @@ curl -X POST https://api.acedata.cloud/<endpoint> \
   -d '{ ... }'
 ```
 
-### Token Types
+## Token Types
 
-| Type | Scope |
-|------|-------|
-| **Service Token** | Access to one subscribed service only |
-| **Global Token** | Access to all subscribed services |
+| Type | Scope | Use Case |
+|------|-------|----------|
+| **Service Token** | Single service | Default. Created per-subscription |
+| **Global Token** | All services | Create from the platform's global credentials page |
+
+## Gotchas
+
+- Tokens are **service-scoped** by default — if you get a 401 on a different service, create a global token or a token for that specific service
+- Tokens do not expire, but can be revoked from the platform

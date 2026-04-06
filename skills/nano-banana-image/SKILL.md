@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally pair with mcp-nano-banana for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-nano-banana for tool-use.
 ---
 
 # NanoBanana Image Generation
