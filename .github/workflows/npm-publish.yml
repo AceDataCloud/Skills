@@ -29,9 +29,11 @@ jobs:
       - name: Generate date-based version
         id: version
         run: |
-          # 版本格式: YYYY.M.D.BUILD
-          # BUILD 是当天的构建序号，从 npm 获取已发布版本来确定
-          DATE_PREFIX=$(date +'%Y.%-m.%-d')
+          # npm 要求 semver（3 段），所以用 YYYY.MDD.BUILD 格式
+          # 例如 2026.407.0 表示 2026年4月7日第0次构建
+          YEAR=$(date +'%Y')
+          MMDD=$(date +'%-m%d')
+          DATE_PREFIX="${YEAR}.${MMDD}"
 
           LATEST_BUILD=$(node -e "
             const https = require('https');
@@ -41,13 +43,10 @@ jobs:
               res.on('end', () => {
                 try {
                   const versions = Object.keys(JSON.parse(data).versions || {});
-                  const todayPrefix = '${DATE_PREFIX}';
+                  const todayPrefix = '${DATE_PREFIX}.';
                   const todayVersions = versions.filter(v => v.startsWith(todayPrefix));
                   if (todayVersions.length === 0) { console.log(0); return; }
-                  const builds = todayVersions.map(v => {
-                    const parts = v.split('.');
-                    return parts.length === 4 ? parseInt(parts[3]) : 0;
-                  });
+                  const builds = todayVersions.map(v => parseInt(v.split('.')[2] || 0));
                   console.log(Math.max(...builds) + 1);
                 } catch(e) { console.log(0); }
               });
