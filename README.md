@@ -64,196 +64,111 @@ Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
 export ACEDATACLOUD_API_TOKEN="your-token-here"
 ```
 
-## Quick Install (npm)
+## Quick Install
+
+**One command** to install skills into your project — works with all agents:
 
 ```bash
-# Install globally
-npm install -g @acedatacloud/skills
+# Install all skills (for any agentskills.io-compatible agent)
+npx skills add AceDataCloud/Skills --skill '*' --yes
 
-# Copy all skills into your project
-npx @acedatacloud/skills install                          # → .agents/skills/ (universal)
-npx @acedatacloud/skills install --target .claude/skills  # → .claude/skills/ (Claude Code)
-npx @acedatacloud/skills install --target .github/skills  # → .github/skills/ (GitHub Copilot)
-
-# Or use npx directly (no install needed)
-npx @acedatacloud/skills install
+# Install specific skills only
+npx skills add AceDataCloud/Skills --skill suno-music --skill midjourney-image --yes
 ```
+
+The [`skills` CLI](https://github.com/vercel-labs/skills) auto-detects your agent and installs to the correct path.
 
 ## Usage by Platform
 
 ### Claude Code
 
-**Option A: Copy into your project (recommended)**
+**Option A: `skills` CLI (recommended)**
 
 ```bash
-# Copy skills into your project's .claude/skills/ directory
-mkdir -p .claude/skills
-cp -r Skills/skills/* .claude/skills/
+# Install all skills for Claude Code
+npx skills add AceDataCloud/Skills --skill '*' -a claude-code --yes
+
+# Install specific skills
+npx skills add AceDataCloud/Skills --skill suno-music -a claude-code --yes
 ```
 
-Claude Code auto-discovers skills in `.claude/skills/` when working in that project.
+Skills are symlinked into `.claude/skills/` and auto-discovered by Claude Code.
 
 **Option B: Plugin Marketplace**
 
-```bash
-# Add the marketplace source
+```
 /plugin marketplace add AceDataCloud/Skills
-
-# Install skill bundles
-/plugin install acedatacloud-ai-media@acedatacloud-skills    # 14 media skills
-/plugin install acedatacloud-ai-tools@acedatacloud-skills     # 5 tool skills
+/plugin install acedatacloud-ai-media@acedatacloud-skills
+/plugin install acedatacloud-ai-tools@acedatacloud-skills
 ```
 
-**Option C: Personal skills (available across all projects)**
+**Option C: npm package**
 
 ```bash
-# Copy to your personal skills directory
-mkdir -p ~/.claude/skills
-cp -r Skills/skills/* ~/.claude/skills/
+npx @acedatacloud/skills install --target .claude/skills
 ```
 
-### GitHub Copilot (VS Code)
-
-GitHub Copilot auto-discovers skills from `.github/skills/`, `.claude/skills/`, and `.agents/skills/`:
+**Option D: Manual copy**
 
 ```bash
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
+git clone https://github.com/AceDataCloud/Skills.git
+cp -r Skills/skills/* .claude/skills/
+```
+
+### GitHub Copilot
+
+```bash
+npx skills add AceDataCloud/Skills --skill '*' -a github-copilot --yes
 ```
 
 ### Gemini CLI
 
-Gemini CLI supports `.agents/skills/` (project) and `~/.agents/skills/` (personal):
-
 ```bash
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
+npx skills add AceDataCloud/Skills --skill '*' -a gemini-cli --yes
 ```
 
 ### OpenAI Codex
 
-Codex supports the agentskills.io standard via `.agents/skills/` and `AGENTS.md`:
-
 ```bash
-# Copy skills into your project
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
-
-# AGENTS.md is already included in this repo for Codex discovery
-cp Skills/AGENTS.md .
-```
-
-Codex auto-discovers skills from `.agents/skills/` and reads `AGENTS.md` for context.
-
-### OpenHands / OpenDevin
-
-```bash
-# Copy skills into your workspace
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
-```
-
-OpenHands auto-discovers `SKILL.md` files in `.agents/skills/`.
-
-### Roo Code
-
-Roo Code supports `.agents/skills/` (cross-agent) and `.roo/skills/` (Roo-specific):
-
-```bash
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
-```
-
-### TRAE (ByteDance)
-
-```bash
-# TRAE supports .agents/skills/ directory
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
-```
-
-### Goose (Block)
-
-Goose supports `.agents/skills/` (project) and `~/.agents/skills/` (personal):
-
-```bash
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
+npx skills add AceDataCloud/Skills --skill '*' -a codex --yes
 ```
 
 ### Cursor
 
-Cursor supports the agentskills.io standard. You can also use `.cursor/rules/`:
+```bash
+npx skills add AceDataCloud/Skills --skill '*' -a cursor --yes
+```
+
+### Roo Code
 
 ```bash
-# Option 1: agentskills.io path
-mkdir -p .agents/skills
-cp -r Skills/skills/* .agents/skills/
+npx skills add AceDataCloud/Skills --skill '*' -a roo --yes
+```
 
-# Option 2: Cursor-native path
-mkdir -p .cursor/rules
-cp -r Skills/skills/*/*.md .cursor/rules/
+### Goose
+
+```bash
+npx skills add AceDataCloud/Skills --skill '*' -a goose --yes
 ```
 
 ### Windsurf
 
-Windsurf uses `.windsurf/rules/` for custom instructions:
-
 ```bash
-mkdir -p .windsurf/rules
-cp -r Skills/skills/*/*.md .windsurf/rules/
+npx skills add AceDataCloud/Skills --skill '*' -a windsurf --yes
 ```
 
 ### Cline
 
-Add skills as custom instructions in Cline:
-
-1. Open Cline sidebar → Settings → Custom Instructions
-2. Paste the content from any `SKILL.md` file
-3. Cline will use the skill context in conversations
-
-Or use `.clinerules` directory:
-
 ```bash
-mkdir -p .clinerules
-cp -r Skills/skills/*/*.md .clinerules/
+npx skills add AceDataCloud/Skills --skill '*' -a cline --yes
 ```
 
-### Continue.dev
+### Other Agents
 
-Configure in `.continue/rules/`:
-
-```bash
-mkdir -p .continue/rules
-cp -r Skills/skills/*/*.md .continue/rules/
-```
-
-### Amazon Q Developer
-
-Amazon Q uses `.amazonq/rules/`:
+The `skills` CLI supports 40+ agents. Use `npx skills add --help` to see all options, or install to the universal `.agents/skills/` path:
 
 ```bash
-mkdir -p .amazonq/rules
-cp -r Skills/skills/*/*.md .amazonq/rules/
-```
-
-### Zed
-
-Zed reads the `.rules` file at the project root. Copy the skill content you need:
-
-```bash
-cat Skills/skills/suno-music/SKILL.md >> .rules
-```
-
-Zed also reads `AGENTS.md`, `.github/copilot-instructions.md`, and other agent instruction files as compatibility aliases.
-
-### Any agentskills.io-compatible Agent
-
-The universal pattern works with all compatible agents:
-
-```bash
-git clone https://github.com/AceDataCloud/Skills.git
-# Then point your agent to ./Skills/skills/
+npx skills add AceDataCloud/Skills --skill '*' --yes
 ```
 
 ## Pairing Skills with MCP Servers
