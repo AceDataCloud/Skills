@@ -9,7 +9,7 @@ if (process.env.npm_config_global !== "true" && !process.env.CI) {
   console.log(
     "\n📦 AceDataCloud Skills installed. To copy skills into your project:\n"
   );
-  console.log("  npx acedatacloud-skills install                          # → .agents/skills/");
-  console.log("  npx acedatacloud-skills install --target .claude/skills  # → .claude/skills/");
-  console.log("  npx acedatacloud-skills install --target .github/skills  # → .github/skills/\n");
+  console.log("  npx @acedatacloud/skills install                          # → .agents/skills/");
+  console.log("  npx @acedatacloud/skills install --target .claude/skills  # → .claude/skills/");
+  console.log("  npx @acedatacloud/skills install --target .github/skills  # → .github/skills/\n");
 }
