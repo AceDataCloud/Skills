@@ -1,20 +1,23 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths-ignore:
+      - .gitignore
+      - LICENSE
+      - "*.md"
+      - ".github/ISSUE_TEMPLATE/**"
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.1)"
-        required: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,18 +26,61 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
-      - name: Set version from release tag
-        if: github.event_name == 'release'
+      - name: Generate date-based version
+        id: version
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          # 版本格式: YYYY.M.D.BUILD
+          # BUILD 是当天的构建序号，从 npm 获取已发布版本来确定
+          DATE_PREFIX=$(date +'%Y.%-m.%-d')
 
-      - name: Set version from input
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version
-        run: |
-          npm version "${{ github.event.inputs.version }}" --no-git-tag-version --allow-same-version
+          LATEST_BUILD=$(node -e "
+            const https = require('https');
+            https.get('https://registry.npmjs.org/@acedatacloud/skills', res => {
+              let data = '';
+              res.on('data', d => data += d);
+              res.on('end', () => {
+                try {
+                  const versions = Object.keys(JSON.parse(data).versions || {});
+                  const todayPrefix = '${DATE_PREFIX}';
+                  const todayVersions = versions.filter(v => v.startsWith(todayPrefix));
+                  if (todayVersions.length === 0) { console.log(0); return; }
+                  const builds = todayVersions.map(v => {
+                    const parts = v.split('.');
+                    return parts.length === 4 ? parseInt(parts[3]) : 0;
+                  });
+                  console.log(Math.max(...builds) + 1);
+                } catch(e) { console.log(0); }
+              });
+            }).on('error', () => console.log(0));
+          ")
+
+          VERSION="${DATE_PREFIX}.${LATEST_BUILD}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
+
+      - name: Set version
+        run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
 
       - name: Publish
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-release:
+    name: Create GitHub Release
+    if: github.event_name == 'push'
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ needs.publish.outputs.version }}" \
+            --title "v${{ needs.publish.outputs.version }}" \
+            --generate-notes \
+            --repo '${{ github.repository }}' || echo "Release already exists, skipping"
