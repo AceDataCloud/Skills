@@ -175,7 +175,9 @@ POST /suno/tasks
 {"task_id": "your-task-id"}
 ```
 
-Poll every 3–5 seconds until `status` is `"complete"`. Always use `callback_url` to avoid blocking — passing `"callback_url": "https://api.acedata.cloud/health"` forces async submission even without a real webhook endpoint.
+Poll every 3–5 seconds. **CRITICAL:** You MUST check the `state` field in the response — only `state: "complete"` with `success: true` means the task is finished. During the `pending` state, the API may return intermediate `audio_url` values (e.g. `audiopipe.suno.ai` streaming preview URLs). These are NOT final results — do NOT stop polling just because `audio_url` is non-empty. Always check `state` first.
+
+Always use `callback_url` to avoid blocking — passing `"callback_url": "https://api.acedata.cloud/health"` forces async submission even without a real webhook endpoint.
 
 ## Lyrics Format
 
