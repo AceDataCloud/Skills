@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Analyze and transform faces through AceDataCloud's Face API suite.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 

@@ -30,6 +30,11 @@ for skill_dir in skills/*/; do
     continue
   fi
 
+  # Skip shared reference files
+  if [ "$skill_name" = "_shared" ]; then
+    continue
+  fi
+
   slug="acedatacloud-${skill_name}"
   echo "  Publishing $skill_name → $slug@$VERSION ..."
 

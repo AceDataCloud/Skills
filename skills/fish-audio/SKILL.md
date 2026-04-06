@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Generate AI audio and synthesize voices through AceDataCloud's Fish Audio API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -26,6 +22,8 @@ curl -X POST https://api.acedata.cloud/fish/audios \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Hello, this is a demonstration of AI voice synthesis."}'
 ```
+
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"task_id": "..."}`.
 
 ## Endpoints
 
@@ -92,23 +90,6 @@ POST /fish/audios
 | `description` | string | Description of the voice |
 | `image_url` | string | Cover image URL for the voice |
 | `callback_url` | string | Webhook URL for async delivery |
-
-## Task Polling
-
-```json
-POST /fish/tasks
-{"task_id": "your-task-id"}
-```
-
-## Response
-
-```json
-{
-  "task_id": "abc123",
-  "audio_url": "https://cdn.example.com/output.mp3",
-  "success": true
-}
-```
 
 ## Gotchas
 

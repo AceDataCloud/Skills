@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate and edit AI images through AceDataCloud's Seedream (ByteDance) API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/seedream/images \
   -d '{"prompt": "a cyberpunk cat wearing VR goggles in a neon city", "model": "doubao-seedream-5-0-260128"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedream/tasks` with `{"id": "..."}`.
 ## Models
 
 | Model | Version | Best For |
@@ -109,32 +106,6 @@ POST /seedream/tasks
 | `image` | Yes (for editing) | Array of image URLs or base64 strings (max 10MB each) |
 | `prompt` | Yes | Describe the desired edit |
 
-## Task Polling
-
-When using `callback_url`, generation is asynchronous. Poll the task endpoint:
-
-```json
-POST /seedream/tasks
-{"id": "your-task-id"}
-```
-
-Or retrieve multiple tasks at once:
-
-```json
-POST /seedream/tasks
-{"ids": ["task-id-1", "task-id-2"], "action": "retrieve_batch"}
-```
-
-## MCP Server
-
-```bash
-pip install mcp-seedream
-```
-
-Or hosted: `https://seedream.mcp.acedata.cloud/mcp`
-
-Key tools: `seedream_generate_image`, `seedream_edit_image`
-
 ## Gotchas
 
 - Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
@@ -145,3 +116,5 @@ Key tools: `seedream_generate_image`, `seedream_edit_image`
 - `guidance_scale` is only available for the 3.0-series models
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
+
+> **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

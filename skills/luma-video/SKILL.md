@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI videos through AceDataCloud's Luma Dream Machine API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,14 +23,7 @@ curl -X POST https://api.acedata.cloud/luma/videos \
   -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
-
-```bash
-curl -X POST https://api.acedata.cloud/luma/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
-```
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /luma/tasks` with `{"task_id": "..."}`.
 
 ## Workflows
 
@@ -107,38 +96,6 @@ POST /luma/videos
 | `timeout` | number | — | Timeout in seconds for the API to return data |
 | `callback_url` | string | — | Webhook URL for async notifications |
 
-## Task Polling
-
-Always use `callback_url` to get a `task_id` immediately without blocking:
-
-```json
-POST /luma/videos
-{
-  "prompt": "...",
-  "action": "generate",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /luma/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `pending` → `completed` or `failed`.
-
-## MCP Server
-
-```bash
-pip install mcp-luma
-```
-
-Or hosted: `https://luma.mcp.acedata.cloud/mcp`
-
-Key tools: `luma_generate_video`, `luma_generate_video_from_image`, `luma_extend_video`
-
 ## Gotchas
 
 - `enhancement: true` (default) improves prompt quality but may alter your intent — set to `false` for literal prompts
@@ -147,3 +104,5 @@ Key tools: `luma_generate_video`, `luma_generate_video_from_image`, `luma_extend
 - Extend requires either `video_id` or `video_url` from a previously completed generation
 - Video generation takes 1–5 minutes depending on complexity
 - Both start and end images are optional — you can use just one for partial guidance
+
+> **MCP:** `pip install mcp-luma` | Hosted: `https://luma.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

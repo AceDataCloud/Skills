@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate and edit images through AceDataCloud's Flux API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,14 +23,7 @@ curl -X POST https://api.acedata.cloud/flux/images \
   -d '{"prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
-
-```bash
-curl -X POST https://api.acedata.cloud/flux/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
-```
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"task_id": "..."}`.
 
 ## Models
 
@@ -82,36 +71,6 @@ POST /flux/images
 }
 ```
 
-## Task Polling
-
-Always use `callback_url` to get a `task_id` immediately without blocking:
-
-```json
-POST /flux/images
-{
-  "prompt": "...",
-  "model": "flux-dev",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /flux/tasks
-{"task_id": "your-task-id"}
-```
-
-## MCP Server
-
-```bash
-pip install mcp-flux
-```
-
-Or hosted: `https://flux.mcp.acedata.cloud/mcp`
-
-Key tools: `flux_generate_image`, `flux_edit_image`
-
 ## Gotchas
 
 - Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro models, aspect ratios (e.g., `"16:9"`) with ultra/kontext models
@@ -119,3 +78,5 @@ Key tools: `flux_generate_image`, `flux_edit_image`
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - Ultra model produces highest quality but is slowest — use dev for iteration, ultra for final output
 - All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks`
+
+> **MCP:** `pip install mcp-flux` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

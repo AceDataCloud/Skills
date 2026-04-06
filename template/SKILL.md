@@ -12,13 +12,18 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Replace this with your skill instructions.
 
-## Authentication
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
-All AceDataCloud API calls require a Bearer token:
+## Quick Start
 
 ```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
+curl -X POST https://api.acedata.cloud/<endpoint> \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "..."}'
 ```
+
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /<service>/tasks` with `{"task_id": "..."}`.
 
 ## Workflow
 
@@ -29,3 +34,5 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 ## Gotchas
 
 - List non-obvious behaviors here
+
+> **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.

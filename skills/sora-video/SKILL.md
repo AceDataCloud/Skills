@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI videos through AceDataCloud's OpenAI Sora API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,14 +23,7 @@ curl -X POST https://api.acedata.cloud/sora/videos \
   -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
-
-```bash
-curl -X POST https://api.acedata.cloud/sora/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
-```
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"task_id": "..."}`.
 
 ## Models
 
@@ -97,38 +86,6 @@ POST /sora/videos
 | `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
 | `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
 
-## Task Polling
-
-Always use `callback_url` to get a `task_id` immediately without blocking:
-
-```json
-POST /sora/videos
-{
-  "prompt": "...",
-  "model": "sora-2",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /sora/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `pending` → `succeeded` or `failed`.
-
-## MCP Server
-
-```bash
-pip install mcp-sora
-```
-
-Or hosted: `https://sora.mcp.acedata.cloud/mcp`
-
-Key tools: `sora_generate_video`, `sora_generate_video_from_image`, `sora_generate_video_with_character`
-
 ## Gotchas
 
 - Duration of **25 seconds** is only available with `sora-2-pro` model
@@ -136,3 +93,5 @@ Key tools: `sora_generate_video`, `sora_generate_video_from_image`, `sora_genera
 - Character-driven generation requires `character_start` and `character_end` timestamps (in seconds) from the source video
 - `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
+
+> **MCP:** `pip install mcp-sora` | Hosted: `https://sora.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

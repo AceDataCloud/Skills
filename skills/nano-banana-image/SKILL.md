@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate and edit AI images through AceDataCloud's NanoBanana (Gemini-based) API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
   -d '{"action": "generate", "prompt": "a watercolor painting of a French countryside village", "model": "nano-banana"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /nano-banana/tasks` with `{"id": "..."}`.
 ## Models
 
 | Model | Best For |
@@ -76,32 +73,6 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
-## Task Polling
-
-When using `callback_url`, generation is asynchronous. Poll for the result:
-
-```json
-POST /nano-banana/tasks
-{"id": "your-task-id"}
-```
-
-For batch polling:
-
-```json
-POST /nano-banana/tasks
-{"ids": ["task-id-1", "task-id-2"], "action": "retrieve_batch"}
-```
-
-## MCP Server
-
-```bash
-pip install mcp-nano-banana
-```
-
-Or hosted: `https://nano-banana.mcp.acedata.cloud/mcp`
-
-Key tools: `nano_banana_generate_image`, `nano_banana_edit_image`
-
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
@@ -110,3 +81,5 @@ Key tools: `nano_banana_generate_image`, `nano_banana_edit_image`
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+
+> **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

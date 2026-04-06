@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI dance and motion videos through AceDataCloud's Seedance (ByteDance) API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/seedance/videos \
   -d '{"model": "doubao-seedance-1-0-pro-250528", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"task_id": "..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
@@ -135,38 +132,6 @@ A kitten yawning at the camera. --rs 720p --rt 16:9 --dur 5 --fps 24 --seed 42
 
 Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration), `--frames`, `--fps` (24 only), `--seed`, `--cf` (camera_fixed), `--wm` (watermark).
 
-## Task Polling
-
-Always use `callback_url` to get a task ID immediately without blocking:
-
-```json
-POST /seedance/videos
-{
-  "model": "doubao-seedance-1-0-pro-250528",
-  "content": [{"type": "text", "text": "..."}],
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /seedance/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `pending` → `succeeded` or `failed`.
-
-## MCP Server
-
-```bash
-pip install mcp-seedance
-```
-
-Or hosted: `https://seedance.mcp.acedata.cloud/mcp`
-
-Key tools: `seedance_generate_video`, `seedance_generate_video_from_image`, `seedance_get_task`, `seedance_get_tasks_batch`, `seedance_list_models`
-
 ## Gotchas
 
 - Model names use the `doubao-*` convention (e.g. `doubao-seedance-1-0-pro-250528`) — old short names like `seedance-1.0` are not valid
@@ -179,3 +144,5 @@ Key tools: `seedance_generate_video`, `seedance_generate_video_from_image`, `see
 - `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
 - Duration range is **2–12 seconds** — values outside this range will fail
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
+
+> **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Create short URLs through AceDataCloud's URL shortening API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -55,18 +51,10 @@ Response:
 |-----------|----------|-------------|
 | `content` | Yes | The original long URL to shorten |
 
-## MCP Server
-
-```bash
-pip install mcp-short-url
-```
-
-Or hosted: `https://short-url.mcp.acedata.cloud/mcp`
-
-Key tools: `create_short_url`
-
 ## Gotchas
 
 - Short URLs use the `suro.id` domain
 - Results are returned synchronously — no task polling needed
 - The `content` field must be a valid URL to shorten
+
+> **MCP:** `pip install mcp-shorturl` | Hosted: `https://short-url.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

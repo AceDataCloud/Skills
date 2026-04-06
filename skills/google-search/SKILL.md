@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Search the web through AceDataCloud's Google SERP API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -80,16 +76,6 @@ Web search returns structured data including:
 - `knowledge_graph`: Entity information panel (when available)
 - `related_searches`: Related query suggestions
 
-## MCP Server
-
-```bash
-pip install mcp-serp
-```
-
-Or hosted: `https://serp.mcp.acedata.cloud/mcp`
-
-Key tool: `serp_google_search`
-
 ## Gotchas
 
 - Default search type is `"search"` (web). Always specify `type` for non-web searches
@@ -98,3 +84,5 @@ Key tool: `serp_google_search`
 - Time range (`range`) only applies to web search and news, not images or places
 - Image search returns thumbnail and full-size URLs — use full-size for downloads
 - Places search works best with location-specific queries (e.g., "restaurants near Times Square")
+
+> **MCP:** `pip install mcp-serp` | Hosted: `https://serp.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

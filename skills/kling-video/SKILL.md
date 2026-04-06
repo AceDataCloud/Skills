@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Generate AI videos through AceDataCloud's Kuaishou Kling API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
   -d '{"action": "text2video", "prompt": "a cat playing piano on a rooftop at sunset", "model": "kling-v2-5-turbo", "mode": "std", "duration": 5}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"task_id": "..."}`.
 ## Models
 
 | Model | Quality | Best For |
@@ -118,15 +115,6 @@ POST /kling/motion
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
-
-## Task Polling
-
-```json
-POST /kling/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `processing` → `succeed` or `failed`.
 
 ## Gotchas
 
