@@ -12,7 +12,7 @@ const command = args[0];
 
 function printUsage() {
   console.log(`
-Usage: acedatacloud-skills <command> [options]
+Usage: npx @acedatacloud/skills <command> [options]
 
 Commands:
   install [--target <dir>]   Copy skills into your project
@@ -22,10 +22,10 @@ Options:
   --target <dir>   Target directory (default: .agents/skills)
 
 Examples:
-  acedatacloud-skills install                          # → .agents/skills/
-  acedatacloud-skills install --target .claude/skills  # → .claude/skills/
-  acedatacloud-skills install --target .github/skills  # → .github/skills/
-  acedatacloud-skills list
+  npx @acedatacloud/skills install                          # → .agents/skills/
+  npx @acedatacloud/skills install --target .claude/skills  # → .claude/skills/
+  npx @acedatacloud/skills install --target .github/skills  # → .github/skills/
+  npx @acedatacloud/skills list
 `);
 }
 
