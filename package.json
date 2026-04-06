@@ -1,5 +1,5 @@
 {
-  "name": "acedatacloud-skills",
+  "name": "@acedatacloud/skills",
   "version": "1.0.0",
   "description": "Agent Skills for AceDataCloud AI services — music, image, video generation, LLM chat, web search. Compatible with Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, and 30+ AI coding agents.",
   "keywords": [
@@ -39,7 +39,8 @@
   "type": "module",
   "main": "index.js",
   "bin": {
-    "acedatacloud-skills": "bin/cli.js"
+    "acedatacloud-skills": "bin/cli.js",
+    "adc-skills": "bin/cli.js"
   },
   "files": [
     "skills/",

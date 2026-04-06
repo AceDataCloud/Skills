@@ -3,7 +3,7 @@
 <p align="center">
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
   <a href="https://platform.acedata.cloud"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
-  <a href="https://www.npmjs.com/package/acedatacloud-skills"><img src="https://img.shields.io/npm/v/acedatacloud-skills.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/@acedatacloud/skills"><img src="https://img.shields.io/npm/v/@acedatacloud/skills.svg" alt="npm"></a>
   <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
 </p>
@@ -68,15 +68,15 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 
 ```bash
 # Install globally
-npm install -g acedatacloud-skills
+npm install -g @acedatacloud/skills
 
 # Copy all skills into your project
-acedatacloud-skills install                          # → .agents/skills/ (universal)
-acedatacloud-skills install --target .claude/skills  # → .claude/skills/ (Claude Code)
-acedatacloud-skills install --target .github/skills  # → .github/skills/ (GitHub Copilot)
+npx @acedatacloud/skills install                          # → .agents/skills/ (universal)
+npx @acedatacloud/skills install --target .claude/skills  # → .claude/skills/ (Claude Code)
+npx @acedatacloud/skills install --target .github/skills  # → .github/skills/ (GitHub Copilot)
 
-# Or use npx without installing
-npx acedatacloud-skills install
+# Or use npx directly (no install needed)
+npx @acedatacloud/skills install
 ```
 
 ## Usage by Platform
