@@ -70,10 +70,10 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 
 ```bash
 # Install all skills (for any agentskills.io-compatible agent)
-npx skills add AceDataCloud/Skills --skill '*' --yes
+npx skills add acedatacloud/skills --skill '*' --yes
 
 # Install specific skills only
-npx skills add AceDataCloud/Skills --skill suno-music --skill midjourney-image --yes
+npx skills add acedatacloud/skills --skill suno-music --skill midjourney-image --yes
 ```
 
 The [`skills` CLI](https://github.com/vercel-labs/skills) auto-detects your agent and installs to the correct path.
@@ -86,10 +86,10 @@ The [`skills` CLI](https://github.com/vercel-labs/skills) auto-detects your agen
 
 ```bash
 # Install all skills for Claude Code
-npx skills add AceDataCloud/Skills --skill '*' -a claude-code --yes
+npx skills add acedatacloud/skills --skill '*' -a claude-code --yes
 
 # Install specific skills
-npx skills add AceDataCloud/Skills --skill suno-music -a claude-code --yes
+npx skills add acedatacloud/skills --skill suno-music -a claude-code --yes
 ```
 
 Skills are symlinked into `.claude/skills/` and auto-discovered by Claude Code.
@@ -97,7 +97,7 @@ Skills are symlinked into `.claude/skills/` and auto-discovered by Claude Code.
 **Option B: Plugin Marketplace**
 
 ```
-/plugin marketplace add AceDataCloud/Skills
+/plugin marketplace add acedatacloud/skills
 /plugin install acedatacloud-ai-media@acedatacloud-skills
 /plugin install acedatacloud-ai-tools@acedatacloud-skills
 ```
@@ -118,49 +118,49 @@ cp -r Skills/skills/* .claude/skills/
 ### GitHub Copilot
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a github-copilot --yes
+npx skills add acedatacloud/skills --skill '*' -a github-copilot --yes
 ```
 
 ### Gemini CLI
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a gemini-cli --yes
+npx skills add acedatacloud/skills --skill '*' -a gemini-cli --yes
 ```
 
 ### OpenAI Codex
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a codex --yes
+npx skills add acedatacloud/skills --skill '*' -a codex --yes
 ```
 
 ### Cursor
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a cursor --yes
+npx skills add acedatacloud/skills --skill '*' -a cursor --yes
 ```
 
 ### Roo Code
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a roo --yes
+npx skills add acedatacloud/skills --skill '*' -a roo --yes
 ```
 
 ### Goose
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a goose --yes
+npx skills add acedatacloud/skills --skill '*' -a goose --yes
 ```
 
 ### Windsurf
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a windsurf --yes
+npx skills add acedatacloud/skills --skill '*' -a windsurf --yes
 ```
 
 ### Cline
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' -a cline --yes
+npx skills add acedatacloud/skills --skill '*' -a cline --yes
 ```
 
 ### Other Agents
@@ -168,7 +168,7 @@ npx skills add AceDataCloud/Skills --skill '*' -a cline --yes
 The `skills` CLI supports 40+ agents. Use `npx skills add --help` to see all options, or install to the universal `.agents/skills/` path:
 
 ```bash
-npx skills add AceDataCloud/Skills --skill '*' --yes
+npx skills add acedatacloud/skills --skill '*' --yes
 ```
 
 ## Pairing Skills with MCP Servers
