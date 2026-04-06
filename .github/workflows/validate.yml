@@ -17,6 +17,10 @@ jobs:
           errors=0
           for skill_dir in skills/*/; do
             skill_name=$(basename "$skill_dir")
+            # Skip shared reference files
+            if [ "$skill_name" = "_shared" ]; then
+              continue
+            fi
             skill_file="$skill_dir/SKILL.md"
 
             # Check SKILL.md exists
@@ -127,6 +131,11 @@ jobs:
 
           for skill_dir in skills/*/; do
             skill_path="${skill_dir%/}"
+            skill_name=$(basename "$skill_path")
+            # Skip shared reference files
+            if [ "$skill_name" = "_shared" ]; then
+              continue
+            fi
             if ! echo "$referenced" | grep -q "^${skill_path}$"; then
               echo "::warning::$skill_path is not referenced in marketplace.json"
             fi

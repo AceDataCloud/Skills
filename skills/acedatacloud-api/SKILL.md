@@ -26,29 +26,7 @@ Browse available services and click **Get** to subscribe. Most services include 
 
 Go to your service's **Credentials** page and create an API Token.
 
-## Authentication
-
-All APIs use Bearer token authentication:
-
-```bash
-curl -X POST https://api.acedata.cloud/<endpoint> \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ ... }'
-```
-
-### Token Types
-
-| Type | Format | Scope |
-|------|--------|-------|
-| **Service Token** | UUID string | Access to subscribed service only |
-| **Global Token** | UUID string | Access to all subscribed services |
-
-## Base URL
-
-```
-https://api.acedata.cloud
-```
+> **Full details:** See [authentication](../_shared/authentication.md) for token types and usage.
 
 ## SDK Integration (OpenAI-Compatible)
 
@@ -82,7 +60,7 @@ const response = await client.chat.completions.create({
 });
 ```
 
-## Common Request Patterns
+## Request Patterns
 
 ### Synchronous APIs
 
@@ -97,25 +75,9 @@ curl -X POST https://api.acedata.cloud/face/analyze \
 
 ### Async Task APIs
 
-Most generation APIs (images, video, music) are asynchronous:
+Most generation APIs (images, video, music) are asynchronous.
 
-**Step 1:** Submit with `callback_url` to force async and get a `task_id` immediately
-
-```json
-POST /suno/audios
-{"prompt": "a jazz song", "callback_url": "https://api.acedata.cloud/health"}
-→ {"task_id": "abc123"}
-```
-
-**Step 2:** Poll for results
-
-```json
-POST /suno/tasks
-{"task_id": "abc123"}
-→ {"state": "succeeded", "data": [...]}
-```
-
-Poll every 3–5 seconds until `succeeded` or `failed`. Using `callback_url` avoids long-running HTTP connections that time out.
+> **Full details:** See [async task polling](../_shared/async-tasks.md) for the submit-and-poll pattern.
 
 ## Error Handling
 
@@ -151,7 +113,7 @@ Error response format:
 |----------|----------|-----------|
 | **AI Chat** | GPT, Claude, Gemini, DeepSeek, Grok | `/v1/chat/completions` |
 | **Image Gen** | Midjourney, Flux, Seedream, NanoBanana | `/midjourney/*`, `/flux/*`, etc. |
-| **Video Gen** | Luma, Sora, Veo, Kling, Hailuo, Seedance | `/luma/*`, `/sora/*`, etc. |
+| **Video Gen** | Luma, Sora, Veo, Kling, Hailuo, Seedance, Wan | `/luma/*`, `/sora/*`, etc. |
 | **Music Gen** | Suno, Producer, Fish Audio | `/suno/*`, `/producer/*`, `/fish/*` |
 | **Search** | Google Search (web/images/news/maps) | `/serp/*` |
 | **Face** | Analyze, beautify, swap, cartoon, age | `/face/*` |
@@ -164,3 +126,5 @@ Error response format:
 - Avoid `wait: true` — it blocks for the full generation duration and will time out for video/music tasks
 - Rate limits vary by service tier — upgrade your plan if hitting limits
 - All timestamps are in UTC
+
+> **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration with AI agents.

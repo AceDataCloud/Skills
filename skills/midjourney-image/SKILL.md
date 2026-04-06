@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate and manipulate AI images through AceDataCloud's Midjourney API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start — Generate an Image
 
@@ -27,14 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
-
-```bash
-curl -X POST https://api.acedata.cloud/midjourney/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
-```
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
 
 ## Generation Modes
 
@@ -168,35 +157,6 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 | `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
 | `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
 
-## Task Polling
-
-Always use `callback_url` to get a `task_id` immediately without blocking:
-
-```json
-POST /midjourney/imagine
-{
-  "prompt": "...",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /midjourney/tasks
-{"task_id": "your-task-id"}
-```
-
-## MCP Server
-
-```bash
-pip install mcp-midjourney
-```
-
-Or hosted: `https://midjourney.mcp.acedata.cloud/mcp`
-
-Key tools: `midjourney_imagine`, `midjourney_transform`, `midjourney_edit`, `midjourney_blend`, `midjourney_describe`, `midjourney_generate_video`
-
 ## Gotchas
 
 - Imagine returns a **2x2 grid** — use upscale/variation actions to work with individual images
@@ -206,3 +166,5 @@ Key tools: `midjourney_imagine`, `midjourney_transform`, `midjourney_edit`, `mid
 - Video generation requires a reference `image_url` — it cannot generate from text alone
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
+
+> **MCP:** `pip install mcp-midjourney` | Hosted: `https://midjourney.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

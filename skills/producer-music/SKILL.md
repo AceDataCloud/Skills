@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Generate AI music through AceDataCloud's Producer API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -26,6 +22,8 @@ curl -X POST https://api.acedata.cloud/producer/audios \
   -H "Content-Type: application/json" \
   -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads"}'
 ```
+
+> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
 
 ## Models
 
@@ -165,21 +163,10 @@ POST /producer/upload
 | `continue_at` | number | Seconds — where to extend from |
 | `replace_section_start` | number | Start time of section to replace |
 | `replace_section_end` | number | End time of section to replace |
-| `lyrics_strength` | 0–1 | Lyrics adherence (default: 0.7) |
-| `sound_strength` | 0.2–1 | Sound quality weight (default: 0.7) |
-| `weirdness` | 0–1 | Creative randomness (default: 0.5) |
+| `lyrics_strength` | 0-1 | Lyrics adherence (default: 0.7) |
+| `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
+| `weirdness` | 0-1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
-
-## Task Polling
-
-All generation is async. Poll for the result:
-
-```json
-POST /producer/tasks
-{"id": "your-task-id"}
-```
-
-Poll every 3–5 seconds. **CRITICAL:** You MUST check the `state` field — only `state: "complete"` with `success: true` means the task is finished. During the `pending` state, the API may return intermediate `audio_url` values (streaming preview URLs). These are NOT final results — do NOT stop polling just because `audio_url` is non-empty. Always check `state` first.
 
 ## Response Structure
 
@@ -208,3 +195,4 @@ Poll every 3–5 seconds. **CRITICAL:** You MUST check the `state` field — onl
 - `weirdness` at 0 = predictable, at 1 = highly experimental
 - Upload a reference audio via `/producer/upload` to get an audio ID for use with `cover` or `extend`
 - WAV and video downloads are separate endpoints — call them after the main generation completes
+- **CRITICAL:** Check the `state` field in task responses — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty

@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable.
 
 Generate AI videos through AceDataCloud's Hailuo (MiniMax) API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/hailuo/videos \
   -d '{"action": "generate", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "minimax-t2v"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"task_id": "..."}`.
 ## Models
 
 | Model | Type | Best For |
@@ -85,15 +82,6 @@ POST /hailuo/videos
 | `model` | Yes | `"minimax-t2v"`, `"minimax-i2v"`, `"minimax-i2v-director"` | Model |
 | `first_image_url` | For i2v | string | Source image URL (required for image-to-video) |
 | `callback_url` | No | string | Async callback URL |
-
-## Task Polling
-
-```json
-POST /hailuo/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `processing` → `succeed` or `failed`.
 
 ## Gotchas
 

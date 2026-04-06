@@ -31,7 +31,7 @@ Examples:
 
 function listSkills() {
   const skills = readdirSync(skillsSrc, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
+    .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
     .map((d) => d.name)
     .sort();
   console.log(`Available skills (${skills.length}):\n`);
@@ -43,7 +43,7 @@ function installSkills(target) {
   mkdirSync(dest, { recursive: true });
 
   const skills = readdirSync(skillsSrc, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
+    .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
     .map((d) => d.name);
 
   let count = 0;

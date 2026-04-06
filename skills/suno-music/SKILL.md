@@ -12,14 +12,9 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI-powered music through AceDataCloud's Suno API.
 
-## Authentication
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-# Get your token at https://platform.acedata.cloud
-```
-
-## Quick Start — Generate a Song
+## Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/suno/audios \
@@ -28,14 +23,7 @@ curl -X POST https://api.acedata.cloud/suno/audios \
   -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-This returns a `task_id` immediately. Poll for the result:
-
-```bash
-curl -X POST https://api.acedata.cloud/suno/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
-```
+> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"task_id": "..."}` every 3-5 seconds.
 
 ## Available Models
 
@@ -166,19 +154,6 @@ For best results follow this multi-step workflow:
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 
-## Task Polling
-
-All generation is async. Submit with `"callback_url"` to get a `task_id` immediately, then poll:
-
-```json
-POST /suno/tasks
-{"task_id": "your-task-id"}
-```
-
-Poll every 3–5 seconds. **CRITICAL:** You MUST check the `state` field in the response — only `state: "complete"` with `success: true` means the task is finished. During the `pending` state, the API may return intermediate `audio_url` values (e.g. `audiopipe.suno.ai` streaming preview URLs). These are NOT final results — do NOT stop polling just because `audio_url` is non-empty. Always check `state` first.
-
-Always use `callback_url` to avoid blocking — passing `"callback_url": "https://api.acedata.cloud/health"` forces async submission even without a real webhook endpoint.
-
 ## Lyrics Format
 
 Use section markers in square brackets:
@@ -197,21 +172,10 @@ Bridge section
 Ending lyrics
 ```
 
-## MCP Server Integration
-
-For tool-use with Claude/Copilot, install the MCP server:
-
-```bash
-pip install mcp-suno
-```
-
-Or use the hosted endpoint: `https://suno.mcp.acedata.cloud/mcp`
-
-Key tools: `suno_generate_music`, `suno_generate_custom_music`, `suno_extend_music`, `suno_cover_music`, `suno_generate_lyrics`, `suno_optimize_style`
-
 ## Gotchas
 
 - All generation is **async** — always set `"callback_url"` to get a `task_id` immediately, then poll `/suno/tasks`
+- **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
@@ -219,3 +183,5 @@ Key tools: `suno_generate_music`, `suno_generate_custom_music`, `suno_extend_mus
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
+
+> **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

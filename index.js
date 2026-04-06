@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const skillsDir = resolve(__dirname, "skills");
 
 export const skills = readdirSync(skillsDir, { withFileTypes: true })
-  .filter((d) => d.isDirectory())
+  .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
   .map((d) => d.name)
   .sort();
 

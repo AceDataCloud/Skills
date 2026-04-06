@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI videos through AceDataCloud's Google Veo API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/veo/videos \
   -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
@@ -102,46 +99,6 @@ POST /veo/videos
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
 
-## Task Polling
-
-Always use `callback_url` to get a task ID immediately without blocking:
-
-```json
-POST /veo/videos
-{
-  "action": "text2video",
-  "prompt": "...",
-  "model": "veo3",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Then poll every 5 seconds until complete:
-
-```json
-POST /veo/tasks
-{"id": "your-task-id"}
-```
-
-For batch polling:
-
-```json
-POST /veo/tasks
-{"ids": ["task-id-1", "task-id-2"], "action": "retrieve_batch"}
-```
-
-States: `pending` → `succeeded` or `failed`.
-
-## MCP Server
-
-```bash
-pip install mcp-veo
-```
-
-Or hosted: `https://veo.mcp.acedata.cloud/mcp`
-
-Key tools: `veo_text_to_video`, `veo_image_to_video`, `veo_get_1080p`, `veo_get_task`, `veo_get_tasks_batch`
-
 ## Gotchas
 
 - Veo 3 and 3.1 models generate **native audio** — `veo2`/`veo2-fast` do NOT support audio
@@ -151,3 +108,5 @@ Key tools: `veo_text_to_video`, `veo_image_to_video`, `veo_get_1080p`, `veo_get_
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
 - Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
+
+> **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

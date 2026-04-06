@@ -12,11 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN environment variable. Optionally 
 
 Generate AI videos through AceDataCloud's Wan (Alibaba) API.
 
-## Authentication
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
@@ -27,6 +23,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
   -d '{"action": "text2video", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "wan2.6-t2v"}'
 ```
 
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"task_id": "..."}`.
 ## Models
 
 | Model | Type | Best For |
@@ -143,25 +140,6 @@ POST /wan/videos
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
 
-## Task Polling
-
-```json
-POST /wan/tasks
-{"task_id": "your-task-id"}
-```
-
-States: `processing` -> `succeed` or `failed`.
-
-## MCP Server
-
-Install `mcp-wan` from PyPI for tool-use integration:
-
-```bash
-pip install mcp-wan
-```
-
-Or connect to the hosted server at `https://wan.mcp.acedata.cloud/mcp`.
-
 ## Gotchas
 
 - `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
@@ -170,3 +148,5 @@ Or connect to the hosted server at `https://wan.mcp.acedata.cloud/mcp`.
 - Supported durations are 5, 10, or 15 seconds only
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
+
+> **MCP:** `pip install mcp-wan` | Hosted: `https://wan.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

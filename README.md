@@ -12,7 +12,7 @@
 
 Compatible with **15+ AI coding agents**: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, OpenHands, Roo Code, TRAE, Goose, Mistral Vibe, and all [agentskills.io](https://agentskills.io/)-compatible tools.
 
-## Available Skills (18)
+## Available Skills (19)
 
 ### AI Music & Audio
 
@@ -296,6 +296,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
+| wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 
 **Using hosted MCP endpoints** (no local install needed):
 
@@ -331,7 +332,10 @@ We welcome contributions! To add a new skill:
 1. Create a directory under `skills/` matching the skill name
 2. Add a `SKILL.md` following the [Agent Skills specification](https://agentskills.io/specification)
 3. Use the [template](template/SKILL.md) as a starting point
-4. Submit a pull request — CI will validate your skill format
+4. Reference shared files (`../_shared/authentication.md`, `../_shared/async-tasks.md`, `../_shared/mcp-servers.md`) instead of duplicating common sections
+5. Submit a pull request — CI will validate your skill format
+
+**Note:** `.agents/skills/` and `.github/skills/` are symlinks to `skills/` — do not modify files via those paths.
 
 ## License
 
