@@ -265,7 +265,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
 | midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
-| flux-image | mcp-flux | Hosted only | `https://flux.mcp.acedata.cloud/mcp` |
+| flux-image | [mcp-flux-pro](https://pypi.org/project/mcp-flux-pro/) | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
 | luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
 | sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
