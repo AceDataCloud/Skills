@@ -77,11 +77,9 @@ jobs:
           echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
 
           # Assign Copilot bot via API (gh issue create can't resolve bot accounts)
-          gh api --method POST \
+          echo '{"assignees":["copilot-swe-agent[bot]"]}' | gh api --method POST \
             "repos/${{ github.repository }}/issues/$ISSUE_NUMBER/assignees" \
-            --input - <<ASSIGN_EOF
-          {"assignees":["copilot-swe-agent[bot]"]}
-          ASSIGN_EOF
+            --input - > /dev/null
 
   wait-and-merge:
     needs: create-task
