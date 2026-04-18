@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's Kuaishou Kling API.
 curl -X POST https://api.acedata.cloud/kling/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a cat playing piano on a rooftop at sunset", "model": "kling-v2-5-turbo", "mode": "std", "duration": 5}'
+  -d '{"action": "text2video", "prompt": "a cat playing piano on a rooftop at sunset", "model": "kling-v3", "mode": "std", "duration": 5}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"task_id": "..."}`.
@@ -28,12 +28,15 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 
 | Model | Quality | Best For |
 |-------|---------|----------|
-| `kling-v1` | Standard | Basic generation, lowest cost |
-| `kling-v1-6` | Improved | Better quality than v1 |
+| `kling-v3` | Latest | Best quality, flexible 3–15s duration, optional audio generation |
+| `kling-v3-omni` | Latest | Omni model with audio support, flexible 3–15s duration |
+| `kling-v2-6` | High | High-quality output with optional audio (pro mode) |
+| `kling-v2-5-turbo` | High + Fast | Best speed/quality trade-off |
 | `kling-v2-master` | High | High-quality output |
 | `kling-v2-1-master` | High | Improved v2 |
-| `kling-v2-5-turbo` | High + Fast | Best speed/quality trade-off (recommended) |
-| `kling-video-o1` | Premium | Highest quality |
+| `kling-v1-6` | Improved | Better quality than v1 |
+| `kling-v1` | Standard | Basic generation, lowest cost |
+| `kling-video-o1` | Premium | Highest quality (thinking model) |
 
 ## Quality Modes
 
@@ -51,7 +54,7 @@ POST /kling/videos
 {
   "action": "text2video",
   "prompt": "a futuristic city with flying cars",
-  "model": "kling-v2-5-turbo",
+  "model": "kling-v3",
   "mode": "std",
   "duration": 5,
   "aspect_ratio": "16:9"
@@ -69,7 +72,7 @@ POST /kling/videos
   "prompt": "the scene slowly comes alive with movement",
   "start_image_url": "https://example.com/scene.jpg",
   "end_image_url": "https://example.com/end-scene.jpg",
-  "model": "kling-v2-5-turbo",
+  "model": "kling-v3",
   "mode": "pro"
 }
 ```
@@ -107,7 +110,8 @@ POST /kling/motion
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
 | `mode` | `"std"`, `"pro"` | Quality mode |
-| `duration` | `5`, `10` | Duration in seconds |
+| `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
+| `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
@@ -118,7 +122,8 @@ POST /kling/motion
 
 ## Gotchas
 
-- `duration` only supports `5` or `10` seconds
+- `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
+- `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
