@@ -43,7 +43,7 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
 | `veo31` | Yes (native) | Veo 3.1, highest quality |
 | `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
-| `veo31-fast-ingredient` | Yes (native) | Veo 3.1 fast, ingredient mode |
+| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
 
 ## Workflows
 
