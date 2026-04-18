@@ -50,35 +50,31 @@ jobs:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           COMMIT_INFO: ${{ steps.docs.outputs.commit_info }}
           RECENT_CHANGES: ${{ steps.docs.outputs.recent_changes }}
-          REPO: ${{ github.repository }}
         run: |
-          body=$(jq -n \
-            --arg changes "$RECENT_CHANGES" \
-            '"The upstream Docs have been updated. Ensure this repo is in sync with the latest API spec.\n\n## Recent Docs Changes\n\n```\n" + $changes + "\n```\n\n## Instructions\n\nSee `.github/copilot-instructions.md` for sync rules.\n\nSource of truth: the Docs repo OpenAPI spec at `openapi/*.json`.\n\nCompare models, endpoints, and parameters against this repo'\''s code. Fix any differences."')
+          ISSUE_URL=$(gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "sync: update from Docs ($COMMIT_INFO)" \
+            --body "The upstream Docs have been updated. Ensure this repo is in sync with the latest API spec.
 
-          ISSUE_URL=$(jq -n \
-            --arg title "sync: update from Docs ($COMMIT_INFO)" \
-            --argjson body "$body" \
-            --arg repo "$REPO" \
-            '{
-              title: $title,
-              body: $body,
-              labels: ["auto-sync"],
-              assignees: ["copilot-swe-agent[bot]"],
-              agent_assignment: {
-                target_repo: $repo,
-                base_branch: "main",
-                custom_instructions: "Check out the AceDataCloud/Docs repo and read the openapi/ specs and mcp/ guides. Compare against the skills/ directories. Update any SKILL.md files that reference outdated models, parameters, or endpoints. Read .github/copilot-instructions.md for detailed sync rules. If everything is already in sync, close this issue with a comment saying so."
-              }
-            }' | gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/"$REPO"/issues \
-            --input - --jq '.number')
+          ## Recent Docs Changes
 
-          echo "Created issue #$ISSUE_URL"
-          echo "issue_number=$ISSUE_URL" >> "$GITHUB_OUTPUT"
+          \`\`\`
+          $RECENT_CHANGES
+          \`\`\`
+
+          ## Instructions
+
+          See \`.github/copilot-instructions.md\` for sync rules.
+
+          Source of truth: the Docs repo OpenAPI spec at \`openapi/*.json\`.
+
+          Compare models, endpoints, and parameters against this repo's code. Fix any differences." \
+            --label "auto-sync" \
+            --assignee "copilot-swe-agent[bot]")
+
+          ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -oE '[0-9]+$')
+          echo "Created issue #$ISSUE_NUMBER"
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
 
   wait-and-merge:
     needs: create-task
