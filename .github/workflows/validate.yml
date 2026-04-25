@@ -140,3 +140,46 @@ jobs:
               echo "::warning::$skill_path is not referenced in marketplace.json"
             fi
           done
+
+      - name: Check for nested skill directories
+        run: |
+          errors=0
+          for base_dir in .github/skills .agents/skills; do
+            [ -d "$base_dir" ] || continue
+            for skill_dir in "$base_dir"/*/; do
+              skill_name=$(basename "$skill_dir")
+              # Detect redundant nested subdirectory: <base>/<name>/<name>/
+              if [ -d "$skill_dir$skill_name" ]; then
+                echo "::error::Nested duplicate directory found: $skill_dir$skill_name/"
+                errors=$((errors + 1))
+              fi
+            done
+          done
+          if [ $errors -gt 0 ]; then
+            echo "::error::$errors nested directory issue(s) found. Manually delete nested directories and ensure the sync workflow uses 'rm -rf' before 'cp -r'."
+            exit 1
+          fi
+          echo "No nested skill directories found"
+
+      - name: Check synced skill directories match skills/
+        run: |
+          errors=0
+          for base_dir in .github/skills .agents/skills; do
+            [ -d "$base_dir" ] || continue
+            for skill_dir in skills/*/; do
+              skill_name=$(basename "$skill_dir")
+              synced_file="$base_dir/$skill_name/SKILL.md"
+              source_file="$skill_dir/SKILL.md"
+              if [ ! -f "$synced_file" ]; then
+                echo "::error::Missing synced file: $synced_file (run the sync workflow)"
+                errors=$((errors + 1))
+              elif ! diff -q "$source_file" "$synced_file" > /dev/null; then
+                echo "::error::$synced_file is out of sync with $source_file (run the sync workflow)"
+                errors=$((errors + 1))
+              fi
+            done
+          done
+          if [ $errors -gt 0 ]; then
+            exit 1
+          fi
+          echo "All synced skill files match skills/"
