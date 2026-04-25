@@ -50,36 +50,44 @@ jobs:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           COMMIT_INFO: ${{ steps.docs.outputs.commit_info }}
           RECENT_CHANGES: ${{ steps.docs.outputs.recent_changes }}
+          REPO: ${{ github.repository }}
         run: |
-          ISSUE_URL=$(gh issue create \
-            --repo "${{ github.repository }}" \
-            --title "sync: update from Docs ($COMMIT_INFO)" \
-            --body "The upstream Docs have been updated. Ensure this repo is in sync with the latest API spec.
+          body=$(jq -n \
+            --arg changes "$RECENT_CHANGES" \
+            '"The upstream Docs have been updated. Ensure this repo is in sync with the latest API spec.\n\n## Recent Docs Changes\n\n```\n" + $changes + "\n```\n\n## Instructions\n\nSee `.github/copilot-instructions.md` for sync rules.\n\nSource of truth: the Docs repo OpenAPI spec at `openapi/*.json`.\n\nCompare models, endpoints, and parameters against this repo'\''s code. Fix any differences."')
 
-          ## Recent Docs Changes
+          ISSUE_JSON=$(jq -n \
+            --arg title "sync: update from Docs ($COMMIT_INFO)" \
+            --argjson body "$body" \
+            '{title: $title, body: $body, labels: ["auto-sync"]}' \
+            | gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/"$REPO"/issues \
+              --input -)
+          ISSUE_NUM=$(echo "$ISSUE_JSON" | jq -r '.number')
+          ISSUE_NODE=$(echo "$ISSUE_JSON" | jq -r '.node_id')
+          echo "Created issue #$ISSUE_NUM (node=$ISSUE_NODE)"
 
-          \`\`\`
-          $RECENT_CHANGES
-          \`\`\`
+          OWNER="${REPO%/*}"
+          NAME="${REPO#*/}"
+          COPILOT_ID=$(gh api graphql \
+            -f query='query($owner:String!,$name:String!){ repository(owner:$owner,name:$name){ suggestedActors(capabilities:[CAN_BE_ASSIGNED], first:50){ nodes { __typename ... on Bot { login id } ... on User { login id } } } } }' \
+            -f owner="$OWNER" -f name="$NAME" \
+            --jq '[.data.repository.suggestedActors.nodes[] | select(.login=="copilot-swe-agent" or .login=="Copilot")] | .[0].id // empty')
 
-          ## Instructions
+          if [ -z "$COPILOT_ID" ]; then
+            echo "::error::Copilot not found in suggestedActors. ADMIN_GITHUB_TOKEN must belong to a user with a Copilot seat in this org."
+            gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "Auto-assignment failed: Copilot not visible to ADMIN_GITHUB_TOKEN. Please assign Copilot manually." || true
+            exit 1
+          fi
 
-          See \`.github/copilot-instructions.md\` for sync rules.
+          gh api graphql \
+            -f query='mutation($a:ID!,$b:[ID!]!){ replaceActorsForAssignable(input:{assignableId:$a, actorIds:$b}){ assignable { ... on Issue { number assignees(first:5){ nodes { login } } } } } }' \
+            -f a="$ISSUE_NODE" -f b="$COPILOT_ID"
 
-          Source of truth: the Docs repo OpenAPI spec at \`openapi/*.json\`.
-
-          Compare models, endpoints, and parameters against this repo's code. Fix any differences." \
-            --label "auto-sync" \
-            --assignee "copilot-swe-agent[bot]")
-
-          ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -oE '[0-9]+$')
-          echo "Created issue #$ISSUE_NUMBER"
-          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
-
-          # Assign Copilot bot via API (gh issue create can't resolve bot accounts)
-          echo '{"assignees":["copilot-swe-agent[bot]"]}' | gh api --method POST \
-            "repos/${{ github.repository }}/issues/$ISSUE_NUMBER/assignees" \
-            --input - > /dev/null 2>&1 || echo "Warning: could not assign bot, continuing"
+          echo "issue_number=$ISSUE_NUM" >> "$GITHUB_OUTPUT"
 
   wait-and-merge:
     needs: create-task
