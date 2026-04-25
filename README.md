@@ -46,7 +46,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (50+ models) |
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (100+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
