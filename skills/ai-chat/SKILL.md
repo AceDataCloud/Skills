@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models. Also supports image generation and editing (dall-e-2/3, gpt-image-1/1.5/2, nano-banana) via the same service.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -209,3 +209,92 @@ curl -X POST https://api.acedata.cloud/aichat/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Image Generation
+
+The same OpenAI-compatible service also exposes image generation at `POST /openai/images/generations`.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/generations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "prompt": "A cinematic portrait in a neon-lit city", "size": "1024x1536"}'
+```
+
+### Image Generation Models
+
+| Model | Best For |
+|-------|----------|
+| `dall-e-2` | Classic DALL·E 2 generation |
+| `dall-e-3` | High-quality DALL·E 3 generation |
+| `gpt-image-1` | GPT image first generation |
+| `gpt-image-1.5` | Improved GPT image generation |
+| `gpt-image-2` | Latest GPT image — best instruction following and text rendering |
+| `nano-banana` | Gemini-based, fast and cost-effective |
+| `nano-banana-2` | Improved nano-banana quality |
+| `nano-banana-pro` | Highest-quality nano-banana |
+
+### Image Generation Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Text description of desired image. Max length: 32 000 chars (GPT image models), 4 000 chars (`dall-e-3`), 1 000 chars (`dall-e-2`) |
+| `model` | string | Image model (see table above) |
+| `size` | string | See model-specific sizes below |
+| `quality` | string | `auto` / `high` / `medium` / `low` (GPT image); `hd` / `standard` (`dall-e-3`); `standard` (`dall-e-2`). Default: `auto` |
+| `style` | string | `vivid` or `natural` — `dall-e-3` only |
+| `n` | integer | Number of images (1–10); `dall-e-3` supports only `1` |
+| `response_format` | string | `url` (default) or `b64_json` — `dall-e-2` / `dall-e-3` only (GPT image always returns base64) |
+| `background` | string | `transparent`, `opaque`, or `auto` — GPT image models only |
+| `output_format` | string | `png`, `jpeg`, or `webp` — GPT image models only |
+| `output_compression` | integer | 0–100% compression for webp/jpeg output — GPT image models only |
+| `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
+
+**Model-specific sizes:**
+
+| Model family | Supported `size` values |
+|---|---|
+| GPT image models | `1024x1024`, `1536x1024` (landscape), `1024x1536` (portrait), `auto` (default) |
+| `dall-e-2` | `256x256`, `512x512`, `1024x1024` |
+| `dall-e-3` | `1024x1024`, `1792x1024`, `1024x1792` |
+| nano-banana | `1024x1024`, `1792x1024`, `1024x1792`, `256x256`, `512x512` (mapped to aspect ratios internally) |
+
+## Image Editing
+
+Edit existing images at `POST /openai/images/edits`. Pass source image(s) as URL(s).
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "image": "https://example.com/photo.jpg", "prompt": "Convert to dark mode"}'
+```
+
+### Image Editing Models
+
+| Model | Notes |
+|-------|-------|
+| `dall-e-3` | Classic editing |
+| `gpt-image-1` | GPT image editing |
+| `gpt-image-1.5` | Improved GPT image editing |
+| `gpt-image-2` | Best structure preservation, text retention, and URL input support |
+| `nano-banana` | Fast Gemini-based editing |
+| `nano-banana-2` | Improved nano-banana editing |
+| `nano-banana-pro` | Highest-quality nano-banana editing |
+
+### Image Editing Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `image` | string or array | Source image URL(s) — single URL or array of up to 16 URLs |
+| `prompt` | string | Edit instruction (max 32 000 chars for GPT image; 1 000 chars for `dall-e-2`) |
+| `model` | string | Editing model (see table above) |
+| `size` | string | `1024x1024`, `1536x1024`, `1024x1536`, or `auto` (GPT image); `256x256`/`512x512`/`1024x1024` (`dall-e-2`) |
+| `quality` | string | `auto`, `high`, `medium`, `low` (GPT image); `standard` (`dall-e-2`) |
+| `background` | string | `transparent`, `opaque`, or `auto` — GPT image models only |
+| `output_format` | string | `png`, `jpeg`, or `webp` — GPT image models only |
+| `output_compression` | integer | 0–100% compression for webp/jpeg — GPT image models only |
+| `response_format` | string | `url` (default) or `b64_json` |
+| `callback_url` | string | Webhook URL for async delivery |
+
+> **Nano-banana via OpenAI endpoint**: nano-banana models can also be called through `/openai/images/generations` and `/openai/images/edits` as shown above. For the native nano-banana endpoint with aspect-ratio control, see the [nano-banana-image](../nano-banana-image/SKILL.md) skill.
