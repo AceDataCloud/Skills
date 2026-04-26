@@ -46,37 +46,56 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
-| `gpt-4.1-mini` | Small | Fast, cost-effective |
-| `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
+| `gpt-5.5` | Latest gen | Highest capability |
+| `gpt-5.5-pro` | Latest gen pro | Maximum performance |
+| `gpt-5.4` | Gen 5.4 | High-performance |
+| `gpt-5.4-pro` | Gen 5.4 pro | Enhanced performance |
+| `gpt-5.2` | Gen 5.2 | Balanced next-gen |
+| `gpt-5.1` | Gen 5.1 | Efficient next-gen |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
+| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
+| `gpt-4.1` | Latest 4.x | General-purpose, high quality |
+| `gpt-4.1-mini` | Small 4.x | Fast, cost-effective |
+| `gpt-4.1-nano` | Tiny 4.x | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
 | `gpt-4o-mini` | Small multimodal | Fast vision tasks |
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `o3` | Advanced reasoning | State-of-the-art reasoning |
+| `o3-mini` | Small advanced reasoning | Fast advanced reasoning |
+| `o3-pro` | Pro advanced reasoning | Maximum reasoning depth |
+| `o4-mini` | Latest mini reasoning | Efficient reasoning |
 
 ### Anthropic Claude
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | Premium tasks |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
+| `claude-opus-4-1-20250805` | Opus 4.1 | High-quality tasks |
 | `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
+| `claude-opus-4-20250514` | Opus 4 | High-quality general-purpose |
 | `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
-| `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
-| `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
+| `claude-3-7-sonnet-20250219` | Sonnet 3.7 | Advanced reasoning |
+| `claude-3-5-sonnet-20241022` | Sonnet 3.5 | Proven track record |
+| `claude-3-5-haiku-20241022` | Haiku 3.5 | Fast, efficient (legacy) |
+| `claude-3-opus-20240229` | Opus 3 | Maximum quality (legacy) |
 
 ### Google Gemini
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.0-pro` | Advanced reasoning |
+| `gemini-3-flash-preview` | Fast, latest gen |
+| `gemini-2.5-pro` | Long context, complex tasks |
+| `gemini-2.5-flash` | Fast, efficient |
+| `gemini-2.0-flash` | Balanced speed and quality |
 
 ### DeepSeek
 
@@ -86,15 +105,40 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v3.2-exp` | Experimental next-gen |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Fast inference |
+| `grok-4-1-fast-non-reasoning` | Fast, non-reasoning mode |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+| `grok-2-vision` | Vision + text |
+
+### Kimi (Moonshot)
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2-thinking-turbo` | Fast deep thinking |
+| `kimi-k2.5` | Latest general-purpose |
+| `kimi-k2-thinking` | Deep reasoning |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-0905-preview` | Preview version |
+| `kimi-k2-turbo-preview` | Fast preview |
+| `kimi-k2-0711-preview` | Earlier preview |
+
+### GLM (Zhipu AI)
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest capability |
+| `glm-4.7` | Advanced tasks |
+| `glm-4.6` | General-purpose |
+| `glm-4.5-air` | Fast, lightweight |
+| `glm-3-turbo` | Legacy, cost-effective |
 
 ## Features
 
