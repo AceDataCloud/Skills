@@ -54,29 +54,48 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
+| `o3` | Advanced reasoning | Frontier reasoning |
+| `o3-mini` | Small reasoning | Efficient advanced reasoning |
+| `o3-pro` | Pro advanced reasoning | Maximum reasoning capability |
+| `o4-mini` | Mini reasoning | Fast advanced reasoning |
 | `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
+| `gpt-5.1` | Gen 5.1 | High-performance next-gen |
+| `gpt-5.2` | Gen 5.2 | High-performance next-gen |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Premium next-gen |
+| `gpt-5.5` | Gen 5.5 | Latest high-performance |
+| `gpt-5.5-pro` | Gen 5.5 Pro | Latest premium |
 
 ### Anthropic Claude
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | Highest capability (prev) |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
+| `claude-opus-4-1-20250805` | Opus 4.1 | Premium tasks |
 | `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
+| `claude-opus-4-20250514` | Opus 4 | High-quality tasks |
 | `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
-| `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
+| `claude-3-7-sonnet-20250219` | Sonnet 3.7 | Extended thinking |
+| `claude-3-5-sonnet-20241022` | Legacy 3.5 Sonnet | Proven track record |
+| `claude-3-5-haiku-20241022` | Legacy 3.5 Haiku | Fast legacy |
 | `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
 
 ### Google Gemini
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.0-pro` | Advanced tasks |
+| `gemini-3-flash-preview` | Fast preview model |
+| `gemini-2.5-pro` | Long context, complex tasks |
+| `gemini-2.5-flash` | Fast, efficient |
+| `gemini-2.0-flash` | Lightweight tasks |
 
 ### DeepSeek
 
@@ -86,15 +105,18 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v3.2-exp` | Experimental next-gen |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Speed-optimized |
+| `grok-4-1-fast-non-reasoning` | Fast, non-reasoning |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+| `grok-2-vision` | Vision tasks |
 
 ## Features
 
@@ -155,9 +177,16 @@ POST /v1/chat/completions
 | `temperature` | 0–2 | Randomness (default: 1) |
 | `top_p` | 0–1 | Nucleus sampling |
 | `max_tokens` | integer | Maximum output tokens |
+| `max_completion_tokens` | integer | Upper bound on tokens including reasoning tokens |
 | `stream` | boolean | Enable SSE streaming |
 | `tools` | array | Function calling definitions |
 | `tool_choice` | string/object | Tool selection strategy |
+| `frequency_penalty` | -2.0–2.0 | Penalize token repetition by frequency |
+| `presence_penalty` | -2.0–2.0 | Penalize tokens already in context |
+| `seed` | integer | Deterministic sampling seed |
+| `stop` | string/array | Up to 4 stop sequences |
+| `reasoning_effort` | string | For reasoning models: `"minimal"`, `"low"`, `"medium"`, `"high"` |
+| `web_search_options` | object | Web search options for search-enabled models (e.g., `gpt-4o-search-preview`) |
 
 ## Response
 
@@ -185,7 +214,7 @@ POST /v1/chat/completions
 
 - **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
 - Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
+- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision`, Gemini models, and Claude 3+ models)
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)

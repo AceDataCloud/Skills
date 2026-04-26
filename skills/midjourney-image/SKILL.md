@@ -23,8 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
-
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action": "retrieve", "id": "..."}` or `{"action": "retrieve", "trace_id": "..."}`. Use `retrieve_batch` with `ids`, `trace_ids`, `offset`, and `limit` for bulk retrieval.
 ## Generation Modes
 
 | Mode | Speed | Cost | Best For |
