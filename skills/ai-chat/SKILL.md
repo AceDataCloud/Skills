@@ -46,7 +46,14 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
+| `gpt-5.5` | Flagship | Best-in-class intelligence |
+| `gpt-5.5-pro` | Pro flagship | Maximum gen 5.5 capability |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Pro gen 5.4 | Premium gen 5.4 quality |
+| `gpt-5.2` | Gen 5.2 | Stable next-gen |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
+| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-4.1` | Latest GPT-4 | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
@@ -54,9 +61,6 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
 
