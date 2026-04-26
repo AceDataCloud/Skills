@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access OpenAI APIs (chat, images, responses, embeddings) and 50+ LLM models through AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or image generation with gpt-image-1/gpt-image-2/dall-e-3. Supports streaming, function calling, vision, and async image tasks.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -54,21 +54,39 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
+| `o3` | Reasoning | Latest O-series reasoning |
+| `o3-mini` | Small reasoning | Efficient O3 reasoning |
+| `o3-pro` | Pro reasoning | Advanced O3 tasks |
+| `o4-mini` | Small reasoning | Fast O4 reasoning |
 | `gpt-5` | Latest gen | Next-gen intelligence |
+| `gpt-5.1` | Gen 5.1 | First GPT-5 generation |
+| `gpt-5.2` | Gen 5.2 | Second GPT-5 generation |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Premium next-gen |
+| `gpt-5.5` | Gen 5.5 | Highest-capability next-gen |
+| `gpt-5.5-pro` | Gen 5.5 Pro | Premium highest-capability |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
 
 ### Anthropic Claude
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | Highest capability |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
+| `claude-opus-4-1-20250805` | Opus 4.1 | High capability |
+| `claude-opus-4-20250514` | Opus 4 | High capability |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
 | `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
 | `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
+| `claude-3-7-sonnet-20250219` | Sonnet 3.7 | Extended thinking |
 | `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
+| `claude-3-5-haiku-20241022` | Haiku 3.5 | Fast, lightweight |
+| `claude-3-5-sonnet-20240620` | Legacy 3.5 | Earlier 3.5 release |
+| `claude-3-haiku-20240307` | Haiku 3 | Ultra-fast legacy |
+| `claude-3-sonnet-20240229` | Sonnet 3 | Balanced legacy |
 | `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
 
 ### Google Gemini
@@ -92,9 +110,12 @@ print(response.choices[0].message.content)
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Fast Grok 4.1 |
+| `grok-4-1-fast-non-reasoning` | Fast Grok 4.1 without reasoning |
 | `grok-3` | General-purpose |
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+| `grok-2-vision` | Vision tasks |
 
 ## Features
 
@@ -209,3 +230,116 @@ curl -X POST https://api.acedata.cloud/aichat/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Image Generation
+
+Generate images using OpenAI-compatible image models via `POST /openai/images/generations`.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/generations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "prompt": "A watercolor painting of a mountain lake at sunrise", "size": "1024x1024"}'
+```
+
+### Image Generation Models
+
+| Model | Best For |
+|-------|----------|
+| `gpt-image-2` | Latest generation, strongest instruction-following and text rendering |
+| `gpt-image-1` | High-quality GPT image generation |
+| `gpt-image-1.5` | Intermediate GPT image generation |
+| `dall-e-3` | Classic DALL-E 3 quality |
+| `nano-banana`, `nano-banana-2`, `nano-banana-pro` | Gemini-based generation |
+
+### Image Generation Parameters
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `model` | see table above | Model to use |
+| `prompt` | string (max 32000 chars) | Text description of the desired image |
+| `size` | `"1024x1024"`, `"1536x1024"`, `"1024x1536"`, `"1792x1024"`, `"1024x1792"`, `"auto"` | Image size |
+| `quality` | `"auto"`, `"high"`, `"medium"`, `"low"`, `"hd"`, `"standard"` | Image quality |
+| `n` | 1–10 | Number of images (dall-e-3 only supports 1) |
+| `output_format` | `"png"`, `"jpeg"`, `"webp"` | Output format for GPT image models |
+| `output_compression` | 0–100 | Compression level for jpeg/webp output |
+| `background` | `"transparent"`, `"opaque"`, `"auto"` | Transparency handling for GPT image models |
+| `moderation` | `"low"`, `"auto"` | Content moderation level |
+| `response_format` | `"url"`, `"b64_json"` | Return format for dall-e-2/dall-e-3 |
+| `style` | `"vivid"`, `"natural"` | Style for dall-e-3 |
+| `callback_url` | string | Async callback URL; returns `task_id` immediately |
+
+## Image Editing
+
+Edit existing images using `POST /openai/images/edits`. Supports JSON body with image URLs (GPT image models) or `multipart/form-data` file upload.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "image": "https://example.com/photo.jpg", "prompt": "Convert to dark mode"}'
+```
+
+### Image Editing Parameters
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `model` | `"gpt-image-2"`, `"gpt-image-1"`, `"gpt-image-1.5"`, `"dall-e-3"`, `"nano-banana"` ... | Model to use (default: `dall-e-3`) |
+| `image` | string or array of strings | Reference image URL(s); up to 16 images for GPT models |
+| `prompt` | string (max 32000 chars) | Text description of the desired edit |
+| `size` | `"1024x1024"`, `"1536x1024"`, `"1024x1536"`, `"auto"` | Output size |
+| `quality` | `"auto"`, `"high"`, `"medium"`, `"low"`, `"standard"` | Image quality |
+| `n` | 1–10 | Number of images to generate |
+| `input_fidelity` | `"high"`, `"low"` | How strongly to match input style/features |
+| `output_format` | `"png"`, `"jpeg"`, `"webp"` | Output format |
+| `output_compression` | 0–100 | Compression level for jpeg/webp |
+| `background` | `"transparent"`, `"opaque"`, `"auto"` | Transparency handling |
+| `mask` | string | Optional mask PNG (transparent areas = regions to edit) |
+| `response_format` | `"url"`, `"b64_json"` | Return format for dall-e-2 |
+| `callback_url` | string | Async callback URL; returns `task_id` immediately |
+
+## Async Image Tasks
+
+Query previously submitted async image tasks via `POST /openai/tasks`. Tasks are only created when `callback_url` was included in the original image request.
+
+> Tasks API is **free to call** — only the original image generation/edit requests are billed.
+
+### Retrieve Single Task
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "retrieve", "id": "7489df4c-ef03-4de0-b598-e9a590793434"}'
+```
+
+| Field | Description |
+|-------|-------------|
+| `action` | `"retrieve"` |
+| `id` | Task ID returned when the image request was submitted (provide `id` or `trace_id`) |
+| `trace_id` | Custom trace ID passed in the original request (provide `id` or `trace_id`) |
+
+### Retrieve Batch
+
+```json
+POST /openai/tasks
+{
+  "action": "retrieve_batch",
+  "trace_ids": ["my-trace-001", "my-trace-002"],
+  "type": "images_generations",
+  "offset": 0,
+  "limit": 12
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `action` | `"retrieve_batch"` |
+| `ids` | Array of task IDs |
+| `trace_ids` | Array of custom trace IDs |
+| `application_id` | Filter by application |
+| `user_id` | Filter by end-user |
+| `type` | Filter by type: `images_generations`, `images_edits`, `chat_completions_image` |
+| `offset` | Pagination start (default: 0) |
+| `limit` | Results per page (default: 12) |
+| `created_at_min` / `created_at_max` | Unix timestamp range filter |
