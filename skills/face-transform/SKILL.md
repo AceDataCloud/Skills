@@ -64,18 +64,27 @@ POST /face/beautify
 ```json
 POST /face/change-age
 {
-  "image_url": "https://example.com/portrait.jpg"
+  "image_url": "https://example.com/portrait.jpg",
+  "age_infos": [{"age": 30}]
 }
 ```
+
+`age_infos` is an array of objects targeting individual faces. Each object has:
+- `age` (number, required): Target age to transform to, range `[10, 80]`.
 
 ### 4. Gender Swap
 
 ```json
 POST /face/change-gender
 {
-  "image_url": "https://example.com/portrait.jpg"
+  "image_url": "https://example.com/portrait.jpg",
+  "gender_infos": [{"gender": 0}]
 }
 ```
+
+`gender_infos` is an array of objects targeting individual faces. Each object has:
+- `gender` (number): `0` = male→female, `1` = female→male.
+- `face_rect` (object, optional): Bounding box `{x, y, width, height}` to target a specific face. If omitted, the largest face is used.
 
 ### 5. Face Swap
 

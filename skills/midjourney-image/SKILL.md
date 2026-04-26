@@ -43,6 +43,18 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
 | `6` | Previous generation |
 | `5.2` | Legacy |
 
+## Endpoints
+
+| Endpoint | Purpose | Description |
+|----------|---------|-------------|
+| `POST /midjourney/imagine` | Generate / Transform | Create a 2×2 image grid, upscale, vary, blend, or pan |
+| `POST /midjourney/edits` | Edit | Modify an existing image with a text prompt |
+| `POST /midjourney/describe` | Reverse Prompt | Get text descriptions for an image (4 options) |
+| `POST /midjourney/translate` | Translate | Translate a prompt to English |
+| `POST /midjourney/videos` | Video | Generate a short video from an image + prompt |
+| `POST /midjourney/seed` | Seed | Retrieve the seed of a generated image |
+| `POST /midjourney/tasks` | Poll | Query task status and results |
+
 ## Core Workflows
 
 ### 1. Generate Images (Imagine)
@@ -118,7 +130,18 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Translate a Prompt
+
+Translate a non-English prompt to English before generating.
+
+```json
+POST /midjourney/translate
+{"content": "夜晚的赛博朋克城市"}
+```
+
+Response includes `content` with the translated English prompt.
+
+### 7. Generate Video from Image
 
 Create a video with a reference image and text prompt.
 
