@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, GLM, or other models through a single endpoint. Supports streaming, function calling, and vision.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -54,8 +54,16 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
+| `o3` | Reasoning | Improved reasoning, latest o-series |
+| `o3-mini` | Small reasoning | Fast o3, cost-effective |
+| `o3-pro` | Pro reasoning | Highest o3 capability |
+| `o4-mini` | Small reasoning | Latest compact reasoning |
 | `gpt-5` | Latest gen | Next-gen intelligence |
+| `gpt-5.2` | Gen 5.2 | Mid-tier next-gen |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Pro variant, highest performance |
+| `gpt-5.5` | Gen 5.5 | Latest, highest quality |
+| `gpt-5.5-pro` | Gen 5.5 Pro | Pro variant, premium quality |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
@@ -95,6 +103,16 @@ print(response.choices[0].message.content)
 | `grok-3` | General-purpose |
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+
+### ZhipuAI GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest GLM, high capability |
+| `glm-4.7` | Balanced performance |
+| `glm-4.6` | General-purpose |
+| `glm-4.5-air` | Lightweight, efficient |
+| `glm-3-turbo` | Legacy, fast responses |
 
 ## Features
 

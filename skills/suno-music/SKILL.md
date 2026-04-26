@@ -141,9 +141,47 @@ For best results follow this multi-step workflow:
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
-| `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | POST | Save a vocal style as a reusable persona (from an existing Suno `audio_id`) |
+| `/suno/voices` | POST | Voice Clone — create a custom voice persona from an uploaded audio file URL (`audio_url` required; MP3/WAV, ≥10s, single speaker) |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
+
+## Voice Clone
+
+Create a custom voice persona from any MP3/WAV recording, then use that voice to sing generated songs.
+
+**Step 1 — Create voice persona:**
+
+```json
+POST /suno/voices
+{
+  "audio_url": "https://example.com/my-voice.mp3",
+  "name": "My Voice",
+  "description": "Custom voice persona"
+}
+```
+
+Returns `data.persona_id` to use in subsequent generation calls.
+
+**Step 2 — Generate with cloned voice:**
+
+```json
+POST /suno/audios
+{
+  "action": "generate",
+  "model": "chirp-v5-5",
+  "prompt": "A warm synth-pop song about city nights",
+  "persona_id": "<persona_id from step 1>"
+}
+```
+
+> **Note:** Voice clone requires `chirp-v4-5` or later (`chirp-v4-5`, `chirp-v5`, `chirp-v5-5`). Not supported on `chirp-v4`.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `audio_url` | ✓ | Publicly accessible MP3 or WAV URL, ≥10 seconds, single speaker, minimal background noise |
+| `name` | — | Display name for the voice persona |
+| `description` | — | Description of the voice persona |
 
 ## Advanced Parameters
 
