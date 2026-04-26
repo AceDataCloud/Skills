@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Also covers OpenAI image generation (gpt-image-2, gpt-image-1, dall-e-3) and the Tasks API for callback-mode async workflows. Supports streaming, function calling, vision, and image generation/editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -209,3 +209,120 @@ curl -X POST https://api.acedata.cloud/aichat/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Image Generation
+
+Generate images from text prompts using OpenAI image models via `POST /openai/images/generations`.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/generations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "prompt": "A watercolor painting of a mountain at sunset", "size": "1024x1024"}'
+```
+
+### Image Models
+
+| Model | Description |
+|-------|-------------|
+| `gpt-image-2` | Latest generation — best text rendering, layout control, and image fidelity (recommended) |
+| `gpt-image-1` | Previous generation GPT image model |
+| `gpt-image-1.5` | Intermediate GPT image model |
+| `dall-e-3` | Classic DALL·E 3 model |
+
+### Image Generation Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | Image model (see table above) |
+| `prompt` | string | Text description of the desired image (max 32000 chars for GPT image models) |
+| `size` | string | `"1024x1024"`, `"1536x1024"` (landscape), `"1024x1536"` (portrait), `"auto"` |
+| `quality` | string | `"auto"` (default), `"high"`, `"medium"`, `"low"` |
+| `n` | integer | Number of images to generate (1–10) |
+| `output_format` | string | `"png"` (default), `"jpeg"`, `"webp"` |
+| `output_compression` | integer | Compression level 0–100% for `webp`/`jpeg` |
+| `background` | string | `"transparent"`, `"opaque"`, `"auto"` |
+| `response_format` | string | `"url"` (default) or `"b64_json"` (for `dall-e-3` / `dall-e-2`) |
+| `callback_url` | string | Async callback URL — returns `task_id` immediately and POSTs result when done |
+
+### Image Editing
+
+Edit existing images via `POST /openai/images/edits`. GPT image models accept image URLs directly as JSON; `dall-e-2` requires `multipart/form-data`.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2",
+    "image": "https://example.com/photo.png",
+    "prompt": "Convert this image to dark mode while keeping the layout intact",
+    "size": "1024x1024"
+  }'
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | Same models as image generation above |
+| `image` | string or array | Source image URL(s) — up to 16 images for GPT image models |
+| `prompt` | string | Editing instruction |
+| `size` | string | Output size |
+| `quality` | string | `"auto"`, `"high"`, `"medium"`, `"low"` |
+| `input_fidelity` | string | `"high"` or `"low"` — how closely to match the source image style |
+| `output_format` | string | `"png"`, `"jpeg"`, `"webp"` |
+| `callback_url` | string | Async callback URL (see Tasks API below) |
+
+## Tasks API
+
+Query previously submitted callback-mode image tasks via `POST /openai/tasks`. Tasks are only stored when the original request included a `callback_url`.
+
+> **Note:** The Tasks API does not incur additional charges — only the original image generation/editing request is billed.
+
+### Retrieve a Single Task
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "retrieve", "id": "7489df4c-ef03-4de0-b598-e9a590793434"}'
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `action` | string | Yes | `"retrieve"` |
+| `id` | string | One of | Task ID returned when the image request was submitted |
+| `trace_id` | string | One of | Custom `trace_id` passed in the original request |
+
+### Retrieve Multiple Tasks
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "retrieve_batch", "trace_ids": ["my-trace-001", "my-trace-002"]}'
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `action` | string | `"retrieve_batch"` |
+| `ids` | string[] | Query by task ID list |
+| `trace_ids` | string[] | Query by custom `trace_id` list |
+| `application_id` | string | Query all tasks for an application |
+| `user_id` | string | Query all tasks for a user |
+| `type` | string | Filter by task type, e.g. `"images_generations"`, `"images_edits"` |
+| `offset` | integer | Pagination offset (default: `0`) |
+| `limit` | integer | Page size (default: `12`) |
+| `created_at_min` | float | Start of time window (Unix seconds) |
+| `created_at_max` | float | End of time window (Unix seconds) |
+
+### Task Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `id` | Task ID assigned at submission |
+| `trace_id` | Custom trace identifier from the original request |
+| `type` | Upstream task type (`images_generations`, `images_edits`, etc.) |
+| `request` | Full original request body |
+| `response` | Final upstream response (populated once the task finishes) |
+| `created_at` / `finished_at` | Unix timestamps (seconds) |
+| `duration` | Processing time in seconds |
