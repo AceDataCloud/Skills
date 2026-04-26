@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, GLM, or other models through a single endpoint. Supports streaming, function calling, and vision.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -46,23 +46,39 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
+| `gpt-5.5` | Gen 5.5 | Latest, highest capability |
+| `gpt-5.5-pro` | Gen 5.5 Pro | Latest Pro variant |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Pro variant |
+| `gpt-5.2` | Gen 5.2 | High performance |
+| `gpt-5.1` | Gen 5.1 | Strong general-purpose |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
+| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
+| `gpt-4.1` | GPT-4.1 | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
 | `gpt-4o-mini` | Small multimodal | Fast vision tasks |
+
+### OpenAI Reasoning
+
+| Model | Type | Best For |
+|-------|------|----------|
+| `o4-mini` | Latest reasoning | Compact, highly capable |
+| `o3` | Reasoning | Advanced complex reasoning |
+| `o3-pro` | Pro reasoning | Highest reasoning quality |
+| `o3-mini` | Small reasoning | Fast reasoning |
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | Premium tasks |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
@@ -75,8 +91,12 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.0-pro` | Highly capable |
+| `gemini-3-flash-preview` | Fast preview |
+| `gemini-2.5-pro` | Long context, complex tasks |
+| `gemini-2.5-flash` | Fast, efficient |
+| `gemini-2.0-flash` | Cost-effective generation |
 
 ### DeepSeek
 
@@ -92,9 +112,20 @@ print(response.choices[0].message.content)
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Fast variant |
+| `grok-4-1-fast-non-reasoning` | Non-reasoning fast |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+
+### GLM (Zhipu AI)
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest capability |
+| `glm-4.7` | High performance |
+| `glm-4.6` | Balanced capability |
+| `glm-4.5-air` | Lightweight, efficient |
+| `glm-3-turbo` | Fast, cost-effective |
 
 ## Features
 
@@ -185,7 +216,7 @@ POST /v1/chat/completions
 
 - **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
 - Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
+- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision`)
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
