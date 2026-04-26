@@ -41,7 +41,7 @@ curl -X POST https://api.acedata.cloud/fish/audios \
 POST /fish/audios
 {
   "prompt": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "voice_id": "d7900c21663f485ab63ebdb7e5905036"
 }
 ```
 
@@ -76,9 +76,9 @@ POST /fish/audios
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `prompt` | string | Text to synthesize into speech |
-| `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
+| `voice_id` | string | Voice model or cloned voice ID to use (default: `"d7900c21663f485ab63ebdb7e5905036"`) |
+| `model` | string | TTS model: `"fish-tts"` |
+| `action` | string | Operation type: `"speech"` |
 | `callback_url` | string | Webhook URL for async delivery |
 
 ### `/fish/voices`

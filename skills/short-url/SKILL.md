@@ -1,6 +1,6 @@
 ---
 name: short-url
-description: Create short URLs via AceDataCloud API. Use when generating shortened links for sharing, or batch-creating multiple short URLs at once. Supports custom slugs and expiration.
+description: Create short URLs via AceDataCloud API. Use when generating shortened links for sharing.
 license: Apache-2.0
 metadata:
   author: acedatacloud

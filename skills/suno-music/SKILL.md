@@ -153,6 +153,15 @@ For best results follow this multi-step workflow:
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `weirdness` | number | Creative randomness; advanced custom mode only |
+| `persona_id` | string | Generate songs based on a saved singer persona |
+| `mashup_audio_ids` | array | Audio IDs to blend together when using the `mashup` action |
+| `overpainting_start` | number | Start time (seconds) for adding vocals via the `overpainting` action (default: 0) |
+| `overpainting_end` | number | End time (seconds) for adding vocals; must be less than total song duration |
+| `underpainting_start` | number | Start time (seconds) for adding accompaniment via the `underpainting` action (default: 0) |
+| `underpainting_end` | number | End time (seconds) for adding accompaniment; must be less than total song duration |
+| `samples_start` | number | Start time (seconds) for adding samples via the `samples` action (default: 0) |
+| `samples_end` | number | End time (seconds) for adding samples; must be less than total song duration |
 
 ## Lyrics Format
 

@@ -96,6 +96,16 @@ print(response.choices[0].message.content)
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
 
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest capability |
+| `glm-4.7` | High quality |
+| `glm-4.6` | Balanced |
+| `glm-4.5-air` | Lightweight, fast |
+| `glm-3-turbo` | Legacy, stable |
+
 ## Features
 
 ### Streaming
