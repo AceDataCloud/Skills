@@ -186,7 +186,7 @@ POST /v1/chat/completions
 | `seed` | integer | Deterministic sampling seed |
 | `stop` | string/array | Up to 4 stop sequences |
 | `reasoning_effort` | string | For reasoning models: `"minimal"`, `"low"`, `"medium"`, `"high"` |
-| `web_search_options` | object | Web search options for search-enabled models |
+| `web_search_options` | object | Web search options for search-enabled models (e.g., `gpt-4o-search-preview`) |
 
 ## Response
 
@@ -214,7 +214,7 @@ POST /v1/chat/completions
 
 - **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
 - Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision`)
+- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision`, Gemini models, and Claude 3+ models)
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
