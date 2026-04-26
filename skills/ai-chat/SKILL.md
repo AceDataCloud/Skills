@@ -54,8 +54,12 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
+| `gpt-5.5` | Gen 5.5 | Newest generation |
+| `gpt-5.5-pro` | Gen 5.5 Pro | Premium newest generation |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Premium high-performance next-gen |
+| `gpt-5.2` | Gen 5.2 | Next-gen intelligence |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
