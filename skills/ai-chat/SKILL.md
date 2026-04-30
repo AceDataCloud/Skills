@@ -209,3 +209,27 @@ curl -X POST https://api.acedata.cloud/aichat/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Native Claude Messages API
+
+For applications that use the Anthropic SDK natively (not the OpenAI-compatible interface), the native Claude `POST /v1/messages` endpoint is also available:
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/messages \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "claude-sonnet-4-20250514", "max_tokens": 1024, "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Claude model name |
+| `messages` | array | Yes | Array of `{role, content}` objects |
+| `max_tokens` | integer | Yes | Maximum tokens to generate |
+| `system` | string | No | System prompt |
+| `stream` | boolean | No | Enable SSE streaming |
+| `temperature` | number | No | Randomness (0–1) |
+| `tools` | array | No | Tool definitions |
+| `tool_choice` | object | No | Tool selection strategy |
+
+A `POST /v1/messages/count_tokens` endpoint is also available to count tokens for a given request before sending it.

@@ -27,10 +27,10 @@ curl -X POST https://api.acedata.cloud/sora/videos \
 
 ## Models
 
-| Model | Duration | Quality | Best For |
-|-------|----------|---------|----------|
-| `sora-2` | 10–15s | Standard | Most tasks (default) |
-| `sora-2-pro` | 10–25s | Higher | Premium quality, longer videos |
+| Model | Duration (v1.0) | Duration (v2.0) | Quality | Best For |
+|-------|-----------------|-----------------|---------|----------|
+| `sora-2` | 10–15s | 4/8/12s | Standard | Most tasks (default) |
+| `sora-2-pro` | 10–25s | 4/8/12s | Higher | Premium quality, longer videos |
 
 ## Workflows
 
@@ -76,22 +76,42 @@ POST /sora/videos
 }
 ```
 
+### 4. Version 2.0 — Pixel Resolution
+
+Use `version: "2.0"` for pixel-based resolution and shorter/faster durations.
+
+```json
+POST /sora/videos
+{
+  "prompt": "a drone shot flying over a misty mountain forest",
+  "model": "sora-2",
+  "version": "2.0",
+  "duration": 8,
+  "size": "1280x720"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
-| `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
+| `version` | `"1.0"` (default), `"2.0"` | API version. v1.0: duration 10/15/25s, size small/large, orientation, character refs. v2.0: duration 4/8/12s, pixel-based size |
+| `duration` | v1.0: `10`, `15`, `25`; v2.0: `4`, `8`, `12` | Duration in seconds (25 only with sora-2-pro on v1.0; v2.0 default is 4) |
+| `size` | v1.0: `"small"`, `"large"`; v2.0: `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution (v2.0 default: `720x1280`) |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation — **v1.0 only** |
+| `image_urls` | array of URLs (optional) | Reference images. v1.0: multiple supported; v2.0: first image only, dimensions should match `size` |
+| `character_url` | URL | Source video for character extraction — **v1.0 only** |
+| `character_start` | integer | Start timestamp (seconds) of character in source video — **v1.0 only** |
+| `character_end` | integer | End timestamp (seconds) of character; range must be 1–3s — **v1.0 only** |
 
 ## Gotchas
 
-- Duration of **25 seconds** is only available with `sora-2-pro` model
-- `size: "large"` produces higher resolution but costs more and takes longer
-- Character-driven generation requires `character_start` and `character_end` timestamps (in seconds) from the source video
-- `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
+- Duration of **25 seconds** is only available with `sora-2-pro` on version 1.0
+- `size: "large"` (v1.0) produces higher resolution but costs more and takes longer
+- Character-driven generation (`character_url`) is **v1.0 only** — requires `character_start` and `character_end` timestamps; range must be 1–3 seconds
+- `orientation` is **v1.0 only** — for v2.0 use pixel `size` values instead
+- In v2.0, `image_urls` only uses the first image, and its dimensions should match the chosen `size`
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-sora` | Hosted: `https://sora.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

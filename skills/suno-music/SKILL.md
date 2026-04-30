@@ -140,6 +140,7 @@ For best results follow this multi-step workflow:
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
+| `/suno/voices` | POST | Create a custom voice persona from an audio file (`audio_url`, `name`, `description`) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
