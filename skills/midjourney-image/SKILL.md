@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action": "retrieve", "id": "<task_id>"}`.
 
 ## Generation Modes
 
@@ -166,5 +166,19 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Video generation requires a reference `image_url` — it cannot generate from text alone
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
+
+## Task Retrieval
+
+Poll or look up tasks via `POST /midjourney/tasks`:
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `action` | Yes | `"retrieve"` for a single task; `"retrieve_batch"` for multiple |
+| `id` | No | Task ID to retrieve (used with `retrieve`) |
+| `trace_id` | No | Trace ID to retrieve (used with `retrieve`) |
+| `ids` | No | Array of task IDs (used with `retrieve_batch`) |
+| `trace_ids` | No | Array of trace IDs (used with `retrieve_batch`) |
+| `offset` | No | Pagination offset (default: `0`) |
+| `limit` | No | Max tasks to return (default: `12`) |
 
 > **MCP:** `pip install mcp-midjourney` | Hosted: `https://midjourney.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

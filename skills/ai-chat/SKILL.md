@@ -190,6 +190,44 @@ POST /v1/chat/completions
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
 
+## Image Generation
+
+Generate images via the OpenAI-compatible image endpoint.
+
+### Generate Image
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/generations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "prompt": "a futuristic city at sunset", "size": "1024x1024"}'
+```
+
+### Edit Image
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-image-2", "prompt": "add a rainbow", "image_url": "https://example.com/photo.jpg", "size": "1024x1024"}'
+```
+
+### gpt-image-2 Supported Sizes
+
+`gpt-image-2` supports 15 size presets across 3 resolution tiers (2K and 4K are billed at **1.5× the 1K rate**):
+
+| Aspect Ratio | 1K (standard) | 2K (×1.5) | 4K (×1.5) |
+|---|---|---|---|
+| 1:1 | `1024x1024` | `2048x2048` | `2880x2880` |
+| 4:3 | `1536x1024` | `2048x1536` | `3264x2448` |
+| 3:4 | `1024x1536` | `1536x2048` | `2448x3264` |
+| 16:9 | `1792x1024` | `2048x1152` | `3840x2160` |
+| 9:16 | `1024x1792` | `1152x2048` | `2160x3840` |
+
+Pass `size: "auto"` (or omit `size`) to let the model choose — billed at 1K rate.
+
+Other supported models: `gpt-image-1`, `dall-e-3` (`1024x1024`, `1792x1024`, `1024x1792`), `dall-e-2` (`256x256`, `512x512`, `1024x1024`), and `nano-banana` / `nano-banana-2` / `nano-banana-pro`.
+
 ## Stateful Conversations Endpoint
 
 For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
