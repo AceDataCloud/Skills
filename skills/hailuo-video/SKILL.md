@@ -23,7 +23,8 @@ curl -X POST https://api.acedata.cloud/hailuo/videos \
   -d '{"action": "generate", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "minimax-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"action": "retrieve", "id": "<task_id>"}`.
+
 ## Models
 
 | Model | Type | Best For |
@@ -78,10 +79,39 @@ POST /hailuo/videos
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
 | `action` | Yes | `"generate"` | Action type |
-| `prompt` | Yes | string | Video description |
-| `model` | Yes | `"minimax-t2v"`, `"minimax-i2v"`, `"minimax-i2v-director"` | Model |
+| `prompt` | No | string | Video description |
+| `model` | No | `"minimax-t2v"`, `"minimax-i2v"`, `"minimax-i2v-director"` | Model (default: `minimax-t2v`) |
 | `first_image_url` | For i2v | string | Source image URL (required for image-to-video) |
 | `callback_url` | No | string | Async callback URL |
+
+## Response Structure
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-...",
+      "model": "minimax-t2v",
+      "prompt": "a dolphin jumping through ocean waves",
+      "first_image_url": null,
+      "video_url": "https://cdn.example.com/videos/a1b2c3d4.mp4",
+      "status": "Success"
+    }
+  ],
+  "success": true,
+  "task_id": "a1b2c3d4-..."
+}
+```
+
+## Task Retrieval
+
+Poll task status via `POST /hailuo/tasks`:
+
+| Parameter | Description |
+|-----------|-------------|
+| `action` | `"retrieve"` for a single task, `"retrieve_batch"` for multiple |
+| `id` | Task ID for single retrieval |
+| `ids` | Array of task IDs for batch retrieval |
 
 ## Gotchas
 

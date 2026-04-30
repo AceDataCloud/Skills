@@ -142,8 +142,36 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | GET | List saved personas for a user |
+| `/suno/persona` | DELETE | Delete a saved persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
+
+### Persona Management
+
+**Save a persona** (`POST /suno/persona`):
+
+```json
+{
+  "name": "My Voice",
+  "audio_id": "existing-audio-id"
+}
+```
+
+**List personas** (`GET /suno/persona`):
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `user_id` | Yes | — | User ID whose personas to list |
+| `limit` | No | `50` | Max personas to return |
+| `offset` | No | `0` | Number of personas to skip |
+
+**Delete a persona** (`DELETE /suno/persona`):
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `persona_id` | Yes | ID of the persona to delete |
+| `user_id` | No | User ID for ownership verification |
 
 ## Advanced Parameters
 
