@@ -142,6 +142,7 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/voices` | POST | Create a voice persona directly from an audio URL |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
@@ -153,6 +154,8 @@ For best results follow this multi-step workflow:
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `weirdness` | number | Controls how experimental/unusual the generation is (advanced custom mode only) |
+| `persona_id` | string | Generate in a specific singer's style using a saved voice persona ID |
 
 ## Lyrics Format
 
@@ -182,6 +185,7 @@ Ending lyrics
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
+- `/suno/voices` creates a voice from an external audio URL (MP3/WAV); use the returned voice ID as `persona_id`
 - Upload external audio via `/suno/upload` before using it with extend/cover
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

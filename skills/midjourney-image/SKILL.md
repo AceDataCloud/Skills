@@ -120,14 +120,39 @@ POST /midjourney/describe
 
 ### 6. Generate Video from Image
 
-Create a video with a reference image and text prompt.
+Create a video with a reference image and text prompt. Optionally specify an end frame image or enable looping.
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
-  "resolution": "720p"
+  "resolution": "720p",
+  "loop": false
+}
+```
+
+To specify the end frame of the video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "generate",
+  "image_url": "https://example.com/start.jpg",
+  "end_image_url": "https://example.com/end.jpg",
+  "prompt": "smooth transition between scenes"
+}
+```
+
+To extend an existing video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0
 }
 ```
 
@@ -164,6 +189,9 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
 - Video generation requires a reference `image_url` — it cannot generate from text alone
+- Use `end_image_url` in video generation to guide the final frame appearance
+- Use `loop: true` in video generation to create seamlessly looping clips
+- Video extension (`action: "extend"`) requires `video_id` and `video_index` (0-based index)
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
