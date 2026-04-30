@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action": "retrieve", "id": "..."}` or `{"action": "retrieve", "trace_id": "..."}`. Use `retrieve_batch` with `ids`/`trace_ids` arrays plus optional `offset`/`limit` for pagination.
 
 ## Generation Modes
 
@@ -118,9 +118,9 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Generate Video
 
-Create a video with a reference image and text prompt.
+Create a video from a text prompt (with an optional reference image), or extend an existing video.
 
 ```json
 POST /midjourney/videos
@@ -128,6 +128,18 @@ POST /midjourney/videos
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+**Extend an existing video:**
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0,
+  "mode": "fast"
 }
 ```
 
@@ -157,13 +169,30 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 | `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
 | `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
 
-## Gotchas
+## Video Parameters
+
+`POST /midjourney/videos` fields:
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `action` | `"generate"`, `"extend"` | Operation type |
+| `mode` | `"fast"`, `"turbo"` | Speed mode (default: fast) |
+| `resolution` | `"480p"`, `"720p"` | Output resolution (default: 720p) |
+| `prompt` | string | Text description for generation |
+| `image_url` | string | First-frame reference image URL |
+| `end_image_url` | string | Image to use as the last frame |
+| `loop` | boolean | Generate a looping video (default: false) |
+| `video_id` | string | Video ID to extend (required for `extend`) |
+| `video_index` | number | Index (0-based) of video to extend |
+| `callback_url` | string | Async callback URL |
+
+
 
 - Imagine returns a **2x2 grid** — use upscale/variation actions to work with individual images
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- Video generation supports both text-only (`prompt`) and image-first (`image_url`) modes; `image_url` is optional
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 

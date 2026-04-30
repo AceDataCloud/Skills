@@ -34,8 +34,6 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 | `chirp-v4-5-plus` | Enhanced v4.5 |
 | `chirp-v4-5` | Good balance of quality and speed |
 | `chirp-v4` | Fast, reliable |
-| `chirp-v3-5` | Legacy, stable |
-| `chirp-v3-0` | Legacy |
 
 ## Core Workflows
 
@@ -142,6 +140,7 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/voices` | POST | Create a custom voice persona from an audio URL (`audio_url`, optional `name`/`description`) |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
