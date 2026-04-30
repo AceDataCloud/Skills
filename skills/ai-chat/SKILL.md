@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, Kimi, or other models through a single endpoint. Supports streaming, function calling, and vision.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -46,7 +46,12 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
+| `gpt-5.5` | Latest | Highest-capability next-gen |
+| `gpt-5.5-pro` | Pro | Premium next-gen |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Pro 5.4 | Premium Gen 5.4 |
+| `gpt-5.2` | Gen 5.2 | Stable next-gen |
+| `gpt-4.1` | Previous gen | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
@@ -54,29 +59,36 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | Premium tasks |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
+| `claude-opus-4-1-20250805` | Opus 4.1 | Strong reasoning |
 | `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
+| `claude-opus-4-20250514` | Opus 4 | Reliable, high quality |
 | `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
+| `claude-3-7-sonnet-20250219` | Sonnet 3.7 | Extended reasoning |
 | `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
+| `claude-3-5-haiku-20241022` | Haiku 3.5 | Fast legacy |
 | `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
 
 ### Google Gemini
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.0-pro` | High quality, balanced |
+| `gemini-3-flash-preview` | Fast preview |
+| `gemini-2.5-pro` | Long context, complex tasks |
+| `gemini-2.5-flash` | Fast, efficient |
+| `gemini-2.0-flash` | Ultra-fast, cost-effective |
 
 ### DeepSeek
 
@@ -86,15 +98,30 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v3.2-exp` | Experimental v3.2 |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Fast Grok 4.1 |
+| `grok-4-1-fast-non-reasoning` | Non-reasoning fast mode |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+| `grok-2-vision` | Vision tasks |
+
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2-thinking-turbo` | Fast reasoning |
+| `kimi-k2.5` | Latest general-purpose |
+| `kimi-k2-thinking` | Deep reasoning |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-0905-preview` | Preview release |
+| `kimi-k2-turbo-preview` | Turbo preview |
+| `kimi-k2-0711-preview` | Stable preview |
 
 ## Features
 
