@@ -143,6 +143,7 @@ For best results follow this multi-step workflow:
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/voices` | POST | Create a custom voice persona from an uploaded audio URL (`audio_url`, `name`, `description`) |
 | `/suno/tasks` | POST | Query task status and results |
 
 ## Advanced Parameters
