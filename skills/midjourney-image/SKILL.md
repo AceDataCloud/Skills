@@ -118,17 +118,39 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Generate or Extend Video
 
-Create a video with a reference image and text prompt.
+Create a video with a reference image and text prompt, or extend an existing video.
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
 }
+```
+
+To extend an existing video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0,
+  "prompt": "continue the motion further"
+}
+```
+
+### 7. Translate a Prompt
+
+Convert a non-English prompt to English for use with Midjourney.
+
+```json
+POST /midjourney/translate
+{"content": "一只猫坐在月亮上"}
 ```
 
 ## Prompt Parameters
@@ -153,7 +175,7 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 |-----------|------|-------------|
 | `version` | string | Midjourney version (`"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
 | `hd` | boolean | Enable HD 2K resolution (V8 only) — costs 4× GPU time |
-| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 16× GPU time |
+| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 4× GPU time |
 | `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
 | `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
 
@@ -162,8 +184,8 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Imagine returns a **2x2 grid** — use upscale/variation actions to work with individual images
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
-- `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney (or use `POST /midjourney/translate` standalone)
+- Video `generate` requires a reference `image_url`; video `extend` requires `video_id` and `video_index`
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
