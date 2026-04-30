@@ -46,7 +46,17 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
+| `gpt-5.5` | Latest 5.5 | Highest next-gen quality |
+| `gpt-5.5-pro` | Latest 5.5 Pro | Advanced next-gen tasks |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Enhanced next-gen |
+| `gpt-5.2` | Gen 5.2 | Balanced next-gen |
+| `gpt-5.1` | Gen 5.1 | Next-gen baseline |
+| `gpt-5.1-all` | Gen 5.1 All | Multi-modal next-gen |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
+| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
+| `gpt-4.1` | Latest 4.1 | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
@@ -54,9 +64,10 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `o3` | O3 | State-of-the-art reasoning |
+| `o3-mini` | O3 mini | Efficient reasoning |
+| `o3-pro` | O3 pro | Maximum reasoning |
+| `o4-mini` | O4 mini | Latest efficient reasoning |
 
 ### Anthropic Claude
 

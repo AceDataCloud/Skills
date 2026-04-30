@@ -142,6 +142,9 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | GET | List saved vocal style personas |
+| `/suno/persona` | DELETE | Delete a saved vocal style persona |
+| `/suno/voices` | POST | Create a custom voice persona from an external audio URL (MP3/WAV, ≥10 sec) |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
