@@ -141,7 +141,10 @@ For best results follow this multi-step workflow:
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
-| `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | POST | Save a vocal style as a reusable persona (requires `name`, `audio_id`) |
+| `/suno/persona` | GET | List all saved vocal personas |
+| `/suno/persona` | DELETE | Delete a saved vocal persona |
+| `/suno/voices` | POST | Create a voice persona from an external audio URL (requires `audio_url`; MP3/WAV, ≥10 s) |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
@@ -149,10 +152,20 @@ For best results follow this multi-step workflow:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | string | Prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | object | Auto-lyrics config when `custom: true` without explicit `lyric` (e.g., `{"prompt": "a sad song about rain"}`) |
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `weirdness` | number | Creative randomness level (advanced custom mode, v5+ only) |
+| `mashup_audio_ids` | array | List of audio IDs to blend together when `action: "mashup"` |
+| `overpainting_start` | number | Start time (seconds) for adding vocals to an uploaded track (`action: "overpainting"`) |
+| `overpainting_end` | number | End time (seconds) for the overpainting section |
+| `underpainting_start` | number | Start time (seconds) for adding accompaniment (`action: "underpainting"`) |
+| `underpainting_end` | number | End time (seconds) for the underpainting section |
+| `samples_start` | number | Start time (seconds) for adding samples (`action: "samples"`) |
+| `samples_end` | number | End time (seconds) for the samples section |
+| `replace_section_start` | number | Start time (seconds) of the section to replace (`action: "replace_section"`) |
+| `replace_section_end` | number | End time (seconds) of the section to replace |
 
 ## Lyrics Format
 

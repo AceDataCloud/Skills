@@ -51,11 +51,17 @@ print(response.choices[0].message.content)
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
 | `gpt-4o-mini` | Small multimodal | Fast vision tasks |
+| `gpt-4o-search-preview` | Web search | GPT-4o with built-in web search |
+| `gpt-4o-mini-search-preview` | Web search | Fast web search variant |
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
+| `o3` | Reasoning | Latest reasoning model |
+| `o3-mini` | Small reasoning | Efficient reasoning |
+| `o4-mini` | Reasoning | Compact, fast reasoning |
 | `gpt-5` | Latest gen | Next-gen intelligence |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.5` | Gen 5.5 | Latest next-gen |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
 
 ### Anthropic Claude
@@ -92,9 +98,19 @@ print(response.choices[0].message.content)
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-1-fast` | Fast Grok 4 variant |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+| `grok-2-vision` | Vision tasks |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, high capability |
+| `glm-4.7` | High quality |
+| `glm-4.6` | General-purpose |
+| `glm-4.5-air` | Fast, efficient |
 
 ## Features
 
@@ -158,6 +174,13 @@ POST /v1/chat/completions
 | `stream` | boolean | Enable SSE streaming |
 | `tools` | array | Function calling definitions |
 | `tool_choice` | string/object | Tool selection strategy |
+| `reasoning_effort` | string | Effort level for reasoning models (`low`, `medium`, `high`); o1/o3/o4/gpt-5 series |
+| `web_search_options` | object | Enable built-in web search on GPT-4o search-preview models |
+| `response_format` | object | Force JSON output (`{"type": "json_object"}`) |
+| `seed` | integer | Deterministic sampling seed |
+| `stop` | string/array | Stop sequences (up to 4) |
+| `frequency_penalty` | -2 to 2 | Penalize repeated tokens |
+| `presence_penalty` | -2 to 2 | Penalize tokens already present |
 
 ## Response
 
@@ -185,10 +208,37 @@ POST /v1/chat/completions
 
 - **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
 - Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
+- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision`)
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
+- Use `reasoning_effort` (`"low"` / `"medium"` / `"high"`) to tune cost vs. quality on o1/o3/o4 and gpt-5 reasoning models
+- Web search models (`gpt-4o-search-preview`, `gpt-4o-mini-search-preview`) accept an optional `web_search_options` object
+
+## OpenAI Responses Endpoint
+
+For stateless single-turn generation using OpenAI's Responses API format, use `POST /openai/responses`:
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/responses \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4.1",
+    "input": [{"role": "user", "content": "Summarize the Eiffel Tower in 3 sentences."}]
+  }'
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | Model ID (REQUIRED) |
+| `input` | array | Conversation turns as `{role, content}` objects (REQUIRED) |
+| `stream` | boolean | Enable SSE streaming |
+| `temperature` | number | Sampling temperature (0–2) |
+| `max_tokens` | number | Token limit for the response |
+| `tools` | array | Tools the model may call |
+| `response_format` | object | Structured output format |
+| `background` | boolean | Run the response in the background |
 
 ## Stateful Conversations Endpoint
 
