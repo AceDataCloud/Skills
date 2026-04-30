@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (19)
+## Available Skills (20)
 
 ### AI Music & Audio
 
@@ -51,6 +51,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
+| [validate-nano](skills/validate-nano/) | Production validation suite for Nano Banana generation/edit callback flows |
 
 ## Prerequisites
 

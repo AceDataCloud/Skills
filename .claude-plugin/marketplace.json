@@ -41,7 +41,8 @@
         "./skills/google-search",
         "./skills/face-transform",
         "./skills/short-url",
-        "./skills/acedatacloud-api"
+        "./skills/acedatacloud-api",
+        "./skills/validate-nano"
       ]
     }
   ]

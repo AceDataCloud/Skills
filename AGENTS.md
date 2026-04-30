@@ -32,6 +32,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs
 - **acedatacloud-api** — API usage guide — authentication, SDKs, error handling
+- **validate-nano** — Production validation suite for Nano Banana generation/edit callback flows
 
 ## Authentication
 
