@@ -90,7 +90,8 @@ POST /midjourney/edits
 {
   "image_url": "https://example.com/photo.jpg",
   "prompt": "add a rainbow in the sky",
-  "mode": "fast"
+  "mode": "fast",
+  "split_images": true
 }
 ```
 
@@ -120,16 +121,47 @@ POST /midjourney/describe
 
 ### 6. Generate Video from Image
 
-Create a video with a reference image and text prompt.
+Create a video with a reference image and text prompt, or extend an existing video.
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
+  "mode": "fast",
   "resolution": "720p"
 }
 ```
+
+Extend an existing video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0,
+  "prompt": "continue the motion smoothly",
+  "mode": "fast",
+  "loop": false
+}
+```
+
+## Video Parameters
+
+| Parameter | Required | Values | Description |
+|-----------|----------|--------|-------------|
+| `action` | Yes | `"generate"`, `"extend"` | Generate a new video or extend an existing one |
+| `image_url` | For generate | string | Source image URL (first frame) |
+| `end_image_url` | No | string | End frame image URL |
+| `prompt` | No | string | Video description |
+| `mode` | No | `"fast"`, `"turbo"` | Generation speed mode |
+| `resolution` | No | `"480p"`, `"720p"` | Video resolution |
+| `video_id` | For extend | string | ID of the existing video to extend |
+| `video_index` | For extend | number | Index of the video segment to extend |
+| `loop` | No | boolean | Loop the video seamlessly |
+| `callback_url` | No | string | Async callback URL |
 
 ## Prompt Parameters
 
@@ -160,10 +192,10 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 ## Gotchas
 
 - Imagine returns a **2x2 grid** — use upscale/variation actions to work with individual images
-- Use `split_images: true` to also receive individual cropped images alongside the grid
+- Use `split_images: true` to also receive individual cropped images alongside the grid (works for both `/midjourney/imagine` and `/midjourney/edits`)
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
-- `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney; or use `POST /midjourney/translate` with `{"content": "..."}` to translate manually
+- Video `generate` action requires a reference `image_url`; `extend` action requires a `video_id`
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
