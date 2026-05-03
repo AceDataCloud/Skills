@@ -44,6 +44,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 |------|-------|------|---------|
 | `std` (Standard) | Slower | Lower | Draft/preview |
 | `pro` (Professional) | Faster | Higher | Final output |
+| `4k` | Slower | Highest | Ultra-high resolution output |
 
 ## Workflows
 
@@ -109,7 +110,7 @@ POST /kling/motion
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
-| `mode` | `"std"`, `"pro"` | Quality mode |
+| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |

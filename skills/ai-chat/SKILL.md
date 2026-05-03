@@ -46,17 +46,29 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
+| `gpt-5.5` | Latest | Cutting-edge quality |
+| `gpt-5.5-pro` | Latest Pro | Premium cutting-edge |
+| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-pro` | Gen 5.4 Pro | Premium high-performance |
+| `gpt-5.2` | Gen 5.2 | Stable next-gen |
+| `gpt-5.1` | Gen 5.1 | Balanced next-gen |
+| `gpt-5` | Gen 5 | Next-gen intelligence |
+| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Ultra-fast next-gen |
+| `gpt-4.1` | GPT-4.1 | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
 | `gpt-4o` | Multimodal | Vision + text |
 | `gpt-4o-mini` | Small multimodal | Fast vision tasks |
+| `gpt-4o-search-preview` | Search | Web-grounded responses |
+| `gpt-4o-mini-search-preview` | Search mini | Fast web-grounded responses |
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `o3` | Reasoning | Latest reasoning model |
+| `o3-mini` | Small reasoning | Compact latest reasoning |
+| `o3-pro` | Pro reasoning | Premium latest reasoning |
+| `o4-mini` | Compact reasoning | Fast o4-series reasoning |
 
 ### Anthropic Claude
 
@@ -86,15 +98,23 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v4-flash` | Fast next-gen |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
-| `grok-4` | Latest, highest capability |
 | `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest capability |
+| `glm-4.7` | High quality |
+| `glm-4.6` | Balanced |
+| `glm-4.5-air` | Lightweight, efficient |
+| `glm-3-turbo` | Fast, cost-effective |
 
 ## Features
 

@@ -29,8 +29,8 @@ curl -X POST https://api.acedata.cloud/sora/videos \
 
 | Model | Duration | Quality | Best For |
 |-------|----------|---------|----------|
-| `sora-2` | 10–15s | Standard | Most tasks (default) |
-| `sora-2-pro` | 10–25s | Higher | Premium quality, longer videos |
+| `sora-2` | 4–15s | Standard | Most tasks (default) |
+| `sora-2-pro` | 4–25s | Higher | Premium quality, longer videos |
 
 ## Workflows
 
@@ -81,10 +81,10 @@ POST /sora/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
-| `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
+| `size` | `"small"`, `"large"`, `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution |
+| `duration` | `4`, `8`, `10`, `12`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation |
+| `version` | `"1.0"`, `"2.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
 
 ## Gotchas
 

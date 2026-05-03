@@ -43,7 +43,7 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
 | `veo31` | Yes (native) | Veo 3.1, highest quality |
 | `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
-| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
+| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredients-to-video mode |
 
 ## Workflows
 
@@ -87,11 +87,24 @@ POST /veo/videos
 }
 ```
 
+### 4. Ingredients-to-Video
+
+Generate a video using the `veo31-fast-ingredients` model with structured ingredient prompts.
+
+```json
+POST /veo/videos
+{
+  "action": "ingredients2video",
+  "prompt": "a fresh salad being tossed with colorful vegetables",
+  "model": "veo31-fast-ingredients"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `action` | `"text2video"`, `"image2video"`, `"get1080p"` | Generation mode |
+| `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
 | `model` | see Models table | Model to use (default: `veo2-fast`) |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"`, `"4:3"`, `"3:4"` | Aspect ratio — only valid for `image2video` |

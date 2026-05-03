@@ -77,8 +77,8 @@ POST /fish/audios
 |-----------|------|-------------|
 | `prompt` | string | Text to synthesize into speech |
 | `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
+| `model` | string | TTS model (`"fish-tts"`) |
+| `action` | string | Operation type (`"speech"`) |
 | `callback_url` | string | Webhook URL for async delivery |
 
 ### `/fish/voices`
