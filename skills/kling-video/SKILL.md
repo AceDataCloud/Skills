@@ -44,6 +44,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 |------|-------|------|---------|
 | `std` (Standard) | Slower | Lower | Draft/preview |
 | `pro` (Professional) | Faster | Higher | Final output |
+| `4k` (Native 4K) | — | Highest | 4K resolution (`kling-v3`/`kling-v3-omni` only, incompatible with `camera_control`) |
 
 ## Workflows
 
@@ -109,15 +110,15 @@ POST /kling/motion
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
-| `mode` | `"std"`, `"pro"` | Quality mode |
+| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` for `kling-v3`/`kling-v3-omni` only) |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
 | `camera_control` | object | Camera movement parameters |
-| `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
-| `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `element_list` | array | Reference subjects from the element library (each item has `element_id`). Only applicable to `kling-video-o1`. |
+| `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Only applicable to `kling-video-o1`. Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
 
 ## Gotchas
@@ -127,5 +128,7 @@ POST /kling/motion
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
+- `4k` mode is native 4K and only supported by `kling-v3` and `kling-v3-omni`; incompatible with `camera_control`
+- `element_list` and `video_list` are only applicable to the `kling-video-o1` model
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
