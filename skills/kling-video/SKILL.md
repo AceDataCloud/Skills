@@ -44,6 +44,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 |------|-------|------|---------|
 | `std` (Standard) | Slower | Lower | Draft/preview |
 | `pro` (Professional) | Faster | Higher | Final output |
+| `4k` (Native 4K) | — | Highest | `kling-v3`/`kling-v3-omni` only; incompatible with `camera_control` |
 
 ## Workflows
 
@@ -109,7 +110,7 @@ POST /kling/motion
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
-| `mode` | `"std"`, `"pro"` | Quality mode |
+| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` requires `kling-v3` or `kling-v3-omni`, incompatible with `camera_control`) |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
@@ -123,6 +124,7 @@ POST /kling/motion
 ## Gotchas
 
 - `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
+- `4k` mode provides native 4K output but is only supported by `kling-v3` and `kling-v3-omni`, and is incompatible with `camera_control`
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation

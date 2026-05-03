@@ -86,6 +86,7 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v4-flash` | Fast, efficient generation |
 
 ### xAI Grok
 
