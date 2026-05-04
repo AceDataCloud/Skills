@@ -31,6 +31,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs
+- **webextrator** — Extract structured content or render full HTML from any web page
 - **acedatacloud-api** — API usage guide — authentication, SDKs, error handling
 
 ## Authentication
