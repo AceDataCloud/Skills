@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (19)
+## Available Skills (30)
 
 ### AI Music & Audio
 
@@ -51,6 +51,24 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
+
+### Connectors
+
+These skills drive third-party connectors users wire up at [auth.acedata.cloud/user/connections](https://auth.acedata.cloud/user/connections). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
+
+| Skill | Description | Connection |
+|-------|-------------|------------|
+| [github](skills/github/) | GitHub issues, pull requests, repos, code search, and Actions via `gh` CLI | `github` |
+| [gitlab](skills/gitlab/) | GitLab issues, MRs, projects, pipelines via the `glab` CLI | `gitlab` |
+| [google-drive](skills/google-drive/) | List, search, and read Google Drive files via the Drive v3 REST API | `google/drive` |
+| [google-gmail](skills/google-gmail/) | Read, search, and triage Gmail messages via the Gmail v1 REST API | `google/gmail` |
+| [google-calendar](skills/google-calendar/) | Read calendar events, agenda, and free-busy windows via Calendar v3 | `google/calendar` |
+| [google-tasks](skills/google-tasks/) | List and inspect Google Tasks via the Tasks v1 REST API | `google/tasks` |
+| [microsoft-onedrive](skills/microsoft-onedrive/) | List and read OneDrive files via the Microsoft Graph API | `microsoft/onedrive` |
+| [microsoft-outlook](skills/microsoft-outlook/) | Read Outlook mail, calendar events, and contacts via Microsoft Graph | `microsoft/outlook` |
+| [notion](skills/notion/) | Read and search Notion pages, databases, and blocks | `notion` |
+| [slack](skills/slack/) | Read Slack channels, messages, and user info via Web API | `slack` |
+| [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
 
 ## Prerequisites
 
