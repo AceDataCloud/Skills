@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
+  pull-requests: write
 
 jobs:
   create-task:
@@ -36,13 +37,28 @@ jobs:
           echo "$recent_changes" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Close existing sync issues
+      - name: Close stale sync issues and orphaned Copilot PRs
         env:
           GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          gh issue list --repo "${{ github.repository }}" --label "auto-sync" --state open --json number --jq '.[].number' | while read -r num; do
-            gh issue close "$num" --repo "${{ github.repository }}" --comment "Superseded by new sync trigger." 2>/dev/null || true
+          set +e
+          # 1) Close prior auto-sync issues — a new dispatch supersedes them.
+          gh issue list --repo "$REPO" --label "auto-sync" --state open --json number --jq '.[].number' | while read -r num; do
+            [ -z "$num" ] && continue
+            gh issue close "$num" --repo "$REPO" --comment "Superseded by new sync trigger." 2>/dev/null || true
           done
+
+          # 2) Close every leftover open copilot/* PR — they are stale by definition once a new
+          #    Docs commit lands. Each new dispatch triggers a fresh Copilot session that will
+          #    open its own PR; old drafts (including 0-commit zombies) just clutter the queue.
+          gh pr list --repo "$REPO" --state open --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("copilot/")) | .number' | while read -r num; do
+            [ -z "$num" ] && continue
+            gh pr close "$num" --repo "$REPO" --delete-branch \
+              --comment "Superseded by new sync trigger; Copilot will open a fresh PR for the latest Docs state." 2>/dev/null || true
+          done
+          exit 0
 
       - name: Create issue for Copilot
         id: create-issue
@@ -92,57 +108,147 @@ jobs:
   wait-and-merge:
     needs: create-task
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
-      - name: Wait for Copilot PR and merge
+      - name: Wait for Copilot to finish
+        id: wait
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ needs.create-task.outputs.issue_number }}
+          REPO: ${{ github.repository }}
         run: |
+          set +e
           echo "Waiting for Copilot to process issue #$ISSUE_NUMBER..."
 
-          for i in $(seq 1 90); do
-            echo "Poll attempt $i/90..."
+          PR_NUMBER=""
+          PR_FOUND_AT=0
+          ZOMBIE_GRACE_SECONDS=1800   # close PR after 30 min if it still has 0 commits
 
-            ISSUE_STATE=$(gh issue view "$ISSUE_NUMBER" --repo "${{ github.repository }}" --json state --jq '.state')
+          # 110 polls × 30s = 55 min, fits inside the 60-min job timeout.
+          for i in $(seq 1 110); do
+            now=$(date +%s)
+            echo "Poll attempt $i/110 (elapsed=$((i * 30))s)..."
+
+            # Fast path: Copilot closed the issue itself (no changes needed)
+            ISSUE_STATE=$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json state --jq '.state' 2>/dev/null)
             if [ "$ISSUE_STATE" = "CLOSED" ]; then
-              echo "Issue #$ISSUE_NUMBER was closed — Copilot determined no changes needed."
+              echo "Issue #$ISSUE_NUMBER closed by Copilot — no changes needed."
+              echo "result=no-op" >> "$GITHUB_OUTPUT"
               exit 0
             fi
 
-            PR_JSON=$(gh pr list --repo "${{ github.repository }}" \
-              --state open --json number,title,author,isDraft,headRefName \
-              --jq '[.[] | select(.headRefName | startswith("copilot/"))] | .[0] // empty')
+            # Locate the PR linked to THIS issue. Copilot puts "#<issue>" or "Closes #<issue>"
+            # in the PR body when assigned to an issue.
+            CANDIDATE=$(gh pr list --repo "$REPO" --state open \
+              --json number,headRefName,body,isDraft,additions,deletions,createdAt \
+              --jq "[.[] | select(.headRefName | startswith(\"copilot/\")) | select(.body // \"\" | test(\"#${ISSUE_NUMBER}( |$|\\\\b)\"))] | .[0] // empty" \
+              2>/dev/null)
 
-            if [ -n "$PR_JSON" ]; then
-              PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
-              PR_TITLE=$(echo "$PR_JSON" | jq -r '.title')
-              HEAD_BRANCH=$(echo "$PR_JSON" | jq -r '.headRefName')
-              echo "Found PR #$PR_NUMBER: $PR_TITLE (branch=$HEAD_BRANCH)"
+            # Fallback: if no PR mentions this issue but exactly one copilot/* PR exists,
+            # take it. (Stale ones were already closed in create-task.)
+            if [ -z "$CANDIDATE" ]; then
+              CANDIDATE=$(gh pr list --repo "$REPO" --state open \
+                --json number,headRefName,body,isDraft,additions,deletions,createdAt \
+                --jq '[.[] | select(.headRefName | startswith("copilot/"))] | if length == 1 then .[0] else empty end' \
+                2>/dev/null)
+            fi
 
-              AGENT_STATUS=$(gh api "/repos/${{ github.repository }}/actions/runs?branch=$HEAD_BRANCH&event=dynamic" \
-                --jq '[.workflow_runs[] | select(.name == "Running Copilot coding agent")] | .[0].conclusion // "pending"' 2>/dev/null || echo "pending")
+            if [ -n "$CANDIDATE" ]; then
+              PR_NUMBER=$(echo "$CANDIDATE" | jq -r '.number')
+              IS_DRAFT=$(echo "$CANDIDATE" | jq -r '.isDraft')
+              ADDITIONS=$(echo "$CANDIDATE" | jq -r '.additions')
+              DELETIONS=$(echo "$CANDIDATE" | jq -r '.deletions')
+              CREATED_AT=$(echo "$CANDIDATE" | jq -r '.createdAt')
 
-              echo "Copilot agent status: $AGENT_STATUS"
+              if [ "$PR_FOUND_AT" -eq 0 ]; then
+                PR_FOUND_AT=$now
+                echo "Tracking PR #$PR_NUMBER (draft=$IS_DRAFT, +$ADDITIONS/-$DELETIONS)"
+              fi
 
-              if [ "$AGENT_STATUS" = "success" ]; then
-                echo "Copilot agent completed. Merging PR #$PR_NUMBER..."
-                gh pr ready "$PR_NUMBER" --repo "${{ github.repository }}" 2>/dev/null || true
-                gh pr merge "$PR_NUMBER" --repo "${{ github.repository }}" --squash \
-                  --admin --subject "sync: update from Docs [automated]"
-                echo "✅ PR #$PR_NUMBER merged successfully!"
+              # Reliable completion signal: Copilot marks the PR ready-for-review
+              # itself when its agent finishes successfully.
+              if [ "$IS_DRAFT" = "false" ]; then
+                echo "PR #$PR_NUMBER is ready for review — Copilot finished."
+                echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+                echo "result=ready" >> "$GITHUB_OUTPUT"
                 exit 0
-              elif [ "$AGENT_STATUS" = "failure" ]; then
-                echo "❌ Copilot agent failed. Manual intervention needed."
-                exit 1
-              else
-                echo "Copilot still working... waiting 20s"
+              fi
+
+              # Zombie guard: if PR has been open >30 min with 0 commits, give up.
+              if [ "$ADDITIONS" = "0" ] && [ "$DELETIONS" = "0" ]; then
+                created_epoch=$(date -d "$CREATED_AT" +%s 2>/dev/null || python3 -c "import datetime,sys; print(int(datetime.datetime.fromisoformat(sys.argv[1].replace('Z','+00:00')).timestamp()))" "$CREATED_AT")
+                age=$((now - created_epoch))
+                if [ "$age" -gt "$ZOMBIE_GRACE_SECONDS" ]; then
+                  echo "::warning::PR #$PR_NUMBER has 0 commits after ${age}s — closing as zombie."
+                  gh pr close "$PR_NUMBER" --repo "$REPO" --delete-branch \
+                    --comment "Auto-closed: Copilot opened this PR but produced no commits within ${ZOMBIE_GRACE_SECONDS}s. Triggering workflow can be re-dispatched if a sync is still needed." 2>/dev/null || true
+                  echo "result=zombie-closed" >> "$GITHUB_OUTPUT"
+                  exit 1
+                fi
               fi
             fi
 
+            sleep 30
+          done
+
+          echo "::warning::Timed out waiting for Copilot to mark PR ready for review."
+          if [ -n "$PR_NUMBER" ]; then
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "result=timeout-with-pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=timeout-no-pr" >> "$GITHUB_OUTPUT"
+          fi
+          exit 1
+
+      - name: Merge PR
+        if: steps.wait.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.wait.outputs.pr_number }}
+          ISSUE_NUMBER: ${{ needs.create-task.outputs.issue_number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          echo "Preparing to merge PR #$PR_NUMBER..."
+
+          # Idempotent: makes draft → ready-for-review. Harmless if already ready.
+          gh pr ready "$PR_NUMBER" --repo "$REPO" 2>/dev/null || true
+
+          # Wait briefly for required checks (validate.yml) to settle. We use --admin
+          # at merge time so this is best-effort: we surface check failures but don't
+          # let a single transient flake block the sync.
+          for i in $(seq 1 24); do
+            CHECKS=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json statusCheckRollup \
+              --jq '[.statusCheckRollup[]? | {name, status, conclusion}]' 2>/dev/null)
+            FAILING=$(echo "$CHECKS" | jq '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out")] | length' 2>/dev/null || echo 0)
+            PENDING=$(echo "$CHECKS" | jq '[.[] | select(.status != "completed")] | length' 2>/dev/null || echo 0)
+            TOTAL=$(echo "$CHECKS" | jq 'length' 2>/dev/null || echo 0)
+            echo "Checks: total=$TOTAL pending=$PENDING failing=$FAILING"
+
+            if [ "${FAILING:-0}" -gt 0 ]; then
+              echo "::warning::PR #$PR_NUMBER has $FAILING failing check(s) — proceeding with --admin merge anyway. Investigate after merge."
+              break
+            fi
+            if [ "${TOTAL:-0}" -gt 0 ] && [ "${PENDING:-0}" -eq 0 ]; then
+              echo "All checks settled."
+              break
+            fi
+            sleep 15
+          done
+
+          # Try the merge up to 3 times — covers transient API hiccups.
+          for attempt in 1 2 3; do
+            echo "Merge attempt $attempt/3..."
+            if gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --admin --delete-branch \
+                --subject "sync: update from Docs [automated] (#$PR_NUMBER)" \
+                --body "Closes #$ISSUE_NUMBER"; then
+              echo "::notice::Merged PR #$PR_NUMBER"
+              exit 0
+            fi
+            echo "Merge attempt $attempt failed, retrying in 20s..."
             sleep 20
           done
 
-          echo "⚠️ Timeout: No PR found after 30 minutes. Copilot may still be working."
-          echo "Check issue #$ISSUE_NUMBER for status."
+          echo "::error::Failed to merge PR #$PR_NUMBER after 3 attempts. Manual intervention required."
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "Auto-merge failed after 3 attempts. Please review and merge manually." 2>/dev/null || true
           exit 1
