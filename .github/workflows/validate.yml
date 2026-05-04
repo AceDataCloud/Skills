@@ -168,6 +168,10 @@ jobs:
             [ -d "$base_dir" ] || continue
             for skill_dir in skills/*/; do
               skill_name=$(basename "$skill_dir")
+              # Skip shared reference files (no SKILL.md by design)
+              if [ "$skill_name" = "_shared" ]; then
+                continue
+              fi
               synced_file="$base_dir/$skill_name/SKILL.md"
               source_file="$skill_dir/SKILL.md"
               if [ ! -f "$synced_file" ]; then
