@@ -19,6 +19,27 @@ Manage Tencent Cloud COS buckets and objects via the official `cos-python-sdk-v5
 
 > **Setup:** See [tencentcloud authentication](../_shared/tencentcloud.md) for SecretId / SecretKey / region setup. The SDK reads `TENCENTCLOUD_SECRET_ID` / `TENCENTCLOUD_SECRET_KEY` / `TENCENTCLOUD_REGION` from the environment.
 
+## CLI (preferred)
+
+The skill ships [`scripts/cos.py`](scripts/cos.py) — a self-contained CLI that wraps every COS operation below. **Prefer this over hand-rolled SDK calls** when the user's request maps cleanly onto one of its subcommands; it's what the maintained code paths exercise.
+
+```bash
+COS=$SKILL_DIR/scripts/cos.py
+
+python3 $COS buckets                                  # list all buckets
+python3 $COS ls mydata-1250000000 --prefix images/    # list objects
+python3 $COS upload mydata-1250000000 ./report.pdf --key docs/report-2026.pdf
+python3 $COS download mydata-1250000000 docs/report-2026.pdf --output ./out.pdf
+python3 $COS url mydata-1250000000 docs/report-2026.pdf --expires 3600
+python3 $COS du mydata-1250000000 --prefix logs/
+python3 $COS cp mydata-1250000000 old/path.txt new/path.txt
+python3 $COS batch-delete mydata-1250000000 --prefix temp/old/ --dry-run
+python3 $COS batch-delete mydata-1250000000 --prefix temp/old/   # actually delete
+python3 $COS info mydata-1250000000 docs/report-2026.pdf
+```
+
+Run `python3 $COS --help` (or `python3 $COS <cmd> --help`) for full flags. Pass `--region <region>` to override per-call.
+
 ## When to Use
 
 - List COS buckets across the account

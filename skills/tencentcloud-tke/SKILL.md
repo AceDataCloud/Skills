@@ -20,6 +20,27 @@ Manage TKE clusters and the workloads inside them.
 
 > **Setup:** See [tencentcloud authentication](../_shared/tencentcloud.md). Cluster discovery and kubeconfig retrieval go through the SDK; everything inside the cluster (pods, services, scale, restart) goes through `kubectl` against the kubeconfig we fetch.
 
+## CLI (preferred)
+
+The skill ships [`scripts/tke.py`](scripts/tke.py) — wraps cluster discovery, kubeconfig retrieval, and the most common in-cluster operations.
+
+```bash
+TKE=$SKILL_DIR/scripts/tke.py
+
+python3 $TKE clusters                                              # list clusters
+python3 $TKE cluster cls-xxxxxxxx                                  # one cluster's details
+python3 $TKE nodes cls-xxxxxxxx
+python3 $TKE pools cls-xxxxxxxx                                    # node pools
+python3 $TKE kubeconfig cls-xxxxxxxx --save ~/.kube/config-tke     # write kubeconfig
+python3 $TKE workloads cls-xxxxxxxx -n my-namespace
+python3 $TKE pods cls-xxxxxxxx -n my-namespace
+python3 $TKE events cls-xxxxxxxx -n my-namespace                   # recent events
+python3 $TKE scale cls-xxxxxxxx -n my-namespace --name my-deploy --replicas 4
+python3 $TKE restart cls-xxxxxxxx -n my-namespace --name my-deploy
+```
+
+In-cluster commands shell out to `kubectl` against an SDK-fetched kubeconfig. `kubectl` must be installed in the sandbox (`pip install` doesn't ship it).
+
 ## When to Use
 
 - List TKE clusters across regions

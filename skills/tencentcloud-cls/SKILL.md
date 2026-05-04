@@ -21,6 +21,25 @@ Search and run CQL / SQL analytics over Tencent Cloud CLS log topics.
 >
 > **Companion skill:** Use `tencentcloud-cls-alarm` for alarm policy / notice group / shield management. This skill is only about searching log content.
 
+## CLI (preferred)
+
+The skill ships [`scripts/cls.py`](scripts/cls.py) — a self-contained CLI for the most common operations.
+
+```bash
+CLS=$SKILL_DIR/scripts/cls.py
+
+python3 $CLS topics                                              # list topics
+python3 $CLS search --topic <topic-id> --query 'level:ERROR' --time 1h
+python3 $CLS search --topic <topic-id> --trace-id <uuid>
+python3 $CLS search --topic <topic-id> --time 1d \
+    --query '* | SELECT api_name, count(*) AS cnt GROUP BY api_name ORDER BY cnt DESC LIMIT 20' \
+    --format json
+```
+
+`--time` accepts `30m / 1h / 6h / 1d / 7d`. `--query` is CQL by default; pass `--lucene` to switch dialect. Append `| SELECT ... GROUP BY ...` to a query for SQL analytics.
+
+For anything beyond what the CLI exposes (custom field projections, raw paginated walks, `Context`-based tailing) drop down to the SDK calls below.
+
 ## When to Use
 
 - Find recent errors / 5xx responses for a service

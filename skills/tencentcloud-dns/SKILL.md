@@ -21,6 +21,26 @@ Manage DNS records via the DNSPod API.
 >
 > The legacy v2 DNSPod API used a different key format; this skill targets the v3 SDK exclusively.
 
+## CLI (preferred)
+
+The skill ships [`scripts/dns.py`](scripts/dns.py) — wraps every common DNSPod v3 operation.
+
+```bash
+DNS=$SKILL_DIR/scripts/dns.py
+
+python3 $DNS domains                                       # list domains
+python3 $DNS list example.com                              # records on one domain
+python3 $DNS list example.com --type CNAME                 # filter by type
+python3 $DNS search example.com --keyword api              # client-side keyword search
+python3 $DNS create example.com --sub www --type A --value 1.2.3.4
+python3 $DNS create example.com --sub @ --type MX --value 'mail.example.com.' --mx 10
+python3 $DNS create example.com --sub _acme-challenge --type TXT --value '"<token>"'
+python3 $DNS update example.com <record-id> --sub www --type A --value 5.6.7.8
+python3 $DNS delete example.com <record-id> --yes          # destructive, requires --yes
+```
+
+The `delete` subcommand requires `--yes` — without it, it prints a dry-run line so you can confirm the right `record-id` first.
+
 ## When to Use
 
 - Add a new subdomain (A / AAAA / CNAME)

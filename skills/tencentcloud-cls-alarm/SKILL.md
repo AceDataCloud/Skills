@@ -22,6 +22,32 @@ CRUD on CLS alarm policies, notice groups, mute shields, and the alarm execution
 >
 > **Companion skill:** `tencentcloud-cls` for log content search.
 
+## CLI (preferred)
+
+The skill ships [`scripts/cls_alarm.py`](scripts/cls_alarm.py) — wraps every alarm / notice / shield operation as a subcommand.
+
+```bash
+A=$SKILL_DIR/scripts/cls_alarm.py
+
+python3 $A alarms                              # list policies
+python3 $A alarm <alarm-id>                    # full detail
+python3 $A alarm-disable <alarm-id>            # quick mute (Status=false)
+python3 $A alarm-enable  <alarm-id>
+python3 $A alarm-create --json /tmp/alarm.json --dry-run
+python3 $A alarm-modify <alarm-id> --condition '$1.cnt > 20'
+python3 $A alarm-delete <alarm-id> --yes       # destructive
+
+python3 $A notices                             # notice groups
+python3 $A notice <notice-id>
+
+python3 $A shields                             # mute rules
+python3 $A shield-create --notice-id <notice-id> --start $(date +%s) --end $(date -v+2H +%s) --type 1 --reason "deploy"
+
+python3 $A alarm-log --time 6h                 # firing history
+```
+
+For the rare schema field the CLI doesn't surface, fall through to the raw SDK examples below.
+
 ## When to Use
 
 - Inspect existing alarm policies (filter by name, enabled flag)

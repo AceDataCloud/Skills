@@ -20,6 +20,32 @@ Manage EdgeOne zones — purge cache, prefetch URLs, manage DNS records on the z
 
 > **Setup:** See [tencentcloud authentication](../_shared/tencentcloud.md). The SDK reads `TENCENTCLOUD_SECRET_ID` / `TENCENTCLOUD_SECRET_KEY` from env. EdgeOne is global — `Region=""` is fine.
 
+## CLI (preferred)
+
+The skill ships [`scripts/edgeone.py`](scripts/edgeone.py) — wraps zone discovery, purge / prefetch, task tracking, EdgeOne DNS records, and WAF inspection.
+
+```bash
+EO=$SKILL_DIR/scripts/edgeone.py
+
+python3 $EO zones                                                  # list zones
+python3 $EO zone zone-xxxxxxxx                                     # one zone's details
+python3 $EO domains zone-xxxxxxxx                                  # acceleration domains
+python3 $EO purge zone-xxxxxxxx --urls https://hub.example.com/index.html
+python3 $EO purge zone-xxxxxxxx --prefixes https://hub.example.com/assets/
+python3 $EO purge zone-xxxxxxxx --hosts hub.example.com
+python3 $EO purge zone-xxxxxxxx --all                              # nuclear
+python3 $EO prefetch zone-xxxxxxxx --urls https://hub.example.com/ https://hub.example.com/chat
+python3 $EO purge-tasks zone-xxxxxxxx --status processing
+python3 $EO prefetch-tasks zone-xxxxxxxx
+python3 $EO dns zone-xxxxxxxx                                      # EdgeOne DNS records
+python3 $EO dns-create zone-xxxxxxxx --name sub --type CNAME --content origin.example.com
+python3 $EO dns-delete zone-xxxxxxxx <record-id>
+python3 $EO security zone-xxxxxxxx                                 # WAF / security cfg
+python3 $EO waf zone-xxxxxxxx
+```
+
+Purge / prefetch propagation is global but typically takes 30s–2min. Use `purge-tasks --status processing` to wait.
+
 ## When to Use
 
 - List EdgeOne zones / acceleration domains
