@@ -153,7 +153,7 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 |-----------|------|-------------|
 | `version` | string | Midjourney version (`"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
 | `hd` | boolean | Enable HD 2K resolution (V8 only) — costs 4× GPU time |
-| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 16× GPU time |
+| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 4× GPU time |
 | `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
 | `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
 
