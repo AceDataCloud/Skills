@@ -1,35 +1,42 @@
 ---
 name: google-tasks
-description: Read Google Tasks task lists and individual tasks via the Tasks v1 REST API. Use when the user mentions Google Tasks, todo / pending / overdue tasks, weekly task recap, or grouping todos by list.
+description: Read and manage Google Tasks task lists and individual tasks via the Tasks v1 REST API. Use when the user mentions Google Tasks, todo / pending / overdue tasks, weekly task recap, grouping todos by list, adding or completing a task, or moving / deleting tasks.
 when_to_use: |
-  Trigger when the user wants to inspect their Google Tasks — list
-  task lists, surface pending items, group by due date, or pull
-  details for one task. The installed connector grants read-only
-  scope (`tasks.readonly`); creating / updating / deleting tasks is
-  out of scope.
+  Trigger when the user wants to inspect or manage their Google
+  Tasks — list task lists, surface pending items, group by due date,
+  pull details for one task, add new todos, mark items complete,
+  re-order or delete tasks. The installed connector always grants
+  `tasks.readonly`; the user opts in to the broader `tasks` scope
+  (full read + write) at install — confirm before destructive writes.
 connections: [google/tasks]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
 Drive Google Tasks via `curl + jq`. The user's OAuth bearer token is
 in `$GOOGLE_TASKS_TOKEN`; every call needs it as
-`Authorization: Bearer $GOOGLE_TASKS_TOKEN`. The token already
-carries the `tasks.readonly` scope the user agreed to at install plus
-the identity scopes (`openid email profile`).
+`Authorization: Bearer $GOOGLE_TASKS_TOKEN`. At minimum the token
+carries `tasks.readonly` plus the identity scopes
+(`openid email profile`); if the user opted in to write at install
+time it also carries the broader `tasks` scope (read + write).
 
 The Tasks API returns standard JSON; failures surface as
 `{"error": {"code": 401|403|..., "message": "..."}}` — show that
 error verbatim. `401` means the token expired (re-install). `403
-insufficientPermissions` means the user is asking for a write this
-connector cannot satisfy — say so.
+insufficientPermissions` on a write means the user only granted
+`tasks.readonly` — ask them to re-install with the read+write box
+checked.
 
 **Always start with `users/@me/lists`** to discover which task lists
 the account has — the user's default plus any extras they created on
 calendar.google.com or in the Tasks app.
+
+**Before bulk creates / completions / deletes** echo the exact
+titles back to the user and ask them to confirm. Don't trash a
+task by guessing an id.
 
 ## Recipes
 
@@ -173,12 +180,115 @@ while : ; do
 done
 ```
 
+## Write recipes
+
+These all need the broader `tasks` scope. If the user only granted
+`tasks.readonly` you'll get `403 insufficientPermissions` — surface
+that and ask them to re-install with the read+write box checked.
+
+### Add a new task
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"title":"Draft Q2 plan","notes":"Outline + risks + asks.","due":"2026-05-15T00:00:00.000Z"}' \
+  "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks" \
+  | jq '{id, title, due, status}'
+```
+
+Google stores `due` as midnight UTC of the chosen day — the time of
+day is ignored in the UI. To insert at the very top of the list,
+add `?previous=` (no value) to the URL.
+
+### Bulk add three tasks under user confirmation
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+DUE='2026-05-12T00:00:00.000Z'
+for T in 'Reply to Alice' 'Review PR #404' 'Send meeting recap'; do
+  curl -sS -X POST -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+    -H 'Content-Type: application/json' \
+    --data "{\"title\":$(jq -nr --arg t "$T" '$t'),\"due\":\"$DUE\"}" \
+    "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks" \
+    | jq -c '{id, title, due}'
+done
+```
+
+Always list the titles you're about to create and ask for the user's
+go-ahead before running this loop — there is no atomic batch endpoint.
+
+### Mark a task complete
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+TASK_ID='dGFza0lkRXhhbXBsZQ'
+NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"status\":\"completed\",\"completed\":\"$NOW\"}" \
+  "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks/$TASK_ID" \
+  | jq '{id, title, status, completed}'
+```
+
+Reverse with `{"status":"needsAction","completed":null}`.
+
+### Edit a task's title / notes / due date
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+TASK_ID='dGFza0lkRXhhbXBsZQ'
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"title":"Draft Q2 plan (rev2)","notes":"Cover risks + asks + budget.","due":"2026-05-20T00:00:00.000Z"}' \
+  "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks/$TASK_ID" \
+  | jq '{id, title, due, notes}'
+```
+
+### Delete a task
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+TASK_ID='dGFza0lkRXhhbXBsZQ'
+curl -sS -X DELETE -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks/$TASK_ID" \
+  -o /dev/null -w 'HTTP %{http_code}\n'
+```
+
+`204` = success. There is no soft-delete — once gone the task is
+gone. Echo the title back before deleting.
+
+### Re-order: move a task to a position
+
+```sh
+LIST_ID='MTAxMjM0NTY3OA'
+TASK_ID='dGFza0lkRXhhbXBsZQ'
+PREV='dGFza0lkUHJldg'  # task id this one should appear AFTER; omit to move to top
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  --data '' \
+  "https://tasks.googleapis.com/tasks/v1/lists/$LIST_ID/tasks/$TASK_ID/move?previous=$PREV" \
+  | jq '{id, title, parent, position}'
+```
+
+Use `?parent=...` instead of `?previous=...` to nest a task under
+another task as a sub-task.
+
+### Create a brand-new task list
+
+```sh
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_TASKS_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"title":"Q2 follow-ups"}' \
+  "https://tasks.googleapis.com/tasks/v1/users/@me/lists" \
+  | jq '{id, title}'
+```
+
 ## Common error codes
 
 | HTTP | meaning | what to tell the user |
 |---|---|---|
 | `401 UNAUTHENTICATED` | token expired / revoked | "Reconnect the Google Tasks connector on the Connections page." |
-| `403 insufficientPermissions` | scope missing | "This connector is read-only — adding or completing tasks isn't possible." |
+| `403 insufficientPermissions` | write scope missing | "This action needs the Tasks read+write scope, but only `tasks.readonly` was granted. Re-install the connector with the read+write box checked." |
 | `404 notFound` | wrong list / task id | re-list with `users/@me/lists` to find the right id. |
 | `429 quotaExceeded` | quota / throttling | back off ~5s, then retry once. |
 

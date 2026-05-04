@@ -1,31 +1,44 @@
 ---
 name: google-gmail
-description: Read, search and triage Gmail mail / threads / labels / attachments via the Gmail v1 REST API. Use when the user mentions Gmail, "my inbox", unread mail, recent emails from someone, summarising a thread, downloading an attachment, or finding mail by label / query.
+description: Read, search, triage, label, archive and send Gmail mail / threads / labels / attachments via the Gmail v1 REST API. Use when the user mentions Gmail, "my inbox", unread mail, recent emails from someone, summarising a thread, downloading an attachment, finding mail by label / query, archiving or labelling a thread, or drafting and sending a reply / new message.
 when_to_use: |
-  Trigger when the user wants to read, list, search, summarise or
-  inspect Gmail mail — including triaging the inbox, surfacing unread,
-  pulling a single thread for review, or downloading an attachment.
-  The installed connector grants read-only scope (`gmail.readonly`);
-  sending / replying / archiving / labelling are out of scope.
+  Trigger when the user wants to read, list, search, summarise,
+  inspect, modify or send Gmail mail — including triaging the inbox,
+  surfacing unread, pulling a single thread, downloading an
+  attachment, archiving / labelling / trashing messages, or having
+  the AI draft and send a reply or new message on their behalf.
+  The installed connector always grants `gmail.readonly`; the user
+  also opts in to `gmail.modify` (label / archive / trash) and
+  `gmail.send` (compose + send) at install time — confirm the action
+  is in scope before issuing it.
 connections: [google/gmail]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
 Drive Gmail via `curl + jq`. The user's OAuth bearer token is in
 `$GOOGLE_GMAIL_TOKEN`; every call needs it as
-`Authorization: Bearer $GOOGLE_GMAIL_TOKEN`. The token already
-carries the `gmail.readonly` scope the user agreed to at install plus
-the identity scopes (`openid email profile`).
+`Authorization: Bearer $GOOGLE_GMAIL_TOKEN`. At minimum the token
+carries `gmail.readonly` plus the identity scopes
+(`openid email profile`); if the user opted in to write at install
+time it also carries `gmail.modify` (label / archive / trash) and/or
+`gmail.send` (compose + send). Always assume the narrowest scope
+until a write actually fails — don't ask Google for new scopes from
+here.
 
 The Gmail API returns standard JSON; failures surface as
 `{"error": {"code": 401|403|..., "message": "..."}}` — show that
-error verbatim. `401` means the token expired (re-install). `403`
-or `400 insufficientPermissions` means the user is asking for a write
-this connector cannot satisfy — say so.
+error verbatim. `401` means the token expired (re-install). `403
+insufficientPermissions` means the user didn't grant the write scope
+this call needs — explain which scope is missing and suggest
+re-installing the connector with the matching write box checked.
+
+**Before any destructive write** (trashing a thread, sending an email)
+show the user the exact target / draft and ask them to confirm. Don't
+fan out across many messages without an explicit go-ahead.
 
 **Always start with `users/me/profile`** to confirm the connection works
 AND learn which Gmail account you're operating against. Mailbox payloads
@@ -201,12 +214,169 @@ while : ; do
 done
 ```
 
+## Write recipes
+
+These all need `gmail.modify` (label / archive / trash) or
+`gmail.send` (compose + send). If the user only granted
+`gmail.readonly` at install you'll get `403 insufficientPermissions`
+— surface that and ask them to re-install with the write boxes
+checked.
+
+### Mark a message read / unread, star it, archive it (gmail.modify)
+
+```sh
+MSG_ID='18f1a2b3c4d5e6f0'
+
+# Mark as read = remove the UNREAD label
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"removeLabelIds":["UNREAD"]}' \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/$MSG_ID/modify"
+
+# Star it = add the STARRED label
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"addLabelIds":["STARRED"]}' \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/$MSG_ID/modify"
+
+# Archive = remove from INBOX (keeps in All Mail)
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"removeLabelIds":["INBOX"]}' \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/$MSG_ID/modify"
+```
+
+The `modify` endpoint takes `addLabelIds` and `removeLabelIds`
+together — useful for atomic "archive + label" moves. Use the same
+shape on `/threads/$THREAD_ID/modify` to apply across a whole thread.
+
+### Apply a custom label
+
+```sh
+# 1. find or remember the label id from labels.list
+LABEL_ID='Label_4'
+MSG_ID='18f1a2b3c4d5e6f0'
+
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"addLabelIds\":[\"$LABEL_ID\"]}" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/$MSG_ID/modify"
+```
+
+Creating a brand-new label needs the same scope:
+
+```sh
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"name":"Follow up","messageListVisibility":"show","labelListVisibility":"labelShow"}' \
+  "https://gmail.googleapis.com/gmail/v1/users/me/labels" \
+  | jq '{id, name}'
+```
+
+### Trash a message or thread
+
+```sh
+MSG_ID='18f1a2b3c4d5e6f0'
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/$MSG_ID/trash"
+
+# Whole thread:
+THREAD_ID='18f1a2b3c4d5e6f0'
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/threads/$THREAD_ID/trash"
+```
+
+Use `/untrash` (same shape) to restore. **Never** use
+`messages.delete` — it permanently deletes and needs a higher scope
+that we don't request.
+
+### Send a brand-new email (gmail.send)
+
+Gmail wants the message as a base64url-encoded RFC 2822 string.
+
+```sh
+# Compose the message
+TO='alice@example.com'
+SUBJECT='Quick hello'
+BODY='Hi Alice,
+
+Just a quick test note from the AceDataCloud Gmail connector.
+
+Best,
+Qingcai'
+
+# Multi-line subject lines need MIME encoded-word for non-ASCII; ASCII is fine raw.
+RAW=$(printf 'To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\nMIME-Version: 1.0\r\n\r\n%s' \
+  "$TO" "$SUBJECT" "$BODY" \
+  | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
+
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"raw\":\"$RAW\"}" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" \
+  | jq '{id, threadId, labelIds}'
+```
+
+For non-ASCII subjects (Chinese / emoji), use MIME encoded-word:
+
+```sh
+SUBJECT_RAW='你好，季度复盘草稿'
+SUBJECT_ENCODED="=?UTF-8?B?$(printf %s "$SUBJECT_RAW" | base64)?="
+```
+
+### Reply in-thread (keeps the thread together)
+
+Reply by setting the `In-Reply-To` and `References` headers to the
+Message-Id of the message you're replying to, **and** pass the
+Gmail thread id in the API body:
+
+```sh
+ORIG_MSG_ID='18f1a2b3c4d5e6f0'
+ORIG=$(curl -sS -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  --get "https://gmail.googleapis.com/gmail/v1/users/me/messages/$ORIG_MSG_ID" \
+  --data-urlencode 'format=metadata' \
+  --data-urlencode 'metadataHeaders=Message-ID' \
+  --data-urlencode 'metadataHeaders=Subject' \
+  --data-urlencode 'metadataHeaders=From')
+MID=$(echo "$ORIG" | jq -r '.payload.headers | from_entries | .["Message-ID"] // .["Message-Id"]')
+FROM=$(echo "$ORIG" | jq -r '.payload.headers | from_entries | .From')
+SUBJ=$(echo "$ORIG" | jq -r '.payload.headers | from_entries | .Subject')
+TID=$(echo "$ORIG" | jq -r .threadId)
+
+RAW=$(printf 'To: %s\r\nSubject: Re: %s\r\nIn-Reply-To: %s\r\nReferences: %s\r\nContent-Type: text/plain; charset=UTF-8\r\nMIME-Version: 1.0\r\n\r\n%s' \
+  "$FROM" "$SUBJ" "$MID" "$MID" \
+  'Replying inline — will follow up later today.' \
+  | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
+
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"raw\":\"$RAW\",\"threadId\":\"$TID\"}" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" \
+  | jq '{id, threadId}'
+```
+
+Without the `threadId` in the body Gmail starts a brand-new thread
+even with the right `In-Reply-To` headers.
+
+### Save a draft instead of sending
+
+Same `raw` payload, different endpoint — still costs `gmail.send`
+(`drafts` shares the send scope under the hood for write):
+
+```sh
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"message\":{\"raw\":\"$RAW\"}}" \
+  "https://gmail.googleapis.com/gmail/v1/users/me/drafts" \
+  | jq '{id, message: {id: .message.id, threadId: .message.threadId}}'
+```
+
 ## Common error codes
 
 | HTTP | meaning | what to tell the user |
 |---|---|---|
 | `401 UNAUTHENTICATED` | token expired / revoked | "Reconnect the Gmail connector on the Connections page." |
-| `403 insufficientPermissions` | scope missing | "This connector grants only read access — modifying mail isn't possible." |
+| `403 insufficientPermissions` | scope missing | identify which scope (`gmail.modify` for label/archive/trash, `gmail.send` for sending) and suggest re-installing the connector with that box checked. |
 | `403 userRateLimitExceeded` / `429` | quota / throttling | back off ~5s, then retry once. |
 | `404 notFound` | wrong message / thread / attachment id | double-check the id, or fall back to `messages.list` with the right query. |
 | `400 invalidQuery` | malformed `q` | print the `q` you sent + the error back to the user. |

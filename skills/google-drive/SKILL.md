@@ -1,32 +1,40 @@
 ---
 name: google-drive
-description: Read and search Google Drive files / folders / shared content via the Drive v3 REST API. Use when the user mentions Drive files, "my drive", shared documents, Google Docs / Sheets / Slides, exporting / downloading a Drive file, or searching by name / owner / folder.
+description: Read, search, upload, rename, move and delete Google Drive files / folders / shared content via the Drive v3 REST API. Use when the user mentions Drive files, "my drive", shared documents, Google Docs / Sheets / Slides, exporting / downloading a Drive file, searching by name / owner / folder, uploading a new file, renaming or moving files, or organising folders.
 when_to_use: |
-  Trigger when the user wants to list, search, read or download files
-  in their Google Drive — including Google-native docs (Docs / Sheets /
-  Slides) which need a special "export" call to get plain content. The
-  installed connector grants read-only scope (`drive.readonly`); writes
-  are out of scope.
+  Trigger when the user wants to list, search, read, download or
+  modify files in their Google Drive — including Google-native docs
+  (Docs / Sheets / Slides) which need a special "export" call to get
+  plain content, as well as uploads, renames, folder moves, and
+  trashing files. The installed connector always grants `drive.readonly`;
+  the user opts in to the broader `drive` scope (full read + write)
+  at install time — confirm before performing destructive writes.
 connections: [google/drive]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
 Drive Google Drive via `curl + jq`. The user's OAuth bearer token is
 in `$GOOGLE_DRIVE_TOKEN`; every call needs it as
-`Authorization: Bearer $GOOGLE_DRIVE_TOKEN`. The token already carries
-the `drive.readonly` scope the user agreed to at install plus the
-identity scopes (`openid email profile`).
+`Authorization: Bearer $GOOGLE_DRIVE_TOKEN`. At minimum the token
+carries `drive.readonly` plus the identity scopes
+(`openid email profile`); if the user opted in to write at install
+time it also carries the broader `drive` scope (full read + write).
 
 The Drive API returns standard JSON; failures surface as
 `{"error": {"code": 401|403|..., "message": "..."}}` — show that
 error verbatim to the user. `401` means the token expired and the
 user must re-install the connector. `403 insufficientPermissions`
-means the connector grants only `drive.readonly` and the user is
-asking for a write — say so explicitly.
+on a write means the user did not grant the `drive` scope at install
+— ask them to re-install with the read+write box checked.
+
+**Before any destructive write** (renaming, moving, trashing, or
+bulk-mutating files) show the exact target list and ask the user to
+confirm. Never trash by guessing an id — always echo back the file
+name + path you're about to touch.
 
 **Always start with `/about?fields=user`** to confirm the connection
 works AND learn which Google account you're operating against.
@@ -188,14 +196,153 @@ while : ; do
 done
 ```
 
+## Write recipes
+
+These all need the broader `drive` scope. If the user only granted
+`drive.readonly` you'll get `403 insufficientPermissions` — surface
+that and suggest re-installing with the read+write box checked.
+**Always echo the target name + path back to the user before
+trashing or bulk-moving anything.**
+
+### Rename a file
+
+```sh
+FILE_ID='1A2B3CdEfGhIjKlMn'
+NEW_NAME='2026 Q2 OKR (final).gdoc'
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"name\":$(jq -nr --arg n "$NEW_NAME" '$n')}" \
+  "https://www.googleapis.com/drive/v3/files/$FILE_ID?fields=id,name"
+```
+
+### Move a file to a different folder
+
+Drive's folder model is parent-id based. Move = remove old parent,
+add new parent:
+
+```sh
+FILE_ID='1A2B3CdEfGhIjKlMn'
+NEW_PARENT='1XYZnewFolderId'
+
+# Read existing parents (so we can pass them in removeParents)
+OLD_PARENTS=$(curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  "https://www.googleapis.com/drive/v3/files/$FILE_ID?fields=parents" \
+  | jq -r '.parents | join(",")')
+
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  --data '' \
+  "https://www.googleapis.com/drive/v3/files/$FILE_ID?addParents=$NEW_PARENT&removeParents=$OLD_PARENTS&fields=id,name,parents"
+```
+
+### Create a new folder
+
+```sh
+PARENT_ID='1XYZparentFolderId'  # or 'root' for My Drive root
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data "{\"name\":\"Reports / 2026Q2\",\"mimeType\":\"application/vnd.google-apps.folder\",\"parents\":[\"$PARENT_ID\"]}" \
+  "https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink" \
+  | jq
+```
+
+### Upload a file (multipart so metadata + bytes go in one request)
+
+```sh
+LOCAL=/tmp/report.pdf
+NAME='Q2 report.pdf'
+PARENT_ID='1XYZparentFolderId'
+MIME='application/pdf'
+
+BOUNDARY='aceDataBoundary'
+META=$(jq -nc --arg n "$NAME" --arg p "$PARENT_ID" '{name:$n, parents:[$p]}')
+{
+  printf -- '--%s\r\n' "$BOUNDARY"
+  printf 'Content-Type: application/json; charset=UTF-8\r\n\r\n'
+  printf '%s\r\n' "$META"
+  printf -- '--%s\r\n' "$BOUNDARY"
+  printf 'Content-Type: %s\r\n\r\n' "$MIME"
+  cat "$LOCAL"
+  printf '\r\n--%s--\r\n' "$BOUNDARY"
+} > /tmp/_drive_upload.bin
+
+curl -sS -X POST -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H "Content-Type: multipart/related; boundary=$BOUNDARY" \
+  --data-binary @/tmp/_drive_upload.bin \
+  "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink" \
+  | jq
+```
+
+For a **media-only** upload (no metadata) use `uploadType=media`; for
+files >5 MB use `uploadType=resumable` (covered in [Drive's docs]
+(https://developers.google.com/drive/api/guides/manage-uploads#resumable)).
+
+### Replace the contents of an existing file
+
+```sh
+FILE_ID='1A2B3CdEfGhIjKlMn'
+LOCAL=/tmp/report-v2.pdf
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H 'Content-Type: application/pdf' \
+  --data-binary @"$LOCAL" \
+  "https://www.googleapis.com/upload/drive/v3/files/$FILE_ID?uploadType=media&fields=id,name,modifiedTime"
+```
+
+Metadata stays the same (id / parents / name) — only the bytes are
+replaced and Drive bumps `modifiedTime`.
+
+### Trash a file (or restore one)
+
+```sh
+FILE_ID='1A2B3CdEfGhIjKlMn'
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"trashed":true}' \
+  "https://www.googleapis.com/drive/v3/files/$FILE_ID?fields=id,name,trashed"
+
+# Restore:
+curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"trashed":false}' \
+  "https://www.googleapis.com/drive/v3/files/$FILE_ID?fields=id,name,trashed"
+```
+
+Prefer `trashed:true` over `DELETE` — `DELETE` is permanent and the
+user can't undo it. Only use `DELETE` when they explicitly say
+"permanently delete".
+
+### Bulk "move every PDF in the root to /Documents/PDF" (confirmation pattern)
+
+```sh
+# 1. List candidates and show the user before doing anything
+DST_FOLDER_ID='1XYZdocsPdfFolder'
+ROOT_ID='root'
+
+CANDS=$(curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+  --get "https://www.googleapis.com/drive/v3/files" \
+  --data-urlencode "q='$ROOT_ID' in parents and mimeType='application/pdf' and trashed=false" \
+  --data-urlencode 'fields=files(id,name,webViewLink)' \
+  | jq '.files')
+echo "$CANDS" | jq -r '.[] | "- \(.name)"'
+
+# 2. (after user confirms) actually move
+echo "$CANDS" | jq -r '.[] | .id' | while read FID; do
+  curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
+    --data '' \
+    "https://www.googleapis.com/drive/v3/files/$FID?addParents=$DST_FOLDER_ID&removeParents=$ROOT_ID&fields=id,name,parents" \
+    | jq -c '{id, name, parents}'
+done
+```
+
 ## Common error codes
 
 | HTTP | meaning | what to tell the user |
 |---|---|---|
 | `401 UNAUTHENTICATED` | token expired / revoked | "Reconnect the Google Drive connector on the Connections page." |
-| `403 insufficientPermissions` | scope missing | "Your installed connector only grants read access — this action needs a write scope we don't have." |
+| `403 insufficientPermissions` | write scope missing | "This action needs the Drive read+write scope, but only `drive.readonly` was granted at install. Re-install the connector and check the read+write box." |
 | `403 userRateLimitExceeded` | quota | retry once after 5–10s; if it persists, tell the user. |
 | `404 notFound` | wrong file id OR file isn't visible to this account | double-check the id; if shared, use `sharedWithMe` query above. |
 | `400 invalidQuery` | malformed `q` | print the `q` you sent + the error message back to the user. |
+
+Never log or echo `$GOOGLE_DRIVE_TOKEN` — treat it as a secret.
 
 Never log or echo `$GOOGLE_DRIVE_TOKEN` — treat it as a secret.
