@@ -41,9 +41,9 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 | `veo2-fast` | No | Fast, cost-effective generation (default) |
 | `veo3` | Yes (native) | Full audiovisual generation |
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
+| `veo31` | Yes (native) | Veo 3.1 highest quality (extend only) |
 | `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
 | `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
-| `veo31` | Yes (native) | Veo 3.1 highest quality (extend only) |
 
 ## Workflows
 
@@ -162,7 +162,7 @@ POST /veo/objects
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
+| `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` *(legacy)* | Generation mode (`get1080p` is superseded by `/veo/upsample`) |
 | `model` | see Models table | Model to use (default: `veo2-fast`) |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"`, `"4:3"`, `"3:4"` | Aspect ratio — only valid for `image2video` |
