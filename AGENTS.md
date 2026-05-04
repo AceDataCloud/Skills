@@ -20,16 +20,17 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 ### AI Video Generation
 - **luma-video** — Generate videos with Luma Dream Machine
 - **sora-video** — Generate videos with OpenAI Sora
-- **veo-video** — Generate videos with Google Veo (native audio)
+- **veo-video** — Generate videos with Google Veo (native audio, extend, reshoot, object editing)
 - **kling-video** — Generate videos with Kuaishou Kling (motion control)
 - **hailuo-video** — Generate videos with Hailuo / MiniMax
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
 
 ### AI Chat & Tools
-- **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (50+ models)
+- **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok, GLM (50+ models)
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
+- **webextrator** — Extract structured content and render JavaScript web pages
 - **short-url** — Create and manage short URLs
 - **acedatacloud-api** — API usage guide — authentication, SDKs, error handling
 

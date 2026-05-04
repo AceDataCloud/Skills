@@ -86,6 +86,18 @@ print(response.choices[0].message.content)
 | `deepseek-r1-0528` | Latest reasoning |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v3.2-exp` | Experimental v3.2 |
+| `deepseek-v4-flash` | Fast, cost-effective |
+
+### ZhipuAI GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest capability |
+| `glm-4.7` | High capability |
+| `glm-4.6` | General-purpose |
+| `glm-4.5-air` | Fast, lightweight |
+| `glm-3-turbo` | Cost-effective |
 
 ### xAI Grok
 
