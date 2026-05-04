@@ -111,20 +111,21 @@ POST /kling/motion
 | `model` | See models table | Model to use |
 | `mode` | `"std"`, `"pro"` | Quality mode |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
-| `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
+| `generate_audio` | `true`, `false` | Generate audio with video (supported only by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` pro mode; other models reject this flag) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
 | `camera_control` | object | Camera movement parameters |
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `end_image_url` | string | End-frame reference URL. Only valid with `action=image2video` and a non-empty `start_image_url`. Constraints by model: `kling-v1` requires `duration=5`; `kling-v1-6`/`kling-v2-5-turbo`/`kling-v2-6` require `mode=pro`; `kling-v3`/`kling-v3-omni`/`kling-video-o1` accept end-frame in all modes; `kling-v2-master`/`kling-v2-1-master` do not support end-frame |
 | `callback_url` | string | Async callback URL |
 
 ## Gotchas
 
 - `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
-- `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
-- `end_image_url` is only for `image2video` action — it defines the last frame
+- `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode); other models will reject this flag if set to true
+- `end_image_url` is only for `image2video` action with a non-empty `start_image_url` — model/mode constraints apply (see parameters table)
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling

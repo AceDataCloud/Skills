@@ -118,18 +118,43 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Generate or Extend Video
 
-Create a video with a reference image and text prompt.
+Create a video from a reference image, or extend an existing generated video.
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
 }
 ```
+
+To extend a previously generated video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0
+}
+```
+
+**Video parameters:**
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `action` | `"generate"`, `"extend"` | `generate` creates a new video (requires `image_url`); `extend` lengthens an existing video (requires `video_id`) |
+| `mode` | `"fast"`, `"turbo"` | Speed mode (default: fast) |
+| `resolution` | `"480p"`, `"720p"` | Output resolution (default: 720p) |
+| `image_url` | string | First-frame reference image — required for `action=generate` |
+| `video_id` | string | ID of video to extend — required for `action=extend` |
+| `video_index` | number | Index (0-based) of the video to extend when multiple videos exist |
+| `end_image_url` | string | Image to use as the last frame of the generated video |
+| `loop` | boolean | Whether to generate a looping video (default: false) |
 
 ## Prompt Parameters
 
@@ -163,7 +188,8 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- Video generation (`/midjourney/videos`) is **image-to-video only** — it cannot generate from text alone; `image_url` is required for `action=generate`
+- `action=extend` requires `video_id` (and optionally `video_index`) — do not pass `image_url` when extending
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
