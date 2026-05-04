@@ -1,0 +1,54 @@
+name: Sync Skill Catalog
+
+# After a merge to main, immediately trigger the AuthBackend
+# `skill-catalog-sync` CronJob so the freshly merged skills appear at
+# https://auth.acedata.cloud/user/skills without waiting up to 6h for
+# the next scheduled run.
+#
+# This mirrors the post-deploy `kubectl create job --from=cronjob/...`
+# step in AuthBackend/deploy/run.sh, but is triggered by Skills repo
+# changes rather than AuthBackend image rebuilds.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - ".claude-plugin/marketplace.json"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-catalog
+  cancel-in-progress: false
+
+jobs:
+  trigger-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set Kubectl
+        uses: Azure/k8s-set-context@v5
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Trigger skill-catalog-sync Job
+        run: |
+          set -euo pipefail
+          JOB_NAME="skill-catalog-sync-skills-${GITHUB_RUN_ID}"
+          echo "Creating Job $JOB_NAME from cronjob/auth-backend-skill-catalog-sync"
+          kubectl -n acedatacloud create job \
+            "$JOB_NAME" \
+            --from=cronjob/auth-backend-skill-catalog-sync
+
+          echo "Waiting for Job to complete (up to 8 minutes)…"
+          kubectl -n acedatacloud wait \
+            --for=condition=complete \
+            --timeout=8m \
+            "job/$JOB_NAME" || {
+              echo "::warning::Job did not complete within 8 minutes; logs follow"
+              kubectl -n acedatacloud logs "job/$JOB_NAME" --tail=200 || true
+              exit 1
+            }
+
+          echo "✓ Job completed. Last log lines:"
+          kubectl -n acedatacloud logs "job/$JOB_NAME" --tail=50 || true
