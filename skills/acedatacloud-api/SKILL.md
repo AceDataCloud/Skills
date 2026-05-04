@@ -117,6 +117,7 @@ Error response format:
 | **Music Gen** | Suno, Producer, Fish Audio | `/suno/*`, `/producer/*`, `/fish/*` |
 | **Search** | Google Search (web/images/news/maps) | `/serp/*` |
 | **Face** | Analyze, beautify, swap, cartoon, age | `/face/*` |
+| **Web** | WebExtrator (render & extract) | `/webextrator/*` |
 | **Utility** | Short URL, QR Art, Headshots | `/short-url`, `/qrart/*`, `/headshots/*` |
 
 ## Gotchas

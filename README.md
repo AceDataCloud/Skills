@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (19)
+## Available Skills (20)
 
 ### AI Music & Audio
 
@@ -37,7 +37,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 |-------|-------------|
 | [luma-video](skills/luma-video/) | Generate videos with Luma Dream Machine |
 | [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
-| [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
+| [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio, extend, reshoot, objects) |
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
@@ -49,6 +49,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
+| [webextrator](skills/webextrator/) | Extract structured content or render web pages with WebExtrator |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
 

@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, or upscaling to 1080p. Supports Veo 2, Veo 3, and Veo 3.1 models including fast variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, extending/reshooting existing videos, or inserting/removing objects. Supports Veo 2, Veo 3, and Veo 3.1 models including fast variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -43,7 +43,7 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
 | `veo31` | Yes (native) | Veo 3.1, highest quality |
 | `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
-| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
+| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, multi-image blend mode |
 
 ## Workflows
 
@@ -74,37 +74,143 @@ POST /veo/videos
 }
 ```
 
-### 3. Upscale to 1080p
+### 3. Multi-Image Blend (Ingredients)
 
-Convert a previously generated video to full 1080p resolution.
+Blend multiple reference images into a single video using `veo31-fast-ingredients` (1–3 images required).
 
 ```json
 POST /veo/videos
 {
-  "action": "get1080p",
+  "action": "ingredients2video",
+  "image_urls": [
+    "https://example.com/scene1.jpg",
+    "https://example.com/scene2.jpg"
+  ],
+  "model": "veo31-fast-ingredients"
+}
+```
+
+### 4. Upscale Video
+
+Upscale a previously generated video to a higher resolution or convert to GIF.
+
+```json
+POST /veo/upsample
+{
+  "action": "4k",
+  "video_id": "your-video-id"
+}
+```
+
+| `action` value | Output |
+|----------------|--------|
+| `1080p` | Upscale to 1080p |
+| `4k` | Upscale to 4K |
+| `gif` | Convert to animated GIF preview |
+
+### 5. Extend Video
+
+Continue a previously generated video, adding more footage after the last frame (Veo 3.1 only).
+
+```json
+POST /veo/extend
+{
   "video_id": "your-video-id",
-  "model": "veo3"
+  "model": "veo31-fast",
+  "prompt": "the camera slowly zooms out to reveal more of the landscape"
+}
+```
+
+### 6. Reshoot with Camera Motion
+
+Re-render a video with a new camera motion while preserving the visual content.
+
+```json
+POST /veo/reshoot
+{
+  "video_id": "your-video-id",
+  "motion_type": "LEFT_TO_RIGHT"
+}
+```
+
+Available `motion_type` values: `STATIONARY`, `STATIONARY_UP`, `STATIONARY_DOWN`, `STATIONARY_LEFT`, `STATIONARY_RIGHT`, `STATIONARY_DOLLY_IN_ZOOM_OUT`, `STATIONARY_DOLLY_OUT_ZOOM_IN`, `UP`, `DOWN`, `LEFT_TO_RIGHT`, `RIGHT_TO_LEFT`, `FORWARD`, `BACKWARD`, `DOLLY_IN_ZOOM_OUT`, `DOLLY_OUT_ZOOM_IN`
+
+### 7. Insert or Remove Objects
+
+Add or erase objects in a video using a mask.
+
+```json
+POST /veo/objects
+{
+  "action": "insert",
+  "video_id": "your-video-id",
+  "prompt": "add a flying pig with black wings"
+}
+```
+
+```json
+POST /veo/objects
+{
+  "action": "remove",
+  "video_id": "your-video-id",
+  "image_mask": "https://example.com/mask.jpg",
+  "prompt": "remove the white cloud"
 }
 ```
 
 ## Parameters
 
+### `/veo/videos`
+
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `action` | `"text2video"`, `"image2video"`, `"get1080p"` | Generation mode |
+| `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
 | `model` | see Models table | Model to use (default: `veo2-fast`) |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"`, `"4:3"`, `"3:4"` | Aspect ratio — only valid for `image2video` |
-| `image_urls` | array of strings | Reference image URLs — only for `image2video` |
+| `image_urls` | array of strings | Reference image URLs — required for `image2video`/`ingredients2video` |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+
+### `/veo/upsample`
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `action` | `"1080p"`, `"4k"`, `"gif"` | Upsample target format |
+| `video_id` | string | ID of a previously generated video task |
+
+### `/veo/extend`
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `model` | `"veo31-fast"`, `"veo31"` | Model for extension (Veo 3.1 series only) |
+| `video_id` | string | ID of a previously generated video task |
+| `prompt` | string | Optional prompt to guide the extended footage |
+
+### `/veo/reshoot`
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `video_id` | string | ID of a previously generated video task |
+| `motion_type` | see motion types above | Camera motion style to apply |
+
+### `/veo/objects`
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `action` | `"insert"`, `"remove"` | Object operation |
+| `video_id` | string | ID of a previously generated video task |
+| `prompt` | string | Required for `insert`; optional for `remove` |
+| `image_mask` | string (URL or base64) | Mask image — required for `remove`, optional for `insert` |
 
 ## Gotchas
 
 - Veo 3 and 3.1 models generate **native audio** — `veo2`/`veo2-fast` do NOT support audio
-- The `get1080p` action uses `video_id` (from a prior generation), not a URL
+- `ingredients2video` is only supported by `veo31-fast-ingredients` and requires 1–3 `image_urls`
 - `aspect_ratio` is **only valid** for the `image2video` action
-- `image_urls` accepts an array — pass one or more image URLs for image-to-video
+- `/veo/extend` only supports `veo31-fast` and `veo31` models
+- Videos produced by `/veo/extend` **cannot** be further processed by `/veo/reshoot` or `/veo/objects`
+- `/veo/upsample` accepts video IDs from any endpoint (`/veo/videos`, `/veo/extend`, `/veo/reshoot`, `/veo/objects`)
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
 - Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
