@@ -14,7 +14,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
 Drive Google Drive via `curl + jq`. The user's OAuth bearer token is
@@ -38,6 +38,61 @@ name + path you're about to touch.
 
 **Always start with `/about?fields=user`** to confirm the connection
 works AND learn which Google account you're operating against.
+
+## Optional: Google Workspace CLI (`gws`) for uploads
+
+[`gws`](https://github.com/googleworkspace/cli) is Google's official CLI
+(not officially supported — community-maintained on the `googleworkspace`
+org). It dynamically builds its command surface from Google's Discovery
+Document, exits non-zero on API errors, supports `--page-all`
+auto-pagination, and ships a `+upload` helper that wraps the multipart
+upload protocol.
+
+**Use `gws` for uploads.** A Drive multipart upload requires a
+hand-formatted `multipart/related` body with a JSON metadata part and a
+binary file part separated by a boundary string — easy to get wrong from
+curl. `gws drive +upload` does it correctly. **For everything else**
+(list, search, get, export, rename, move, trash, delete) the curl recipes
+below are equivalent and shorter — stay on those.
+
+### Install
+
+```sh
+npm install -g @googleworkspace/cli   # or: brew install googleworkspace-cli
+# Pre-built binaries also at https://github.com/googleworkspace/cli/releases
+gws --version
+```
+
+### Auth
+
+`gws` reads its OAuth bearer token from the `GOOGLE_WORKSPACE_CLI_TOKEN`
+environment variable. The Drive token used in this skill is in
+`$GOOGLE_DRIVE_TOKEN`, so re-export it once at the top of every shell
+block that calls `gws`:
+
+```sh
+export GOOGLE_WORKSPACE_CLI_TOKEN="$GOOGLE_DRIVE_TOKEN"
+```
+
+### Upload
+
+```sh
+# Simple upload to My Drive (auto-detects MIME type, sets the file name
+# from --name; falls back to the local filename if --name is omitted)
+gws drive +upload ./report.pdf --name "Q1 Report"
+
+# Upload into a specific folder, or with explicit metadata, via the
+# generic Discovery method + --upload (multipart wire format handled
+# for you)
+gws drive files create \
+  --json '{"name":"report.pdf","parents":["FOLDER_ID"],"description":"Q1"}' \
+  --upload ./report.pdf
+```
+
+Both exit non-zero with a structured JSON error on stderr if Google
+rejects the request — surface that verbatim. Uploads need the broader
+`drive` scope; on `403 insufficientPermissions` ask the user to
+re-install the connector with read+write checked.
 
 ## Recipes
 

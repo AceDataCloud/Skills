@@ -17,8 +17,7 @@ Quick examples:
 
 Environment:
   Reads TENCENTCLOUD_SECRET_ID, TENCENTCLOUD_SECRET_KEY, TENCENTCLOUD_REGION
-  from the sandbox environment (auto-injected by aichat2 from the user's
-  AceDataCloud BYOC connection; or set manually in `.env`).
+  from the environment.
 """
 
 from __future__ import annotations

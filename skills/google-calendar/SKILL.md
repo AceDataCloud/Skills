@@ -15,7 +15,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
 Drive Google Calendar via `curl + jq`. The user's OAuth bearer token
@@ -42,6 +42,72 @@ event that has attendees) show the exact event details and ask the
 user to confirm. When attendees are involved, also confirm whether
 they want Google to email the attendees — that's controlled by the
 `sendUpdates` query parameter.
+
+## Optional: Google Workspace CLI (`gws`) for agenda + create
+
+[`gws`](https://github.com/googleworkspace/cli) is Google's official CLI
+(not officially supported — community-maintained on the `googleworkspace`
+org). It dynamically builds its command surface from Google's Discovery
+Document, exits non-zero on API errors, and ships hand-crafted helper
+commands (prefixed `+`) for time-aware workflows.
+
+**Use `gws` for two specific cases:**
+
+- `+agenda` reads the user's account timezone from `Settings.timezone`
+  (cached for 24 h) and renders today's events in that zone, so you don't
+  have to fetch the timezone yourself before formatting times.
+- `+insert` shapes the create-event JSON for you (attendees, sendUpdates,
+  reminders) so a one-line invocation produces a well-formed request.
+
+For everything else (events.list / patch / move / delete, freebusy,
+calendarList) the curl recipes below are equivalent and shorter — stay
+on those.
+
+### Install
+
+```sh
+npm install -g @googleworkspace/cli   # or: brew install googleworkspace-cli
+# Pre-built binaries also at https://github.com/googleworkspace/cli/releases
+gws --version
+```
+
+### Auth
+
+`gws` reads its OAuth bearer token from the `GOOGLE_WORKSPACE_CLI_TOKEN`
+environment variable. The Calendar token used in this skill is in
+`$GOOGLE_CALENDAR_TOKEN`, so re-export it once at the top of every shell
+block that calls `gws`:
+
+```sh
+export GOOGLE_WORKSPACE_CLI_TOKEN="$GOOGLE_CALENDAR_TOKEN"
+```
+
+### Agenda + create
+
+```sh
+# Today on the primary calendar, in the account's own timezone
+gws calendar +agenda
+
+# Today / week, with explicit overrides
+gws calendar +agenda --today --tz America/New_York
+gws calendar +agenda --range week
+
+# Create an event (auto-shapes attendees + sendUpdates JSON)
+gws calendar +insert --calendar primary \
+  --json '{
+    "summary":"Standup",
+    "start":{"dateTime":"2026-05-06T10:00:00-04:00"},
+    "end":  {"dateTime":"2026-05-06T10:30:00-04:00"},
+    "attendees":[{"email":"alice@example.com"}]
+  }' \
+  --params '{"sendUpdates":"all"}'
+```
+
+Both helpers exit non-zero with a structured JSON error on stderr if
+Google rejects the request — surface that verbatim. `+insert` against
+attendees requires the broader `calendar` scope; on `403
+insufficientPermissions` ask the user to re-install with read+write
+checked.
 
 ## Recipes
 
