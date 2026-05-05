@@ -16,7 +16,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
 Drive Gmail via `curl + jq`. The user's OAuth bearer token is in
@@ -44,6 +44,76 @@ fan out across many messages without an explicit go-ahead.
 AND learn which Gmail account you're operating against. Mailbox payloads
 can be huge — fetch metadata first, only `format=full` when the user
 actually wants the body of a specific message.
+
+## Optional: Google Workspace CLI (`gws`) for outbound mail
+
+[`gws`](https://github.com/googleworkspace/cli) is Google's official CLI
+(not officially supported — community-maintained on the `googleworkspace`
+org). It dynamically builds its command surface from Google's Discovery
+Document, exits non-zero on API errors, and ships hand-crafted helper
+commands (prefixed `+`) that handle the message-encoding boilerplate.
+
+**Use `gws` for sending mail.** The Gmail REST API requires every
+outbound message to be a fully-formed RFC 822 message, base64url-encoded
+into a `raw` field, with reply / forward threading carried in
+`In-Reply-To` / `References` / `threadId`. The `+send / +reply /
++reply-all / +forward` helpers do all of that for you. **For everything
+else** (read, search, labels, attachments) `gws` and curl are equivalent,
+so the curl recipes below are usually shorter — stay on those.
+
+### Install
+
+```sh
+npm install -g @googleworkspace/cli   # or: brew install googleworkspace-cli
+# Pre-built binaries also at https://github.com/googleworkspace/cli/releases
+gws --version
+```
+
+### Auth
+
+`gws` reads its OAuth bearer token from the `GOOGLE_WORKSPACE_CLI_TOKEN`
+environment variable. The Gmail token used in this skill is in
+`$GOOGLE_GMAIL_TOKEN`, so re-export it once at the top of every shell
+block that calls `gws`:
+
+```sh
+export GOOGLE_WORKSPACE_CLI_TOKEN="$GOOGLE_GMAIL_TOKEN"
+```
+
+You can confirm the active account with `gws gmail users getProfile
+--params '{"userId":"me"}'`.
+
+### Send / reply / forward
+
+```sh
+# New message
+gws gmail +send \
+  --to alice@example.com \
+  --cc team@example.com \
+  --subject "Q1 status" \
+  --body "Numbers attached."
+
+# Reply (handles threadId, In-Reply-To, References automatically;
+# To is the original sender, Subject gets the "Re: " prefix)
+gws gmail +reply --message-id MSG_ID --body "Thanks — looks good."
+
+# Reply-all
+gws gmail +reply-all --message-id MSG_ID --body "+1"
+
+# Forward to new recipients (preserves the original message body
+# inline; original headers are summarised in the forward block)
+gws gmail +forward --message-id MSG_ID --to bob@example.com
+```
+
+Each helper exits with a non-zero status and a JSON error on stderr if
+Google rejects the request — surface that error verbatim. `+send` /
+`+reply` need the `gmail.send` scope; if the user only granted
+`gmail.readonly` you'll see `403 insufficientPermissions` and should ask
+them to re-install the connector with the send box checked.
+
+All the read / list / search / label / attachment recipes below are
+intentionally **not** rewritten to `gws` — a one-line `curl ... | jq` is
+shorter and easier to compose with shell pipelines.
 
 ## Recipes
 
