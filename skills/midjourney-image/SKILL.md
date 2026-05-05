@@ -120,14 +120,25 @@ POST /midjourney/describe
 
 ### 6. Generate Video from Image
 
-Create a video with a reference image and text prompt.
+Create a video from a reference image (image-to-video only — Midjourney video does not support pure text-to-video).
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+Use `action: "extend"` with `video_id` to extend an existing generated video:
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id"
 }
 ```
 
@@ -163,7 +174,8 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- Video generation (`POST /midjourney/videos`) is image-to-video only — `image_url` is required when `action` is `"generate"`; Midjourney does not support pure text-to-video
+- Use `action: "extend"` with `video_id` to extend an existing video
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 

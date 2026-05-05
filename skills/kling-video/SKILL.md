@@ -112,7 +112,7 @@ POST /kling/motion
 | `model` | See models table | Model to use |
 | `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
-| `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
+| `generate_audio` | `true`, `false` | Generate audio with video. Supported only by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` (pro mode only). Other models will reject this flag if set to `true`. |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
@@ -121,12 +121,30 @@ POST /kling/motion
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
 
+## Model Capability Matrix
+
+| Model | Mode | `end_image_url` | `generate_audio` | `camera_control` | Notes |
+|-------|------|-----------------|------------------|------------------|-------|
+| `kling-v1` | std / pro | ✅ only `duration=5` | ❌ | ✅ only `duration=5` | `extend` does not support `negative_prompt` / `cfg_scale` |
+| `kling-v1-6` | std | ❌ | ❌ | ❌ | |
+| `kling-v1-6` | pro | ✅ | ❌ | ❌ | |
+| `kling-v2-master` | — | ❌ | ❌ | ❌ | Single mode, only `duration=5/10` |
+| `kling-v2-1-master` | — | ❌ | ❌ | ❌ | Single mode, only `duration=5/10` |
+| `kling-v2-5-turbo` | std | ❌ | ❌ | ❌ | |
+| `kling-v2-5-turbo` | pro | ✅ | ❌ | ❌ | |
+| `kling-v2-6` | std | ❌ | ❌ | ❌ | |
+| `kling-v2-6` | pro | ✅ | ✅ | ❌ | Only non-v3 model with audio |
+| `kling-v3` | std / pro | ✅ | ✅ | ✅ | `duration` 3–15 s |
+| `kling-v3` | 4k | ✅ | ✅ | ❌ | 4K incompatible with `camera_control` |
+| `kling-v3-omni` | std / pro / 4k | ✅ | ✅ | ❌ | |
+| `kling-video-o1` | std / pro | ✅ | ❌ | ❌ | Only `duration=5/10` |
+
 ## Gotchas
 
 - `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
 - `mode=4k` is only available for `kling-v3` and `kling-v3-omni` and is incompatible with `camera_control`
-- `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
-- `end_image_url` is only for `image2video` action — it defines the last frame
+- `generate_audio` enables synchronized audio generation. Supported only by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` (pro mode only). Other models will reject this flag if set to `true`
+- `end_image_url` is only valid with `action=image2video` and a non-empty `start_image_url`. Model/mode constraints: `kling-v1` requires `duration=5`; `kling-v1-6`/`kling-v2-5-turbo`/`kling-v2-6` require `mode=pro`; `kling-v3`/`kling-v3-omni`/`kling-video-o1` accept end-frame in all modes; `kling-v2-master`/`kling-v2-1-master` do not support end-frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling

@@ -91,7 +91,9 @@ POST /seedream/tasks
 | `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution (e.g. `1K`=1024px, `2K`=2048px); `3K` only for Seedream 5.0 |
 | `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I / SeedEdit 3.0 only) |
 | `guidance_scale` | number [1, 10] | Prompt adherence strength (3.0 models only; T2I default 2.5, edit default 5.5) |
-| `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
+| `sequential_image_generation` | `"auto"`, `"disabled"` | Default is `"disabled"`. Set to `"auto"` to generate a coherent group of related images sharing characters, style, and details (multi-image consistency). Only supported on Seedream 5.0 lite, 4.5, and 4.0. |
+| `sequential_image_generation_options` | object | Tunable options for grouped image generation. Only honored when `sequential_image_generation=auto`. Fields: `max_images` (integer 1–15). Note: (reference images in `image`) + (generated images) must be ≤ 15. Only supported on Seedream 5.0 lite, 4.5, and 4.0. |
+| `optimize_prompt_options` | object | Optional prompt optimization config. Fields: `mode` (`"standard"` for higher quality but slower, `"fast"` for quicker but lower quality). Supported on Seedream 5.0 lite and 4.5 (standard mode only) and 4.0. |
 | `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
 | `watermark` | boolean | Add AI-generated watermark (default: true) |
 | `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
@@ -114,7 +116,7 @@ POST /seedream/tasks
 - `3K` size is only supported by Seedream 5.0; `adaptive` selects the best aspect ratio automatically
 - `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
 - `guidance_scale` is only available for the 3.0-series models
-- `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
+- `stream` and `sequential_image_generation` are only available for Seedream 5.0 lite, 4.5, and 4.0; use `sequential_image_generation_options.max_images` to cap the batch size (1–15)
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
 
 > **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
