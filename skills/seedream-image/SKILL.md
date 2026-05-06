@@ -97,6 +97,7 @@ POST /seedream/tasks
 | `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
 | `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
 | `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
+| `optimize_prompt_options` | object | Prompt optimization config: `{"mode": "standard"\|"fast"}`. `standard` is higher quality but slower; `fast` is quicker but lower quality. Supported on Seedream 5.0 (both modes), 4.5 (standard only), and 4.0 (both modes) |
 | `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
 
 ### Editing

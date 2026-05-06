@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/suno/audios \
   -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"task_id": "..."}` every 3-5 seconds.
+> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "..."}` every 3-5 seconds.
 
 ## Available Models
 
@@ -141,7 +141,10 @@ For best results follow this multi-step workflow:
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
+| `/suno/voices` | POST | Create a custom voice persona from an audio URL (`audio_url` required; `name`, `description` optional) |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | GET | List all saved personas |
+| `/suno/persona` | DELETE | Delete a saved persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
