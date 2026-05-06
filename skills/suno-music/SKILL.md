@@ -27,15 +27,15 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 
 ## Available Models
 
-| Model | Best For |
-|-------|---------|
-| `chirp-v5-5` | Latest, highest quality |
-| `chirp-v5` | High quality |
-| `chirp-v4-5-plus` | Enhanced v4.5 |
-| `chirp-v4-5` | Good balance of quality and speed |
-| `chirp-v4` | Fast, reliable |
-| `chirp-v3-5` | Legacy, stable |
-| `chirp-v3-0` | Legacy |
+| Model | Best For | Lyric Limit | Style Limit | Max Length |
+|-------|---------|-------------|-------------|------------|
+| `chirp-v5-5` | Latest, highest quality | 5000 chars | 1000 chars | 8 min |
+| `chirp-v5` | High quality | 5000 chars | 1000 chars | 8 min |
+| `chirp-v4-5-plus` | Enhanced v4.5 | 5000 chars | 1000 chars | 8 min |
+| `chirp-v4-5` | Good balance of quality and speed | 5000 chars | 1000 chars | 4 min |
+| `chirp-v4` | Fast, reliable | 3000 chars | 200 chars | 2.5 min |
+| `chirp-v3-5` | Legacy, stable | 3000 chars | 200 chars | 2 min |
+| `chirp-v3-0` | Legacy | 3000 chars | 200 chars | 2 min |
 
 ## Core Workflows
 
@@ -137,13 +137,15 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
-| `/suno/wav` | POST | Convert to lossless WAV format |
+| `/suno/wav` | POST | Convert to lossless WAV format (30-day CDN retention — see note below) |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
+
+> **WAV CDN note:** The upstream Suno CDN (`cdn1.suno.ai`) expires WAV files after a few days. `/suno/wav` automatically mirrors the file to AceDataCloud's CDN and returns a stable URL valid for **30 days**. Download and save the file before expiry. In rare mirror-failure cases, the original upstream URL is returned as a fallback.
 
 ## Advanced Parameters
 
@@ -176,7 +178,7 @@ Ending lyrics
 
 - All generation is **async** — always set `"callback_url"` to get a `task_id` immediately, then poll `/suno/tasks`
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
-- Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
+- Lyrics max ~3000 characters for v4 and below, ~5000 for v4.5 and above. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
