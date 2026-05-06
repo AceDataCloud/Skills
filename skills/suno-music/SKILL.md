@@ -137,7 +137,7 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
-| `/suno/wav` | POST | Convert to lossless WAV format |
+| `/suno/wav` | POST | Convert to lossless WAV format (returns a stable AceDataCloud CDN URL, not the upstream Suno CDN which expires in a few days) |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
@@ -176,6 +176,7 @@ Ending lyrics
 
 - All generation is **async** — always set `"callback_url"` to get a `task_id` immediately, then poll `/suno/tasks`
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
+- `/suno/wav` returns a **stable AceDataCloud CDN URL** (`https://platform.cdn.acedata.cloud/suno/{task_id}.wav`) — the API automatically re-saves the upstream Suno WAV before returning so the link does not expire. On rare re-save failure it falls back to the upstream URL
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
