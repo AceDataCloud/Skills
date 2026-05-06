@@ -137,7 +137,7 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
-| `/suno/wav` | POST | Convert to lossless WAV format |
+| `/suno/wav` | POST | Convert to lossless WAV format — result `file_url` is auto-stored to AceDataCloud CDN for persistence (upstream Suno WAV links expire after a few days) |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
@@ -181,6 +181,7 @@ Ending lyrics
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - The `concat` action merges extended song segments — requires audio_id of the extended track
+- `replace_section` only returns the **replacement segment** (the new audio for the replaced range), NOT the full reassembled song. To get the full song with the replaced section spliced in, follow up with a `concat` action on the returned segment ID
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
 

@@ -89,7 +89,9 @@ POST /seedream/tasks
 | `model` | see Models table | Model to use (required) |
 | `prompt` | string | Image description (required) |
 | `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution (e.g. `1K`=1024px, `2K`=2048px); `3K` only for Seedream 5.0 |
-| `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I / SeedEdit 3.0 only) |
+| `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I only — `doubao-seedream-3-0-t2i-250415`) |
+| `sequential_image_generation_options` | object | Options for grouped image generation, e.g. `{"max_images": 5}` (max 15). Only honored when `sequential_image_generation=auto`; Seedream 5.0, 4.5, 4.0 only |
+| `optimize_prompt_options` | object | Prompt optimization config, e.g. `{"mode": "standard"}` (`standard` or `fast`). Seedream 5.0 and 4.5 (standard only) and 4.0 |
 | `guidance_scale` | number [1, 10] | Prompt adherence strength (3.0 models only; T2I default 2.5, edit default 5.5) |
 | `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
 | `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
@@ -112,7 +114,7 @@ POST /seedream/tasks
 - Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
 - `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
 - `3K` size is only supported by Seedream 5.0; `adaptive` selects the best aspect ratio automatically
-- `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
+- `seed` only works with `doubao-seedream-3-0-t2i-250415` (not SeedEdit 3.0)
 - `guidance_scale` is only available for the 3.0-series models
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
