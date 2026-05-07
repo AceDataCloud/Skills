@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/hailuo/videos \
   -d '{"action": "generate", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "minimax-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"id": "..."}`.
 ## Models
 
 | Model | Type | Best For |

@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/fish/audios \
   -d '{"prompt": "Hello, this is a demonstration of AI voice synthesis."}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id": "..."}`.
 
 ## Endpoints
 
@@ -41,7 +41,8 @@ curl -X POST https://api.acedata.cloud/fish/audios \
 POST /fish/audios
 {
   "prompt": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "action": "speech",
+  "voice_id": "d7900c21663f485ab63ebdb7e5905036"
 }
 ```
 
@@ -77,8 +78,8 @@ POST /fish/audios
 |-----------|------|-------------|
 | `prompt` | string | Text to synthesize into speech |
 | `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
+| `model` | string | TTS model (e.g., `"fish-tts"`) |
+| `action` | string | Operation type (`"speech"`) |
 | `callback_url` | string | Webhook URL for async delivery |
 
 ### `/fish/voices`

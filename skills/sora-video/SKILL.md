@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/sora/videos \
   -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"id": "..."}`.
 
 ## Models
 
@@ -81,9 +81,9 @@ POST /sora/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
+| `size` | `"small"`, `"large"`, `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution |
+| `duration` | `4`, `8`, `10`, `12`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation |
 | `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
 
 ## Gotchas
