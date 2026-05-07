@@ -137,7 +137,7 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
-| `/suno/wav` | POST | Convert to lossless WAV format |
+| `/suno/wav` | POST | Convert to lossless WAV format. Returns `file_url` hosted on `platform.cdn.acedata.cloud` (30-day expiry — download promptly) |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
@@ -183,5 +183,6 @@ Ending lyrics
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- `/suno/wav` returns a `file_url` on `platform.cdn.acedata.cloud` cached for **30 days** — download and save the file before it expires
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
