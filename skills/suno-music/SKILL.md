@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/suno/audios \
   -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"task_id": "..."}` every 3-5 seconds.
+> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "...", "action": "retrieve"}` every 3-5 seconds (or `{"ids": ["..."], "action": "retrieve_batch"}` for batch lookups).
 
 ## Available Models
 
@@ -103,7 +103,7 @@ For best results follow this multi-step workflow:
 1. **Generate lyrics** — `POST /suno/lyrics` with a topic/prompt
 2. **Optimize style** — `POST /suno/style` to refine style description
 3. **Generate music** — `POST /suno/audios` with custom action, lyrics + style
-4. **Poll task** — `POST /suno/tasks` with task_id until status is complete
+4. **Poll task** — `POST /suno/tasks` with `id` + `action: "retrieve"` until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
 7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
@@ -142,6 +142,7 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/voices` | POST | Clone a custom voice persona from an external MP3/WAV URL |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
@@ -182,6 +183,9 @@ Ending lyrics
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
+- `/suno/voices` requires a public MP3/WAV URL (>=10s, clear single-speaker vocal) and returns a private `persona_id`
+- Cloned/custom voices are only supported on `chirp-v4-5` and newer models
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- `/suno/wav` returns a platform CDN URL intended for download/archive (current retention is about 30 days)
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
