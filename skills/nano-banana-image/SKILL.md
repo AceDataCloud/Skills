@@ -80,6 +80,7 @@ POST /nano-banana/images
 - `nano-banana-2` is the second-generation model; `nano-banana-pro` offers the highest quality
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
+- On OpenAI-compatible `/openai/images/*` endpoints, `n` is only effective for `dall-e-2`; for `nano-banana` models, values greater than 1 are ignored (send parallel requests instead)
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
