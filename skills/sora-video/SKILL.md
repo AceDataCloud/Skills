@@ -90,8 +90,8 @@ POST /sora/videos
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
 | `version` | `"1.0"`, `"2.0"` | API version (default: `1.0`) — see table above |
 | `size` | `"small"`, `"large"` (v1.0); `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` (v2.0) | Video resolution |
-| `duration` | v1.0: `10`, `15`, `25`; v2.0: `4`, `8`, `10`, `12` | Duration in seconds |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation — v1.0 only |
+| `duration` | v1.0: `10`, `15` (sora-2), `10`, `15`, `25` (sora-2-pro); v2.0: `4`, `8`, `10`, `12` | Duration in seconds |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation — v1.0 only; `"square"` is not supported |
 
 ## Gotchas
 
