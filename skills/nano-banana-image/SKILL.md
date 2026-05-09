@@ -81,5 +81,6 @@ POST /nano-banana/images
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+- On OpenAI-compatible `/openai/images/*` endpoints, `n > 1` is ignored for all nano-banana models; send parallel requests when you need multiple outputs
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
