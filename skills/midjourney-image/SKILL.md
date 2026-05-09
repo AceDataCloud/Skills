@@ -118,16 +118,31 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Generate or Extend Video
 
-Create a video with a reference image and text prompt.
+Create a video with a reference image and text prompt, or extend an existing video.
+
+**Generate:**
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+**Extend:**
+
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 1,
+  "prompt": "the city lights fade into dawn"
 }
 ```
 
@@ -163,7 +178,9 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
+- Video generation (`generate`) requires a reference `image_url` — it cannot generate from text alone
+- Video extend (`extend`) requires `video_id` and `video_index` (1-based index into the 4-video grid)
+- `end_image_url` sets the last frame of a generated video
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
