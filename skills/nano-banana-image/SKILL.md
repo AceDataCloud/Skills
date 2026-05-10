@@ -75,7 +75,7 @@ POST /nano-banana/images
 
 ## OpenAI-Compatible Interface
 
-All three nano-banana models are also available through the OpenAI-compatible endpoints at `https://api.acedata.cloud`. Set `OPENAI_BASE_URL=https://api.acedata.cloud/openai` and your token as `OPENAI_API_KEY` to use the standard OpenAI SDK.
+All nano-banana models (`nano-banana`, `nano-banana-2`, `nano-banana-pro`) are also available through the OpenAI-compatible endpoints at `https://api.acedata.cloud`. Set `OPENAI_BASE_URL=https://api.acedata.cloud/openai` and your token as `OPENAI_API_KEY` to use the standard OpenAI SDK.
 
 ### 3. Generation via `/openai/images/generations`
 
@@ -88,7 +88,7 @@ POST /openai/images/generations
 }
 ```
 
-Supported parameters in this mode: `model`, `prompt`, `size`. All other OpenAI parameters (`n`, `quality`, `style`, `response_format`, `background`, `output_format`, etc.) are silently ignored.
+Supported parameters in this mode: `model`, `prompt`, `size`. All other parameters (`n`, `quality`, `style`, `response_format`, `background`, `output_format`, etc.) are silently ignored by the adapter layer.
 
 **`size` → aspect ratio mapping:**
 
@@ -112,7 +112,7 @@ POST /openai/images/edits   (multipart/form-data or application/json)
 }
 ```
 
-Supported parameters in this mode: `model`, `prompt`, `image` (URL string or binary upload). Parameters `mask`, `n`, `size`, `response_format` are not supported and will be ignored.
+Supported parameters in this mode: `model`, `prompt`, `image` (URL string or binary upload). Parameters `mask`, `n`, `size`, `response_format` are silently ignored.
 
 ```shell
 # curl example (URL in form field)
