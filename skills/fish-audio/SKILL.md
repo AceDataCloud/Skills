@@ -17,83 +17,129 @@ Generate AI audio and synthesize voices through AceDataCloud's Fish Audio API.
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/fish/audios \
+curl -X POST https://api.acedata.cloud/fish/tts \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "model: s2-pro" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Hello, this is a demonstration of AI voice synthesis."}'
+  -d '{"text": "Hello, this is a demonstration of AI voice synthesis."}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id": "...", "action": "retrieve"}` (single task) or `{"ids": ["..."], "action": "retrieve_batch"}` (batch).
 
 ## Endpoints
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /fish/audios` | Generate audio from text or parameters |
-| `POST /fish/voices` | Voice synthesis and cloning |
-| `POST /fish/tasks` | Poll task status |
+| `POST /fish/tts` | Fish-compatible text-to-speech generation |
+| `GET /fish/model` | List voice models with filters |
+| `GET /fish/model/{id}` | Get one voice model by ID |
+| `POST /fish/tasks` | Poll task status (`retrieve` / `retrieve_batch`) |
 
 ## Workflows
 
 ### 1. Text-to-Speech
 
 ```json
-POST /fish/audios
+POST /fish/tts
 {
-  "prompt": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "text": "The quick brown fox jumps over the lazy dog.",
+  "reference_id": "d7900c21663f485ab63ebdb7e5905036",
+  "format": "mp3",
+  "sample_rate": 44100
 }
 ```
 
-### 2. Voice Cloning — Register a Voice
-
-Upload a reference audio to create a cloneable voice.
+### 2. Async Text-to-Speech with Callback
 
 ```json
-POST /fish/voices
+POST /fish/tts
 {
-  "voice_url": "https://example.com/reference-voice.mp3",
-  "title": "My Custom Voice",
-  "description": "Clear, neutral-toned speaker for TTS",
-  "image_url": "https://example.com/avatar.jpg"
+  "text": "Welcome to our platform.",
+  "callback_url": "https://example.com/fish-callback"
 }
 ```
 
-### 3. Text-to-Speech with Cloned Voice
+Immediate response:
 
 ```json
-POST /fish/audios
 {
-  "prompt": "Welcome to our platform.",
-  "voice_id": "<voice_id from POST /fish/voices>"
+  "task_id": "2725a2d3-f87e-4905-9c53-9988d5a7b2f5",
+  "started_at": "2025-05-09T12:34:56.789Z"
 }
+```
+
+Then poll with `POST /fish/tasks`:
+
+```json
+{
+  "id": "2725a2d3-f87e-4905-9c53-9988d5a7b2f5",
+  "action": "retrieve"
+}
+```
+
+### 3. List Voice Models
+
+```http
+GET /fish/model?page_size=10&page_number=1&self=true&language=en
+```
+
+### 4. Get One Voice Model
+
+```http
+GET /fish/model/d7900c21663f485ab63ebdb7e5905036
 ```
 
 ## Parameters
 
-### `/fish/audios`
+### `POST /fish/tts`
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `prompt` | string | Text to synthesize into speech |
-| `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
-| `callback_url` | string | Webhook URL for async delivery |
+| `text` | string | Text to synthesize (required) |
+| `reference_id` | string | Voice model ID |
+| `format` | string | Output format: `mp3`, `wav`, `pcm`, `opus` |
+| `sample_rate` | integer | Output sample rate |
+| `mp3_bitrate` | integer | MP3 bitrate: `64`, `128`, `192` |
+| `opus_bitrate` | integer | Opus bitrate |
+| `latency` | string | `normal` or `balanced` |
+| `chunk_length` | integer | Chunk length control |
+| `min_chunk_length` | integer | Minimum chunk length |
+| `temperature` | number | Sampling temperature |
+| `top_p` | number | Top-p sampling |
+| `repetition_penalty` | number | Repetition penalty |
+| `max_new_tokens` | integer | Max generated tokens |
+| `normalize` | boolean | Enable text normalization |
+| `prosody` | object | Prosody overrides |
+| `references` | array<object> | Inline reference samples |
+| `callback_url` | string | Async callback URL (returns `task_id` immediately) |
+| `model` (header) | string | TTS model header: `s1` or `s2-pro` (default `s2-pro`) |
 
-### `/fish/voices`
+### `GET /fish/model` (query)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `voice_url` | string | Reference audio URL for voice cloning |
-| `title` | string | Display title for the cloned voice |
-| `description` | string | Description of the voice |
-| `image_url` | string | Cover image URL for the voice |
-| `callback_url` | string | Webhook URL for async delivery |
+| `page_size` | integer | Items per page (default: 10) |
+| `page_number` | integer | 1-based page number (default: 1) |
+| `title` | string | Partial title filter |
+| `tag` | string | Tag filter |
+| `self` | boolean | Only models owned by current account |
+| `author_id` | string | Author filter |
+| `language` | string | Language filter |
+| `title_language` | string | Title language filter |
+| `sort_by` | string | Upstream sort field (e.g. `created_at`, `task_count`) |
+
+### `POST /fish/tasks`
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `id` | string | Single task ID |
+| `ids` | array<string> | Multiple task IDs |
+| `action` | string | `retrieve` (single) or `retrieve_batch` (multiple) |
 
 ## Gotchas
 
-- Pricing is based on **byte count** of the generated audio
-- Voice cloning requires a clear reference audio sample
-- Text-to-speech supports multiple languages automatically
-- Use the `/fish/voices` endpoint to register a reference audio and receive a `voice_id` for TTS
+- `POST /fish/tts` is compatible with Fish Audio's TTS request/response format; use the `model` HTTP header (`s1` or `s2-pro`) instead of a JSON `model` field
+- If `latency` is omitted, platform defaults it to `normal` for upstream compatibility
+- For async mode, include `callback_url`; the immediate response returns `task_id`, and final result contains `audio_url`
+- Polling uses `POST /fish/tasks` with `action: "retrieve"` or `"retrieve_batch"` (not `task_id`)
+- `GET /fish/model/{id}` returns model details; use `_id` values from model list responses
