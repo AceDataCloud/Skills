@@ -24,6 +24,10 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /nano-banana/tasks` with `{"id": "..."}`.
+
+Also available through OpenAI-compatible image endpoints:
+- `POST /openai/images/generations`
+- `POST /openai/images/edits`
 ## Models
 
 | Model | Best For |
@@ -61,6 +65,28 @@ POST /nano-banana/images
 }
 ```
 
+### 3. OpenAI-Compatible Generation
+
+```json
+POST /openai/images/generations
+{
+  "model": "nano-banana-2",
+  "prompt": "a minimalist mountain logo in blue tones",
+  "size": "1792x1024"
+}
+```
+
+### 4. OpenAI-Compatible Editing
+
+```json
+POST /openai/images/edits
+{
+  "model": "nano-banana-pro",
+  "prompt": "change the background to warm sunset colors",
+  "image": "https://example.com/photo.jpg"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
@@ -73,6 +99,20 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
+### OpenAI-Compatible `/openai/images/generations` (Nano Banana models)
+
+Supported params:
+- `model`: `nano-banana`, `nano-banana-2`, `nano-banana-pro`
+- `prompt`
+- `size` (mapped internally to aspect ratio; unknown sizes degrade to `1:1`)
+
+### OpenAI-Compatible `/openai/images/edits` (Nano Banana models)
+
+Supported params:
+- `model`: `nano-banana`, `nano-banana-2`, `nano-banana-pro`
+- `prompt`
+- `image` (URL, array of URLs, or form-uploaded image)
+
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
@@ -81,5 +121,9 @@ POST /nano-banana/images
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+- OpenAI-compatible usage is supported via `/openai/images/generations` and `/openai/images/edits`
+- On OpenAI-compatible endpoints, `n > 1` is ignored for `nano-banana*`; use parallel requests for multiple outputs
+- On OpenAI-compatible generation, Nano Banana supports `model/prompt/size` only; extra params are ignored
+- On OpenAI-compatible editing, Nano Banana supports `model/prompt/image` only; extra params are ignored
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
