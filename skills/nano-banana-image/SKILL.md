@@ -61,7 +61,7 @@ POST /nano-banana/images
 }
 ```
 
-## Parameters
+## Parameters (Native API)
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
@@ -73,6 +73,56 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
+## OpenAI-Compatible Interface
+
+All three nano-banana models are also available through the OpenAI-compatible endpoints at `https://api.acedata.cloud`. Set `OPENAI_BASE_URL=https://api.acedata.cloud/openai` and your token as `OPENAI_API_KEY` to use the standard OpenAI SDK.
+
+### 3. Generation via `/openai/images/generations`
+
+```json
+POST /openai/images/generations
+{
+  "model": "nano-banana-pro",
+  "prompt": "a photorealistic macro shot of morning dew on a spider web",
+  "size": "1792x1024"
+}
+```
+
+Supported parameters in this mode: `model`, `prompt`, `size`. All other OpenAI parameters (`n`, `quality`, `style`, `response_format`, `background`, `output_format`, etc.) are silently ignored.
+
+**`size` → aspect ratio mapping:**
+
+| `size` value(s) | Internal aspect ratio |
+|---|---|
+| `1024x1024`, `512x512`, `256x256` | `1:1` |
+| `1792x1024` | `16:9` |
+| `1024x1792` | `9:16` |
+| Any other value | `1:1` (fallback) |
+
+Response follows OpenAI format (`data[].url`). `created` is always `0`, `b64_json` is never returned, and `revised_prompt` always equals the original `prompt`.
+
+### 4. Editing via `/openai/images/edits`
+
+```json
+POST /openai/images/edits   (multipart/form-data or application/json)
+{
+  "model": "nano-banana",
+  "prompt": "add a green leaf on top of the apple",
+  "image": "https://example.com/apple.png"
+}
+```
+
+Supported parameters in this mode: `model`, `prompt`, `image` (URL string or binary upload). Parameters `mask`, `n`, `size`, `response_format` are not supported and will be ignored.
+
+```shell
+# curl example (URL in form field)
+curl -X POST "https://api.acedata.cloud/openai/images/edits" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -F "model=nano-banana" \
+  -F "prompt=add a green leaf on top of the apple" \
+  -F "image=https://example.com/apple.png"
+```
+
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
@@ -81,5 +131,7 @@ POST /nano-banana/images
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+- **OpenAI-compatible mode**: `n > 1` is silently ignored — only one image is returned per request. Send parallel requests to get multiple outputs
+- **OpenAI-compatible mode**: the `/openai/images/*` endpoints share the same token/credential as the native `/nano-banana/images` endpoint
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
