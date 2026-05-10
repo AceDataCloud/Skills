@@ -92,8 +92,11 @@ GET /fish/model?page_size=10&page_number=1&self=true
 | `top_p` | number | Nucleus sampling |
 | `callback_url` | string | Async callback URL (platform extension) |
 
-Header:
-- `model`: `s1` or `s2-pro` (default `s2-pro`)
+### Headers
+
+| Header | Values | Description |
+|--------|--------|-------------|
+| `model` | `s1`, `s2-pro` | TTS model for `/fish/tts` (default `s2-pro`) |
 
 ### `/fish/model` (voice clone models)
 
