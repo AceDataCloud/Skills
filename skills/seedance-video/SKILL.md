@@ -23,14 +23,14 @@ curl -X POST https://api.acedata.cloud/seedance/videos \
   -d '{"model": "doubao-seedance-1-0-pro-250528", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"id":"...","action":"retrieve"}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/seedance/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from above>"}'
+  -d '{"id":"<task_id from above>","action":"retrieve"}'
 ```
 
 ## Models
@@ -42,6 +42,8 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 | `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
+| `doubao-seedance-2-0-260128` | Text+Image-to-Video | Newer v2 quality model |
+| `doubao-seedance-2-0-fast-260128` | Text+Image-to-Video | Faster v2 generation |
 
 ## Workflows
 
