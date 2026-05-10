@@ -75,8 +75,11 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest Gemini, highest capability |
+| `gemini-3.1-pro-preview` | Latest Gemini preview |
+| `gemini-3.1-flash-lite-preview` | Fast, efficient |
+| `gemini-2.5-flash-lite` | Compact flash |
+| `gemini-2.0-flash-lite` | Ultra-fast, lowest cost |
 
 ### DeepSeek
 
@@ -84,8 +87,33 @@ print(response.choices[0].message.content)
 |-------|----------|
 | `deepseek-r1` | Deep reasoning |
 | `deepseek-r1-0528` | Latest reasoning |
+| `deepseek-reasoner` | Reasoning alias |
 | `deepseek-v3` | General-purpose |
 | `deepseek-v3-250324` | Latest general |
+| `deepseek-v3.2-exp` | Experimental v3.2 |
+| `deepseek-v4-flash` | Fast v4 |
+| `deepseek-chat` | Chat alias |
+
+### Kimi (Moonshot)
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2-thinking` | Deep reasoning |
+| `kimi-k2-thinking-turbo` | Fast reasoning |
+| `kimi-k2.5` | Latest general |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-turbo-preview` | Speed-optimized |
+
+### GLM (Zhipu)
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest GLM |
+| `glm-5` | General GLM 5 |
+| `glm-4.7` | High-performance |
+| `glm-4.6` | Balanced |
+| `glm-4.5` | Compact |
+| `glm-4.5-air` | Fast and efficient |
 
 ### xAI Grok
 
@@ -190,9 +218,44 @@ POST /v1/chat/completions
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
 
-## Stateful Conversations Endpoint
+## Stateful Conversations Endpoints
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+### `/aichat2/conversations` (Recommended — Next-Gen)
+
+The next-generation stateful conversation endpoint with multi-modal input, agentic tool calling, SSE/NDJSON streaming, and full conversation CRUD. Drop-in compatible with the v1 `question/model/stateful/references` shape.
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
+```
+
+**Actions:** `chat` (default), `retrieve`, `retrieve_batch`, `update`, `delete`
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | **Required for `chat`.** Model name (see Available Models above) |
+| `action` | string | Operation: `chat`, `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `id` | string | Conversation ID — required for retrieve/update/delete; resumes a session when supplied with `stateful: true` |
+| `question` | string | Plain-text user prompt (v1-compatible) |
+| `message` | string/array | Multi-modal content blocks: `text`, `image_url`, or `file_url` — use for vision/file inputs |
+| `stateful` | boolean | Persist the conversation server-side (default: true) |
+| `references` | array | Reference URLs; image URLs become `image_url` blocks, others become `file_url` blocks |
+| `preset` | string | Server-side system prompt preset |
+| `max_turns` | integer | Hard cap on agentic-loop iterations per request |
+| `tool_results` | array | Resume payload for a paused `ask_user_question` turn |
+| `model_group` | string | Filter for `retrieve_batch`: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `user_id` | string | Filter conversations by user (retrieve_batch) |
+| `application_id` | string | Filter conversations by application (retrieve_batch) |
+| `offset` | integer | Pagination offset (retrieve_batch) |
+| `limit` | integer | Pagination limit (retrieve_batch) |
+
+**Streaming:** Set `Accept: text/event-stream` for SSE or `Accept: application/x-ndjson` for NDJSON streaming. Event types include `text_delta`, `thinking`, `tool_use`, `tool_result`, `citation`, `ask_user_question`, `done`.
+
+### `/aichat/conversations` (Legacy v1)
+
+For stateful, session-based chat (no need to send the full history each time):
 
 ```bash
 curl -X POST https://api.acedata.cloud/aichat/conversations \

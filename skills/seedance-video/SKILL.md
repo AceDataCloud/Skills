@@ -37,9 +37,11 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 
 | Model | Type | Best For |
 |-------|------|----------|
+| `doubao-seedance-2-0-260128` | Text+Image-to-Video | Latest generation, highest quality |
+| `doubao-seedance-2-0-fast-260128` | Text+Image-to-Video | Latest generation, speed-optimized |
+| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | High quality, audio support |
 | `doubao-seedance-1-0-pro-250528` | Text+Image-to-Video | General-purpose, reliable quality |
 | `doubao-seedance-1-0-pro-fast-251015` | Text+Image-to-Video | Faster Pro generation |
-| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
 
@@ -138,7 +140,7 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - The `content` array replaces the old `prompt` + `image_url` fields; always use `content`
 - Image and text scenarios are mutually exclusive per content item — each item has either `text` or `image_url`, not both
 - `first_frame`, `last_frame`, and `reference_image` roles are mutually exclusive scenarios — pick one pattern per request
-- `generate_audio: true` is only supported by `doubao-seedance-1-5-pro-251215`; other models ignore this field
+- `generate_audio: true` is only supported by `doubao-seedance-1-5-pro-251215`; the 2.0 models and other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
 - Resolution options are `480p`, `720p`, `1080p` — there is no 360p or 540p
 - `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
