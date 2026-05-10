@@ -123,7 +123,7 @@ Supported params:
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 - OpenAI-compatible usage is supported via `/openai/images/generations` and `/openai/images/edits`
 - On OpenAI-compatible endpoints, `n > 1` is ignored for `nano-banana*`; use parallel requests for multiple outputs
-- On OpenAI-compatible generation, Nano Banana supports `model/prompt/size` only; extra params are ignored
-- On OpenAI-compatible editing, Nano Banana supports `model/prompt/image` only; extra params are ignored
+- On OpenAI-compatible generation, Nano Banana supports only `model`, `prompt`, and `size`; extra params are ignored
+- On OpenAI-compatible editing, Nano Banana supports only `model`, `prompt`, and `image`; extra params are ignored
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

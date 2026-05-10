@@ -24,7 +24,7 @@ curl -X POST https://api.acedata.cloud/fish/tts \
   -d '{"text": "Hello, this is a demonstration of AI voice synthesis."}'
 ```
 
-> **Async:** `POST /fish/tts` supports `callback_url` and returns `{task_id, started_at}` immediately; then your webhook receives the final result with `audio_url`.
+> **Async:** `POST /fish/tts` supports `callback_url` and returns `{"task_id": "...", "started_at": "..."}` immediately; then your webhook receives the final result with `audio_url`.
 
 ## Endpoints
 
