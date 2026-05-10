@@ -73,6 +73,36 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
+## OpenAI-Compatible Endpoint
+
+NanoBanana models are also available via the OpenAI-compatible image endpoints. This lets you use the standard OpenAI SDK without modification:
+
+### Text-to-Image via OpenAI API
+
+```json
+POST /openai/images/generations
+{
+  "model": "nano-banana-pro",
+  "prompt": "a photorealistic macro shot of morning dew on a spider web",
+  "size": "1024x1024"
+}
+```
+
+### Image Editing via OpenAI API
+
+```json
+POST /openai/images/edits
+{
+  "model": "nano-banana",
+  "prompt": "change the background to a starry night sky",
+  "image": "https://example.com/photo.jpg"
+}
+```
+
+**Supported models on OpenAI endpoints:** `nano-banana`, `nano-banana-2`, `nano-banana-pro`
+
+> **Note:** `n > 1` is silently ignored on OpenAI-compatible endpoints — nano-banana models always return a single image per request. Send parallel requests if you need multiple outputs.
+
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
@@ -81,5 +111,6 @@ POST /nano-banana/images
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+- On the native `/nano-banana/images` endpoint, use `image_urls` (array); on the OpenAI endpoint `/openai/images/edits`, use `image` (single URL or array)
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
