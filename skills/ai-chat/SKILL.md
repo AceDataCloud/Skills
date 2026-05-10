@@ -209,3 +209,59 @@ curl -X POST https://api.acedata.cloud/aichat/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Conversations v2 Endpoint (`/aichat2/conversations`)
+
+`/aichat2/conversations` is a fully upgraded version of `/aichat/conversations`. It is **backward-compatible** — just swap the path; existing `model`+`question` payloads work unchanged. New capabilities include multi-modal input, agentic tool use, CRUD operations, and a broader model catalog.
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-5.4", "question": "Summarize the latest AI news."}'
+```
+
+### Actions
+
+Pass an `action` field to perform CRUD on conversations:
+
+| `action` | Description |
+|----------|-------------|
+| `chat` (default) | Send a new message turn |
+| `retrieve` | Fetch a single conversation by `id` |
+| `retrieve_batch` | List conversations (filterable, paginated) |
+| `update` | Update `messages` or `title` of an existing conversation |
+| `delete` | Delete a conversation by `id` |
+
+### Additional Models (v2 only)
+
+Beyond the models listed above, `/aichat2/conversations` also supports:
+
+| Provider | Models |
+|----------|--------|
+| Moonshot Kimi | `kimi-k2.5`, `kimi-k2-thinking`, `kimi-k2-thinking-turbo`, `kimi-k2-turbo-preview` |
+| Zhipu GLM | `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5-air`, `glm-4.5v` |
+| Google Gemini | `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-image-preview`, `gemini-2.5-flash-lite` |
+| OpenAI | `gpt-5.2-pro`, `gpt-5.1-all`, `gpt-5-all`, `gpt-4o-image`, `o3`, `o3-pro`, `o4-mini` |
+
+### v2 Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string* | Model name |
+| `action` | string | `chat` (default), `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `id` | string | Conversation ID — required for retrieve/update/delete; optional to continue a chat session |
+| `question` | string | Plain-text prompt (v1-compatible; ignored when `message` is provided) |
+| `message` | string/array | Multi-modal user content — plain string or array of content blocks (text, image, file) |
+| `stateful` | boolean | Persist the conversation server-side (default: `true`) |
+| `references` | array | Reference URLs (images, documents) to attach to this turn |
+| `preset` | string | Server-side system prompt preset name |
+| `max_turns` | integer | Hard cap on agentic-loop iterations for this request |
+| `tool_results` | array | Resume payload for a conversation paused on `ask_user_question` |
+| `messages` | array | Replacement message history — only honored for `action=update` |
+| `title` | string | Conversation title — only honored for `action=update` |
+| `model_group` | string | Filter by model family: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `user_id` | string | Filter conversations by user — only for `action=retrieve_batch` |
+| `application_id` | string | Filter conversations by application — only for `action=retrieve_batch` |
+| `offset` | integer | Pagination offset for `action=retrieve_batch` |
+| `limit` | integer | Pagination limit for `action=retrieve_batch` |
