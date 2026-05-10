@@ -73,6 +73,38 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
+## OpenAI-Compatible Mode
+
+NanoBanana models are also available via the OpenAI-compatible image endpoints. Use these when you want a drop-in replacement for `dall-e-2`/`dall-e-3` or OpenAI's GPT image models.
+
+### Generate (OpenAI-compatible)
+
+```json
+POST /openai/images/generations
+{
+  "model": "nano-banana-pro",
+  "prompt": "a watercolor painting of a French countryside village",
+  "size": "1024x1024"
+}
+```
+
+### Edit (OpenAI-compatible)
+
+```json
+POST /openai/images/edits
+{
+  "model": "nano-banana",
+  "prompt": "change the background to a starry night sky",
+  "image": "https://example.com/photo.jpg"
+}
+```
+
+**OpenAI-compatible parameters (generations):** `model`, `prompt`, `size`
+
+**OpenAI-compatible parameters (edits):** `model`, `prompt`, `image`
+
+> **⚠️ `n` is not honored for NanoBanana models** — values greater than 1 are silently downgraded to 1 (a single image is returned and only one image is billed). To get multiple images, send multiple parallel requests.
+
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
@@ -81,5 +113,6 @@ POST /nano-banana/images
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
+- On `/openai/images/*` endpoints, `n>1` is silently ignored for NanoBanana models — use parallel requests for multiple images
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nano-banana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
