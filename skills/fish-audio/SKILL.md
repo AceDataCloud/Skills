@@ -30,7 +30,7 @@ Response:
 {"audio_url": "https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Include `callback_url` in the request body for async delivery; poll via `POST /fish/tasks` with `{"id": "...", "action": "retrieve"}`.
+> **Async:** Include `callback_url` in the request body for async delivery. Poll status via `POST /fish/tasks` with `{"id": "<task_id>", "action": "retrieve"}`. Note: this endpoint uses `id` + `action` rather than the standard `task_id` pattern in [async-tasks.md](../_shared/async-tasks.md).
 
 ## Endpoints
 
@@ -129,7 +129,7 @@ curl "https://api.acedata.cloud/fish/model/d7900c21663f485ab63ebdb7e5905036" \
 
 | Header | Values | Description |
 |--------|--------|-------------|
-| `model` | `s1`, `s2-pro` | TTS model. Defaults to `s2-pro` |
+| `model` | `s1`, `s2-pro` | TTS model (optional). Defaults to `s2-pro` |
 
 ### `GET /fish/model`
 

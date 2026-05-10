@@ -235,7 +235,7 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | string | **Required for `chat`.** Model name (see Available Models above) |
+| `model` | string | **Required for `chat`.** Model name (see provider-specific model tables above) |
 | `action` | string | Operation: `chat`, `retrieve`, `retrieve_batch`, `update`, `delete` |
 | `id` | string | Conversation ID — required for retrieve/update/delete; resumes a session when supplied with `stateful: true` |
 | `question` | string | Plain-text user prompt (v1-compatible) |
