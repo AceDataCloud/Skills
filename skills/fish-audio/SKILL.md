@@ -92,7 +92,7 @@ GET /fish/model?page_size=10&page_number=1&self=true
 | `top_p` | number | Nucleus sampling |
 | `callback_url` | string | Async callback URL (platform extension) |
 
-### Headers
+### `/fish/tts` Headers
 
 | Header | Values | Description |
 |--------|--------|-------------|
