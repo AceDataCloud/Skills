@@ -40,6 +40,8 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 | `doubao-seedance-1-0-pro-250528` | Text+Image-to-Video | General-purpose, reliable quality |
 | `doubao-seedance-1-0-pro-fast-251015` | Text+Image-to-Video | Faster Pro generation |
 | `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
+| `doubao-seedance-2-0-260128` | Text+Image-to-Video | Next-generation quality model |
+| `doubao-seedance-2-0-fast-260128` | Text+Image-to-Video | Faster generation on Seedance 2.0 |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
 
