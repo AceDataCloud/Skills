@@ -190,22 +190,55 @@ POST /v1/chat/completions
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
 
-## Stateful Conversations Endpoint
+## Stateful Conversations APIs
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+Use `/aichat2/conversations` for new integrations. `/aichat/conversations` is still available for legacy v1-compatible flows.
+
+### Recommended: `/aichat2/conversations`
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"action":"chat","model":"gpt-4.1","question":"What is quantum computing?","stateful":true}'
+```
+
+`Accept` supports:
+- `application/json` (single response)
+- `application/x-ndjson` (line-delimited streaming)
+- `text/event-stream` (SSE streaming)
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `action` | string | `chat` (default), `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `model` | string | Required for `chat`; optional filter for `retrieve_batch` |
+| `id` | string | Conversation ID (required for `retrieve`/`update`/`delete`) |
+| `question` | string | Plain-text prompt (`chat`) |
+| `message` | string/array | Multi-modal content blocks (`text`, `image_url`, `file_url`) |
+| `stateful` | boolean | Persist conversation history (`true` by default) |
+| `references` | array | URL references (auto-mapped to image/file blocks) |
+| `preset` | string | Server-side prompt preset |
+| `max_turns` | integer | Agentic loop cap for one request |
+| `tool_results` | array | Resume payload for paused `ask_user_question` turns |
+| `messages` | array | Replacement history (for `action=update`) |
+| `title` | string | Conversation title (for `action=update`) |
+| `user_id` | string | Filter (for `action=retrieve_batch`) |
+| `application_id` | string | Filter (for `action=retrieve_batch`) |
+| `model_group` | string | Filter bucket: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `offset` | integer | Pagination offset (for `retrieve_batch`) |
+| `limit` | integer | Pagination size (1–100, for `retrieve_batch`) |
+
+### Legacy: `/aichat/conversations`
 
 ```bash
 curl -X POST https://api.acedata.cloud/aichat/conversations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
+  -d '{"model":"gpt-4.1","question":"What is quantum computing?","stateful":true}'
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | string | Model name (see Available Models above) |
-| `question` | string | The prompt or question to answer |
-| `id` | string | Conversation ID — pass the same ID to continue a session |
-| `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
-| `references` | array | Additional context documents to include |
+Legacy v1 fields:
+- `model` (required)
+- `question` (required)
+- `id`, `preset`, `stateful`, `references`
