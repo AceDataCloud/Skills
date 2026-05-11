@@ -192,20 +192,39 @@ POST /v1/chat/completions
 
 ## Stateful Conversations Endpoint
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+For stateful, session-based chat (no need to send the full history each time), use the **recommended** `/aichat2/conversations` endpoint:
 
 ```bash
-curl -X POST https://api.acedata.cloud/aichat/conversations \
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
 ```
 
+### `/aichat2/conversations` key capabilities
+
+- Backward-compatible with v1 request style (`model` + `question` + optional `stateful` / `id` / `references` / `preset`)
+- Structured streaming via `accept: text/event-stream` (SSE) or `accept: application/x-ndjson` (NDJSON)
+- Multimodal input via `message` blocks (`text`, `image_url`, `file_url`)
+- Agentic tool loops with streaming events such as `tool_use`, `tool_result`, `citation`, `artifact`, `ask_user_question`
+- Conversation CRUD via `action`: `retrieve`, `retrieve_batch`, `update`, `delete`
+
+### `/aichat2/conversations` core parameters
+
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | string | Model name (see Available Models above) |
-| `question` | string | The prompt or question to answer |
-| `id` | string | Conversation ID — pass the same ID to continue a session |
-| `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
-| `references` | array | Additional context documents to include |
+| `model` | string | Model name (**required**) |
+| `question` | string | Simple text prompt |
+| `message` | array | Structured multimodal blocks |
+| `stateful` | boolean | Session mode (default `true`) |
+| `id` | string | Conversation ID to continue/retrieve/update/delete |
+| `references` | array | Backward-compatible URL context input |
+| `preset` | string | Optional system/preset prompt |
+| `max_turns` | integer | Max autonomous tool turns in this request |
+| `tool_results` | array | Resume paused conversations (`ask_user_question`) |
+| `action` | string | `retrieve` / `retrieve_batch` / `update` / `delete` |
+| `limit`, `offset` | integer | Pagination for `retrieve_batch` |
+
+### Legacy endpoint (still available)
+
+`POST /aichat/conversations` remains available for v1 clients, but new integrations should prefer `POST /aichat2/conversations`.
