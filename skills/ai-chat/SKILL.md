@@ -219,13 +219,13 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `stateful` | boolean | Persist conversation history (`true` by default) |
 | `references` | array | URL references (auto-mapped to image/file blocks) |
 | `preset` | string | Server-side prompt preset |
-| `max_turns` | integer | Agentic loop cap for one request |
+| `max_turns` | integer | Maximum tool-use / multi-step reasoning iterations for one request |
 | `tool_results` | array | Resume payload for paused `ask_user_question` turns |
 | `messages` | array | Replacement history (for `action=update`) |
 | `title` | string | Conversation title (for `action=update`) |
 | `user_id` | string | Filter (for `action=retrieve_batch`) |
 | `application_id` | string | Filter (for `action=retrieve_batch`) |
-| `model_group` | string | Filter bucket: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `model_group` | string | Provider filter bucket (`chatgpt`=GPT family, `claude`=Anthropic, `gemini`=Google, `grok`=xAI, `kimi`=Moonshot, `glm`=Zhipu, `deepseek`=DeepSeek) |
 | `offset` | integer | Pagination offset (for `retrieve_batch`) |
 | `limit` | integer | Pagination size (1–100, for `retrieve_batch`) |
 
