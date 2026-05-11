@@ -17,83 +17,126 @@ Generate AI audio and synthesize voices through AceDataCloud's Fish Audio API.
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/fish/audios \
+curl -X POST https://api.acedata.cloud/fish/tts \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Hello, this is a demonstration of AI voice synthesis."}'
+  -d '{"text":"Hello, this is a demonstration of AI voice synthesis.","format":"mp3"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"...","action":"retrieve"}`.
 
 ## Endpoints
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /fish/audios` | Generate audio from text or parameters |
-| `POST /fish/voices` | Voice synthesis and cloning |
-| `POST /fish/tasks` | Poll task status |
+| `POST /fish/tts` | Generate speech from text (Fish-compatible TTS API) |
+| `GET /fish/model` | List/search available voice models |
+| `GET /fish/model/{id}` | Fetch details for a specific voice model |
+| `POST /fish/tasks` | Poll async task status (`retrieve` / `retrieve_batch`) |
 
 ## Workflows
 
 ### 1. Text-to-Speech
 
 ```json
-POST /fish/audios
+POST /fish/tts
 {
-  "prompt": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "text": "The quick brown fox jumps over the lazy dog.",
+  "format": "mp3",
+  "reference_id": "8d2c17a9b26d4d83888ea67a1ee565b2"
 }
 ```
 
-### 2. Voice Cloning — Register a Voice
+### 2. List/Search Models
 
-Upload a reference audio to create a cloneable voice.
+```bash
+curl -G https://api.acedata.cloud/fish/model \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  --data-urlencode "title=narration" \
+  --data-urlencode "language=en" \
+  --data-urlencode "page_size=10"
+```
+
+### 3. Get Model by ID
+
+```bash
+curl https://api.acedata.cloud/fish/model/8d2c17a9b26d4d83888ea67a1ee565b2 \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN"
+```
+
+### 4. Poll Async Task
 
 ```json
-POST /fish/voices
+POST /fish/tasks
 {
-  "voice_url": "https://example.com/reference-voice.mp3",
-  "title": "My Custom Voice",
-  "description": "Clear, neutral-toned speaker for TTS",
-  "image_url": "https://example.com/avatar.jpg"
+  "id": "79d82713-2897-4eeb-9934-e7544d471aa7",
+  "action": "retrieve"
 }
 ```
 
-### 3. Text-to-Speech with Cloned Voice
+Batch polling:
 
 ```json
-POST /fish/audios
+POST /fish/tasks
 {
-  "prompt": "Welcome to our platform.",
-  "voice_id": "<voice_id from POST /fish/voices>"
+  "ids": ["task-id-1", "task-id-2"],
+  "action": "retrieve_batch"
 }
 ```
 
 ## Parameters
 
-### `/fish/audios`
+### `/fish/tts` (request body)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `text` | string | Yes | Text to synthesize |
+| `format` | string | Yes | Output format: `mp3` or `pcm` |
+| `reference_id` | string or string[] | No | Voice clone/model ID(s) |
+| `references` | object[] | No | Inline reference samples (`audio` + `text`) |
+| `sample_rate` | integer | No | Audio sample rate |
+| `mp3_bitrate` | integer | No | MP3 bitrate (`64`, `128`, `192`) |
+| `latency` | string | No | Latency mode (`normal`, `balanced`) |
+| `chunk_length` | integer | No | Chunk length for generation |
+| `temperature` | number | No | Sampling temperature |
+| `top_p` | number | No | Top-p sampling |
+| `normalize` | boolean | No | Normalize input text |
+| `prosody` | object | No | Prosody controls (e.g. speed, volume) |
+| `callback_url` | string | No | Webhook URL for async delivery |
+
+### `/fish/tts` (headers)
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer <ACEDATACLOUD_API_TOKEN>` |
+| `Content-Type` | Yes | `application/json` |
+| `model` | No | TTS model: `s1` or `s2-pro` |
+
+### `/fish/model` (query params)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `prompt` | string | Text to synthesize into speech |
-| `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
-| `callback_url` | string | Webhook URL for async delivery |
+| `page_size` | integer | Page size (default `10`) |
+| `page_number` | integer | Page number (default `1`) |
+| `title` | string | Fuzzy title search |
+| `tag` | string | Filter by a single tag |
+| `self` | boolean | `true` to return only current account's models |
+| `author_id` | string | Filter by author ID |
+| `language` | string | Filter by language code |
+| `title_language` | string | Filter by title language |
+| `sort_by` | string | Sort field (e.g., `created_at`, `task_count`) |
 
-### `/fish/voices`
+### `/fish/tasks`
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `voice_url` | string | Reference audio URL for voice cloning |
-| `title` | string | Display title for the cloned voice |
-| `description` | string | Description of the voice |
-| `image_url` | string | Cover image URL for the voice |
-| `callback_url` | string | Webhook URL for async delivery |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | string | Conditionally | Single task ID (`action=retrieve`) |
+| `ids` | string[] | Conditionally | Multiple task IDs (`action=retrieve_batch`) |
+| `action` | string | Yes | `retrieve` or `retrieve_batch` |
 
 ## Gotchas
 
-- Pricing is based on **byte count** of the generated audio
-- Voice cloning requires a clear reference audio sample
-- Text-to-speech supports multiple languages automatically
-- Use the `/fish/voices` endpoint to register a reference audio and receive a `voice_id` for TTS
+- `format` must be explicitly provided (`mp3` or `pcm`)
+- Use the `model` **header** (not request body) for `s1` / `s2-pro`
+- `GET /fish/model/{id}` is useful for retrieving a voice ID to pass as `reference_id`
+- Returned audio URLs are signed links and can expire
