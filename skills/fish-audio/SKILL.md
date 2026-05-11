@@ -94,7 +94,7 @@ POST /fish/tasks
 | `sample_rate` | integer | Output sample rate |
 | `mp3_bitrate` | integer | MP3 bitrate (`64`, `128`, `192`) |
 | `opus_bitrate` | integer | Opus bitrate |
-| `prosody` | object | Prosody overrides object (for example `{"speed": 1.2, "volume": 3}`) |
+| `prosody` | object | Prosody overrides object (example: `{"speed": 1.2, "volume": 3}`; key/range constraints follow Fish upstream docs) |
 | `latency` | string | `normal` or `balanced` |
 | `temperature` | number | Sampling temperature |
 | `top_p` | number | Top-p sampling |
@@ -109,7 +109,7 @@ Headers:
 
 | Header | Values | Description |
 |--------|--------|-------------|
-| `model` | `s1`, `s2-pro` | Optional model selector (`s1` is more stable for long text; `s2-pro` is more expressive and is the default) |
+| `model` | `s1`, `s2-pro` | Optional model selector. Use `s1` for more stable long-text synthesis, or `s2-pro` for more expressive output. Default: `s2-pro` |
 | `accept` | `application/json` | Optional response media type |
 
 ### `/fish/model` (GET)
