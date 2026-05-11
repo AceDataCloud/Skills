@@ -94,7 +94,7 @@ POST /fish/tasks
 | `sample_rate` | integer | Output sample rate |
 | `mp3_bitrate` | integer | MP3 bitrate (`64`, `128`, `192`) |
 | `opus_bitrate` | integer | Opus bitrate |
-| `prosody` | object | Prosody overrides (for example `speed`, `volume`) |
+| `prosody` | object | Prosody overrides object (for example `{"speed": 1.2, "volume": 0}`) |
 | `latency` | string | `normal` or `balanced` |
 | `temperature` | number | Sampling temperature |
 | `top_p` | number | Top-p sampling |
@@ -106,7 +106,7 @@ POST /fish/tasks
 | `callback_url` | string | Webhook URL for async completion |
 
 Headers:
-- `model` (optional): `s1` or `s2-pro`
+- `model` (optional): `s1` (more stable for long text) or `s2-pro` (more expressive; default)
 - `accept` (optional): `application/json`
 
 ### `/fish/model` (GET)
