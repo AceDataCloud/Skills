@@ -24,7 +24,7 @@ curl -X POST https://api.acedata.cloud/fish/tts \
   -d '{"text":"Hello, this is a demonstration of AI voice synthesis."}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"...","action":"retrieve"}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"<task_id>","action":"retrieve"}`.
 
 ## Endpoints
 

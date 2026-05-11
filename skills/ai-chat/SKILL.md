@@ -219,7 +219,7 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `stateful` | boolean | Persist conversation history (`true` by default) |
 | `references` | array | URL references (auto-mapped to image/file blocks) |
 | `preset` | string | Server-side prompt preset |
-| `max_turns` | integer | Maximum tool-use / multi-step reasoning iterations per request; when reached, processing stops and returns the current state |
+| `max_turns` | integer | Maximum tool-use/multi-step iterations per request. Processing stops and returns current state when reached |
 | `tool_results` | array | Resume payload for paused `ask_user_question` turns |
 | `messages` | array | Replacement history (for `action=update`) |
 | `title` | string | Conversation title (for `action=update`) |
