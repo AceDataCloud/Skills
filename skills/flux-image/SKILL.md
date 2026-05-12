@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/flux/images \
   -d '{"prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
 
 ## Models
 
@@ -77,6 +77,6 @@ POST /flux/images
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - Ultra model produces highest quality but is slowest — use dev for iteration, ultra for final output
-- All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks`
+- All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks` with `{"id": "..."}`
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

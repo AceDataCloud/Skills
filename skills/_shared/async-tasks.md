@@ -21,7 +21,7 @@ Using `"callback_url": "https://api.acedata.cloud/health"` as a placeholder forc
 curl -X POST https://api.acedata.cloud/<service>/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from step 1>"}'
+  -d '{"id": "<task_id from step 1>"}'
 ```
 
 ## Important Notes
@@ -29,4 +29,4 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 - Always use `callback_url` to avoid long-running HTTP connections that time out
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Some services use `id` instead of `task_id` in the poll request (e.g., Veo, Seedream, NanoBanana)
+- All task endpoints use `id` (not `task_id`) in the poll request body
