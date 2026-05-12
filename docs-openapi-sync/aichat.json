@@ -1,0 +1,970 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AI Dialogue",
+    "version": "1.0.0",
+    "description": "API reference for AI Dialogue on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/aichat2/conversations": {
+      "post": {
+        "summary": "Conversations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": "f2f4b3e8-0c0a-4d3a-aaa2-7ff80c0a1c44",
+                    "answer": "Hi! I'm an AI assistant. How can I help you today?"
+                  },
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier of the conversation. For action=chat, the new (or reused, when `id` was supplied) conversation id."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "description": "The final assistant answer text. Only present for action=chat with accept: application/json."
+                    }
+                  }
+                }
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "object",
+                  "description": "Line-delimited JSON. Each line is a streaming event from the agentic loop. The most common event is `text_delta` (incremental answer text); other events surface tool calls, citations, thinking, ask-user prompts, etc. A final `done` event closes the stream.",
+                  "example": {
+                    "type": "text_delta",
+                    "content": " today",
+                    "delta_answer": " today",
+                    "answer": "Hello! How can I assist you today",
+                    "id": "f2f4b3e8-0c0a-4d3a-aaa2-7ff80c0a1c44"
+                  }
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "description": "Server-Sent Events stream. Each event is emitted as `data: {json}\\n\\n`. The stream terminates with a `done` event followed by `data: [DONE]\\n\\n`. Event types include `text_delta`, `thinking`, `tool_use`, `tool_result`, `card`, `citation`, `ask_user_question`, `artifact`, `system_message`, `compact`, `error`, `done`."
+                }
+              }
+            },
+            "description": "OK. For action=chat, returns the conversation result (JSON / NDJSON / SSE selected via the `accept` header). For action=retrieve, returns the full conversation document. For action=retrieve_batch, returns `{ items, total }` of conversation summaries. For action=update / delete, returns `{ id, success: true }`."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is required"
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is required",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Bad request, possibly due to missing or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized, invalid or missing authorization token."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "code": "not_found",
+                      "message": "conversation not found"
+                    },
+                    "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "not_found",
+                          "description": "Error code of the response."
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "conversation not found",
+                          "description": "Error message of the response."
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "The trace id of this request."
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The conversation referenced by `id` does not exist (action=retrieve / update / delete)."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "code": "too_many_requests",
+                      "message": "You have exceeded the rate limit."
+                    },
+                    "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "too_many_requests",
+                          "description": "Error code of the response."
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "You have exceeded the rate limit.",
+                          "description": "Error message of the response."
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "The trace id of this request."
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Too many requests, you have exceeded the rate limit."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "code": "chat_error",
+                      "message": "upstream LLM returned an error"
+                    },
+                    "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "chat_error",
+                          "description": "Error code of the response."
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "upstream LLM returned an error",
+                          "description": "Error message of the response."
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "The trace id of this request."
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal server error, something went wrong on the server."
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json",
+                "application/x-ndjson",
+                "text/event-stream"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Response format. `application/json` (default) returns a single `{answer, id}` object once generation completes. `application/x-ndjson` streams line-delimited JSON events. `text/event-stream` streams Server-Sent Events with the same payloads."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "chat",
+                      "retrieve",
+                      "retrieve_batch",
+                      "update",
+                      "delete"
+                    ],
+                    "description": "Which operation to perform. Defaults to `chat`. `retrieve` loads one conversation (requires `id`). `retrieve_batch` lists conversation summaries (no messages) with optional filters. `update` patches `title` / `messages`. `delete` removes a conversation."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Conversation identifier. Required for action=retrieve/update/delete. Optional for action=chat: when supplied with `stateful: true`, the conversation is resumed (its message history is loaded and the new turn is appended)."
+                  },
+                  "model": {
+                    "enum": [
+                      "gpt-4",
+                      "gpt-4.1",
+                      "gpt-4.1-mini",
+                      "gpt-4.1-nano",
+                      "gpt-4o",
+                      "gpt-4o-2024-05-13",
+                      "gpt-4o-all",
+                      "gpt-4o-image",
+                      "gpt-4o-mini",
+                      "gpt-5-all",
+                      "gpt-5.1-all",
+                      "gpt-5.2-pro",
+                      "gpt-5.4-mini",
+                      "gpt-5.4-nano",
+                      "gpt-image-1",
+                      "claude-3-5-haiku-20241022",
+                      "claude-3-5-sonnet-20240620",
+                      "claude-3-5-sonnet-20241022",
+                      "claude-3-7-sonnet-20250219",
+                      "claude-3-haiku-20240307",
+                      "claude-3-opus-20240229",
+                      "claude-3-sonnet-20240229",
+                      "claude-haiku-4-5-20251001",
+                      "claude-opus-4-1-20250805",
+                      "claude-opus-4-20250514",
+                      "claude-opus-4-5-20251101",
+                      "claude-opus-4-6",
+                      "claude-opus-4-7",
+                      "claude-sonnet-4-20250514",
+                      "claude-sonnet-4-5-20250929",
+                      "claude-sonnet-4-6",
+                      "gemini-2.0-flash-lite",
+                      "gemini-2.5-flash-lite",
+                      "gemini-3-pro-preview",
+                      "gemini-3.1-flash-image-preview",
+                      "gemini-3.1-flash-lite-preview",
+                      "gemini-3.1-pro",
+                      "gemini-3.1-pro-preview",
+                      "grok-2-vision",
+                      "grok-2-vision-1212",
+                      "grok-3",
+                      "grok-3-fast",
+                      "grok-3-mini",
+                      "grok-3-mini-fast",
+                      "grok-4",
+                      "grok-4-0709",
+                      "grok-4-1-fast",
+                      "grok-4-1-fast-non-reasoning",
+                      "grok-4-1-fast-reasoning",
+                      "deepseek-chat",
+                      "deepseek-r1",
+                      "deepseek-r1-0528",
+                      "deepseek-reasoner",
+                      "deepseek-v3",
+                      "deepseek-v3-250324",
+                      "deepseek-v3.2-exp",
+                      "deepseek-v4-flash",
+                      "kimi-k2-0711-preview",
+                      "kimi-k2-0905-preview",
+                      "kimi-k2-instruct-0905",
+                      "kimi-k2-thinking",
+                      "kimi-k2-thinking-turbo",
+                      "kimi-k2-turbo-preview",
+                      "kimi-k2.5",
+                      "glm-3-turbo",
+                      "glm-4-air",
+                      "glm-4-flash",
+                      "glm-4-plus",
+                      "glm-4.5",
+                      "glm-4.5-air",
+                      "glm-4.5v",
+                      "glm-4.6",
+                      "glm-4.7",
+                      "glm-5",
+                      "glm-5-turbo",
+                      "glm-5.1",
+                      "o1",
+                      "o1-mini",
+                      "o1-pro",
+                      "o3",
+                      "o3-mini",
+                      "o3-pro",
+                      "o4-mini"
+                    ],
+                    "type": "string",
+                    "description": "Which model to use. Required for action=chat. For action=retrieve_batch, acts as an optional filter."
+                  },
+                  "question": {
+                    "type": "string",
+                    "description": "Plain-text user prompt (v1-compatible). Ignored when `message` is supplied."
+                  },
+                  "message": {
+                    "description": "Multi-modal user content for this turn. Either a plain string or an array of content blocks. Each block has a `type` of `text`, `image_url`, or `file_url`. Use this for vision / file inputs; for pure text you can stay on the legacy `question` field.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "text",
+                                "image_url",
+                                "file_url"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "description": "Required when type=text."
+                            },
+                            "image_url": {
+                              "type": "object",
+                              "description": "Required when type=image_url.",
+                              "properties": {
+                                "url": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "file_url": {
+                              "type": "object",
+                              "description": "Required when type=file_url.",
+                              "properties": {
+                                "url": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "stateful": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to persist the conversation. When `true` (default), the new turn is stored under `id` and can be resumed by later calls. Set to `false` for one-shot requests where the conversation must not be saved."
+                  },
+                  "references": {
+                    "type": "array",
+                    "description": "Optional reference URLs to attach to this turn. URLs ending in image extensions (jpg/png/webp/…) are auto-converted to `image_url` blocks; everything else becomes a `file_url` block. Useful for the v1-compatible flow when you do not want to build the `message` array yourself.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "preset": {
+                    "type": "string",
+                    "description": "Name of a server-side system prompt preset to apply to this turn. Stacks with skill / MCP system prompts."
+                  },
+                  "max_turns": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Hard cap on agentic-loop iterations for this request. Clamped to the platform default. Each iteration is one upstream LLM call; raise this only when long tool chains are expected."
+                  },
+                  "tool_results": {
+                    "type": "array",
+                    "description": "Resume payload for a conversation paused on `ask_user_question`. Provide exactly one entry whose `tool_use_id` matches the pending tool_use block. When set, `question` / `message` / `references` are ignored.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "tool_use_id",
+                        "output"
+                      ],
+                      "properties": {
+                        "tool_use_id": {
+                          "type": "string",
+                          "description": "Must match the `tool_id` of the pending ask_user_question block."
+                        },
+                        "output": {
+                          "type": "string",
+                          "description": "The user's answer to the pending question."
+                        },
+                        "is_error": {
+                          "type": "boolean",
+                          "description": "Set to true to signal the model that the user declined / cannot answer."
+                        }
+                      }
+                    }
+                  },
+                  "messages": {
+                    "type": "array",
+                    "description": "Replacement message history. Only honored for action=update.",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Conversation title. Only honored for action=update."
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "description": "Filter conversations by user. Only honored for action=retrieve_batch (and only when the caller does not already carry a user context)."
+                  },
+                  "application_id": {
+                    "type": "string",
+                    "description": "Filter conversations by application. Only honored for action=retrieve_batch."
+                  },
+                  "model_group": {
+                    "type": "string",
+                    "enum": [
+                      "chatgpt",
+                      "claude",
+                      "gemini",
+                      "grok",
+                      "kimi",
+                      "glm",
+                      "deepseek"
+                    ],
+                    "description": "Filter conversations by provider bucket. Only honored for action=retrieve_batch."
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0,
+                    "description": "Pagination offset for action=retrieve_batch."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 100,
+                    "description": "Pagination limit for action=retrieve_batch."
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Next-generation AI conversation endpoint. Generalises the v1 /aichat/conversations API with multi-modal user content, agentic tool calling (built-in tools + connection-bound MCP), SSE/NDJSON streaming and conversation-store CRUD actions (chat, retrieve, retrieve_batch, update, delete). Drop-in compatible with v1's question/model/stateful/references shape — same response when callers stick to the v1 fields and accept: application/json."
+      }
+    },
+    "/aichat/conversations": {
+      "post": {
+        "summary": "Conversations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": "64a67fff-61dc-4801-8339-2c69334c61d6",
+                    "answer": "I am a highly intelligent question answering AI. If you ask me a question, I will do my best to give you a helpful answer."
+                  },
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier of the conversation."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "description": "The generated answer for the given prompt."
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK, the request was successful."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Bad request, possibly due to missing or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized, invalid or missing authorization token."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Too many requests, you have exceeded the rate limit."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Internal server error, something went wrong on the server."
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json",
+                "application/x-ndjson"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Specifies the format of the response from the server."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question",
+                  "model"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The unique identifier of the conversation."
+                  },
+                  "model": {
+                    "enum": [
+                      "gpt-5.5",
+                      "gpt-5.5-pro",
+                      "gpt-5.4",
+                      "gpt-5.4-pro",
+                      "gpt-5.2",
+                      "gpt-5.1",
+                      "gpt-5.1-all",
+                      "gpt-5",
+                      "gpt-5-mini",
+                      "gpt-5-nano",
+                      "gpt-5-all",
+                      "gpt-4",
+                      "gpt-4-all",
+                      "gpt-4-turbo",
+                      "gpt-4-turbo-preview",
+                      "gpt-4-vision-preview",
+                      "gpt-4.1",
+                      "gpt-4.1-2025-04-14",
+                      "gpt-4.1-mini",
+                      "gpt-4.1-mini-2025-04-14",
+                      "gpt-4.1-nano",
+                      "gpt-4.1-nano-2025-04-14",
+                      "gpt-4.5-preview",
+                      "gpt-4.5-preview-2025-02-27",
+                      "gpt-4o",
+                      "gpt-4o-2024-05-13",
+                      "gpt-4o-2024-08-06",
+                      "gpt-4o-2024-11-20",
+                      "gpt-4o-all",
+                      "gpt-4o-image",
+                      "gpt-4o-mini",
+                      "gpt-4o-mini-2024-07-18",
+                      "gpt-4o-mini-search-preview",
+                      "gpt-4o-mini-search-preview-2025-03-11",
+                      "gpt-4o-search-preview",
+                      "gpt-4o-search-preview-2025-03-11",
+                      "o1",
+                      "o1-2024-12-17",
+                      "o1-all",
+                      "o1-mini",
+                      "o1-mini-2024-09-12",
+                      "o1-mini-all",
+                      "o1-preview",
+                      "o1-preview-2024-09-12",
+                      "o1-preview-all",
+                      "o1-pro",
+                      "o1-pro-2025-03-19",
+                      "o1-pro-all",
+                      "o3",
+                      "o3-2025-04-16",
+                      "o3-all",
+                      "o3-mini",
+                      "o3-mini-2025-01-31",
+                      "o3-mini-2025-01-31-high",
+                      "o3-mini-2025-01-31-low",
+                      "o3-mini-2025-01-31-medium",
+                      "o3-mini-all",
+                      "o3-mini-high",
+                      "o3-mini-high-all",
+                      "o3-mini-low",
+                      "o3-mini-medium",
+                      "o3-pro",
+                      "o3-pro-2025-06-10",
+                      "o4-mini",
+                      "o4-mini-2025-04-16",
+                      "o4-mini-all",
+                      "o4-mini-high-all",
+                      "deepseek-r1",
+                      "deepseek-r1-0528",
+                      "deepseek-v3",
+                      "deepseek-v3-250324",
+                      "deepseek-v4-flash",
+                      "grok-3",
+                      "glm-5.1",
+                      "glm-4.7",
+                      "glm-4.6",
+                      "glm-4.5-air",
+                      "glm-3-turbo"
+                    ],
+                    "type": "string",
+                    "description": "The model to be used for answering the prompt."
+                  },
+                  "preset": {
+                    "type": "string",
+                    "description": "The preset model to be used for answering the prompt."
+                  },
+                  "question": {
+                    "type": "string",
+                    "description": "The prompt or question to be answered."
+                  },
+                  "stateful": {
+                    "type": "boolean",
+                    "description": "Whether to use the stateful conversation or not."
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "The references or sources to be used for answering the prompt."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Use Large Language Model to generate answers for the given prompt, which can supports all kind of models, such as GPT-3, GPT-4, GPT-4-Browsing, etc"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "AI Dialogue"
+    }
+  ]
+}

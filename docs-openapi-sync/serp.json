@@ -1,0 +1,784 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Search Engine",
+    "version": "1.0.0",
+    "description": "API reference for Search Engine on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/serp/google": {
+      "post": {
+        "summary": "Get Google search results",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "images": [
+                      {
+                        "link": "https://en.wikipedia.org/wiki/Cat",
+                        "title": "upload.wikimedia.org/wikipedia/commons/0/0b/Cat_po...",
+                        "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Cat_poster_1.jpg"
+                      },
+                      {
+                        "link": "https://www.nationalgeographic.com/animals/mammals/facts/domestic-cat",
+                        "title": "Domestic cat",
+                        "image_url": "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_3x2.jpg"
+                      },
+                      {
+                        "link": "https://www.four-paws.org/our-stories/publications-guides/a-cats-personality",
+                        "title": "A Cat's Personality - FOUR PAWS International - Animal Welfare ...",
+                        "image_url": "https://media.4-paws.org/d/2/5/f/d25ff020556e4b5eae747c55576f3b50886c0b90/cut%20cat%20serhio%2002-1813x1811-720x719.jpg"
+                      },
+                      {
+                        "link": "https://en.wikipedia.org/wiki/Cat",
+                        "title": "Cat - Wikipedia",
+                        "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg"
+                      }
+                    ],
+                    "organic": [
+                      {
+                        "link": "https://en.wikipedia.org/wiki/Cat",
+                        "title": "Cat - Wikipedia",
+                        "snippet": "The cat (Felis catus), commonly referred to as the domestic cat or house cat, is a small domesticated carnivorous mammal. It is the only domesticated ...",
+                        "position": 1
+                      },
+                      {
+                        "date": "3 days ago",
+                        "link": "https://www.britannica.com/animal/cat",
+                        "title": "Cat | Breeds, Origins, History, Body Types, Senses ... - Britannica",
+                        "snippet": "Domestic cats are characterized by retractable claws, powerful bodies, acute senses, long tails, and specialized teeth adapted for hunting prey.",
+                        "position": 2,
+                        "sitelinks": [
+                          {
+                            "link": "https://www.britannica.com/animal/feral-cat",
+                            "title": "Feral cat"
+                          },
+                          {
+                            "link": "https://www.britannica.com/animal/Norwegian-forest-cat",
+                            "title": "Norwegian Forest Cat"
+                          },
+                          {
+                            "link": "https://www.britannica.com/animal/Siamese-breed-of-cat",
+                            "title": "Siamese"
+                          },
+                          {
+                            "link": "https://www.britannica.com/animal/cat/List-of-selected-shorthair-breeds",
+                            "title": "List of selected shorthair breeds"
+                          }
+                        ]
+                      },
+                      {
+                        "link": "https://www.nationalgeographic.com/animals/mammals/facts/domestic-cat",
+                        "title": "Domestic cat - National Geographic",
+                        "snippet": "As mostly nocturnal animals, cats have excellent vision and hearing, with ears that can turn like satellite dishes. Their reputation for having nine lives stems ...",
+                        "position": 3
+                      },
+                      {
+                        "date": "May 17, 2022",
+                        "link": "https://hakaimagazine.com/features/its-10-pm-do-you-know-where-your-cat-is/",
+                        "title": "It's 10 PM. Do You Know Where Your Cat Is? - Hakai Magazine",
+                        "snippet": "This cat companionship is as old as the country itself. The Norse who mastered sailing from northern Europe to this middle-of-nowhere island ...",
+                        "position": 4
+                      },
+                      {
+                        "link": "https://www.avma.org/resources/pet-owners/petcare/selecting-pet-cat",
+                        "title": "Selecting a pet cat | American Veterinary Medical Association",
+                        "snippet": "When choosing a cat, pick one that is active, inquisitive, and seeks affection and attention from people. Sometimes cats are uncomfortable in noisy or ...",
+                        "position": 5
+                      },
+                      {
+                        "link": "https://www.alleycat.org/resources/the-natural-history-of-the-cat/",
+                        "title": "The Natural History of Domestic Cats | Alley Cat Allies",
+                        "snippet": "Cats began their unique relationship with humans 10,000 to 12,000 years ago in the Fertile Crescent, the geographic region where some of the earliest ...",
+                        "position": 6
+                      },
+                      {
+                        "link": "https://www.purina.com/cats/cat-breeds",
+                        "title": "All Cat Breed Information | Purina US",
+                        "snippet": "Trying to decide what type of cat is right for you and your family? Browse through our list of cat breeds, and find the best cat for you.",
+                        "position": 7,
+                        "sitelinks": [
+                          {
+                            "link": "https://www.purina.com/cats/cat-breeds/birman-cat",
+                            "title": "Birman Cat Breed"
+                          },
+                          {
+                            "link": "https://www.purina.com/cats/cat-breeds/abyssinian-cat",
+                            "title": "Abyssinian Cat Breed"
+                          },
+                          {
+                            "link": "https://www.purina.com/cats/cat-breeds/american-shorthair",
+                            "title": "American Shorthair Cat"
+                          },
+                          {
+                            "link": "https://www.purina.com/cats/cat-breeds/chartreux",
+                            "title": "Chartreux"
+                          }
+                        ]
+                      },
+                      {
+                        "date": "Apr 4, 2024",
+                        "link": "https://www.youtube.com/watch?v=Lsc-DRpEauY",
+                        "title": "A DAY IN THE LIFE OF A CAT OWNER - YouTube",
+                        "snippet": "The struggle is real... Experience a day in the life of Simon, all cat owners will relate! Check out ...",
+                        "position": 8,
+                        "image_url": "https://i.ytimg.com/vi/Lsc-DRpEauY/default.jpg?sqp=-oaymwEECHgQQw&rs=AMzJL3kwgvYkTQDoFf__9Ht7cBZ81s_sOA",
+                        "attributes": {
+                          "Posted": "Apr 4, 2024",
+                          "Duration": "12:24"
+                        }
+                      },
+                      {
+                        "link": "https://www.aspca.org/pet-care/cat-care/general-cat-care",
+                        "title": "General Cat Care | ASPCA",
+                        "snippet": "Get a host of handy information about your feline companion in our general cat care guide. It also comes in an easy-to-print PDF for tacking on your fridge ...",
+                        "position": 9,
+                        "sitelinks": [
+                          {
+                            "link": "https://www.aspca.org/pet-care/cat-care/general-cat-care#:~:text=General%20Cat%20Care,-Have%20you%20recently%20added%20a",
+                            "title": "General Cat Care"
+                          },
+                          {
+                            "link": "https://www.aspca.org/pet-care/cat-care/general-cat-care#:~:text=Litter%20Box,-All%20indoor%20cats%20need%20a",
+                            "title": "Litter Box"
+                          },
+                          {
+                            "link": "https://www.aspca.org/pet-care/cat-care/general-cat-care#:~:text=Cat%20Supply%20Checklist",
+                            "title": "Cat Supply Checklist"
+                          }
+                        ]
+                      },
+                      {
+                        "link": "https://www.freshpet.com/blog/10-reasons-why-cats-make-great-pets",
+                        "title": "10 Reasons Why Cats Make Great Pets - Freshpet",
+                        "snippet": "1. Cats are quiet. If noise levels are a concern in your living situation, cats are a great choice of pet. · 2. Cats are low maintenance. Compared to dogs, cats ...",
+                        "position": 10
+                      }
+                    ],
+                    "knowledge_graph": {
+                      "type": "Animal",
+                      "title": "Cat",
+                      "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJn19n5xv68EdzI0Vfp-GbACvr6Oh5_FHaqKDI55c&s=0",
+                      "attributes": {
+                        "Class": "Mammalia",
+                        "Domain": "Eukaryota",
+                        "Family": "Felidae",
+                        "Lifespan": "12 – 18 years (Domesticated)",
+                        "Scientific name": "Felis catus",
+                        "Gestation period": "65 days"
+                      },
+                      "description": "The cat, commonly referred to as the domestic cat or house cat, is a small domesticated carnivorous mammal. It is the only domesticated species of the family Felidae. Advances in archaeology and genetics have shown that the domestication of the...",
+                      "description_link": "https://en.wikipedia.org/wiki/Cat",
+                      "description_source": "Wikipedia"
+                    },
+                    "people_also_ask": [
+                      {
+                        "link": "https://en.wikipedia.org/wiki/Cat",
+                        "title": "Cat - Wikipedia",
+                        "snippet": "Valued by humans for companionship and its ability to kill vermin, the cat's retractable claws are adapted to killing small prey like mice and rats. It has a strong, flexible body, quick reflexes, and sharp teeth, and its night vision and sense of smell are well developed.",
+                        "question": "What is a cat known for?"
+                      },
+                      {
+                        "link": "https://en.wikipedia.org/wiki/Felidae",
+                        "title": "Felidae - Wikipedia",
+                        "snippet": "Proailurus is the oldest known cat that occurred after the Eocene–Oligocene extinction event about 33.9 million years ago; fossil remains were excavated in France and Mongolia's Hsanda Gol Formation. Fossil occurrences indicate that the Felidae arrived in North America around 18.5 million years ago.",
+                        "question": "What was the first cat on Earth?"
+                      },
+                      {
+                        "link": "https://mmilani.com/writing/articles/cats/what-makes-a-cat/",
+                        "title": "Brief Overview of Cat Behavior: What Makes a Cat a Cat? - MMilani.com",
+                        "snippet": "To summarize then, five behaviors make cats cats: They're nocturnal, territorial, solitary, predatory, and maternal-sexual. And because cats are so newly domesticated, we can be sure these same behaviors may influence our pets every bit as much as they did their ancient ancestors.",
+                        "question": "What makes a cat a cat?"
+                      },
+                      {
+                        "link": "https://cvillecatcare.com/veterinary-topics/101-amazing-cat-facts-fun-trivia-about-your-feline-friend/",
+                        "title": "101 Amazing Cat Facts: Fun Trivia About Your Feline Friend",
+                        "snippet": "Cats are crepuscular, which means that they're most active at dawn and dusk. Cats are fastidious creatures about their “bathroom.” If you have more than one cat, you should have one litter box for each. Cats can spend up to a third of their waking hours grooming. Cats live longer when they stay indoors.",
+                        "question": "What are some facts about cats behavior?"
+                      }
+                    ],
+                    "related_searches": [
+                      {
+                        "query": "Birds"
+                      },
+                      {
+                        "query": "A cat meaning"
+                      },
+                      {
+                        "query": "A cat movie"
+                      },
+                      {
+                        "query": "Cat lifespan"
+                      },
+                      {
+                        "query": "How to get a cat"
+                      },
+                      {
+                        "query": "Black Cat"
+                      },
+                      {
+                        "query": "Cat videos"
+                      },
+                      {
+                        "query": "Cute cat"
+                      },
+                      {
+                        "query": "History of cats timeline"
+                      }
+                    ]
+                  },
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "description": "The output adsl proxy list"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "The flag indicates the request is successful or not"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK, the request is successful."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Bad request, possibly due to missing or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized, invalid or missing authorization token."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized, invalid or missing authorization token."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized, invalid or missing authorization token."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Too many requests, you have exceeded the rate limit."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Error code of the response."
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Error message of the response."
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "The trace id of this request."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Internal server error, something went wrong on the server."
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Specifies the format of the response from the server."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "number",
+                    "description": "The page number of the search results, default is 1"
+                  },
+                  "type": {
+                    "enum": [
+                      "search",
+                      "images",
+                      "news",
+                      "maps",
+                      "places",
+                      "videos"
+                    ],
+                    "type": "string",
+                    "default": "search",
+                    "description": "search resource type parameter. Currently, only six types are supported. The default parameter is search."
+                  },
+                  "query": {
+                    "type": "string",
+                    "example": "apple inc",
+                    "description": "The search query."
+                  },
+                  "range": {
+                    "type": "string",
+                    "description": "The date range of the search results, default is unlimited"
+                  },
+                  "number": {
+                    "type": "number",
+                    "description": "The number of search results, default is 10"
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "The country code of the search engine, default is US."
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "The language code of the search engine, default is en."
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Search Engine"
+    }
+  ]
+}
