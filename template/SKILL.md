@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/<endpoint> \
   -d '{"prompt": "..."}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /<service>/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /<service>/tasks` with `{"id": "..."}`.
 
 ## Workflow
 

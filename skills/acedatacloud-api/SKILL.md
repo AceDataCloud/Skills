@@ -122,7 +122,7 @@ Error response format:
 ## Gotchas
 
 - Tokens are **service-scoped** by default — create a global token if you need cross-service access
-- Async APIs return a `task_id` — always use `callback_url` to get the task_id immediately, then poll for results
+- Async APIs return a `task_id` — always use `callback_url` to get the task ID immediately, then poll `/.../tasks` with `{"id":"<task_id>"}` for results
 - Avoid `wait: true` — it blocks for the full generation duration and will time out for video/music tasks
 - Rate limits vary by service tier — upgrade your plan if hitting limits
 - All timestamps are in UTC
