@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action":"retrieve","id":"..."}`. For batch lookup, use `{"action":"retrieve_batch","ids":[...]}` (or `trace_id` / `trace_ids`).
 
 ## Generation Modes
 
@@ -128,6 +128,28 @@ POST /midjourney/videos
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+### 7. Shorten a Long Prompt
+
+Use Midjourney's prompt analyzer to extract high-weight tokens and return 5 shorter candidate prompts.
+
+```json
+POST /midjourney/shorten
+{
+  "prompt": "a serene mountain lake at sunrise, mist rising from the water, towering pine trees on the shore, golden hour lighting, ultra detailed, cinematic, 35mm film photography style, masterpiece --ar 16:9 --v 6"
+}
+```
+
+### 8. Translate Prompt Text to English
+
+Translate non-English prompt content before generation workflows.
+
+```json
+POST /midjourney/translate
+{
+  "content": "精致，无暇，洁白的天使"
 }
 ```
 
