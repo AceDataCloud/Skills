@@ -1,6 +1,6 @@
 ---
 name: midjourney-image
-description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, or generating video from images. Supports versions 5.2 through 8.
+description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, shortening/translating prompts, or generating video from images. Supports versions 5.2 through 8.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action":"retrieve","id":"..."}`.
 
 ## Generation Modes
 
@@ -128,6 +128,28 @@ POST /midjourney/videos
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+### 7. Shorten a Prompt
+
+Analyze a long prompt and return focused shorter variants.
+
+```json
+POST /midjourney/shorten
+{
+  "prompt": "a hyper-detailed cinematic cyberpunk city with neon reflections, moody fog, volumetric lighting, and bustling street markets at night"
+}
+```
+
+### 8. Translate Prompt to English
+
+Translate non-English content to English before generation.
+
+```json
+POST /midjourney/translate
+{
+  "content": "一只穿宇航服的柴犬在月球上奔跑"
 }
 ```
 
