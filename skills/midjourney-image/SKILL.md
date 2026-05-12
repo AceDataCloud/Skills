@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"id": "...", "action": "retrieve"}`.
 
 ## Generation Modes
 
@@ -118,7 +118,23 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Translate / Shorten Prompt Text
+
+Prepare prompts before generation:
+
+```json
+POST /midjourney/translate
+{"content": "精致，无暇，洁白的天使"}
+```
+
+```json
+POST /midjourney/shorten
+{"prompt": "a very long detailed prompt with many descriptors ..."}
+```
+
+`/translate` converts Chinese prompt text to English. `/shorten` returns up to 5 concise candidate prompts in `prompts`.
+
+### 7. Generate Video from Image
 
 Create a video with a reference image and text prompt.
 
@@ -166,5 +182,6 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Video generation requires a reference `image_url` — it cannot generate from text alone
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
+- Task polling uses `id` / `ids` with `action` (`retrieve` or `retrieve_batch`), not `task_id`
 
 > **MCP:** `pip install mcp-midjourney` | Hosted: `https://midjourney.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
