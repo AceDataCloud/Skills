@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action":"retrieve","id":"..."}`.
 
 ## Generation Modes
 
@@ -129,6 +129,24 @@ POST /midjourney/videos
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
 }
+```
+
+### 7. Shorten Long Prompts
+
+Split very long prompts into Midjourney-friendly chunks.
+
+```json
+POST /midjourney/shorten
+{"prompt": "very long prompt text..."}
+```
+
+### 8. Translate to English
+
+Translate text to English before generation.
+
+```json
+POST /midjourney/translate
+{"content": "一只未来风格的机械猫"}
 ```
 
 ## Prompt Parameters
