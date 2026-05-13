@@ -1,6 +1,6 @@
 ---
 name: midjourney-image
-description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, or generating video from images. Supports versions 5.2 through 8.
+description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, shortening/translating prompts, or generating video from images. Supports versions 5.2 through 8.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action": "retrieve", "id": "<task_id>"}`.
 
 ## Generation Modes
 
@@ -118,7 +118,34 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Shorten a Prompt
+
+Analyze and shorten long prompts while preserving key weighted tokens.
+
+```json
+POST /midjourney/shorten
+{"prompt": "a cinematic cyberpunk city street with neon reflections and flying cars --ar 16:9 --v 7"}
+```
+
+### 7. Translate Prompt to English
+
+Translate prompt text to English before generation.
+
+```json
+POST /midjourney/translate
+{"content": "赛博朋克城市夜景，霓虹灯，电影感"}
+```
+
+### 8. Get Seed from an Image
+
+Extract the seed from an existing Midjourney image.
+
+```json
+POST /midjourney/seed
+{"image_id": "image-id-from-task-result"}
+```
+
+### 9. Generate Video from Image
 
 Create a video with a reference image and text prompt.
 
@@ -128,6 +155,26 @@ POST /midjourney/videos
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
+}
+```
+
+### 10. Retrieve Task Status
+
+```json
+POST /midjourney/tasks
+{
+  "action": "retrieve",
+  "id": "task-id"
+}
+```
+
+For batch polling:
+
+```json
+POST /midjourney/tasks
+{
+  "action": "retrieve_batch",
+  "ids": ["task-id-1", "task-id-2"]
 }
 ```
 
