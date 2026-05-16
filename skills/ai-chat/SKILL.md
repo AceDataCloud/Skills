@@ -10,11 +10,11 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-Access 50+ language models through a single OpenAI-compatible endpoint via AceDataCloud.
+Access GPT, Claude, Gemini, Grok, DeepSeek, Kimi, GLM, and reasoning models through AceDataCloud.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
-## Quick Start
+## OpenAI-Compatible Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/v1/chat/completions \
@@ -40,172 +40,130 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-## Available Models
+## Stateful Conversations (OpenAPI)
 
-### OpenAI GPT
+The OpenAPI spec currently exposes two conversation endpoints:
 
-| Model | Type | Best For |
-|-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
-| `gpt-4.1-mini` | Small | Fast, cost-effective |
-| `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
-| `gpt-4o` | Multimodal | Vision + text |
-| `gpt-4o-mini` | Small multimodal | Fast vision tasks |
-| `o1` | Reasoning | Complex reasoning tasks |
-| `o1-mini` | Small reasoning | Quick reasoning |
-| `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| Endpoint | Status | Purpose |
+|----------|--------|---------|
+| `POST /aichat2/conversations` | Recommended | Next-generation stateful chat with multimodal input, tool calls, SSE/NDJSON streaming, and conversation CRUD actions |
+| `POST /aichat/conversations` | Legacy compatibility | Older stateful endpoint using the simpler `question` + `model` request shape |
+
+### Recommended: `/aichat2/conversations`
+
+```json
+POST /aichat2/conversations
+{
+  "action": "chat",
+  "model": "gpt-4.1",
+  "message": [
+    {"type": "text", "text": "Summarize this image"},
+    {"type": "image_url", "image_url": {"url": "https://example.com/photo.jpg"}}
+  ],
+  "stateful": true
+}
+```
+
+#### `/aichat2/conversations` parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `action` | string | Conversation operation: `chat`, `retrieve`, `retrieve_batch`, `update`, or `delete` |
+| `id` | string | Conversation ID; optional for `chat`, required for `retrieve` / `update` / `delete` |
+| `model` | string | Model name; required for `chat`, optional filter for `retrieve_batch` |
+| `question` | string | Plain-text prompt in the older v1-compatible shape |
+| `message` | string/array | Multimodal user content; plain string or content blocks such as text and `image_url` |
+| `stateful` | boolean | Persist server-side conversation history (default behavior) |
+| `references` | array | Reference URLs or documents to attach to the turn |
+| `preset` | string | Server-side system prompt preset |
+| `max_turns` | integer | Max agentic/tool-call loop iterations |
+| `tool_results` | array | Resume payload for a conversation paused on `ask_user_question` |
+| `messages` | array | Full replacement message history for `update` |
+| `title` | string | Conversation title for `update` |
+| `user_id` | string | Filter by user when using `retrieve_batch` |
+| `application_id` | string | Filter by application when using `retrieve_batch` |
+| `model_group` | string | Provider filter for `retrieve_batch`: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `offset` | integer | Pagination offset for `retrieve_batch` |
+| `limit` | integer | Pagination limit for `retrieve_batch` |
+
+### Legacy: `/aichat/conversations`
+
+```json
+POST /aichat/conversations
+{
+  "model": "gpt-4.1",
+  "question": "What is quantum computing?",
+  "stateful": true
+}
+```
+
+#### `/aichat/conversations` parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `id` | string | Conversation ID for continuing a session |
+| `model` | string | Model name |
+| `preset` | string | Preset/system prompt |
+| `question` | string | Prompt or question to answer |
+| `stateful` | boolean | Maintain history server-side |
+| `references` | array | Additional context documents or URLs |
+
+## Current `/aichat2` Model Families
+
+### OpenAI + reasoning
+
+`gpt-4`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-2024-05-13`, `gpt-4o-all`, `gpt-4o-image`, `gpt-4o-mini`, `gpt-5-all`, `gpt-5.1-all`, `gpt-5.2-pro`, `gpt-5.4-mini`, `gpt-5.4-nano`, `gpt-image-1`, `o1`, `o1-mini`, `o1-pro`, `o3`, `o3-mini`, `o3-pro`, `o4-mini`
 
 ### Anthropic Claude
 
-| Model | Type | Best For |
-|-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
-| `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
-| `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
-| `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
-| `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
-| `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
-| `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
-| `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
+`claude-3-5-haiku-20241022`, `claude-3-5-sonnet-20240620`, `claude-3-5-sonnet-20241022`, `claude-3-7-sonnet-20250219`, `claude-3-haiku-20240307`, `claude-3-opus-20240229`, `claude-3-sonnet-20240229`, `claude-haiku-4-5-20251001`, `claude-opus-4-1-20250805`, `claude-opus-4-20250514`, `claude-opus-4-5-20251101`, `claude-opus-4-6`, `claude-opus-4-7`, `claude-sonnet-4-20250514`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-6`
 
 ### Google Gemini
 
-| Model | Best For |
-|-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
-
-### DeepSeek
-
-| Model | Best For |
-|-------|----------|
-| `deepseek-r1` | Deep reasoning |
-| `deepseek-r1-0528` | Latest reasoning |
-| `deepseek-v3` | General-purpose |
-| `deepseek-v3-250324` | Latest general |
+`gemini-2.0-flash-lite`, `gemini-2.5-flash-lite`, `gemini-3-pro-preview`, `gemini-3.1-flash-image-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`
 
 ### xAI Grok
 
-| Model | Best For |
-|-------|----------|
-| `grok-4` | Latest, highest capability |
-| `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
+`grok-2-vision`, `grok-2-vision-1212`, `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`, `grok-4`, `grok-4-0709`, `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`, `grok-4-1-fast-reasoning`
+
+### DeepSeek
+
+`deepseek-chat`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-reasoner`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp`, `deepseek-v4-flash`
+
+### Moonshot Kimi
+
+`kimi-k2-0711-preview`, `kimi-k2-0905-preview`, `kimi-k2-instruct-0905`, `kimi-k2-thinking`, `kimi-k2-thinking-turbo`, `kimi-k2-turbo-preview`, `kimi-k2.5`
+
+### Zhipu GLM
+
+`glm-3-turbo`, `glm-4-air`, `glm-4-flash`, `glm-4-plus`, `glm-4.5`, `glm-4.5-air`, `glm-4.5v`, `glm-4.6`, `glm-4.7`, `glm-5`, `glm-5-turbo`, `glm-5.1`
+
+> Legacy `/aichat/conversations` keeps a wider snapshot-heavy model enum, including dated GPT and o-series variants such as `gpt-5.5`, `gpt-5.4-pro`, `gpt-4o-2024-11-20`, `o1-2024-12-17`, `o3-2025-04-16`, and `o4-mini-2025-04-16`.
 
 ## Features
 
 ### Streaming
 
-```json
-POST /v1/chat/completions
-{
-  "model": "claude-sonnet-4-20250514",
-  "messages": [{"role": "user", "content": "Write a story"}],
-  "stream": true
-}
-```
+- `/v1/chat/completions` supports standard OpenAI SSE streaming
+- `/aichat2/conversations` additionally supports SSE/NDJSON streaming for stateful conversations and tool loops
 
-### Function Calling
+### Function Calling and Tools
 
-```json
-POST /v1/chat/completions
-{
-  "model": "gpt-4.1",
-  "messages": [{"role": "user", "content": "What's the weather in Tokyo?"}],
-  "tools": [
-    {
-      "type": "function",
-      "function": {
-        "name": "get_weather",
-        "parameters": {"type": "object", "properties": {"location": {"type": "string"}}}
-      }
-    }
-  ]
-}
-```
+- OpenAI-compatible `tools` / `tool_choice` work on `/v1/chat/completions`
+- `/aichat2/conversations` supports built-in tools and connection-bound MCP tools during agentic conversations
 
-### Vision
+### Vision and multimodal input
 
-```json
-POST /v1/chat/completions
-{
-  "model": "gpt-4o",
-  "messages": [
-    {
-      "role": "user",
-      "content": [
-        {"type": "text", "text": "What's in this image?"},
-        {"type": "image_url", "image_url": {"url": "https://example.com/photo.jpg"}}
-      ]
-    }
-  ]
-}
-```
-
-## Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | string | Model name (see tables above) |
-| `messages` | array | Array of `{role, content}` objects |
-| `temperature` | 0–2 | Randomness (default: 1) |
-| `top_p` | 0–1 | Nucleus sampling |
-| `max_tokens` | integer | Maximum output tokens |
-| `stream` | boolean | Enable SSE streaming |
-| `tools` | array | Function calling definitions |
-| `tool_choice` | string/object | Tool selection strategy |
-
-## Response
-
-```json
-{
-  "id": "chatcmpl-xxx",
-  "object": "chat.completion",
-  "model": "claude-sonnet-4-20250514",
-  "choices": [
-    {
-      "index": 0,
-      "message": {"role": "assistant", "content": "Hello!"},
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 10,
-    "completion_tokens": 5,
-    "total_tokens": 15
-  }
-}
-```
+- Use multimodal-capable models such as `gpt-4o`, `gpt-4o-mini`, `gpt-4o-image`, `grok-2-vision`, or Gemini image-capable variants
+- `/aichat2/conversations` accepts content blocks such as text plus `image_url`
 
 ## Gotchas
 
-- **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
-- Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
-- Function calling works on most modern models (GPT-4+, Claude 3+)
-- Streaming returns `chat.completion.chunk` objects via SSE
-- `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
+- Prefer `POST /aichat2/conversations` for new stateful work; keep `/aichat/conversations` only for legacy compatibility
+- `question` is the simple v1-style field; `message` is the richer multimodal field on `/aichat2/conversations`
+- `action=retrieve_batch` is how you list/filter stored conversations
+- `model_group` filters only work on `/aichat2/conversations`
+- Model availability differs between `/aichat2/conversations` and legacy `/aichat/conversations`; choose the endpoint that matches the model enum you need
+- For stateless chat completions with existing OpenAI SDKs, keep using `/v1/chat/completions`
 
-## Stateful Conversations Endpoint
-
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
-
-```bash
-curl -X POST https://api.acedata.cloud/aichat/conversations \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | string | Model name (see Available Models above) |
-| `question` | string | The prompt or question to answer |
-| `id` | string | Conversation ID — pass the same ID to continue a session |
-| `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
-| `references` | array | Additional context documents to include |
+> **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.

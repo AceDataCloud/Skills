@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
   -d '{"action": "text2video", "prompt": "a cat playing piano on a rooftop at sunset", "model": "kling-v3", "mode": "std", "duration": 5}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"id": "<task_id>"}`.
 ## Models
 
 | Model | Quality | Best For |

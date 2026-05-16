@@ -23,7 +23,20 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"action": "retrieve", "id": "<task_id>"}`. You can also retrieve by `trace_id`, or batch-retrieve with `ids` / `trace_ids`.
+
+## Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/midjourney/imagine` | POST | Generate images, blend inputs, or run follow-up transform actions |
+| `/midjourney/seed` | POST | Get the seed for a generated image |
+| `/midjourney/edits` | POST | Edit an existing image with a prompt and optional mask |
+| `/midjourney/videos` | POST | Generate or extend a video from an image/video |
+| `/midjourney/describe` | POST | Reverse-prompt an image |
+| `/midjourney/shorten` | POST | Analyze and shorten a prompt |
+| `/midjourney/translate` | POST | Translate a prompt into English |
+| `/midjourney/tasks` | POST | Retrieve one or more tasks |
 
 ## Generation Modes
 
@@ -37,7 +50,8 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
 
 | Version | Notes |
 |---------|-------|
-| `8` | Latest, best quality |
+| `8.1` | Latest, recommended |
+| `8` | V8 billing/version controls |
 | `7` | Great quality, fast |
 | `6.1` | Stable, well-tested |
 | `6` | Previous generation |
@@ -46,8 +60,6 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
 ## Core Workflows
 
 ### 1. Generate Images (Imagine)
-
-Creates a 2x2 grid of 4 image variations.
 
 ```json
 POST /midjourney/imagine
@@ -59,11 +71,9 @@ POST /midjourney/imagine
 }
 ```
 
-Set `translation: true` to auto-translate non-English prompts. Set `split_images: true` to get individual images besides the grid.
+Set `translation: true` to auto-translate non-English prompts. Set `split_images: true` to return individual crops alongside the 2x2 grid.
 
-### 2. Upscale / Vary / Pan / Zoom
-
-After generating a grid, use transform actions on individual images:
+### 2. Upscale / vary / pan / zoom
 
 ```json
 POST /midjourney/imagine
@@ -73,98 +83,141 @@ POST /midjourney/imagine
 }
 ```
 
-**Available actions:**
-- `upscale1`–`upscale4`: Upscale individual quadrant
-- `variation1`–`variation4`: Create variation of a quadrant
-- `variation_subtle` / `variation_strong`: Subtle/strong variation of full image
-- `reroll`: Re-generate with same prompt
-- `zoom_out_2x` / `zoom_out_1_5x`: Zoom out
-- `pan_left` / `pan_right` / `pan_up` / `pan_down`: Extend canvas
+Common action values include:
 
-### 3. Edit an Image
+- `upscale1`–`upscale4`
+- `variation1`–`variation4`
+- `variation_subtle`, `variation_strong`
+- `reroll`
+- `zoom_out_2x`, `zoom_out_1_5x`
+- `pan_left`, `pan_right`, `pan_up`, `pan_down`
+- `blend`
 
-Modify an existing image using a text prompt, optionally with a mask.
+### 3. Edit an image
 
 ```json
 POST /midjourney/edits
 {
   "image_url": "https://example.com/photo.jpg",
   "prompt": "add a rainbow in the sky",
-  "mode": "fast"
+  "mode": "fast",
+  "split_images": true
 }
 ```
 
-### 4. Blend Images
-
-Combine 2–5 images into a new composition.
-
-```json
-POST /midjourney/imagine
-{
-  "action": "blend",
-  "image_urls": [
-    "https://example.com/image1.jpg",
-    "https://example.com/image2.jpg"
-  ]
-}
-```
-
-### 5. Describe an Image (Reverse Prompt)
-
-Get AI-generated text descriptions of an image (returns 4 options).
+### 4. Describe, shorten, and translate prompts
 
 ```json
 POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+```json
+POST /midjourney/shorten
+{"prompt": "very long prompt text here"}
+```
 
-Create a video with a reference image and text prompt.
+```json
+POST /midjourney/translate
+{"content": "将这个提示词翻译成英文"}
+```
+
+### 5. Generate or extend video
 
 ```json
 POST /midjourney/videos
 {
+  "action": "generate",
   "image_url": "https://example.com/photo.jpg",
   "prompt": "the city comes alive with moving traffic",
   "resolution": "720p"
 }
 ```
 
+```json
+POST /midjourney/videos
+{
+  "action": "extend",
+  "video_id": "existing-video-id",
+  "video_index": 0,
+  "prompt": "continue the motion for a few more seconds"
+}
+```
+
+### 6. Poll tasks
+
+```json
+POST /midjourney/tasks
+{
+  "action": "retrieve",
+  "id": "task-id"
+}
+```
+
+Batch retrieval:
+
+```json
+POST /midjourney/tasks
+{
+  "action": "retrieve_batch",
+  "ids": ["task-1", "task-2"]
+}
+```
+
+You can also substitute `trace_id` / `trace_ids`.
+
 ## Prompt Parameters
 
-Append these to your prompt text:
+Append these to the prompt string:
 
 | Parameter | Example | Description |
 |-----------|---------|-------------|
 | `--ar` | `--ar 16:9` | Aspect ratio |
 | `--v` | `--v 7` | Midjourney version |
-| `--q` | `--q 2` | Quality (0.25, 0.5, 1, 2) |
-| `--s` | `--s 750` | Stylization (0–1000) |
-| `--c` | `--c 50` | Chaos/variety (0–100) |
+| `--q` | `--q 2` | Quality (`0.25`, `0.5`, `1`, `2`) |
+| `--s` | `--s 750` | Stylization (`0–1000`) |
+| `--c` | `--c 50` | Chaos (`0–100`) |
 | `--no` | `--no text, watermark` | Negative prompt |
 | `--seed` | `--seed 12345` | Reproducible generation |
 
 ## API-Level Parameters (Billing Impact)
 
-These top-level fields on `POST /midjourney/imagine` affect billing and are separate from inline prompt parameters:
+These top-level `POST /midjourney/imagine` fields affect billing and are separate from inline prompt parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `version` | string | Midjourney version (`"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
-| `hd` | boolean | Enable HD 2K resolution (V8 only) — costs 4× GPU time |
-| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 4× GPU time |
-| `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
-| `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
+| `version` | string | Version used for billing calculation (`8.1`, `8`, `7`, `6.1`, etc.) |
+| `hd` | boolean | Enable HD image generation (V8/V8.1 only) |
+| `quality` | string | Quality level: `.25`, `.5`, `1`, `2`, `4` |
+| `style_reference` | boolean | Whether the prompt uses `--sref` |
+| `moodboard` | boolean | Whether the prompt uses moodboard references |
+
+## Other Request Parameters
+
+### `POST /midjourney/imagine`
+
+`mask`, `mode`, `action`, `prompt`, `timeout`, `image_id`, `translation`, `callback_url`, `split_images`, `version`, `hd`, `quality`, `style_reference`, `moodboard`
+
+### `POST /midjourney/edits`
+
+`mask`, `mode`, `action`, `prompt`, `image_url`, `callback_url`, `split_images`
+
+### `POST /midjourney/videos`
+
+`action`, `mode`, `resolution`, `prompt`, `video_id`, `video_index`, `loop`, `image_url`, `end_image_url`, `callback_url`
+
+### `POST /midjourney/tasks`
+
+`action`, `id`, `trace_id`, `ids`, `trace_ids`, `offset`, `limit`
 
 ## Gotchas
 
-- Imagine returns a **2x2 grid** — use upscale/variation actions to work with individual images
-- Use `split_images: true` to also receive individual cropped images alongside the grid
-- Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
-- `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
-- Video generation requires a reference `image_url` — it cannot generate from text alone
-- Available transform actions depend on the image — check `available_actions` in the response
-- Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
+- Imagine returns a **2x2 grid** by default — use follow-up actions to work on individual results
+- Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate JSON fields
+- `translation: true` auto-translates non-English prompts before sending them to Midjourney
+- Prompt utility endpoints are separate: use `/midjourney/shorten` to compress prompts and `/midjourney/translate` to translate them
+- Video generation requires `image_url` for `action: "generate"`; video extension requires `video_id` and `video_index`
+- `/midjourney/tasks` polling uses `id` / `ids` (or `trace_id` / `trace_ids`), not `task_id`
+- Use `POST /midjourney/seed` with an image ID when you need reproducible seed data
 
 > **MCP:** `pip install mcp-midjourney` | Hosted: `https://midjourney.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

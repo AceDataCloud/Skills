@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/sora/videos \
   -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"id": "<task_id>"}`.
 
 ## Models
 

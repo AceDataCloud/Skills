@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
   -d '{"action": "text2video", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "wan2.6-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"id": "<task_id>"}`.
 ## Models
 
 | Model | Type | Best For |
