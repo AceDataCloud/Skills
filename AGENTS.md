@@ -27,7 +27,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **wan-video** — Generate videos with Alibaba Wan
 
 ### AI Chat & Tools
-- **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, DeepSeek, Grok (50+ models)
+- **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models)
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs
