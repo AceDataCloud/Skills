@@ -111,7 +111,7 @@ Error response format:
 
 | Category | Services | Base Path |
 |----------|----------|-----------|
-| **AI Chat** | GPT, Claude, Gemini, DeepSeek, Grok | `/v1/chat/completions` |
+| **AI Chat** | GPT, Claude, Gemini, Kimi, Grok | `/v1/chat/completions` |
 | **Image Gen** | Midjourney, Flux, Seedream, NanoBanana | `/midjourney/*`, `/flux/*`, etc. |
 | **Video Gen** | Luma, Sora, Veo, Kling, Hailuo, Seedance, Wan | `/luma/*`, `/sora/*`, etc. |
 | **Music Gen** | Suno, Producer, Fish Audio | `/suno/*`, `/producer/*`, `/fish/*` |

@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, DeepSeek, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, Kimi, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -77,15 +77,6 @@ print(response.choices[0].message.content)
 |-------|----------|
 | `gemini-1.5-pro` | Long context, complex tasks |
 | `gemini-1.5-flash` | Fast, efficient |
-
-### DeepSeek
-
-| Model | Best For |
-|-------|----------|
-| `deepseek-r1` | Deep reasoning |
-| `deepseek-r1-0528` | Latest reasoning |
-| `deepseek-v3` | General-purpose |
-| `deepseek-v3-250324` | Latest general |
 
 ### xAI Grok
 
