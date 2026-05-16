@@ -1,6 +1,6 @@
 ---
 name: midjourney-image
-description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, or generating video from images. Supports versions 5.2 through 8.
+description: Generate, edit, blend, upscale, and describe images with Midjourney via AceDataCloud API. Use when creating AI images from text prompts, editing existing images, generating 2x2 grids, upscaling, creating variations, blending multiple images, reverse-prompting from images, or generating video from images. Supports versions 5.2 through 8.1.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"id": "..."}`.
 
 ## Generation Modes
 
@@ -37,7 +37,8 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
 
 | Version | Notes |
 |---------|-------|
-| `8` | Latest, best quality |
+| `8.1` | Latest, recommended |
+| `8` | Best quality, legacy V8 pricing |
 | `7` | Great quality, fast |
 | `6.1` | Stable, well-tested |
 | `6` | Previous generation |
@@ -118,9 +119,31 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Shorten a Long Prompt
 
-Create a video with a reference image and text prompt.
+Analyze a long prompt and get up to 5 shorter candidate prompts that keep the highest-weight tokens.
+
+```json
+POST /midjourney/shorten
+{
+  "prompt": "a serene mountain lake at sunrise, mist rising from the water, towering pine trees on the shore, golden hour lighting, ultra detailed, cinematic, 35mm film photography style, masterpiece --ar 16:9 --v 6"
+}
+```
+
+### 7. Translate a Prompt to English
+
+Translate non-English prompt text before sending it to Midjourney.
+
+```json
+POST /midjourney/translate
+{
+  "content": "精致，无暇，洁白的天使"
+}
+```
+
+### 8. Generate Video from Image
+
+Create a video with a reference image and text prompt, or extend an existing generated video.
 
 ```json
 POST /midjourney/videos
@@ -131,6 +154,8 @@ POST /midjourney/videos
 }
 ```
 
+To extend an existing video, call `POST /midjourney/videos` with `"action": "extend"`, `video_id`, and `video_index`.
+
 ## Prompt Parameters
 
 Append these to your prompt text:
@@ -138,7 +163,7 @@ Append these to your prompt text:
 | Parameter | Example | Description |
 |-----------|---------|-------------|
 | `--ar` | `--ar 16:9` | Aspect ratio |
-| `--v` | `--v 7` | Midjourney version |
+| `--v` | `--v 8.1` | Midjourney version |
 | `--q` | `--q 2` | Quality (0.25, 0.5, 1, 2) |
 | `--s` | `--s 750` | Stylization (0–1000) |
 | `--c` | `--c 50` | Chaos/variety (0–100) |
@@ -151,11 +176,11 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `version` | string | Midjourney version (`"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
-| `hd` | boolean | Enable HD 2K resolution (V8 only) — costs 4× GPU time |
-| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 4× GPU time |
-| `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
-| `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
+| `version` | string | Midjourney version (`"8.1"`, `"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
+| `hd` | boolean | Enable HD 2K resolution (V8/V8.1 only) — much cheaper on V8.1 than V8 |
+| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8/V8.1 only |
+| `style_reference` | boolean | Whether prompt uses `--sref` style references (cheaper and more stable on V8.1 than V8) |
+| `moodboard` | boolean | Whether prompt uses moodboard image references (cheaper and more stable on V8.1 than V8) |
 
 ## Gotchas
 
@@ -163,7 +188,10 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
+- Use `POST /midjourney/translate` if you want to preview or store the translated English prompt before generation
+- Use `POST /midjourney/shorten` to compress long prompts into 5 candidate prompts before calling imagine
 - Video generation requires a reference `image_url` — it cannot generate from text alone
+- Video extension uses `action: "extend"` plus `video_id` and `video_index`
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
 
