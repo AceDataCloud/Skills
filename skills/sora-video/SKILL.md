@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/sora/videos \
   -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"id": "..."}`.
 
 ## Models
 
@@ -81,17 +81,22 @@ POST /sora/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
-| `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
+| `size` | `"small"`, `"large"`, `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution — named sizes for version `1.0`, pixel sizes for version `2.0` |
+| `duration` | `4`, `8`, `10`, `12`, `15`, `25` | Duration in seconds — version `1.0` supports `10/15` (`25` with `sora-2-pro`), version `2.0` supports `4/8/12` |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation; only applies to version `1.0` |
+| `version` | `"1.0"`, `"2.0"` | API version — use `1.0` for orientation/character references and `2.0` for short clips with pixel-based sizes |
+
+## Version Guide
+
+- **Version `1.0`** supports `orientation`, character-driven video (`character_url`, `character_start`, `character_end`), and named sizes (`"small"`, `"large"`).
+- **Version `2.0`** supports shorter clips (`4`, `8`, `12` seconds), pixel-based sizes (`"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"`), and image-guided generation using the first item in `image_urls`.
 
 ## Gotchas
 
 - Duration of **25 seconds** is only available with `sora-2-pro` model
-- `size: "large"` produces higher resolution but costs more and takes longer
+- `size: "large"` is only for version `1.0` and only supported by `sora-2-pro`
 - Character-driven generation requires `character_start` and `character_end` timestamps (in seconds) from the source video
-- `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
+- `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content, but only on version `1.0`
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-sora` | Hosted: `https://sora.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

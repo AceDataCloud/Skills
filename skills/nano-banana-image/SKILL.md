@@ -70,7 +70,7 @@ POST /nano-banana/images
 | `prompt` | string | Image description or editing instruction |
 | `image_urls` | array of strings | Source image URLs (required for edit action) |
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
-| `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
+| `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px); only effective for `nano-banana-pro` during `generate`, and ignored for `edit` |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
 ## Gotchas

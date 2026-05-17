@@ -17,20 +17,22 @@ Generate AI audio and synthesize voices through AceDataCloud's Fish Audio API.
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/fish/audios \
+curl -X POST https://api.acedata.cloud/fish/tts \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "model: s2-pro" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Hello, this is a demonstration of AI voice synthesis."}'
+  -d '{"text": "Hello, this is a demonstration of AI voice synthesis.", "format": "mp3"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id": "..."}` or `{"ids": ["..."], "action": "retrieve_batch"}`.
 
 ## Endpoints
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /fish/audios` | Generate audio from text or parameters |
-| `POST /fish/voices` | Voice synthesis and cloning |
+| `POST /fish/tts` | Generate speech from text |
+| `GET /fish/model` | Browse available voice models |
+| `GET /fish/model/{id}` | Fetch one voice model by ID |
 | `POST /fish/tasks` | Poll task status |
 
 ## Workflows
@@ -38,62 +40,80 @@ curl -X POST https://api.acedata.cloud/fish/audios \
 ### 1. Text-to-Speech
 
 ```json
-POST /fish/audios
+POST /fish/tts
 {
-  "prompt": "The quick brown fox jumps over the lazy dog.",
-  "voice_id": "default"
+  "text": "The quick brown fox jumps over the lazy dog.",
+  "format": "mp3"
 }
 ```
 
-### 2. Voice Cloning — Register a Voice
+### 2. Text-to-Speech with a Specific Voice Model
 
-Upload a reference audio to create a cloneable voice.
+Use a Fish voice model ID as `reference_id`.
 
 ```json
-POST /fish/voices
+POST /fish/tts
 {
-  "voice_url": "https://example.com/reference-voice.mp3",
-  "title": "My Custom Voice",
-  "description": "Clear, neutral-toned speaker for TTS",
-  "image_url": "https://example.com/avatar.jpg"
+  "text": "Welcome to our platform.",
+  "reference_id": "d7900c21663f485ab63ebdb7e5905036",
+  "format": "wav"
 }
 ```
 
-### 3. Text-to-Speech with Cloned Voice
+### 3. Browse Voice Models
 
 ```json
-POST /fish/audios
-{
-  "prompt": "Welcome to our platform.",
-  "voice_id": "<voice_id from POST /fish/voices>"
-}
+GET /fish/model?page_number=1&page_size=10&language=en&title=Marcus
+```
+
+### 4. Fetch One Voice Model
+
+```json
+GET /fish/model/d7900c21663f485ab63ebdb7e5905036
 ```
 
 ## Parameters
 
-### `/fish/audios`
+### `POST /fish/tts`
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `prompt` | string | Text to synthesize into speech |
-| `voice_id` | string | Voice model or cloned voice ID to use |
-| `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
-| `action` | string | Operation type (e.g., `"generate"`) |
-| `callback_url` | string | Webhook URL for async delivery |
+| `text` | string | Text to synthesize into speech (required) |
+| `reference_id` | string or array | Voice model ID for a single-speaker or multi-speaker request |
+| `format` | string | Output format: `"mp3"`, `"wav"`, `"pcm"`, or `"opus"` |
+| `model` | string (header) | TTS model header: `"s1"` or `"s2-pro"` |
+| `sample_rate` | integer | Output sample rate such as `16000`, `22050`, or `44100` |
+| `mp3_bitrate` | integer | MP3 bitrate: `64`, `128`, or `192` |
+| `opus_bitrate` | integer | Opus bitrate when `format` is `"opus"` |
+| `latency` | string | `"normal"` or `"balanced"` |
+| `callback_url` | string | Optional webhook URL for async delivery |
 
-### `/fish/voices`
+### `GET /fish/model`
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `voice_url` | string | Reference audio URL for voice cloning |
-| `title` | string | Display title for the cloned voice |
-| `description` | string | Description of the voice |
-| `image_url` | string | Cover image URL for the voice |
-| `callback_url` | string | Webhook URL for async delivery |
+| `page_size` | integer | Number of voice models to return per page |
+| `page_number` | integer | Page number to fetch |
+| `title` | string | Filter by voice title |
+| `tag` | string | Filter by voice tag |
+| `self` | boolean | Limit results to your own voice models |
+| `author_id` | string | Filter by voice author |
+| `language` | string | Filter by voice language |
+| `title_language` | string | Filter by title language |
+| `sort_by` | string | Sort key passed through to the upstream API |
+
+### `POST /fish/tasks`
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `id` | string | Single task ID to retrieve |
+| `ids` | array of strings | Multiple task IDs for batch polling |
+| `action` | string | `"retrieve"` (default) or `"retrieve_batch"` |
 
 ## Gotchas
 
-- Pricing is based on **byte count** of the generated audio
-- Voice cloning requires a clear reference audio sample
-- Text-to-speech supports multiple languages automatically
-- Use the `/fish/voices` endpoint to register a reference audio and receive a `voice_id` for TTS
+- `POST /fish/tts` requires `text`; the voice selector is `reference_id`, not `voice_id`
+- Choose the synthesis model with the `model` request header, not a JSON body field
+- Async callbacks may return a `task_id`, but polling still uses `POST /fish/tasks` with `id` / `ids`
+- Use `GET /fish/model` to browse public or owned voices, then `GET /fish/model/{id}` for one record
+- Pricing is based on generated audio usage and the selected Fish model
