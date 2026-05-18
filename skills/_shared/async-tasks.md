@@ -1,10 +1,10 @@
 # Async Task Polling
 
-Most generation APIs (images, video, music) are asynchronous — they return a `task_id` immediately, and you poll for the result.
+Most generation APIs (images, video, music) are asynchronous — they return a task ID immediately, and you poll for the result.
 
 ## Pattern
 
-**Step 1:** Submit with `callback_url` to force async mode and get a `task_id` immediately.
+**Step 1:** Submit with `callback_url` to force async mode and get a task ID immediately.
 
 ```bash
 curl -X POST https://api.acedata.cloud/<service>/<resource> \
@@ -21,7 +21,7 @@ Using `"callback_url": "https://api.acedata.cloud/health"` as a placeholder forc
 curl -X POST https://api.acedata.cloud/<service>/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"task_id": "<task_id from step 1>"}'
+  -d '{"id": "<task_id from step 1>"}'
 ```
 
 ## Important Notes
@@ -29,4 +29,5 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 - Always use `callback_url` to avoid long-running HTTP connections that time out
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Some services use `id` instead of `task_id` in the poll request (e.g., Veo, Seedream, NanoBanana)
+- Poll with `{"id": "..."}` for a single task, or `{"action": "retrieve_batch", "ids": ["..."]}` for batch retrieval
+- `action` defaults to `retrieve` when omitted

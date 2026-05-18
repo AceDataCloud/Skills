@@ -1,202 +1,154 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, Kimi, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access GPT, Claude, Gemini, Grok, DeepSeek, Kimi, GLM, and OpenAI reasoning models through AceDataCloud conversation APIs. Supports stateful chat, multimodal inputs, and conversation management.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works as a drop-in replacement for the OpenAI SDK.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md).
 ---
 
 # AI Chat — Unified LLM Gateway
 
-Access 50+ language models through a single OpenAI-compatible endpoint via AceDataCloud.
+Access GPT, Claude, Gemini, Grok, DeepSeek, Kimi, and GLM models through AceDataCloud's conversation APIs.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/v1/chat/completions \
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model": "claude-sonnet-4-20250514", "messages": [{"role": "user", "content": "Hello!"}]}'
+  -d '{"model": "gpt-4.1", "question": "Explain quantum computing in simple terms."}'
 ```
 
-## OpenAI SDK Drop-in
+## Endpoints
 
-```python
-from openai import OpenAI
+| Endpoint | Status | Purpose |
+|----------|--------|---------|
+| `POST /aichat2/conversations` | Recommended | Stateful chat, multimodal inputs, resume/retrieve/update/delete flows |
+| `POST /aichat/conversations` | Legacy | Simpler text-only conversation flow kept for compatibility |
 
-client = OpenAI(
-    api_key="your-token-here",
-    base_url="https://api.acedata.cloud/v1"
-)
+## Available Model Families
 
-response = client.chat.completions.create(
-    model="gpt-4.1",
-    messages=[{"role": "user", "content": "Explain quantum computing"}]
-)
-print(response.choices[0].message.content)
-```
+`/aichat2/conversations` supports a large cross-provider model catalog, including dated aliases. Common public families include:
 
-## Available Models
+| Family | Representative models |
+|--------|------------------------|
+| OpenAI GPT & reasoning | `gpt-4.1`, `gpt-4o`, `gpt-5-all`, `gpt-5.1-all`, `gpt-5.2-pro`, `o1`, `o3`, `o4-mini` |
+| Anthropic Claude | `claude-sonnet-4-20250514`, `claude-sonnet-4-6`, `claude-opus-4-6`, `claude-opus-4-7`, `claude-haiku-4-5-20251001` |
+| Google Gemini | `gemini-2.0-flash-lite`, `gemini-2.5-flash-lite`, `gemini-3-pro-preview`, `gemini-3.1-pro`, `gemini-3.1-flash-image-preview` |
+| xAI Grok | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-4`, `grok-4-1-fast`, `grok-4-1-fast-reasoning` |
+| DeepSeek | `deepseek-chat`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v4-flash` |
+| Moonshot Kimi | `kimi-k2-0711-preview`, `kimi-k2-0905-preview`, `kimi-k2-instruct-0905`, `kimi-k2-thinking`, `kimi-k2.5` |
+| Zhipu GLM | `glm-3-turbo`, `glm-4-air`, `glm-4-flash`, `glm-4.5`, `glm-4.6`, `glm-4.7`, `glm-5`, `glm-5.1` |
 
-### OpenAI GPT
+## Recommended Workflow (`/aichat2/conversations`)
 
-| Model | Type | Best For |
-|-------|------|----------|
-| `gpt-4.1` | Latest | General-purpose, high quality |
-| `gpt-4.1-mini` | Small | Fast, cost-effective |
-| `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
-| `gpt-4o` | Multimodal | Vision + text |
-| `gpt-4o-mini` | Small multimodal | Fast vision tasks |
-| `o1` | Reasoning | Complex reasoning tasks |
-| `o1-mini` | Small reasoning | Quick reasoning |
-| `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5` | Latest gen | Next-gen intelligence |
-| `gpt-5.4` | Gen 5.4 | High-performance next-gen |
-| `gpt-5-mini` | Mini gen 5 | Fast next-gen |
-
-### Anthropic Claude
-
-| Model | Type | Best For |
-|-------|------|----------|
-| `claude-opus-4-6` | Latest Opus | Highest capability |
-| `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
-| `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
-| `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
-| `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
-| `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
-| `claude-3-5-sonnet-20241022` | Legacy 3.5 | Proven track record |
-| `claude-3-opus-20240229` | Legacy Opus | Maximum quality (legacy) |
-
-### Google Gemini
-
-| Model | Best For |
-|-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
-
-### xAI Grok
-
-| Model | Best For |
-|-------|----------|
-| `grok-4` | Latest, highest capability |
-| `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
-
-## Features
-
-### Streaming
+### 1. Chat with plain text
 
 ```json
-POST /v1/chat/completions
+POST /aichat2/conversations
 {
-  "model": "claude-sonnet-4-20250514",
-  "messages": [{"role": "user", "content": "Write a story"}],
-  "stream": true
+  "model": "claude-sonnet-4-6",
+  "question": "Summarize the latest release notes."
 }
 ```
 
-### Function Calling
+`action` defaults to `"chat"`.
+
+### 2. Resume a stateful conversation
 
 ```json
-POST /v1/chat/completions
+POST /aichat2/conversations
 {
+  "id": "conv_123",
   "model": "gpt-4.1",
-  "messages": [{"role": "user", "content": "What's the weather in Tokyo?"}],
-  "tools": [
-    {
-      "type": "function",
-      "function": {
-        "name": "get_weather",
-        "parameters": {"type": "object", "properties": {"location": {"type": "string"}}}
-      }
-    }
-  ]
+  "question": "Continue from the previous answer.",
+  "stateful": true
 }
 ```
 
-### Vision
+### 3. Send multimodal input
 
 ```json
-POST /v1/chat/completions
+POST /aichat2/conversations
 {
-  "model": "gpt-4o",
-  "messages": [
-    {
-      "role": "user",
-      "content": [
-        {"type": "text", "text": "What's in this image?"},
-        {"type": "image_url", "image_url": {"url": "https://example.com/photo.jpg"}}
-      ]
-    }
+  "model": "gemini-3.1-pro",
+  "message": [
+    {"type": "text", "text": "Describe this file and image."},
+    {"type": "image_url", "image_url": {"url": "https://example.com/photo.jpg"}},
+    {"type": "file_url", "file_url": {"url": "https://example.com/report.pdf"}}
   ]
 }
 ```
 
-## Parameters
+### 4. Retrieve, list, update, or delete conversations
+
+```json
+POST /aichat2/conversations
+{
+  "action": "retrieve",
+  "id": "conv_123",
+  "model": "gpt-4.1"
+}
+```
+
+Other supported actions:
+- `retrieve_batch` — list conversation summaries with optional filters
+- `update` — patch `title` and/or `messages`
+- `delete` — remove a conversation
+
+## Parameters (`/aichat2/conversations`)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | string | Model name (see tables above) |
-| `messages` | array | Array of `{role, content}` objects |
-| `temperature` | 0–2 | Randomness (default: 1) |
-| `top_p` | 0–1 | Nucleus sampling |
-| `max_tokens` | integer | Maximum output tokens |
-| `stream` | boolean | Enable SSE streaming |
-| `tools` | array | Function calling definitions |
-| `tool_choice` | string/object | Tool selection strategy |
+| `action` | string | `chat` (default), `retrieve`, `retrieve_batch`, `update`, or `delete` |
+| `id` | string | Conversation ID. Required for `retrieve`, `update`, and `delete`; optional for resumed `chat` |
+| `model` | string | Model name. Required for `chat`; optional filter for `retrieve_batch` |
+| `question` | string | Plain-text prompt. Ignored when `message` or `tool_results` is supplied |
+| `message` | string/array | User content for this turn. Use a string or an array of `text`, `image_url`, and `file_url` blocks |
+| `stateful` | boolean | Persist the conversation server-side (defaults to `true`) |
+| `references` | array | URLs to attach as extra context. Image URLs become `image_url` blocks; others become `file_url` blocks |
+| `preset` | string | Server-side preset / system prompt |
+| `max_turns` | integer | Cap agentic-loop iterations for the request |
+| `tool_results` | array | Resume a paused `ask_user_question` turn with `{tool_use_id, output, is_error?}` |
+| `messages` | array | Replacement message history for `action: "update"` |
+| `title` | string | Conversation title for `action: "update"` |
+| `user_id` | string | Filter for `retrieve_batch` |
+| `application_id` | string | Filter for `retrieve_batch` |
+| `model_group` | string | Provider-family filter for `retrieve_batch`: `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `offset` | integer | Pagination offset for `retrieve_batch` |
+| `limit` | integer | Pagination limit (`1`-`100`) for `retrieve_batch` |
 
-## Response
+## Legacy Endpoint (`/aichat/conversations`)
+
+Use the legacy endpoint only when you need its older, simpler request shape:
 
 ```json
+POST /aichat/conversations
 {
-  "id": "chatcmpl-xxx",
-  "object": "chat.completion",
-  "model": "claude-sonnet-4-20250514",
-  "choices": [
-    {
-      "index": 0,
-      "message": {"role": "assistant", "content": "Hello!"},
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 10,
-    "completion_tokens": 5,
-    "total_tokens": 15
-  }
+  "model": "gpt-5.4",
+  "question": "What changed in this document?",
+  "stateful": true,
+  "references": ["https://example.com/spec.pdf"]
 }
 ```
+
+Legacy request fields:
+- `id`
+- `model`
+- `preset`
+- `question`
+- `stateful`
+- `references`
 
 ## Gotchas
 
-- **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
-- Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
-- Function calling works on most modern models (GPT-4+, Claude 3+)
-- Streaming returns `chat.completion.chunk` objects via SSE
-- `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
-
-## Stateful Conversations Endpoint
-
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
-
-```bash
-curl -X POST https://api.acedata.cloud/aichat/conversations \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | string | Model name (see Available Models above) |
-| `question` | string | The prompt or question to answer |
-| `id` | string | Conversation ID — pass the same ID to continue a session |
-| `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
-| `references` | array | Additional context documents to include |
+- Prefer `POST /aichat2/conversations` for all new integrations; keep `POST /aichat/conversations` only for compatibility
+- `question` is ignored when `message` is present, and both are ignored when `tool_results` resumes a paused conversation
+- `message` blocks support `text`, `image_url`, and `file_url`; use them for vision and file inputs
+- `retrieve_batch` returns conversation summaries rather than the full message history
+- `limit` is capped at `100`
+- The available model list changes over time; dated aliases may remain available alongside the representative models listed above

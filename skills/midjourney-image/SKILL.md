@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
   -d '{"prompt": "a futuristic city at sunset, cyberpunk style --ar 16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /midjourney/tasks` with `{"id": "..."}`.
 
 ## Generation Modes
 
@@ -37,7 +37,8 @@ curl -X POST https://api.acedata.cloud/midjourney/imagine \
 
 | Version | Notes |
 |---------|-------|
-| `8` | Latest, best quality |
+| `8.1` | Latest, recommended |
+| `8` | Previous V8 generation |
 | `7` | Great quality, fast |
 | `6.1` | Stable, well-tested |
 | `6` | Previous generation |
@@ -118,7 +119,21 @@ POST /midjourney/describe
 {"image_url": "https://example.com/photo.jpg"}
 ```
 
-### 6. Generate Video from Image
+### 6. Shorten or Translate a Prompt
+
+Use helper endpoints before generation when you want Midjourney to compress or translate prompt text:
+
+```json
+POST /midjourney/shorten
+{"prompt": "a cinematic scene with dramatic lighting, reflective rain-soaked streets, and intricate futuristic architecture"}
+```
+
+```json
+POST /midjourney/translate
+{"content": "一座赛博朋克风格的未来城市"}
+```
+
+### 7. Generate Video from Image
 
 Create a video with a reference image and text prompt.
 
@@ -151,9 +166,9 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `version` | string | Midjourney version (`"8"`, `"7"`, `"6.1"`, etc.) — used for billing calculation |
+| `version` | string | Midjourney version (`"8.1"`, `"8"`, `"7"`, `"6.1"`, etc.) — `8.1` is the latest recommended version and is used for billing calculation |
 | `hd` | boolean | Enable HD 2K resolution (V8 only) — costs 4× GPU time |
-| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8 only and costs 4× GPU time |
+| `quality` | string | Quality level: `".25"`, `".5"`, `"1"`, `"2"`, `"4"` — quality `"4"` is V8/V8.1 only and costs 4× GPU time on V8 |
 | `style_reference` | boolean | Whether prompt uses `--sref` style references (V8: costs 4× GPU time) |
 | `moodboard` | boolean | Whether prompt uses moodboard image references (V8: costs 4× GPU time) |
 
@@ -163,8 +178,10 @@ These top-level fields on `POST /midjourney/imagine` affect billing and are sepa
 - Use `split_images: true` to also receive individual cropped images alongside the grid
 - Prompt parameters (`--ar`, `--v`, etc.) go **inside the prompt string**, not as separate fields
 - `translation: true` auto-translates Chinese/other languages to English before sending to Midjourney
+- Use `POST /midjourney/shorten` or `POST /midjourney/translate` when you want helper processing before generation
 - Video generation requires a reference `image_url` — it cannot generate from text alone
 - Available transform actions depend on the image — check `available_actions` in the response
 - Get the seed with `POST /midjourney/seed` using the image_id for reproducible results
+- `POST /midjourney/tasks` supports `id` / `trace_id` for single lookups and `ids` / `trace_ids` with `action: "retrieve_batch"` for batch retrieval
 
 > **MCP:** `pip install mcp-midjourney` | Hosted: `https://midjourney.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
