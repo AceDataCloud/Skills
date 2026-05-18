@@ -181,22 +181,40 @@ POST /v1/chat/completions
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
 
-## Stateful Conversations Endpoint
+## Stateful Conversations Endpoints
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+Use `/aichat2/conversations` as the primary stateful endpoint. Keep `/aichat/conversations` only for legacy compatibility.
 
 ```bash
-curl -X POST https://api.acedata.cloud/aichat/conversations \
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'
+  -d '{"model":"gpt-4.1","question":"What is quantum computing?","stateful":true}'
 ```
+
+| Endpoint | Status | Notes |
+|----------|--------|-------|
+| `/aichat2/conversations` | Recommended | Supports `chat`, `retrieve`, `retrieve_batch`, `update`, `delete` via `action` |
+| `/aichat/conversations` | Legacy | Older compatibility endpoint (`question` + `model`) |
+
+### `/aichat2/conversations` parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | string | Model name (see Available Models above) |
-| `question` | string | The prompt or question to answer |
-| `id` | string | Conversation ID — pass the same ID to continue a session |
-| `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
-| `references` | array | Additional context documents to include |
+| `action` | string | Operation: `chat` (default), `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `id` | string | Conversation ID for retrieve/update/delete |
+| `model` | string | Model name (required for chat; used as optional filter in retrieve_batch) |
+| `question` | string | Plain-text prompt (v1-compatible) |
+| `message` | object | Multimodal content for the turn |
+| `stateful` | boolean | Persist conversation server-side (`true` by default) |
+| `references` | array | Optional context URLs |
+| `preset` | string | Server-side preset/system prompt |
+| `max_turns` | integer | Limit for agentic loop turns |
+| `tool_results` | array | Resume payload for paused tool flows |
+| `messages` | array | Full replacement history (update) |
+| `title` | string | Conversation title (update) |
+| `user_id` | string | Filter for retrieve_batch |
+| `application_id` | string | Filter for retrieve_batch |
+| `model_group` | string | Provider group filter (e.g. `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`) |
+| `offset` | integer | Pagination offset for retrieve_batch |
+| `limit` | integer | Pagination limit for retrieve_batch |
