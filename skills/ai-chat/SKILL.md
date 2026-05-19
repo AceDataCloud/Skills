@@ -75,17 +75,51 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Highest-quality Gemini chat |
+| `gemini-3.1-pro-preview` | Preview of newer Gemini 3.1 capabilities |
+| `gemini-3.1-flash-lite-preview` | Faster/cost-efficient Gemini tasks |
+| `gemini-3.1-flash-image-preview` | Image-capable Gemini conversations |
+| `gemini-2.5-flash-lite` | Lightweight low-latency tasks |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
-| `grok-3` | General-purpose |
-| `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
+| `grok-4-1-fast` | High-speed Grok 4.1 family |
+| `grok-4-1-fast-reasoning` | Faster reasoning-focused Grok |
+| `grok-4-1-fast-non-reasoning` | Fast non-reasoning variant |
+| `grok-3` | General-purpose previous generation |
+| `grok-3-fast` | Speed-optimized previous generation |
+
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2.5` | Newest Kimi generation |
+| `kimi-k2-thinking` | Reasoning-heavy tasks |
+| `kimi-k2-thinking-turbo` | Faster Kimi reasoning |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-turbo-preview` | Lightweight preview tier |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest GLM generation |
+| `glm-5` | Advanced GLM tasks |
+| `glm-5-turbo` | Faster GLM 5 variant |
+| `glm-4.7` | High-capability GLM 4.x |
+| `glm-4-flash` | Cost/performance focused GLM |
+
+### DeepSeek
+
+| Model | Best For |
+|-------|----------|
+| `deepseek-v4-flash` | Latest fast DeepSeek model |
+| `deepseek-v3.2-exp` | Experimental DeepSeek generation |
+| `deepseek-v3` | General DeepSeek usage |
+| `deepseek-r1` | Reasoning-focused workloads |
 
 ## Features
 
@@ -181,9 +215,38 @@ POST /v1/chat/completions
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
 
-## Stateful Conversations Endpoint
+## Stateful Conversations Endpoint (Recommended)
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+For stateful, session-based chat (no need to send full history each time), use `/aichat2/conversations`:
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4.1","question":"What is quantum computing?","stateful":true}'
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `action` | string | `chat` (default), `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `id` | string | Conversation ID (or target ID for retrieve/update/delete) |
+| `model` | string | Model name (required for chat/update actions) |
+| `question` | string | Prompt text for chat actions |
+| `message` / `messages` | object/array | Message payload alternatives |
+| `stateful` | boolean | Keep conversation history server-side (default: `true`) |
+| `references` | array | Additional context documents |
+| `preset` | string | Preset/system prompt |
+| `max_turns` | integer | Maximum retained turns |
+| `tool_results` | array | Tool output context for follow-up turns |
+| `title` | string | Conversation title |
+| `user_id` | string | User identifier |
+| `application_id` | string | Application identifier |
+| `model_group` | string | `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek` |
+| `offset` / `limit` | integer | Pagination controls for retrieval actions |
+
+## Legacy Stateful Endpoint
+
+`/aichat/conversations` remains available for compatibility with older integrations:
 
 ```bash
 curl -X POST https://api.acedata.cloud/aichat/conversations \
