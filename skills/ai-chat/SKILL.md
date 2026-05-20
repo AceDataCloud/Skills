@@ -75,6 +75,7 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
+| `gemini-3.5-flash` | Latest fast Gemini model |
 | `gemini-1.5-pro` | Long context, complex tasks |
 | `gemini-1.5-flash` | Fast, efficient |
 
