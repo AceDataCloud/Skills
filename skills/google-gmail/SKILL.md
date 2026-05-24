@@ -132,8 +132,16 @@ curl -sS -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
   --get "https://gmail.googleapis.com/gmail/v1/users/me/messages" \
   --data-urlencode 'q=is:unread in:inbox newer_than:7d' \
   --data-urlencode 'maxResults=20' \
-  | jq '.messages[]'
+  | jq '.messages // [] | .[]'
 ```
+
+**Always default `.messages` to `[]`** — Gmail's `messages.list` omits the
+field entirely when there are zero matches (the response is just
+`{"resultSizeEstimate": 0}`), so a bare `.messages[]` will crash jq
+with `Cannot iterate over null (null)` and exit 5. Same applies to
+`.threads`, `.labels`, `.drafts` on their list endpoints. If the result
+is empty, tell the user plainly (e.g. "No unread mail in the last 7
+days") instead of retrying.
 
 The `messages.list` endpoint returns only `{id, threadId}` — you have
 to fan out to `messages.get` for headers / body. Cheap pattern: list
@@ -147,8 +155,10 @@ IDS=$(curl -sS -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
   --get "https://gmail.googleapis.com/gmail/v1/users/me/messages" \
   --data-urlencode 'q=is:unread in:inbox' \
   --data-urlencode 'maxResults=10' \
-  | jq -r '.messages[].id')
+  | jq -r '.messages // [] | .[].id')
 
+# If $IDS is empty the for-loop below runs zero times — tell the user
+# "no unread mail" rather than echoing an empty result.
 for ID in $IDS; do
   curl -sS -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
     --get "https://gmail.googleapis.com/gmail/v1/users/me/messages/$ID" \
@@ -195,7 +205,7 @@ curl -sS -H "Authorization: Bearer $GOOGLE_GMAIL_TOKEN" \
   --data-urlencode 'metadataHeaders=From' \
   --data-urlencode 'metadataHeaders=Subject' \
   --data-urlencode 'metadataHeaders=Date' \
-  | jq '{id, historyId, messages: [.messages[] | {id, snippet, from: (.payload.headers | from_entries.From), date: (.payload.headers | from_entries.Date)}]}'
+  | jq '{id, historyId, messages: [(.messages // [])[] | {id, snippet, from: (.payload.headers | from_entries.From), date: (.payload.headers | from_entries.Date)}]}'
 ```
 
 ### Search by Gmail query
