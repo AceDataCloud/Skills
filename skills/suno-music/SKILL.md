@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/suno/audios \
   -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"task_id": "..."}` every 3-5 seconds.
+> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "<task_id>"}` every 3-5 seconds.
 
 ## Available Models
 
@@ -103,7 +103,7 @@ For best results follow this multi-step workflow:
 1. **Generate lyrics** — `POST /suno/lyrics` with a topic/prompt
 2. **Optimize style** — `POST /suno/style` to refine style description
 3. **Generate music** — `POST /suno/audios` with custom action, lyrics + style
-4. **Poll task** — `POST /suno/tasks` with task_id until status is complete
+4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
 7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
@@ -149,7 +149,7 @@ For best results follow this multi-step workflow:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | string | Prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
@@ -174,7 +174,7 @@ Ending lyrics
 
 ## Gotchas
 
-- All generation is **async** — always set `"callback_url"` to get a `task_id` immediately, then poll `/suno/tasks`
+- All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
