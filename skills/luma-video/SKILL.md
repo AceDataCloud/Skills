@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/luma/videos \
   -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /luma/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /luma/tasks` with `{"id": "..."}`.
 
 ## Workflows
 
