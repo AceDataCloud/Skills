@@ -149,7 +149,7 @@ For best results follow this multi-step workflow:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | object | Prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
