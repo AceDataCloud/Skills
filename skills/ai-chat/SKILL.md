@@ -62,6 +62,7 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
+| `claude-opus-4-8` | Latest Opus | Highest capability |
 | `claude-opus-4-6` | Latest Opus | Highest capability |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
@@ -183,10 +184,10 @@ POST /v1/chat/completions
 
 ## Stateful Conversations Endpoint
 
-For stateful, session-based chat (no need to send the full history each time), use the `/aichat/conversations` endpoint:
+For stateful, session-based chat (no need to send the full history each time), use `POST /aichat2/conversations` (recommended). `POST /aichat/conversations` remains available for legacy compatibility.
 
 ```bash
-curl -X POST https://api.acedata.cloud/aichat/conversations \
+curl -X POST https://api.acedata.cloud/aichat2/conversations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"model": "gpt-4.1", "question": "What is quantum computing?", "stateful": true}'

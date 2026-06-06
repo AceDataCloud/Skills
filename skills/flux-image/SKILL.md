@@ -1,6 +1,6 @@
 ---
 name: flux-image
-description: Generate and edit images with Flux (Black Forest Labs) via AceDataCloud API. Use when creating images from text prompts, editing existing images with text instructions, or when high-quality image generation is needed. Supports multiple Flux models including dev, pro, ultra, and kontext for editing.
+description: Generate and edit images with Flux (Black Forest Labs) via AceDataCloud API. Use when creating images from text prompts, editing existing images with text instructions, or when high-quality image generation is needed. Supports multiple Flux models including dev, pro, Flux 2 variants, and kontext for editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/flux/images \
   -d '{"prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"task_id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
 
 ## Models
 
@@ -31,8 +31,9 @@ curl -X POST https://api.acedata.cloud/flux/images \
 |-------|---------|-------|-------|----------|
 | `flux-dev` | Good | Fast | 256–1440px | Quick generation (default) |
 | `flux-pro` | High | Medium | 256–1440px | Production work |
-| `flux-pro-1.1` | Higher | Medium | 256–1440px | Better prompt following |
-| `flux-pro-1.1-ultra` | Highest | Slow | Aspect ratios | Maximum quality |
+| `flux-2-flex` | High | Fast | 256–1440px | Faster high-quality generation |
+| `flux-2-pro` | Higher | Medium | 256–1440px | Better prompt following |
+| `flux-2-max` | Highest | Slow | 256–1440px | Maximum quality generation |
 | `flux-kontext-pro` | High | Medium | Aspect ratios | Image editing |
 | `flux-kontext-max` | Highest | Slow | Aspect ratios | Complex editing |
 
@@ -43,7 +44,7 @@ POST /flux/images
 {
   "prompt": "a minimalist logo of a mountain",
   "action": "generate",
-  "model": "flux-pro-1.1",
+  "model": "flux-2-pro",
   "size": "1024x1024",
   "count": 1
 }
@@ -51,10 +52,10 @@ POST /flux/images
 
 ### Size Options
 
-**For dev/pro/pro-1.1** (pixel dimensions):
+**For dev/pro/flux-2** (pixel dimensions):
 - `"1024x1024"`, `"1344x768"`, `"768x1344"`, `"1024x576"`, `"576x1024"`
 
-**For ultra/kontext** (aspect ratios):
+**For kontext** (aspect ratios):
 - `"1:1"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"`, `"3:2"`, `"2:3"`, `"21:9"`, `"9:21"`
 
 ## Edit Images
@@ -73,10 +74,10 @@ POST /flux/images
 
 ## Gotchas
 
-- Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro models, aspect ratios (e.g., `"16:9"`) with ultra/kontext models
+- Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro/flux-2 models, aspect ratios (e.g., `"16:9"`) with kontext models
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
-- Ultra model produces highest quality but is slowest — use dev for iteration, ultra for final output
-- All generation is async — always set `"callback_url"` to get a `task_id` immediately, then poll `/flux/tasks`
+- `flux-2-max` produces highest quality but is slowest — use dev/flex for iteration and max for final output
+- All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
