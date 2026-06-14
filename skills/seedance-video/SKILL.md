@@ -39,7 +39,9 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 |-------|------|----------|
 | `doubao-seedance-1-0-pro-250528` | Text+Image-to-Video | General-purpose, reliable quality |
 | `doubao-seedance-1-0-pro-fast-251015` | Text+Image-to-Video | Faster Pro generation |
-| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
+| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | High quality generation with audio support |
+| `doubao-seedance-2-0-260128` | Text+Image-to-Video | Latest Seedance 2.0 generation model |
+| `doubao-seedance-2-0-fast-260128` | Text+Image-to-Video | Faster Seedance 2.0 generation |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
 
@@ -115,9 +117,10 @@ POST /seedance/videos
 | `duration` | `2` – `12` | Duration in seconds |
 | `frames` | 29–289 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
-| `generate_audio` | `true` / `false` | Generate audio (only supported by `doubao-seedance-1-5-pro-251215`) |
+| `generate_audio` | `true` / `false` | Generate audio when supported by the selected model |
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
+| `async` | `true` / `false` | Return a `task_id` immediately without requiring a callback URL |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `service_tier` | `"default"`, `"flex"` | Processing tier (default: default) |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
@@ -138,11 +141,12 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - The `content` array replaces the old `prompt` + `image_url` fields; always use `content`
 - Image and text scenarios are mutually exclusive per content item — each item has either `text` or `image_url`, not both
 - `first_frame`, `last_frame`, and `reference_image` roles are mutually exclusive scenarios — pick one pattern per request
-- `generate_audio: true` is only supported by `doubao-seedance-1-5-pro-251215`; other models ignore this field
+- `generate_audio` is model-dependent — verify support on the selected model before relying on generated audio output
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
 - Resolution options are `480p`, `720p`, `1080p` — there is no 360p or 540p
 - `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
 - Duration range is **2–12 seconds** — values outside this range will fail
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
+- Use `callback_url` or `async: true` to get a `task_id` immediately before polling `/seedance/tasks`
 
 > **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

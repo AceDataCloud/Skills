@@ -143,6 +143,8 @@ POST /kling/lip-sync
 | `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
+| `callback_url` (`/kling/lip-sync`) | string | Optional webhook URL for async lip-sync results |
+| `async` (`/kling/lip-sync`) | `true`, `false` | Return a `task_id` immediately and poll `POST /kling/tasks` |
 
 ## Gotchas
 
@@ -151,7 +153,8 @@ POST /kling/lip-sync
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
-- Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
+- Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url`/`audio_file` for `audio2video` or `text` + voice fields for `text2video`
+- Lip-sync supports async execution via `callback_url` or `async: true`; poll `POST /kling/tasks` with the returned task ID
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
