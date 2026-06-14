@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, or applying motion control. Supports text-to-video, image-to-video, extend, and motion generation with multiple models and quality modes.
+description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, or creating lip-sync videos. Supports text-to-video, image-to-video, extend, motion, and lip-sync generation with multiple models and quality modes.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -104,13 +104,27 @@ POST /kling/motion
 }
 ```
 
+### 5. Lip Sync (Audio/Text Driven Talking Video)
+
+Drive an existing 5s/10s video with audio or text-to-speech to create synced speech animation.
+
+```json
+POST /kling/lip-sync
+{
+  "video_id": "895047463190134880",
+  "mode": "audio2video",
+  "audio_url": "https://example.com/voiceover.mp3",
+  "audio_type": "url"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
-| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
+| `mode` | `/kling/videos`: `"std"`, `"pro"`, `"4k"`; `/kling/lip-sync`: `"audio2video"`, `"text2video"` | Videos: quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`). Lip-sync: input drive mode. |
 | `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
@@ -119,6 +133,9 @@ POST /kling/motion
 | `camera_control` | object | Camera movement parameters |
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `audio_type` | `"url"`, `"file"` | Audio source type for `/kling/lip-sync` in `audio2video` mode (default `"url"`) |
+| `voice_id` | string | Voice ID for `/kling/lip-sync` in `text2video` mode |
+| `voice_language` | string | Voice language for `/kling/lip-sync` in `text2video` mode (default `"zh"`) |
 | `callback_url` | string | Async callback URL |
 
 ## Gotchas
@@ -131,3 +148,4 @@ POST /kling/motion
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
+- For `/kling/lip-sync`, provide exactly one of `video_id` or `video_url`; use `audio2video` with `audio_url`, or `text2video` with `text` + `voice_id`
