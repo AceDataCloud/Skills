@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, or applying motion control. Supports text-to-video, image-to-video, extend, and motion generation with multiple models and quality modes.
+description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, or syncing lip movements to audio/text. Supports text-to-video, image-to-video, extend, motion generation, and lip sync with multiple models and quality modes.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -119,7 +119,51 @@ POST /kling/motion
 | `camera_control` | object | Camera movement parameters |
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `async` | `true`/`false` | Set `true` to get `task_id` immediately without `callback_url` |
 | `callback_url` | string | Async callback URL |
+
+## Lip Sync
+
+Drive an existing Kling video (5 s or 10 s) so the character speaks in sync with audio or text. Pair with image-to-video for a full talking-photo pipeline.
+
+```json
+POST /kling/lip-sync
+{
+  "mode": "audio2video",
+  "video_id": "895047463190134880",
+  "audio_url": "https://example.com/speech.mp3"
+}
+```
+
+```json
+POST /kling/lip-sync
+{
+  "mode": "text2video",
+  "video_url": "https://example.com/portrait.mp4",
+  "text": "Hello, welcome to our product demo!",
+  "voice_id": "your-voice-id",
+  "voice_language": "en"
+}
+```
+
+### Lip Sync Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `mode` | `"audio2video"` \| `"text2video"` | yes | Drive mode |
+| `video_id` | string | one-of | ID of a Kling-generated video (within 30 days) |
+| `video_url` | string | one-of | Public URL of a 5 s/10 s video |
+| `audio_url` | string | audio2video | Public URL of the driving audio |
+| `audio_type` | `"url"` \| `"file"` | no | How audio is supplied (default `"url"`) |
+| `text` | string (≤120 chars) | text2video | Text for the character to speak |
+| `voice_id` | string | text2video | Voice ID to use |
+| `voice_language` | string | no | Language for text2video (default `"zh"`) |
+| `callback_url` | string | no | Async callback URL; returns `task_id` immediately |
+| `async` | boolean | no | Set `true` to return `task_id` immediately without `callback_url` |
+
+> **Async:** Lip sync requests can be async — use `async: true` or `callback_url`. Poll via `POST /kling/tasks` with `{"id": "<task_id>"}`.
+
+**Pricing:** 2.45 Credits per call (flat).
 
 ## Gotchas
 

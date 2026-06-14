@@ -4,7 +4,16 @@ Most generation APIs (images, video, music) are asynchronous — they return a `
 
 ## Pattern
 
-**Step 1:** Submit with `callback_url` to force async mode and get a `task_id` immediately.
+**Step 1:** Submit with `callback_url` or `async: true` to get a `task_id` immediately.
+
+```bash
+curl -X POST https://api.acedata.cloud/<service>/<resource> \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "...", "async": true}'
+```
+
+Alternatively, set `callback_url` to a real or placeholder URL:
 
 ```bash
 curl -X POST https://api.acedata.cloud/<service>/<resource> \
@@ -35,7 +44,7 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 
 ## Important Notes
 
-- Always use `callback_url` to avoid long-running HTTP connections that time out
+- Always use `callback_url` or `async: true` to avoid long-running HTTP connections that time out
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
 - Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
