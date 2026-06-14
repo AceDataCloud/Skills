@@ -55,8 +55,14 @@ print(response.choices[0].message.content)
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
 | `gpt-5` | Latest gen | Next-gen intelligence |
+| `gpt-5.5` | Gen 5.5 | Latest flagship |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.4-mini` | Mini gen 5.4 | Fast + low cost |
+| `gpt-5.4-nano` | Nano gen 5.4 | Ultra-fast + low cost |
+| `gpt-5.2-pro` | Pro gen 5.2 | Strong reasoning |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `o3` | Reasoning | Advanced reasoning |
+| `o4-mini` | Compact reasoning | Fast reasoning |
 
 ### Anthropic Claude
 
@@ -78,6 +84,9 @@ print(response.choices[0].message.content)
 |-------|----------|
 | `gemini-1.5-pro` | Long context, complex tasks |
 | `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest high-quality Gemini |
+| `gemini-3.1-pro-preview` | Preview Gemini Pro |
+| `gemini-2.5-flash-lite` | Cost-efficient Gemini |
 
 ### xAI Grok
 
@@ -87,6 +96,31 @@ print(response.choices[0].message.content)
 | `grok-3` | General-purpose |
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
+
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2.5` | Latest Kimi general tasks |
+| `kimi-k2-thinking` | Stronger reasoning |
+| `kimi-k2-thinking-turbo` | Faster reasoning |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest GLM model |
+| `glm-5` | General-purpose GLM |
+| `glm-5-turbo` | Faster GLM responses |
+| `glm-4.7` | Stable GLM generation |
+
+### DeepSeek
+
+| Model | Best For |
+|-------|----------|
+| `deepseek-v4-flash` | Fast DeepSeek generation |
+| `deepseek-v3.2-exp` | Experimental high quality |
+| `deepseek-r1-0528` | Reasoning-focused output |
 
 ## Features
 
@@ -177,7 +211,7 @@ POST /v1/chat/completions
 
 - **100% OpenAI-compatible** — use the standard OpenAI SDK with `base_url="https://api.acedata.cloud/v1"`
 - Billing is token-based with per-model pricing (more expensive models cost more per token)
-- Vision is supported on multimodal models (`gpt-4o`, `gpt-4o-mini`, `grok-2-vision-*`)
+- Vision is supported on multimodal models (for example `gpt-4o`, `gpt-4o-mini`, `gpt-4o-image`)
 - Function calling works on most modern models (GPT-4+, Claude 3+)
 - Streaming returns `chat.completion.chunk` objects via SSE
 - `finish_reason` values: `"stop"` (complete), `"length"` (max tokens), `"tool_calls"` (function call), `"content_filter"` (filtered)
@@ -199,5 +233,7 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `question` | string | The prompt or question to answer |
 | `id` | string | Conversation ID — pass the same ID to continue a session |
 | `preset` | string | Preset/system prompt for the conversation |
-| `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
+| `stateful` | boolean | Persist conversation server-side (default: `true`) |
 | `references` | array | Additional context documents to include |
+| `action` | string | Optional conversation action: `retrieve`, `retrieve_batch`, `update`, `delete` |
+| `message` | array | Optional multimodal blocks (`text`, `image_url`, `file_url`) |
