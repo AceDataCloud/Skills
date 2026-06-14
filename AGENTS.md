@@ -26,6 +26,9 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
 
+### Video Production (workflow)
+- **marketing-video-factory** — Produce a short-form marketing/feature video end-to-end (orchestrates the media skills: generate assets → capture UI → assemble with FFmpeg → distribute)
+
 ### AI Chat & Tools
 - **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models)
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
