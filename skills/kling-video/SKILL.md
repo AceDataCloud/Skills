@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, or applying motion control. Supports text-to-video, image-to-video, extend, and motion generation with multiple models and quality modes.
+description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, or lip-syncing audio/text to video. Supports text-to-video, image-to-video, extend, motion generation, and lip-sync with multiple models and quality modes.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -104,6 +104,19 @@ POST /kling/motion
 }
 ```
 
+### 5. Lip Sync
+
+Create a lip-synced video from a source video plus either an audio track or input text.
+
+```json
+POST /kling/lip-sync
+{
+  "video_url": "https://example.com/source.mp4",
+  "mode": "audio2video",
+  "audio_url": "https://example.com/voiceover.mp3"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
@@ -120,6 +133,16 @@ POST /kling/motion
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
+| `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
+| `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
+| `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |
+| `audio_url` (`/kling/lip-sync`) | URL | Audio source URL (for `audio2video`) |
+| `audio_type` (`/kling/lip-sync`) | `"url"`, `"file"` | Audio input type (default `url`) |
+| `audio_file` (`/kling/lip-sync`) | string | Audio file payload when `audio_type=file` |
+| `text` (`/kling/lip-sync`) | string | Input text to synthesize speech (for `text2video`) |
+| `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
+| `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
+| `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
 
 ## Gotchas
 
@@ -128,6 +151,7 @@ POST /kling/motion
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
+- Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
