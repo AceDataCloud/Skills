@@ -104,7 +104,7 @@ POST /kling/motion
 }
 ```
 
-### 5. Lip Sync (Audio/Text Driven Talking Video)
+### 5. Lip Sync
 
 Drive an existing video so the subject speaks in sync with audio or text.
 
@@ -151,7 +151,7 @@ POST /kling/lip-sync
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
-- Lip sync (`/kling/lip-sync`) supports `audio2video` and `text2video`; provide exactly one of `video_id` or `video_url`
+- Lip sync (`/kling/lip-sync`) supports `audio2video` and `text2video`; provide exactly one of `video_id` or `video_url` (`video_id` is typical after `/kling/videos`, `video_url` is useful for external videos)
 - For lip sync audio mode, use `audio_url` by default or `audio_file` (base64) when `audio_type=file`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
