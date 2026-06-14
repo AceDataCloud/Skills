@@ -24,6 +24,8 @@ curl -X POST https://api.acedata.cloud/v1/audio/speech \
   -d '{"model":"tts-1-hd","input":"Hello from AceData Cloud.","voice":"nova","response_format":"mp3"}'
 ```
 
+Use your normal bearer auth header format from [authentication](../_shared/authentication.md) when running the command.
+
 ## Endpoint
 
 - `POST /v1/audio/speech` (alias: `POST /openai/audio/speech`)

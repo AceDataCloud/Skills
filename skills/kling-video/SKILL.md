@@ -120,6 +120,8 @@ POST /kling/lip-sync
 }
 ```
 
+For `audio2video`, send `audio_url` (or `audio_file` with `audio_type: "file"`) instead of text/voice fields.
+
 ## Parameters
 
 | Parameter | Values | Description |
