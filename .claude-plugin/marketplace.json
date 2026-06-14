@@ -18,6 +18,7 @@
         "./skills/suno-music",
         "./skills/producer-music",
         "./skills/fish-audio",
+        "./skills/openai-audio",
         "./skills/midjourney-image",
         "./skills/flux-image",
         "./skills/seedream-image",

@@ -104,6 +104,22 @@ POST /kling/motion
 }
 ```
 
+### 5. Lip Sync (Audio/Text Driven Talking Video)
+
+Drive an existing video so the subject speaks in sync with audio or text.
+
+```json
+POST /kling/lip-sync
+{
+  "mode": "text2video",
+  "video_id": "895055164389466178",
+  "text": "Hi, long time no see. I am doing well.",
+  "voice_id": "genshin_vindi2",
+  "voice_language": "en",
+  "voice_speed": 1.0
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
@@ -119,6 +135,13 @@ POST /kling/motion
 | `camera_control` | object | Camera movement parameters |
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `audio_type` | `"url"`, `"file"` | For `/kling/lip-sync` audio mode; defaults to `url` |
+| `audio_url` | string | Public audio URL for `/kling/lip-sync` when `audio_type=url` |
+| `audio_file` | string | Base64-encoded audio for `/kling/lip-sync` when `audio_type=file` |
+| `voice_id` | string | Voice ID for `/kling/lip-sync` `text2video` mode |
+| `voice_language` | `"zh"`, `"en"` | Voice language for `/kling/lip-sync` `text2video` mode |
+| `voice_speed` | 0.8–2.0 | Speech rate for `/kling/lip-sync` `text2video` mode |
+| `async` | `true`, `false` | Async execution; returns `task_id` immediately when true |
 | `callback_url` | string | Async callback URL |
 
 ## Gotchas
@@ -128,6 +151,8 @@ POST /kling/motion
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
+- Lip sync (`/kling/lip-sync`) supports `audio2video` and `text2video`; provide exactly one of `video_id` or `video_url`
+- For lip sync audio mode, use `audio_url` by default or `audio_file` (base64) when `audio_type=file`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")

@@ -10,6 +10,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **suno-music** — Generate AI music, lyrics, covers, and vocal extraction with Suno
 - **producer-music** — Generate music, covers, extend tracks, swap vocals with Producer
 - **fish-audio** — Text-to-speech and voice synthesis with Fish Audio
+- **openai-audio** — OpenAI-compatible text-to-speech via `/v1/audio/speech`
 
 ### AI Image Generation
 - **midjourney-image** — Generate, edit, blend, describe, and upscale images with Midjourney
