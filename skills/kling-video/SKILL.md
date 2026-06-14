@@ -159,7 +159,7 @@ POST /kling/lip-sync
 | `voice_id` | string | text2video | Voice ID to use |
 | `voice_language` | string | no | Language for text2video (default `"zh"`) |
 | `callback_url` | string | no | Async callback URL; returns `task_id` immediately |
-| `async` | boolean | no | Set `true` to return `task_id` immediately without `callback_url` |
+| `async` | `true`/`false` | no | Set `true` to return `task_id` immediately without `callback_url` |
 
 > **Async:** Lip sync requests can be async — use `async: true` or `callback_url`. Poll via `POST /kling/tasks` with `{"id": "<task_id>"}`.
 
