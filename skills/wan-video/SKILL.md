@@ -139,6 +139,7 @@ POST /wan/videos
 | `duration` | No | `5`, `10`, `15` | Video duration in seconds |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
+| `async` | No | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/wan/tasks` for the result |
 
 ## Gotchas
 

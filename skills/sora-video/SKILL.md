@@ -85,6 +85,8 @@ POST /sora/videos
 | `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
 | `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
 | `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
+| `callback_url` | string | Webhook URL — returns `task_id` immediately; result is pushed to this URL when ready |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/sora/tasks` for the result |
 
 ## Gotchas
 

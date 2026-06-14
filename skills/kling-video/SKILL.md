@@ -120,6 +120,7 @@ POST /kling/motion
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/kling/tasks` for the result |
 
 ## Gotchas
 

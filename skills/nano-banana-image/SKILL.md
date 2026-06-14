@@ -72,6 +72,7 @@ POST /nano-banana/images
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/nano-banana/tasks` for the result |
 
 ## Gotchas
 

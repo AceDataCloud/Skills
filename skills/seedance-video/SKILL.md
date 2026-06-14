@@ -121,6 +121,8 @@ POST /seedance/videos
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `service_tier` | `"default"`, `"flex"` | Processing tier (default: default) |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
+| `callback_url` | string | Webhook URL — returns `task_id` immediately; result is pushed to this URL when ready |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/seedance/tasks` for the result |
 
 ## Inline Parameter Syntax
 

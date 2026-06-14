@@ -122,6 +122,7 @@ POST /face/detect-live
 | `source_image_url` | Yes | URL of the face to use (replaces the face) |
 | `target_image_url` | Yes | URL of the image to put the face onto |
 | `callback_url` | No | Webhook URL for async delivery |
+| `async` | No | Set to `true` to return a `task_id` immediately without a callback URL; poll `/face/tasks` for the result |
 | `timeout` | No | Max wait time in seconds (default: 120) |
 
 ### `/face/beautify`
@@ -145,7 +146,7 @@ POST /face/detect-live
 
 ## Gotchas
 
-- All face APIs return results synchronously. `/face/swap` additionally supports an optional `callback_url` parameter for async delivery (pass it to receive the result via webhook instead of waiting inline)
+- All face APIs return results synchronously. `/face/swap` additionally supports `callback_url` (webhook) or `async: true` for async delivery — both return a `task_id` immediately; poll `/face/tasks` for the result
 - Face analyze returns 90+ keypoints per detected face, supporting multiple faces in one image
 - Face swap uses `source_image_url` (the face to apply) and `target_image_url` (the body to apply it to)
 - All APIs are currently in **Alpha** stage — interfaces may evolve

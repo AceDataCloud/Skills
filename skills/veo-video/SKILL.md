@@ -114,6 +114,8 @@ POST /veo/videos
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+| `callback_url` | string | Webhook URL — returns `task_id` immediately; result is pushed to this URL when ready |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/veo/tasks` for the result |
 
 ## Post-Generation Endpoints
 

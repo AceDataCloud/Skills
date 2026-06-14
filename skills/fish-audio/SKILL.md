@@ -80,6 +80,7 @@ POST /fish/audios
 | `model` | string | TTS model (e.g., `"speech-1.5"`, `"speech-1.5-hd"`) |
 | `action` | string | Operation type (e.g., `"generate"`) |
 | `callback_url` | string | Webhook URL for async delivery |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/fish/tasks` for the result |
 
 ### `/fish/voices`
 
@@ -90,6 +91,7 @@ POST /fish/audios
 | `description` | string | Description of the voice |
 | `image_url` | string | Cover image URL for the voice |
 | `callback_url` | string | Webhook URL for async delivery |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/fish/tasks` for the result |
 
 ## Gotchas
 

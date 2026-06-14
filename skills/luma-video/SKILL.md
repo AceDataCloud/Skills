@@ -95,6 +95,7 @@ POST /luma/videos
 | `video_url` | string | — | URL of video to extend (alternative to `video_id`) |
 | `timeout` | number | — | Timeout in seconds for the API to return data |
 | `callback_url` | string | — | Webhook URL for async notifications |
+| `async` | boolean | — | Set to `true` to return a `task_id` immediately without a callback URL; poll `/luma/tasks` for the result |
 
 ## Gotchas
 

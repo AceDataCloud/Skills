@@ -62,14 +62,14 @@ POST /seedream/images
 
 ### 3. Async Generation with Task Polling
 
-Pass a `callback_url` to receive results asynchronously via webhook, or poll `/seedream/tasks` for the result:
+Set `async: true` (or pass a `callback_url`) to get a `task_id` immediately and poll for the result:
 
 ```json
 POST /seedream/images
 {
   "prompt": "an epic fantasy landscape",
   "model": "doubao-seedream-5-0-260128",
-  "callback_url": "https://api.acedata.cloud/health"
+  "async": true
 }
 ```
 
@@ -98,6 +98,7 @@ POST /seedream/tasks
 | `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
 | `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
 | `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/seedream/tasks` for the result |
 
 ### Editing
 
@@ -115,6 +116,6 @@ POST /seedream/tasks
 - `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
 - `guidance_scale` is only available for the 3.0-series models
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
-- Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
+- Pass `callback_url` or set `async: true` to get a `task_id` immediately; poll `/seedream/tasks` for the result — use `async: true` if you have no public webhook URL
 
 > **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

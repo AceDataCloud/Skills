@@ -167,6 +167,8 @@ POST /producer/upload
 | `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
 | `weirdness` | 0-1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
+| `callback_url` | string | Webhook URL — returns `task_id` immediately; result is pushed to this URL when ready |
+| `async` | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/producer/tasks` for the result |
 
 ## Response Structure
 

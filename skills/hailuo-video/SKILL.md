@@ -82,6 +82,7 @@ POST /hailuo/videos
 | `model` | Yes | `"minimax-t2v"`, `"minimax-i2v"`, `"minimax-i2v-director"` | Model |
 | `first_image_url` | For i2v | string | Source image URL (required for image-to-video) |
 | `callback_url` | No | string | Async callback URL |
+| `async` | No | boolean | Set to `true` to return a `task_id` immediately without a callback URL; poll `/hailuo/tasks` for the result |
 
 ## Gotchas
 
