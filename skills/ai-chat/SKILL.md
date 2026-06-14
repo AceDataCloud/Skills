@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, Kimi, Grok, or other models through a single endpoint. Supports streaming, function calling, and vision.
+description: Access 50+ LLM models through a unified OpenAI-compatible API via AceDataCloud. Use when you need chat completions from GPT, Claude, Gemini, Kimi, Grok, GLM, DeepSeek, or other models through a single endpoint. Supports streaming, function calling, and vision.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -63,9 +63,12 @@ print(response.choices[0].message.content)
 | Model | Type | Best For |
 |-------|------|----------|
 | `claude-opus-4-8` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Latest Opus | Highest capability |
 | `claude-opus-4-6` | Latest Opus | Highest capability |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
+| `claude-opus-4-1-20250805` | Opus 4.1 | Strong reasoning |
+| `claude-opus-4-20250514` | Opus 4 | High-capability baseline |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
 | `claude-sonnet-4-20250514` | Sonnet 4 | Reliable general-purpose |
 | `claude-haiku-4-5-20251001` | Haiku 4.5 | Fast, efficient |
@@ -76,17 +79,60 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.1-pro-preview` | Preview of Gemini 3.1 Pro |
+| `gemini-3-pro-preview` | Previous generation, strong quality |
+| `gemini-3.1-flash-image-preview` | Image-generation flash model |
+| `gemini-3.1-flash-lite-preview` | Lightweight, fast |
+| `gemini-2.5-flash-lite` | Cost-effective flash |
+| `gemini-2.0-flash-lite` | Fast, efficient |
 
 ### xAI Grok
 
 | Model | Best For |
 |-------|----------|
 | `grok-4` | Latest, highest capability |
+| `grok-4-0709` | Latest release (July 2025) |
 | `grok-3` | General-purpose |
 | `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
+
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2.5` | Latest, strongest reasoning |
+| `kimi-k2-thinking` | Extended reasoning |
+| `kimi-k2-thinking-turbo` | Fast reasoning |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-turbo-preview` | Speed-optimized |
+| `kimi-k2-0905-preview` | Sept 2025 preview |
+| `kimi-k2-0711-preview` | July 2025 preview |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.1` | Latest, highest quality |
+| `glm-5` | Strong general-purpose |
+| `glm-5-turbo` | Fast GLM-5 |
+| `glm-4.7` | High-quality balance |
+| `glm-4.6` | Reliable general-purpose |
+| `glm-4.5` | Good balance |
+| `glm-4.5v` | Vision-enabled |
+| `glm-3-turbo` | Fast, cost-effective |
+
+### DeepSeek
+
+| Model | Best For |
+|-------|----------|
+| `deepseek-v4-flash` | Latest, fast |
+| `deepseek-v3.2-exp` | Experimental v3.2 |
+| `deepseek-v3-250324` | V3 March 2025 |
+| `deepseek-v3` | Strong coding & reasoning |
+| `deepseek-r1-0528` | R1 May 2025 release |
+| `deepseek-r1` | Reasoning model |
+| `deepseek-reasoner` | Advanced reasoning |
+| `deepseek-chat` | General-purpose chat |
 
 ## Features
 

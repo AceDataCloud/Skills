@@ -115,6 +115,6 @@ POST /seedream/tasks
 - `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
 - `guidance_scale` is only available for the 3.0-series models
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
-- Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
+- Set `"async": true` (or pass `callback_url`) to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result
 
 > **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

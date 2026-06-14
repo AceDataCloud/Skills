@@ -78,6 +78,6 @@ POST /flux/images
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-max` produces highest quality but is slowest — use dev/flex for iteration and max for final output
-- All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- All generation is async — set `"async": true` (or `"callback_url"`) to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
