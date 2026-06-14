@@ -66,14 +66,27 @@ curl -sS -X POST https://api.acedata.cloud/seedance/videos \
 curl -sS -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" -H "Content-Type: application/json" \
   -d '{"action":"generate","prompt":"uplifting minimal electronic, premium tech","instrumental":true,"model":"chirp-v5-5"}'
+
+# Voiceover — OpenAI-compatible TTS, SYNCHRONOUS (returns audio bytes, no polling).
+# Generate ONE file per scene so the audio aligns to scene boundaries.
+curl -sS -X POST https://api.acedata.cloud/v1/audio/speech \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" -H "Content-Type: application/json" \
+  -o scene1.mp3 \
+  -d '{"model":"tts-1-hd","input":"<scene narration>","voice":"nova"}'
 ```
 
 All of the above return a `task_id` — **poll the matching `/<service>/tasks`** until
 `state`/`status` is terminal, then read the media URL (see _shared/async-tasks.md).
 The media is served from `*.cdn.acedata.cloud`. Per-model details: `flux-image`,
 `seedream-image`, `nano-banana-image`, `seedance-video`, `veo-video`, `suno-music`,
-`fish-audio` skills. (Voiceover: `POST /text-to-speech`, keep word timings for
-karaoke captions.)
+`fish-audio` skills.
+
+**Voiceover (TTS):** `POST /v1/audio/speech` is the OpenAI-compatible route — it is
+**synchronous** (returns the audio bytes directly, no `task_id`/polling), models
+`tts-1-hd` (default) / `tts-1`, voices `alloy|echo|fable|onyx|nova|shimmer`, and it
+speaks both English and Chinese. (`/fish/tts` is an alternate voice-cloning route.)
+The endpoint does **not** return word timings — run WhisperX on the returned audio
+for karaoke, or distribute words across the scene duration proportionally.
 
 ## Recipe — capture product UI (Playwright)
 
@@ -126,8 +139,9 @@ real bold sans (`C:/Windows/Fonts/arialbd.ttf`, `DejaVuSans-Bold.ttf`, etc.),
 so the product stays visible.
 
 > Reference implementation (Scene-JSON contract, caption-burn, render driver,
-> material-library convention): **AceDataCloud/PlatformStudio** (`app/`,
-> `scripts/build_video.py`, `assets/MATERIALS.md`).
+> material-library convention): **AceDataCloud/PlatformStudio** — `app/contract.py`,
+> `app/pipeline/`, `scripts/render_veo_rough_cut.py`, `scripts/build_material_catalog.py`,
+> and the curated material index `materials/catalog.json` + `materials/curated.json`.
 
 ## Recipe — upload to CDN + distribute
 
