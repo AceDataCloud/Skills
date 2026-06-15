@@ -42,12 +42,6 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 
-### Video Production (workflow)
-
-| Skill | Description |
-|-------|-------------|
-| [marketing-video-factory](skills/marketing-video-factory/) | Produce a short-form marketing/feature video end-to-end — generate assets + capture UI + assemble (FFmpeg) + distribute |
-
 ### AI Chat & Tools
 
 | Skill | Description |
