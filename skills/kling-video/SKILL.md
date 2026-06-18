@@ -142,7 +142,8 @@ POST /kling/lip-sync
 | `text` (`/kling/lip-sync`) | string | Input text to synthesize speech (for `text2video`) |
 | `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
-| `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
+| `voice_speed` (`/kling/lip-sync`) | number (0.8–2.0) | TTS speaking speed (default `1.0`) |
+| `async` (`/kling/lip-sync`) | boolean | Return a `task_id` immediately without waiting (default `false`) |
 
 ## Gotchas
 

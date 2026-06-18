@@ -106,6 +106,24 @@ POST /seedream/tasks
 | `image` | Yes (for editing) | Array of image URLs or base64 strings (max 10MB each) |
 | `prompt` | Yes | Describe the desired edit |
 
+## Response Structure
+
+A successful `/seedream/images` call returns:
+
+```json
+{
+  "success": true,
+  "task_id": "task-id",
+  "trace_id": "trace-id",
+  "data": [
+    {
+      "prompt": "a cyberpunk cat wearing VR goggles in a neon city",
+      "image_url": "https://cdn.acedata.cloud/seedream/xxx.jpg"
+    }
+  ]
+}
+```
+
 ## Gotchas
 
 - Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)

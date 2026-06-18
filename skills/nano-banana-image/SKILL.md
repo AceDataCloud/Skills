@@ -73,6 +73,24 @@ POST /nano-banana/images
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
 
+## Response Structure
+
+A successful `/nano-banana/images` call returns:
+
+```json
+{
+  "success": true,
+  "task_id": "task-id",
+  "trace_id": "trace-id",
+  "data": [
+    {
+      "prompt": "a watercolor painting of a French countryside village",
+      "image_url": "https://cdn.acedata.cloud/nanobanana/xxx.png"
+    }
+  ]
+}
+```
+
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language

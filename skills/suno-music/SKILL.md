@@ -128,6 +128,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Generate inspired by reference audio URLs |
 
 ## Auxiliary Endpoints
 
@@ -153,6 +154,7 @@ For best results follow this multi-step workflow:
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `audio_urls` | array | Array of audio URLs for `mashup` or `inspo` actions (e.g., `["https://cdn1.suno.ai/xxx.mp3"]`) |
 
 ## Lyrics Format
 
@@ -170,6 +172,34 @@ Bridge section
 
 [Outro]
 Ending lyrics
+```
+
+## Response Structure
+
+A successful `/suno/audios` call returns:
+
+```json
+{
+  "success": true,
+  "task_id": "task-id",
+  "trace_id": "trace-id",
+  "data": [
+    {
+      "id": "audio-id",
+      "title": "Song Title",
+      "lyric": "full lyrics...",
+      "model": "chirp-v5-5",
+      "state": "complete",
+      "style": "Synthwave, Electronic",
+      "prompt": "original prompt",
+      "duration": 180,
+      "audio_url": "https://cdn1.suno.ai/xxx.mp3",
+      "image_url": "https://cdn1.suno.ai/xxx.jpeg",
+      "video_url": "https://cdn1.suno.ai/xxx.mp4",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
 ```
 
 ## Gotchas

@@ -132,6 +132,40 @@ A kitten yawning at the camera. --rs 720p --rt 16:9 --dur 5 --fps 24 --seed 42
 
 Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration), `--frames`, `--fps` (24 only), `--seed`, `--cf` (camera_fixed), `--wm` (watermark).
 
+## Response Structure
+
+A successful `/seedance/videos` call returns:
+
+```json
+{
+  "success": true,
+  "task_id": "task-id",
+  "trace_id": "trace-id",
+  "data": [
+    {
+      "id": "video-id",
+      "model": "doubao-seedance-1-0-pro-250528",
+      "status": "succeeded",
+      "content": {
+        "video_url": "https://cdn.example.com/video.mp4"
+      },
+      "seed": 12345,
+      "resolution": "1080p",
+      "ratio": "16:9",
+      "duration": 5,
+      "framespersecond": 24,
+      "service_tier": "default",
+      "usage": {
+        "completion_tokens": 100,
+        "total_tokens": 100
+      },
+      "created_at": 1743414673,
+      "updated_at": 1743414673
+    }
+  ]
+}
+```
+
 ## Gotchas
 
 - Model names use the `doubao-*` convention (e.g. `doubao-seedance-1-0-pro-250528`) — old short names like `seedance-1.0` are not valid

@@ -170,6 +170,8 @@ POST /producer/upload
 
 ## Response Structure
 
+A successful `/producer/audios` call returns:
+
 ```json
 {
   "data": [
@@ -181,11 +183,17 @@ POST /producer/upload
       "title": "Song Title",
       "lyric": "full lyrics...",
       "style": "electronic, dance",
-      "model": "FUZZ-2.0 Pro"
+      "model": "FUZZ-2.0 Pro",
+      "prompt": "original prompt",
+      "created_at": "2024-01-01T00:00:00Z"
     }
   ]
 }
 ```
+
+`/producer/upload` returns `{"data": {"audio_id": "uploaded-audio-id"}, "success": true}`.
+
+`/producer/lyrics` returns `{"data": {"text": "lyrics text", "title": "Suggested Title", "status": "complete"}, "success": true}`.
 
 ## Gotchas
 
