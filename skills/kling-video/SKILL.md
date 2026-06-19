@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, or lip-syncing audio/text to video. Supports text-to-video, image-to-video, extend, motion generation, and lip-sync with multiple models and quality modes.
+description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, lip-syncing audio/text to video, or turning a photo plus audio into a talking video. Supports text-to-video, image-to-video, extend, motion generation, lip-sync, and talking-photo workflows with multiple models and quality modes.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -117,6 +117,21 @@ POST /kling/lip-sync
 }
 ```
 
+### 6. Talking Photo
+
+Turn a single portrait image plus an audio clip into a talking video in one call. This chains image animation and lip-sync internally.
+
+```json
+POST /kling/talking-photo
+{
+  "image_url": "https://example.com/portrait.jpg",
+  "audio_url": "https://example.com/voiceover.mp3",
+  "model": "kling-v2-1-master",
+  "duration": 5,
+  "mode": "pro"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
@@ -143,6 +158,13 @@ POST /kling/lip-sync
 | `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
+| `image_url` (`/kling/talking-photo`) | URL | Source portrait image URL |
+| `audio_url` (`/kling/talking-photo`) | URL | Driving audio URL (`.mp3`, `.wav`, `.m4a`, `.aac`, up to 5 MB) |
+| `prompt` (`/kling/talking-photo`) | string | Optional motion/expression hint for the animation step |
+| `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Animation model (default `kling-v2-1-master`) |
+| `duration` (`/kling/talking-photo`) | `5`, `10` | Talking-photo output length (default `5`) |
+| `mode` (`/kling/talking-photo`) | `"std"`, `"pro"` | Animation quality mode (default `pro`) |
+| `async` (`/kling/talking-photo`) | `true`, `false` | Return immediately with a task id for polling |
 
 ## Gotchas
 
@@ -152,6 +174,7 @@ POST /kling/lip-sync
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
+- Talking photo is a separate endpoint (`/kling/talking-photo`) that requires both `image_url` and `audio_url`; it internally performs image-to-video plus lip-sync
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")

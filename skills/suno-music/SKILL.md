@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, using reference audio for inspo generations, extracting vocals, managing voice personas, or any music generation task. Supports text-to-music, custom styles, inspo/reference-audio workflows, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -96,7 +96,26 @@ POST /suno/audios
 }
 ```
 
-### 5. Full Song Creation Workflow
+### 5. Inspo from Reference Audio
+
+Generate a new song inspired by 1-4 public reference audio files without directly cloning the original track.
+
+```json
+POST /suno/audios
+{
+  "action": "inspo",
+  "model": "chirp-v5",
+  "audio_urls": [
+    "https://cdn1.suno.ai/reference-track.mp3"
+  ],
+  "prompt": "warm acoustic folk with soft vocals",
+  "tags": "acoustic, folk, warm",
+  "title": "Inspo Demo",
+  "audio_weight": 0.6
+}
+```
+
+### 6. Full Song Creation Workflow
 
 For best results follow this multi-step workflow:
 
@@ -128,6 +147,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Generate a new track from 1-4 reference audio URLs plus optional prompt/tags |
 
 ## Auxiliary Endpoints
 
@@ -152,7 +172,8 @@ For best results follow this multi-step workflow:
 | `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
-| `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `audio_weight` | number | Weight for reference audio in cover or `inspo` workflows (advanced, v5+ only) |
+| `audio_urls` | array | Public reference audio URLs for `action: "inspo"` (1-4 items) |
 
 ## Lyrics Format
 
@@ -183,5 +204,6 @@ Ending lyrics
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- `inspo` requires 1-4 public `audio_urls`; copyright checks may reject exact matches to known third-party recordings
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
