@@ -150,7 +150,7 @@ POST /kling/talking-photo
 | `callback_url` | string | Async callback URL |
 | `image_url` (`/kling/talking-photo`) | URL | Portrait image URL (required) |
 | `audio_url` (`/kling/talking-photo`) | URL | Driving audio URL (required) |
-| `prompt` (`/kling/talking-photo`) | string | Motion/expression hint for animation |
+| `prompt` (`/kling/talking-photo`) | string | Motion/expression hint for animation (optional) |
 | `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model (default `kling-v2-1-master`) |
 | `duration` (`/kling/talking-photo`) | `5`, `10` | Output length in seconds (default `5`) |
 | `mode` (`/kling/talking-photo`) | `"std"`, `"pro"` | Talking-photo quality mode (default `pro`) |

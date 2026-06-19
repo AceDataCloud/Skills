@@ -154,7 +154,7 @@ For best results follow this multi-step workflow:
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_urls` | array[string] | 1–4 public reference audio URLs (required for `action: "inspo"`) |
-| `audio_weight` | number | Weight (0–1) of reference audio influence (optional for `inspo`) |
+| `audio_weight` | number | Weight (0–1) of reference audio influence (optional for `inspo`, and available for advanced `cover` workflows on v5+ models) |
 
 ## Lyrics Format
 
