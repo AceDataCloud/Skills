@@ -117,6 +117,21 @@ POST /kling/lip-sync
 }
 ```
 
+### 6. Talking Photo
+
+Turn a single portrait image plus audio into a talking video.
+
+```json
+POST /kling/talking-photo
+{
+  "image_url": "https://example.com/portrait.jpg",
+  "audio_url": "https://example.com/voice.mp3",
+  "model": "kling-v2-1-master",
+  "duration": 5,
+  "mode": "pro"
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
@@ -133,6 +148,14 @@ POST /kling/lip-sync
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
+| `image_url` (`/kling/talking-photo`) | URL | Portrait image URL (required) |
+| `audio_url` (`/kling/talking-photo`) | URL | Driving audio URL (required) |
+| `prompt` (`/kling/talking-photo`) | string | Motion/expression hint for animation |
+| `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model (default `kling-v2-1-master`) |
+| `duration` (`/kling/talking-photo`) | `5`, `10` | Output length in seconds (default `5`) |
+| `mode` (`/kling/talking-photo`) | `"std"`, `"pro"` | Talking-photo quality mode (default `pro`) |
+| `callback_url` (`/kling/talking-photo`) | string | Async callback URL |
+| `async` (`/kling/talking-photo`) | `true`, `false` | Async mode flag (default `false`) |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
 | `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |
@@ -152,6 +175,7 @@ POST /kling/lip-sync
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
+- Talking photo (`/kling/talking-photo`) combines image animation + lip-sync in one request and requires both `image_url` and `audio_url`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")

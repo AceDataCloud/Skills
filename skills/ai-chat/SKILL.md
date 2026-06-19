@@ -88,6 +88,35 @@ print(response.choices[0].message.content)
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
 
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2.5` | Latest Kimi generation |
+| `kimi-k2-thinking` | Deliberate, reasoning-heavy responses |
+| `kimi-k2-instruct-0905` | Instruction-following workloads |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.2` | Latest GLM generation |
+| `glm-5.1` | Strong general-purpose performance |
+| `glm-5` | Stable flagship |
+| `glm-5-turbo` | Lower-latency GLM option |
+| `glm-4.7` | Previous-generation compatibility |
+| `glm-4.6` | Previous-generation compatibility |
+| `glm-4.5` | Previous-generation compatibility |
+| `glm-3-turbo` | Legacy compatibility |
+
+### DeepSeek
+
+| Model | Best For |
+|-------|----------|
+| `deepseek-v4-flash` | Fast responses |
+| `deepseek-v3-250324` | Stable production use |
+| `deepseek-r1` | Reasoning-heavy tasks |
+
 ## Features
 
 ### Streaming
