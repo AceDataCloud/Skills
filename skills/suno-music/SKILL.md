@@ -128,6 +128,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Generate using public reference audio URLs for style inspiration |
 
 ## Auxiliary Endpoints
 
@@ -152,7 +153,8 @@ For best results follow this multi-step workflow:
 | `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
-| `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
+| `audio_urls` | array | 1–4 public audio URLs used as style/inspiration references (for `inspo` action) |
+| `audio_weight` | number | Weight for audio reference when covering or using inspo (0–1, advanced, v5+ only) |
 
 ## Lyrics Format
 
