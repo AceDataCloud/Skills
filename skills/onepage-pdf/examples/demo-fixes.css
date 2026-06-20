@@ -1,0 +1,5 @@
+/* lock the 900px breakpoint back to desktop (print MQ evaluates at ~741px) */
+.card-grid { grid-template-columns: repeat(3, 1fr) !important; }
+.hero h1 { font-size: 56px !important; }
+/* glassmorphism: backdrop-filter blur is dropped in PDF — solidify the card */
+.glass { backdrop-filter: none !important; background: rgba(255, 255, 255, .88) !important; }

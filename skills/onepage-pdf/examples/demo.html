@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>示例提案 — 星尘咖啡烘焙工坊数字化方案</title>
+<style>
+  :root { --accent: #b45309; --ink: #1f2937; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background: linear-gradient(175deg, #fdf6ec 0%, #f3e7d3 45%, #e8d5b5 100%);
+    width: 1280px; margin: 0 auto;
+  }
+  .hero { padding: 120px 80px 80px; }
+  .hero h1 { font-size: 56px; font-weight: 700; letter-spacing: 2px; }
+  .hero p { font-size: 20px; color: #6b7280; margin-top: 24px; max-width: 720px; }
+  section { padding: 64px 80px; }
+  h2 { font-size: 32px; margin-bottom: 32px; border-left: 6px solid var(--accent); padding-left: 18px; }
+  .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    background: #fff; border-radius: 16px; padding: 28px;
+    box-shadow: 0 8px 24px rgba(31, 41, 55, .08);
+  }
+  .card h3 { font-size: 20px; margin-bottom: 12px; color: var(--accent); }
+  .card p { font-size: 15px; line-height: 1.8; color: #4b5563; }
+  .glass {
+    margin-top: 48px; padding: 36px; border-radius: 20px;
+    background: rgba(255, 255, 255, .35);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, .6);
+  }
+  .fade-in { opacity: 0; transform: translateY(24px); transition: all .8s ease; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; }
+  th, td { padding: 14px 20px; text-align: left; border-bottom: 1px solid #f3f4f6; font-size: 15px; }
+  th { background: var(--ink); color: #fff; font-weight: 500; }
+  footer { padding: 48px 80px 96px; color: #9ca3af; font-size: 13px; }
+  /* breakpoint >= 741px: fires during print unless locked via --extra-css */
+  @media (max-width: 900px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+  <div class="hero fade-in">
+    <h1>星尘咖啡烘焙工坊<br>数字化升级方案</h1>
+    <p>虚构示例：本页面用于演示 onepage-pdf 的转换效果 — 渐变背景、三列卡片栅格、玻璃拟态、滚动渐入动画与中文排版，全部应在单页 PDF 中保持桌面布局。</p>
+  </div>
+
+  <section class="fade-in">
+    <h2>一、现状与目标</h2>
+    <div class="card-grid">
+      <div class="card"><h3>门店运营</h3><p>三家门店的点单、库存与会员数据彼此孤立，月度对账依赖人工汇总表格，平均耗时两个工作日，且错漏率随单量增长而上升。</p></div>
+      <div class="card"><h3>烘焙生产</h3><p>烘焙排期靠经验估算，生豆损耗未量化。引入批次追踪后，可将每炉烘焙曲线与杯测评分关联，沉淀为可复用的烘焙档案。</p></div>
+      <div class="card"><h3>会员增长</h3><p>现有会员体系仅有储值功能，缺少消费行为分析。目标是基于购买频次与口味偏好做精准触达，提升复购率至行业均值以上。</p></div>
+    </div>
+    <div class="glass">
+      <h3>方案总览（玻璃拟态卡片）</h3>
+      <p>分三期推进：第一期打通点单与库存数据流，第二期上线烘焙批次追踪，第三期构建会员画像与自动化营销。每期交付均含验收标准与回滚预案。</p>
+    </div>
+  </section>
+
+  <section class="fade-in">
+    <h2>二、实施排期</h2>
+    <table>
+      <tr><th>阶段</th><th>内容</th><th>周期</th><th>验收标准</th></tr>
+      <tr><td>一期</td><td>点单系统与库存打通</td><td>4 周</td><td>日结报表自动生成，误差为零</td></tr>
+      <tr><td>二期</td><td>烘焙批次追踪上线</td><td>6 周</td><td>每炉烘焙档案可检索、可对比</td></tr>
+      <tr><td>三期</td><td>会员画像与营销自动化</td><td>8 周</td><td>触达转化率较基线提升 20%</td></tr>
+    </table>
+  </section>
+
+  <section class="fade-in">
+    <h2>三、投入与回报</h2>
+    <div class="card-grid">
+      <div class="card"><h3>一次性投入</h3><p>系统搭建与数据迁移共计十二万元，含三个月驻场支持。所有数据资产归属工坊，供应商不留存任何经营数据副本。</p></div>
+      <div class="card"><h3>年度运维</h3><p>云资源与维护费用每年两万四千元，按季度支付。合同期内功能迭代不另行收费，重大版本升级提前一个月公示变更说明。</p></div>
+      <div class="card"><h3>预期回报</h3><p>按当前单量测算，对账人力成本年省约五万元；会员复购提升带来的增量收入预计在第二年覆盖全部投入。</p></div>
+    </div>
+  </section>
+
+  <footer>本文档为 onepage-pdf 演示用虚构内容 · 星尘咖啡烘焙工坊并不存在 · 生成于示例管线</footer>
+
+  <script>
+    // scroll-reveal: in a headless print pass these never fire — the injected
+    // CSS must force .fade-in visible or the PDF renders blank blocks
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.style.opacity = 1; e.target.style.transform = 'none'; }
+    }));
+    document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

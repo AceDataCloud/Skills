@@ -50,6 +50,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
+| [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
 
 ### Connectors
