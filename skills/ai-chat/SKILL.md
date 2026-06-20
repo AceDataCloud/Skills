@@ -88,6 +88,19 @@ print(response.choices[0].message.content)
 | `grok-3-fast` | Speed-optimized |
 | `grok-3-mini` | Compact, efficient |
 
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.2` | Latest GLM capabilities |
+| `glm-5.1` | General-purpose reasoning |
+| `glm-5` | Strong reasoning and generation |
+| `glm-5-turbo` | Fast, efficient responses |
+| `glm-4.7` | Balanced legacy compatibility |
+| `glm-4.6` | Stable legacy tasks |
+| `glm-4.5` | Older compatible workloads |
+| `glm-3-turbo` | Lightweight legacy use |
+
 ## Features
 
 ### Streaming
