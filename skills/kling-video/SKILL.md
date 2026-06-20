@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, or lip-syncing audio/text to video. Supports text-to-video, image-to-video, extend, motion generation, talking-photo, and lip-sync with multiple models and quality modes.
+description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Supports text-to-video, image-to-video, extend, motion generation, talking-photo, and lip-sync with multiple models and quality modes. Use when creating videos from text or images, extending existing videos, applying motion control, or lip-syncing audio/text to video.
 license: Apache-2.0
 metadata:
   author: acedatacloud
