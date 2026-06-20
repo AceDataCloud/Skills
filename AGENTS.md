@@ -25,6 +25,8 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **hailuo-video** — Generate videos with Hailuo / MiniMax
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
+- **dreamina-video** — Animate a portrait with audio into a talking-photo video using ByteDance OmniHuman
+- **grok-video** — Generate videos from text or images with xAI Grok
 
 ### AI Chat & Tools
 - **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models)
