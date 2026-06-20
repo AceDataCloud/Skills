@@ -93,6 +93,6 @@ Response when done:
 - Both `image_url` and `audio_url` are **required** — the API will return a 400 error if either is missing
 - `image_url` must be a public URL of a portrait/face image — non-face images will fail with a 403 error
 - Generation is async — always supply `callback_url` to receive the task ID immediately, then poll `/dreamina/tasks`
-- `mask_url` accepts an array of public image URLs that define which region of the image should be animated
+- `mask_url` accepts an array of public image URLs (despite the singular name — this matches the API parameter name) that define which region of the image should be animated
 
 > **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.
