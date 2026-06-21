@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-cn-blog — read & publish on Chinese content platforms with the user's own
+zhihu — read & publish on Zhihu (知乎) with the user's own
 login cookies (BYOC). Standard-library only (urllib), no third-party deps,
 so it runs in the bare sandbox without an image change.
 
@@ -319,7 +319,7 @@ COMMANDS = {
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(prog="blog.py", description="cn-blog cookie CLI")
+    p = argparse.ArgumentParser(prog="blog.py", description="zhihu cookie CLI")
     p.add_argument("--platform", default="zhihu", choices=["zhihu"],
                    help="content platform (only zhihu is implemented today)")
     sub = p.add_subparsers(dest="command", required=True)
