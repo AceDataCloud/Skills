@@ -1,6 +1,6 @@
 ---
-name: cn-blog
-description: Read and publish on Chinese content platforms with the user's own login cookies (BYOC) — list their published articles with vote/comment stats, inspect one article, and publish a new article. Use when the user mentions 知乎 / Zhihu, "我的知乎文章", reading their article stats (点赞/评论), or publishing/发文 to Zhihu.
+name: zhihu
+description: Read and publish on Zhihu (知乎) with the user's own login cookies (BYOC) — list their published articles with vote/comment stats, inspect one article, and publish a new article. Use when the user mentions 知乎 / Zhihu, "我的知乎文章", reading their article stats (点赞/评论), or publishing/发文 to Zhihu.
 when_to_use: |
   Trigger for anything on the user's Zhihu (知乎) account driven by their own
   login cookie: show who they are, list their published articles with
@@ -15,7 +15,7 @@ metadata:
   version: "1.0"
 ---
 
-# cn-blog — Zhihu via your own cookies
+# zhihu — read & publish on Zhihu via your own cookies
 
 Drives the user's **real** Zhihu account through the same web APIs the site's
 own editor uses, authenticated by the login cookie they captured with the ACE
@@ -93,5 +93,6 @@ python3 $BLOG publish --title "标题" --content-file article.html --confirm    
   acts on the user's own account with their own captured cookie; the user owns
   that risk. Never use it to scrape other people's content at scale.
 - **Never print `ZHIHU_COOKIES`** — it is full account access.
-- **Scope today**: Zhihu only. 掘金 / CSDN connectors exist in the vault and are
-  planned next; this skill will grow a `--platform` switch for them.
+- **Scope**: Zhihu only. Other Chinese platforms (掘金 / CSDN / …) ship as their
+  own per-platform skills (e.g. `csdn`, `juejin`), each with its own connector —
+  not a `--platform` switch here.
