@@ -26,9 +26,13 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import ipaddress
 import json
+import mimetypes
 import os
+import random
 import re
+import socket
 import sys
 import time
 import urllib.error
@@ -253,25 +257,117 @@ def cmd_article(jar, args):
     })
 
 
-def _markdown_to_deltas(title: str, content: str) -> list:
-    """Minimal Markdown → Medium paragraph deltas. Title is a type-3 paragraph;
-    body blocks split on blank lines; ``#``/``##``/``###`` map to h1/h2/h3,
-    ``>`` to blockquote, ``` ``` to code, everything else to body text."""
+# ── image upload (Medium has no markdown image; upload bytes → image
+#    paragraph delta type 4) ─────────────────────────────────────────
+
+_MD_IMG = re.compile(r"!\[([^\]]*)\]\((https?://[^)\s]+)\)")
+
+
+def _rand_hex(n):
+    return "".join(random.choice("0123456789abcdef") for _ in range(n))
+
+
+MAX_IMG_BYTES = 12 * 1024 * 1024
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    # Refuse redirects on image fetches — a 30x could reach an internal host the
+    # _assert_public_url() check never saw (SSRF).
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise RuntimeError(f"image redirect blocked ({code}) -> {newurl[:80]}")
+
+
+_IMG_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
+def _assert_public_url(url):
+    """SSRF guard — block non-http(s) and private/loopback/link-local hosts."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme not in ("http", "https") or not parts.hostname:
+        raise RuntimeError(f"unsupported image URL: {url[:80]}")
+    try:
+        addrs = socket.getaddrinfo(parts.hostname, None)
+    except OSError as e:
+        raise RuntimeError(f"cannot resolve {parts.hostname}: {e}")
+    for info in addrs:
+        ip = ipaddress.ip_address(info[4][0])
+        if (ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+            raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
+
+
+def _download_image(url):
+    _assert_public_url(url)
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with _IMG_OPENER.open(req, timeout=30) as r:
+        data = r.read(MAX_IMG_BYTES + 1)
+        ct = (r.headers.get("Content-Type") or "image/png").split(";")[0].strip()
+    if len(data) > MAX_IMG_BYTES:
+        raise RuntimeError(f"image exceeds {MAX_IMG_BYTES} bytes")
+    return data, (ct if ct.startswith("image/") else "image/png")
+
+
+def medium_upload_image(jar, post_id, img_bytes, content_type):
+    """POST the bytes to Medium's /_/upload and return (fileId, w, h)."""
+    ext = (mimetypes.guess_extension(content_type) or ".png").lstrip(".")
+    boundary = "----acedata" + _rand_hex(20)
+    body = (
+        f'--{boundary}\r\nContent-Disposition: form-data; name="uploadedFile";'
+        f' filename="image.{ext}"\r\nContent-Type: {content_type}\r\n\r\n'.encode()
+        + img_bytes + f"\r\n--{boundary}--\r\n".encode()
+    )
+    xsrf = cookie_value(jar, "xsrf")
+    hdrs = {
+        "User-Agent": UA, "Accept": "application/json, text/plain, */*",
+        "Origin": BASE, "Referer": f"{BASE}/p/{post_id}/edit",
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": f"multipart/form-data; boundary={boundary}",
+    }
+    if xsrf:
+        hdrs["x-xsrf-token"] = xsrf
+    url = f"{BASE}/_/upload?is2x=true"
+    req = urllib.request.Request(url, data=body, headers=hdrs, method="POST")
+    req.add_unredirected_header("Cookie", cookie_header(jar, url))
+    with urllib.request.urlopen(req, timeout=60) as r:
+        text = r.read().decode("utf-8", "replace")
+    val = (json.loads(_PREFIX.sub("", text)).get("payload") or {}).get("value") or {}
+    if not val.get("fileId"):
+        raise RuntimeError(f"upload returned no fileId: {text[:200]}")
+    return val["fileId"], val.get("imgWidth"), val.get("imgHeight")
+
+
+def _build_deltas(jar, post_id, title, content, rehost=True):
+    """Markdown → Medium paragraph deltas (image-aware). A standalone
+    ``![alt](url)`` block is uploaded to Medium and emitted as an image
+    paragraph (type 4); on upload failure it degrades to a link paragraph."""
     paras = [{"type": 3, "text": title}]
-    blocks = re.split(r"\n\s*\n", content.strip())
-    in_code = False
-    code_buf = []
-    for block in blocks:
+    for block in re.split(r"\n\s*\n", content.strip()):
         b = block.strip("\n")
         if not b.strip():
             continue
         first = b.lstrip()
-        if first.startswith("```"):
-            # toggle / inline fenced block
-            body = re.sub(r"^```[^\n]*\n?|\n?```$", "", b)
-            paras.append({"type": 8, "text": body})
+        m = _MD_IMG.fullmatch(first)
+        if m:
+            alt, src = m.group(1), m.group(2)
+            if rehost:
+                try:
+                    data, ct = _download_image(src)
+                    fid, w, h = medium_upload_image(jar, post_id, data, ct)
+                    sys.stderr.write(f"[img] uploaded {src} -> {fid}\n")
+                    meta = {"id": fid}
+                    if w:
+                        meta["originalWidth"] = w
+                    if h:
+                        meta["originalHeight"] = h
+                    paras.append({"type": 4, "text": alt or "", "layout": 1, "metadata": meta})
+                    continue
+                except Exception as e:  # noqa: BLE001 — degrade to a link
+                    sys.stderr.write(f"[img] link-only {src} (upload failed: {e})\n")
+            paras.append({"type": 1, "text": f"{alt or 'image'}: {src}"})
             continue
-        if first.startswith("# "):
+        if first.startswith("```"):
+            paras.append({"type": 8, "text": re.sub(r"^```[^\n]*\n?|\n?```$", "", b)})
+        elif first.startswith("# "):
             paras.append({"type": 12, "text": first[2:].strip()})
         elif first.startswith("## "):
             paras.append({"type": 2, "text": first[3:].strip()})
@@ -281,11 +377,15 @@ def _markdown_to_deltas(title: str, content: str) -> list:
             paras.append({"type": 6, "text": first[2:].strip()})
         else:
             paras.append({"type": 1, "text": b.replace("\n", " ").strip()})
-    deltas = []
+    out_deltas = []
     for i, p in enumerate(paras):
-        deltas.append({"type": 1, "index": i,
-                       "paragraph": {"type": p["type"], "text": p["text"], "markups": []}})
-    return deltas
+        para = {"type": p["type"], "text": p["text"], "markups": []}
+        if "layout" in p:
+            para["layout"] = p["layout"]
+        if "metadata" in p:
+            para["metadata"] = p["metadata"]
+        out_deltas.append({"type": 1, "index": i, "paragraph": para})
+    return out_deltas
 
 
 def cmd_publish(jar, args):
@@ -327,8 +427,9 @@ def cmd_publish(jar, args):
     if base_rev is None:
         base_rev = 0
 
-    # 3. write the body as paragraph deltas
-    deltas = _markdown_to_deltas(args.title, content)
+    # 3. write the body as paragraph deltas (images uploaded to Medium inline)
+    deltas = _build_deltas(jar, post_id, args.title, content,
+                           rehost=not args.no_rehost_images)
     api("POST", f"{BASE}/p/{post_id}/deltas", jar,
         body={"baseRev": base_rev, "deltas": deltas})
 
@@ -364,6 +465,8 @@ def main() -> None:
     sp.add_argument("--content", help="Markdown content inline")
     sp.add_argument("--content-file", help="path to a Markdown file")
     sp.add_argument("--draft-only", action="store_true", help="create a draft only; do NOT go public")
+    sp.add_argument("--no-rehost-images", action="store_true",
+                    help="don't upload images to Medium (degrade to link-only paragraphs)")
     args = p.parse_args(ARGV)
     jar = load_cookies()
     COMMANDS[args.command](jar, args)

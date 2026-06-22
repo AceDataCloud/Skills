@@ -73,6 +73,14 @@ python3 $CSDN publish --title "标题" --content-file a.md --tags "AI,Python" --
   name. Default to `--draft-only` unless the user clearly asked to go live.
 - `--tags` is a comma-separated list of article tags.
 
+## Images
+
+`publish` automatically re-hosts external markdown images (`![](url)`) onto
+CSDN's own CDN (`i-blog.csdnimg.cn`) before saving — CSDN 防盗链 blocks external
+images, and saving an article full of external URLs can even time out. Images
+already on `csdnimg.cn` are left alone; pass `--no-rehost-images` to skip. An
+image that fails to upload keeps its original URL (never blocks the post).
+
 ## Gotchas — surface before the user is surprised
 
 - **This is the user's real CSDN account.** Confirm before any publish.
