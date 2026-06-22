@@ -24,6 +24,14 @@ Failures are `{"error":{"code","message"}}` — show `message` verbatim. `401` =
 re-install. `403`/`Forbidden` on send = the user granted read-only
 (`Chat.Read`) → re-connect with `Chat.ReadWrite` + `ChatMessage.Send`.
 
+**`403 "No authorization information present on the request"` on `/me/chats` =
+the connected account is a *personal* Microsoft account.** Teams chat is a
+work/school (organization) feature — Microsoft Graph does not expose `/me/chats`
+or grant the `Chat.*` scopes for personal MSA accounts (outlook.com/hotmail/etc).
+Tell the user plainly: "Microsoft Teams chat needs a work or school account;
+your connected account is a personal Microsoft account. Reconnect Teams and
+choose a work/school account." Do not retry — it cannot succeed for that account.
+
 ```bash
 G="https://graph.microsoft.com/v1.0"; AUTH="Authorization: Bearer $MICROSOFT_TEAMS_TOKEN"
 # My chats (1:1 + group), most recent first; expand members for names
