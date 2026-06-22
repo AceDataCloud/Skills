@@ -28,6 +28,7 @@ import base64
 import gzip
 import hashlib
 import hmac
+import html as _html
 import ipaddress
 import json
 import mimetypes
@@ -286,7 +287,7 @@ def cmd_article(jar, args):
 # Signed signature → Huawei OBS multipart → csdnimg.cn URL. Mirrors our
 # PlatformPublisher csdn.py flow.
 
-_MD_IMG = re.compile(r"!\[([^\]]*)\]\((https?://[^)\s]+)\)")
+_MD_IMG = re.compile(r"!\[([^\]]{0,500})\]\((https?://[^)\s]{0,2000})\)")  # bounded: no O(n²) on "![" * N
 _IMG_SKIP = ("csdnimg.cn", "csdn.net")
 
 
@@ -416,6 +417,126 @@ def rehost_images(jar, content):
     return _MD_IMG.sub(repl, content)
 
 
+# ── Markdown → HTML (CSDN renders the `content` HTML field, not the source) ──
+
+# Bounded so a single token can't scan to EOF — keeps these linear (no O(n²)
+# backtracking on malformed input like "![" * N). Real alt < 500 / URL < 2000.
+_IMG_RE = re.compile(r"!\[([^\]]{0,500})\]\(([^)\s]{0,2000})\)")
+_LINK_RE = re.compile(r"(?<!!)\[([^\]]{0,500})\]\(([^)\s]{0,2000})\)")
+
+
+def _attr_url(u):
+    # Strip C0 controls/space FIRST, then allow only http/https/mailto — otherwise
+    # `\x01javascript:` would slip past a literal scheme check yet be re-normalised
+    # to javascript: by the browser. Finally neutralise attribute-breaking quotes.
+    u = re.sub(r"[\x00-\x20\x7f]", "", u or "")
+    m = re.match(r"(?i)([a-z][a-z0-9+.\-]*):", u)
+    if m and m.group(1).lower() not in ("http", "https", "mailto"):
+        return "#"
+    return u.replace('"', "%22").replace("'", "%27")
+
+
+def _alt(s):
+    # alt text is already &/</>-escaped by the line escape; only the attribute
+    # quote can still break out, so neutralise it.
+    return (s or "").replace('"', "&quot;").replace("'", "&#x27;")
+
+
+def _inline_md(t):
+    t = _html.escape(t, quote=False).replace("\x00", "")
+    # Stash code spans FIRST so emphasis/link/image markup inside `…` stays
+    # literal (e.g. `**x**` must render as text, not bold).
+    spans = []
+
+    def _stash(m):
+        spans.append("<code>" + m.group(1) + "</code>")
+        return f"\x00{len(spans) - 1}\x00"
+
+    t = re.sub(r"`([^`]+)`", _stash, t)
+    t = _IMG_RE.sub(lambda m: f'<img src="{_attr_url(m.group(2))}" alt="{_alt(m.group(1))}">', t)
+    t = _LINK_RE.sub(lambda m: f'<a href="{_attr_url(m.group(2))}">{m.group(1)}</a>', t)
+    t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", t)
+    t = re.sub(r"\x00(\d+)\x00", lambda m: spans[int(m.group(1))], t)
+    return t
+
+
+def _md_block_to_html(b):
+    b = b.strip("\n")
+    if not b.strip():
+        return None
+    f = b.lstrip()
+    m = re.match(r"(#{1,6})\s+(.*)", f)
+    if m:
+        lvl = len(m.group(1))
+        return f"<h{lvl}>{_inline_md(m.group(2).strip())}</h{lvl}>"
+    if f.startswith(">"):
+        inner = re.sub(r"^>\s?", "", b, flags=re.M).replace("\n", " ")
+        return "<blockquote><p>" + _inline_md(inner) + "</p></blockquote>"
+    if re.match(r"[-*+]\s+", f):
+        items = [_inline_md(re.sub(r"^[-*+]\s+", "", ln)) for ln in b.split("\n") if ln.strip()]
+        return "<ul>" + "".join(f"<li>{x}</li>" for x in items) + "</ul>"
+    if re.match(r"\d+\.\s+", f):
+        items = [_inline_md(re.sub(r"^\d+\.\s+", "", ln)) for ln in b.split("\n") if ln.strip()]
+        return "<ol>" + "".join(f"<li>{x}</li>" for x in items) + "</ol>"
+    only = re.fullmatch(r"!\[([^\]]{0,500})\]\(([^)\s]{0,2000})\)", f)
+    if only:
+        return f'<img src="{_attr_url(only.group(2))}" alt="{_alt(_html.escape(only.group(1), quote=False))}">'
+    return "<p>" + _inline_md(b.replace("\n", " ").strip()) + "</p>"
+
+
+def md_to_html(src):
+    """Minimal stdlib Markdown→HTML for the platforms whose body is HTML.
+    Covers headings, paragraphs, standalone images, links, bold/italic/code,
+    fenced code, blockquotes, and ordered/unordered lists."""
+    src = (src or "").strip()
+    out = []
+    # Pull fenced code out FIRST (it may itself contain blank lines) so the
+    # blank-line block splitter below can never tear a ``` … ``` fence apart.
+    for i, part in enumerate(re.split(r"(?ms)^(```.*?(?:\n```[ \t]*$|\Z))", src)):
+        if i % 2 == 1:  # fenced code segment
+            code = re.sub(r"\A```[^\n]*\n?", "", part)
+            code = re.sub(r"\n?```[ \t]*\Z", "", code)
+            out.append("<pre><code>" + _html.escape(code) + "</code></pre>")
+            continue
+        for b in re.split(r"\n[ \t]*\n", part):  # blank-line split (no cross-newline \s*)
+            block = _md_block_to_html(b)
+            if block:
+                out.append(block)
+    return "\n".join(out)
+
+
+def _looks_like_markdown(s):
+    # Three-way classification (no full parser): block-level HTML ⇒ already an
+    # HTML document → pass through (even if it also contains markdown-looking
+    # text like **bold**); else markdown markers ⇒ render; else inline-only HTML
+    # ⇒ pass through; else plain text ⇒ render (md_to_html just wraps/escapes it).
+    s = s or ""
+    block_html = re.search(
+        r"</?(?:p|div|h[1-6]|ul|ol|li|table|thead|tbody|tr|td|th|blockquote|"
+        r"pre|figure|figcaption|section|article|header|footer|nav|aside|hr|"
+        r"main|details|summary)\b",
+        s, re.I,
+    )
+    if block_html:
+        return False
+    # ^-anchored (re.M) + horizontal-only whitespace + bounded {0,N} repeats so
+    # the scan can't backtrack across newlines or to EOF (no quadratic scanning).
+    has_md = re.search(
+        r"^#{1,6}\s|!\[[^\]]{0,500}\]\([^)]{0,2000}\)|^[ \t]*[-*+]\s|^[ \t]*\d+\.\s"
+        r"|\[[^\]]{0,500}\]\([^)]{0,2000}\)|`[^`]{1,500}`|\*\*[^*]{1,500}\*\*",
+        s, re.M,
+    )
+    if has_md:
+        return True
+    inline_html = re.search(
+        r"</?(?:a|strong|em|b|i|u|s|span|code|br|img|small|mark|sup|sub|"
+        r"video|audio|iframe)\b",
+        s, re.I,
+    )
+    return not inline_html
+
+
 def cmd_publish(jar, args):
     if not args.title:
         die("--title is required")
@@ -450,8 +571,12 @@ def cmd_publish(jar, args):
     status_code = 2 if args.draft_only else 0
     body = {
         "title": args.title,
+        # markdowncontent = the editor source; content = the RENDERED HTML CSDN
+        # actually displays. Sending raw markdown as `content` shows literal
+        # `##`/`![]()` and collapses newlines — it MUST be HTML. Already-HTML
+        # callers are passed through untouched (don't double-escape).
         "markdowncontent": content,
-        "content": content,
+        "content": md_to_html(content) if _looks_like_markdown(content) else content,
         "readType": "public",
         "status": status_code,
         "categories": "",
