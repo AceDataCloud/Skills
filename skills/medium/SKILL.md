@@ -65,6 +65,14 @@ Publishing is Medium's multi-step editor flow (new-story → write deltas →
 publish). `--draft-only` stops at the draft (visible only at the user's
 `/me/stories/drafts`). Default to `--draft-only` unless the user asked to go live.
 
+## Images
+
+`publish` automatically uploads each external markdown image (`![](url)`) to
+Medium and inserts it as a real image block — Medium has no markdown-image
+syntax, so this is the only way images render. Pass `--no-rehost-images` to
+degrade images to link-only paragraphs. An image that fails to upload falls back
+to a link paragraph (never blocks the post).
+
 ## Gotchas
 
 - **This is the user's real Medium account.** Confirm before any publish.

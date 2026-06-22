@@ -28,8 +28,13 @@ import base64
 import gzip
 import hashlib
 import hmac
+import ipaddress
 import json
+import mimetypes
 import os
+import random
+import re
+import socket
 import sys
 import urllib.error
 import urllib.parse
@@ -127,7 +132,8 @@ def _browser_headers(jar: list, url: str, referer: str, origin: str) -> dict:
     }
 
 
-def request(method: str, url: str, jar: list, *, referer, origin, headers=None, body=None):
+def request(method: str, url: str, jar: list, *, referer, origin, headers=None, body=None,
+            nonfatal=False):
     hdrs = _browser_headers(jar, url, referer, origin)
     if headers:
         hdrs.update(headers)
@@ -154,6 +160,8 @@ def request(method: str, url: str, jar: list, *, referer, origin, headers=None, 
             pass
         return e.code, raw.decode("utf-8", "replace")
     except urllib.error.URLError as e:
+        if nonfatal:
+            raise RuntimeError(f"network error reaching {url}: {e.reason}")
         die(f"network error reaching {url}: {e.reason}")
 
 
@@ -274,6 +282,140 @@ def cmd_article(jar, args):
     die(f"article {args.id} not found among your published articles")
 
 
+# ── image upload (CSDN 防盗链s external images; re-host them first) ───
+# Signed signature → Huawei OBS multipart → csdnimg.cn URL. Mirrors our
+# PlatformPublisher csdn.py flow.
+
+_MD_IMG = re.compile(r"!\[([^\]]*)\]\((https?://[^)\s]+)\)")
+_IMG_SKIP = ("csdnimg.cn", "csdn.net")
+
+
+def _rand_hex(n):
+    return "".join(random.choice("0123456789abcdef") for _ in range(n))
+
+
+def _multipart(files, data):
+    boundary = "----acedata" + _rand_hex(20)
+    parts = []
+    for k, v in data.items():
+        parts.append((f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"'
+                      f"\r\n\r\n{v}\r\n").encode())
+    for field, (filename, blob, ctype) in files.items():
+        parts.append((f'--{boundary}\r\nContent-Disposition: form-data; name="{field}";'
+                      f' filename="{filename}"\r\nContent-Type: {ctype}\r\n\r\n').encode())
+        parts.append(blob)
+        parts.append(b"\r\n")
+    parts.append(f"--{boundary}--\r\n".encode())
+    return b"".join(parts), boundary
+
+
+MAX_IMG_BYTES = 12 * 1024 * 1024
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    # Refuse redirects on image fetches — otherwise a 30x could send the request
+    # to an internal host that the _assert_public_url() check never saw (SSRF).
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise RuntimeError(f"image redirect blocked ({code}) -> {newurl[:80]}")
+
+
+_IMG_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
+def _assert_public_url(url):
+    """Block non-http(s) and private/loopback/link-local hosts (SSRF guard) —
+    article content can carry arbitrary image URLs."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme not in ("http", "https") or not parts.hostname:
+        raise RuntimeError(f"unsupported image URL: {url[:80]}")
+    try:
+        addrs = socket.getaddrinfo(parts.hostname, None)
+    except OSError as e:
+        raise RuntimeError(f"cannot resolve {parts.hostname}: {e}")
+    for info in addrs:
+        ip = ipaddress.ip_address(info[4][0])
+        if (ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+            raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
+
+
+def _download_image(url):
+    _assert_public_url(url)
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with _IMG_OPENER.open(req, timeout=30) as r:
+        data = r.read(MAX_IMG_BYTES + 1)
+    if len(data) > MAX_IMG_BYTES:
+        raise RuntimeError(f"image exceeds {MAX_IMG_BYTES} bytes")
+    return data
+
+
+def _same_or_sub(host, suffix):
+    return host == suffix or host.endswith("." + suffix)
+
+
+def _ext_of(url, default="png"):
+    tail = url.rsplit("/", 1)[-1].split("?")[0]
+    if "." in tail:
+        e = tail.rsplit(".", 1)[-1].lower()
+        if e in ("jpg", "jpeg", "png", "gif", "webp"):
+            return e
+    return default
+
+
+def csdn_upload_image(jar, src) -> str:
+    img = _download_image(src)
+    ext = _ext_of(src)
+    # 1. signed signature request
+    sig_path = "/resource-api/v1/image/direct/upload/signature"
+    sign = ca_sign("POST", sig_path, "application/json")
+    sign["Accept"] = "*/*"
+    status, text = request("POST", f"{BIZ}{sig_path}", jar, referer="https://editor.csdn.net/",
+                           origin="https://editor.csdn.net", headers=sign, nonfatal=True,
+                           body={"imageTemplate": "", "appName": "direct_blog_markdown",
+                                 "imageSuffix": ext})
+    sd = json.loads(text)
+    if sd.get("code") != 200 or not sd.get("data"):
+        raise RuntimeError(f"signature failed ({sd.get('code')}): {sd.get('message')}")
+    info = sd["data"]
+    cp = info.get("customParam") or {}
+    # 2. multipart POST to Huawei OBS (no signing/cookies — the policy authorizes it)
+    form = {
+        "key": info["filePath"], "policy": info["policy"], "signature": info["signature"],
+        "callbackBody": info["callbackBody"], "callbackBodyType": info["callbackBodyType"],
+        "callbackUrl": info["callbackUrl"], "AccessKeyId": info["accessId"],
+        "x:rtype": cp.get("rtype", ""), "x:filePath": cp.get("filePath", ""),
+        "x:isAudit": str(cp.get("isAudit", 0)), "x:x-image-app": cp.get("x-image-app", ""),
+        "x:type": cp.get("type", ""), "x:x-image-suffix": cp.get("x-image-suffix", ""),
+        "x:username": cp.get("username", ""),
+    }
+    body, boundary = _multipart({"file": (f"image.{ext}", img, f"image/{ext}")}, form)
+    req = urllib.request.Request(info["host"], data=body, method="POST", headers={
+        "User-Agent": UA, "Content-Type": f"multipart/form-data; boundary={boundary}"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        od = json.loads(r.read().decode("utf-8", "replace"))
+    if od.get("code") == 200 and (od.get("data") or {}).get("imageUrl"):
+        return od["data"]["imageUrl"]
+    raise RuntimeError(f"OBS upload failed: {str(od)[:200]}")
+
+
+def rehost_images(jar, content):
+    """Re-host external markdown images on CSDN's CDN (防盗链 blocks external).
+    Best-effort: keep the original URL if an image fails."""
+    def repl(m):
+        alt, src = m.group(1), m.group(2)
+        host = (urllib.parse.urlsplit(src).hostname or "").lower()
+        if any(_same_or_sub(host, s) for s in _IMG_SKIP):
+            return m.group(0)
+        try:
+            new = csdn_upload_image(jar, src)
+            sys.stderr.write(f"[img] rehosted {src} -> {new}\n")
+            return f"![{alt}]({new})"
+        except Exception as e:  # noqa: BLE001 — best-effort
+            sys.stderr.write(f"[img] kept {src} (upload failed: {e})\n")
+            return m.group(0)
+    return _MD_IMG.sub(repl, content)
+
+
 def cmd_publish(jar, args):
     if not args.title:
         die("--title is required")
@@ -298,6 +440,10 @@ def cmd_publish(jar, args):
                     "a PUBLIC article on the user's real account.",
         })
         return
+
+    # CSDN 防盗链s external images → re-host them on CSDN's CDN first.
+    if not args.no_rehost_images:
+        content = rehost_images(jar, content)
 
     path = "/blog-console-api/v3/mdeditor/saveArticle"
     url = f"{BIZ}{path}"
@@ -366,6 +512,8 @@ def main() -> None:
     sp.add_argument("--content-file", help="path to a Markdown file")
     sp.add_argument("--draft-only", action="store_true", help="save a private draft; do NOT go public")
     sp.add_argument("--tags", help="comma-separated article tags")
+    sp.add_argument("--no-rehost-images", action="store_true",
+                    help="keep external image URLs as-is (skip CSDN CDN re-host)")
     args = p.parse_args(ARGV)
     jar = load_cookies()
     COMMANDS[args.command](jar, args)

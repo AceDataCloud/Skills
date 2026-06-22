@@ -25,8 +25,12 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+import ipaddress
 import json
 import os
+import random
+import re
+import socket
 import sys
 import time
 import urllib.error
@@ -276,6 +280,155 @@ def cmd_article(jar, args):
 _TID_CANDIDATES = ["4", "3", "6", "7", "2", "17", "28", "41"]
 
 
+# ── image upload (Bilibili hotlink-blocks external imgs; re-host via
+#    upcover, mirroring our PlatformPublisher bilibili.py) ────────────
+
+_IMG_SKIP = ("hdslb.com", "bilibili.com", "biliimg.com")
+# matches both HTML <img src="..."> and markdown ![alt](...)
+# <img ... src = "..."> / '...'  (tolerates spaces and either quote style)
+_HTML_IMG = re.compile(r"""(<img\b[^>]*?\bsrc\s*=\s*)(["'])(https?://[^"']+)(\2)""", re.IGNORECASE)
+_MD_IMG = re.compile(r"!\[([^\]]*)\]\((https?://[^)\s]+)\)")
+UPCOVER = "https://api.bilibili.com/x/article/creative/article/upcover"
+
+
+def _rand_hex(n):
+    return "".join(random.choice("0123456789abcdef") for _ in range(n))
+
+
+MAX_IMG_BYTES = 12 * 1024 * 1024
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    # Refuse redirects on image fetches — a 30x could reach an internal host the
+    # _assert_public_url() check never saw (SSRF).
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise RuntimeError(f"image redirect blocked ({code}) -> {newurl[:80]}")
+
+
+_IMG_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
+def _assert_public_url(url):
+    """SSRF guard — block non-http(s) and private/loopback/link-local hosts."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme not in ("http", "https") or not parts.hostname:
+        raise RuntimeError(f"unsupported image URL: {url[:80]}")
+    try:
+        addrs = socket.getaddrinfo(parts.hostname, None)
+    except OSError as e:
+        raise RuntimeError(f"cannot resolve {parts.hostname}: {e}")
+    for info in addrs:
+        ip = ipaddress.ip_address(info[4][0])
+        if (ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+            raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
+
+
+def _same_or_sub(host, suffix):
+    return host == suffix or host.endswith("." + suffix)
+
+
+def _get_bytes(url):
+    _assert_public_url(url)
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "image/*"})
+    with _IMG_OPENER.open(req, timeout=30) as r:
+        data = r.read(MAX_IMG_BYTES + 1)
+    if len(data) > MAX_IMG_BYTES:
+        raise RuntimeError(f"image exceeds {MAX_IMG_BYTES} bytes")
+    return data
+
+
+def _is_webp(data):
+    return data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+
+
+def _download_image(url):
+    # Bilibili's upcover rejects webp. Many of our images live on Tencent COS
+    # (cdn.acedata.cloud) which can transcode server-side, so on a webp body
+    # retry with the COS format param to get a png Bilibili accepts.
+    data = _get_bytes(url)
+    if _is_webp(data):
+        sep = "&" if "?" in url else "?"
+        try:
+            conv = _get_bytes(f"{url}{sep}imageMogr2/format/png")
+            if not _is_webp(conv):
+                return conv
+        except Exception:  # noqa: BLE001 — fall through with original bytes
+            pass
+    return data
+
+
+def _sniff_image(data):
+    """Real (ext, mime) from magic bytes — a URL's extension or the CDN's
+    Content-Type can lie (e.g. a `.png` URL serving webp bytes), and Bilibili
+    rejects a filename/format mismatch."""
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "png", "image/png"
+    if data[:2] == b"\xff\xd8":
+        return "jpg", "image/jpeg"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "gif", "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp", "image/webp"
+    return "jpg", "image/jpeg"
+
+
+def bili_upload_image(jar, csrf, src):
+    img = _download_image(src)
+    ext, ct = _sniff_image(img)
+    boundary = "----acedata" + _rand_hex(20)
+    body = (
+        f'--{boundary}\r\nContent-Disposition: form-data; name="binary";'
+        f' filename="image.{ext}"\r\nContent-Type: {ct}\r\n\r\n'.encode()
+        + img + f'\r\n--{boundary}\r\nContent-Disposition: form-data; name="csrf"'
+        f"\r\n\r\n{csrf}\r\n--{boundary}--\r\n".encode()
+    )
+    hdrs = {"User-Agent": UA, "Origin": "https://member.bilibili.com",
+            "Referer": "https://member.bilibili.com/",
+            "Content-Type": f"multipart/form-data; boundary={boundary}"}
+    req = urllib.request.Request(UPCOVER, data=body, headers=hdrs, method="POST")
+    req.add_unredirected_header("Cookie", cookie_header(jar, UPCOVER))
+    with urllib.request.urlopen(req, timeout=60) as r:
+        d = json.loads(r.read().decode("utf-8", "replace"))
+    if d.get("code") == 0 and (d.get("data") or {}).get("url"):
+        return d["data"]["url"]
+    raise RuntimeError(f"upcover failed (code={d.get('code')}): {d.get('message')}")
+
+
+def rehost_images(jar, csrf, content):
+    """Re-host external images (both <img src> and markdown) on Bilibili's CDN.
+    An image that can't be uploaded is DROPPED (not kept as an external link) —
+    Bilibili rejects the whole article with code 37130 if any external image
+    link remains. Rate-limited to dodge code -1."""
+    def _one(src):
+        host = (urllib.parse.urlsplit(src).hostname or "").lower()
+        if any(_same_or_sub(host, s) for s in _IMG_SKIP):
+            return "keep", src
+        try:
+            new = bili_upload_image(jar, csrf, src)
+            sys.stderr.write(f"[img] rehosted {src} -> {new}\n")
+            time.sleep(0.3)
+            return "ok", new
+        except Exception as e:  # noqa: BLE001 — drop the image rather than fail
+            sys.stderr.write(f"[img] dropped {src} (upload failed: {e})\n")
+            return "drop", None
+
+    def html_repl(m):
+        # groups: 1=<img ... src= , 2=quote, 3=url, 4=closing quote (backref)
+        st, new = _one(m.group(3))
+        if st == "drop":
+            return ""
+        return m.group(1) + m.group(2) + (new or m.group(3)) + m.group(2)
+
+    def md_repl(m):
+        st, new = _one(m.group(2))
+        return "" if st == "drop" else f"![{m.group(1)}]({new or m.group(2)})"
+
+    content = _HTML_IMG.sub(html_repl, content)
+    content = _MD_IMG.sub(md_repl, content)
+    return content
+
+
 def cmd_publish(jar, args):
     if not args.title:
         die("--title is required")
@@ -303,6 +456,10 @@ def cmd_publish(jar, args):
                     "the saved draft is the reliable result.",
         })
         return
+
+    # Bilibili hotlink-blocks external images → re-host them on its CDN first.
+    if not args.no_rehost_images:
+        content = rehost_images(jar, csrf, content)
 
     ref = "https://member.bilibili.com/"
     base = {
@@ -424,6 +581,8 @@ def main() -> None:
     sp.add_argument("--content", help="HTML content inline")
     sp.add_argument("--content-file", help="path to an HTML file")
     sp.add_argument("--draft-only", action="store_true", help="save a draft; do NOT submit")
+    sp.add_argument("--no-rehost-images", action="store_true",
+                    help="keep external image URLs as-is (skip Bilibili CDN re-host)")
     sp = sub.add_parser("drafts", help="list 专栏 drafts (id+title); use to prune the 999-draft cap")
     sp.add_argument("--limit", type=int, default=50)
     sp.add_argument("--page", type=int, default=1)

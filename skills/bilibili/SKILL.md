@@ -87,6 +87,16 @@ python3 $BILI delete-draft <aid> <aid2> ... --confirm # PERMANENTLY delete those
   "yes" before `--confirm`. Pass multiple aids to batch a few per call.
 - Never bulk-delete blindly: list first, confirm the titles are junk/duplicates.
 
+## Images
+
+`publish` automatically re-hosts external images (both `<img src>` and markdown)
+onto Bilibili's CDN (`i0.hdslb.com` / `article.biliimg.com`) before saving —
+Bilibili hotlink-blocks external images and rejects the whole article (`37130`)
+if any external link remains. webp sources (which upcover rejects) are
+transcoded to png via the CDN when possible; an image that still can't upload is
+**dropped** from the article rather than failing the post. `--no-rehost-images`
+skips this.
+
 ## Gotchas
 
 - **This is the user's real Bilibili account.** Confirm before any publish.
