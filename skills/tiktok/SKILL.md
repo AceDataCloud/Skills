@@ -24,9 +24,9 @@ Responses wrap everything in `{"data":...,"error":{"code","message","log_id"}}` 
 `401`/`access_token_invalid` = re-connect TikTok.
 
 ```bash
-T="https://open.tiktokapis.com/v2"; AUTH=(-H "Authorization: Bearer $TIKTOK_TOKEN")
+T="https://open.tiktokapis.com/v2"; AUTH="Authorization: Bearer $TIKTOK_TOKEN"
 # Profile (account card)
-curl -sS "${AUTH[@]}" "$T/user/info/?fields=open_id,display_name,avatar_url" \
+curl -sS -H "$AUTH" "$T/user/info/?fields=open_id,display_name,avatar_url" \
   | jq '.data.user'
 ```
 
@@ -37,7 +37,7 @@ on a **verified domain** (AceData's `cdn.acedata.cloud` is verified for this app
 
 ```bash
 VIDEO_URL="https://cdn.acedata.cloud/...mp4"   # must be on a verified domain
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" -d "$(jq -n --arg u "$VIDEO_URL" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" -d "$(jq -n --arg u "$VIDEO_URL" \
   '{source_info:{source:"PULL_FROM_URL", video_url:$u}}')" \
   "$T/post/publish/inbox/video/init/" | jq '{publish_id: .data.publish_id, error}'
 ```
@@ -46,7 +46,7 @@ This drops the video into the user's TikTok **inbox** — they open the TikTok a
 to add caption / sound / privacy and post. Poll status:
 
 ```bash
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"publish_id":"PUBLISH_ID"}' "$T/post/publish/status/fetch/" \
   | jq '.data | {status, fail_reason}'
 ```

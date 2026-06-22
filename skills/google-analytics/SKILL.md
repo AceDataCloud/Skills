@@ -24,9 +24,9 @@ Failures are `{"error":{"code","message","status"}}` — show verbatim. `401` =
 re-install.
 
 ```bash
-AUTH=(-H "Authorization: Bearer $GOOGLE_ANALYTICS_TOKEN")
+AUTH="Authorization: Bearer $GOOGLE_ANALYTICS_TOKEN"
 # List the GA4 properties the user can access (via their account summaries)
-curl -sS "${AUTH[@]}" "https://analyticsadmin.googleapis.com/v1beta/accountSummaries" \
+curl -sS -H "$AUTH" "https://analyticsadmin.googleapis.com/v1beta/accountSummaries" \
   | jq '.accountSummaries[]?.propertySummaries[]? | {property, displayName}'
 ```
 
@@ -36,7 +36,7 @@ curl -sS "${AUTH[@]}" "https://analyticsadmin.googleapis.com/v1beta/accountSumma
 
 ```bash
 PID="123456789"
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" -d '{
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" -d '{
   "dateRanges":[{"startDate":"28daysAgo","endDate":"today"}],
   "dimensions":[{"name":"pagePath"}],
   "metrics":[{"name":"screenPageViews"},{"name":"activeUsers"}],
@@ -54,7 +54,7 @@ Swap dimensions/metrics for other reports: `sessionDefaultChannelGroup` +
 ## Realtime
 
 ```bash
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"dimensions":[{"name":"country"}],"metrics":[{"name":"activeUsers"}]}' \
   "https://analyticsdata.googleapis.com/v1beta/properties/$PID:runRealtimeReport" | jq '.rows'
 ```

@@ -25,12 +25,12 @@ Failures are `{"error":{"code","message"}}` — show `message` verbatim. `401` =
 token expired (re-install). `403` on a write = the user granted read-only.
 
 ```bash
-G="https://graph.microsoft.com/v1.0"; AUTH=(-H "Authorization: Bearer $MICROSOFT_EXCEL_TOKEN")
+G="https://graph.microsoft.com/v1.0"; AUTH="Authorization: Bearer $MICROSOFT_EXCEL_TOKEN"
 # Find the workbook by name (then take .id as ITEM_ID)
-curl -sS "${AUTH[@]}" "$G/me/drive/root/search(q='budget.xlsx')" \
+curl -sS -H "$AUTH" "$G/me/drive/root/search(q='budget.xlsx')" \
   | jq '.value[] | {id, name, webUrl}'
 # Worksheets in the workbook
-curl -sS "${AUTH[@]}" "$G/me/drive/items/ITEM_ID/workbook/worksheets" \
+curl -sS -H "$AUTH" "$G/me/drive/items/ITEM_ID/workbook/worksheets" \
   | jq '.value[] | {id, name, position}'
 ```
 
@@ -39,16 +39,16 @@ curl -sS "${AUTH[@]}" "$G/me/drive/items/ITEM_ID/workbook/worksheets" \
 ```bash
 ITEM="ITEM_ID"; WS="Sheet1"
 # Used range (values + formulas + formats)
-curl -sS "${AUTH[@]}" \
+curl -sS -H "$AUTH" \
   "$G/me/drive/items/$ITEM/workbook/worksheets/$WS/usedRange" \
   | jq '{address, values: .values}'
 
 # Read a specific range
-curl -sS "${AUTH[@]}" \
+curl -sS -H "$AUTH" \
   "$G/me/drive/items/$ITEM/workbook/worksheets/$WS/range(address='A1:C5')" | jq '.values'
 
 # Update a range (confirm first). values is a 2-D array matching the address shape.
-curl -sS -X PATCH "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X PATCH -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"values":[["Q3",1200],["Q4",1580]]}' \
   "$G/me/drive/items/$ITEM/workbook/worksheets/$WS/range(address='A2:B3')" | jq '.address'
 ```
@@ -56,7 +56,7 @@ curl -sS -X PATCH "${AUTH[@]}" -H "Content-Type: application/json" \
 ## Append a row to a table
 
 ```bash
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"values":[["2026-06-21","Acme",4200]]}' \
   "$G/me/drive/items/$ITEM/workbook/tables/Table1/rows/add" | jq '.index'
 ```

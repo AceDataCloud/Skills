@@ -24,9 +24,9 @@ Failures are `{"error":{"code","message","status"}}` — show verbatim. `401` =
 re-install. `403` = the token's account doesn't own/verify that site.
 
 ```bash
-AUTH=(-H "Authorization: Bearer $GOOGLE_SEARCH_CONSOLE_TOKEN")
+AUTH="Authorization: Bearer $GOOGLE_SEARCH_CONSOLE_TOKEN"
 # Verified sites (siteUrl is the property — URL-encode it in later calls)
-curl -sS "${AUTH[@]}" "https://searchconsole.googleapis.com/webmasters/v3/sites" \
+curl -sS -H "$AUTH" "https://searchconsole.googleapis.com/webmasters/v3/sites" \
   | jq '.siteEntry[] | {siteUrl, permissionLevel}'
 ```
 
@@ -36,7 +36,7 @@ curl -sS "${AUTH[@]}" "https://searchconsole.googleapis.com/webmasters/v3/sites"
 # Top queries by clicks for the last 28 days. siteUrl must be URL-encoded
 # (https%3A%2F%2Fexample.com%2F  or  sc-domain%3Aexample.com).
 SITE="https%3A%2F%2Fexample.com%2F"
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" -d '{
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" -d '{
   "startDate":"2026-05-24","endDate":"2026-06-21",
   "dimensions":["query"],"rowLimit":10
 }' "https://searchconsole.googleapis.com/webmasters/v3/sites/$SITE/searchAnalytics/query" \
@@ -50,11 +50,11 @@ Swap `dimensions` for `["page"]`, `["country"]`, `["date"]`, or combine
 
 ```bash
 # Submitted sitemaps
-curl -sS "${AUTH[@]}" "https://searchconsole.googleapis.com/webmasters/v3/sites/$SITE/sitemaps" \
+curl -sS -H "$AUTH" "https://searchconsole.googleapis.com/webmasters/v3/sites/$SITE/sitemaps" \
   | jq '.sitemap[] | {path, lastDownloaded, errors, warnings}'
 
 # Is a URL indexed?
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"inspectionUrl":"https://example.com/page","siteUrl":"https://example.com/"}' \
   "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect" \
   | jq '.inspectionResult.indexStatusResult | {verdict, coverageState, lastCrawlTime}'

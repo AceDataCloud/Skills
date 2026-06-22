@@ -35,16 +35,16 @@ say so rather than calling the API (it would 401/DEVELOPER_TOKEN_NOT_APPROVED).
 
 ```bash
 VER="v18"; BASE="https://googleads.googleapis.com/$VER"
-AUTH=(-H "Authorization: Bearer $GOOGLE_ADS_TOKEN" -H "developer-token: $GOOGLE_ADS_DEVELOPER_TOKEN")
+AUTH="Authorization: Bearer $GOOGLE_ADS_TOKEN"; DEV="developer-token: $GOOGLE_ADS_DEVELOPER_TOKEN"
 # Customers the OAuth user can access (ids are returned as customers/<id>)
-curl -sS "${AUTH[@]}" "$BASE/customers:listAccessibleCustomers" | jq '.resourceNames'
+curl -sS -H "$AUTH" -H "$DEV" "$BASE/customers:listAccessibleCustomers" | jq '.resourceNames'
 ```
 
 ## Report with GAQL (searchStream)
 
 ```bash
 CID="1234567890"   # target customer id, digits only
-curl -sS "${AUTH[@]}" -H "login-customer-id: ${GOOGLE_ADS_LOGIN_CUSTOMER_ID:-$CID}" \
+curl -sS -H "$AUTH" -H "$DEV" -H "login-customer-id: ${GOOGLE_ADS_LOGIN_CUSTOMER_ID:-$CID}" \
   -H "Content-Type: application/json" -d '{
   "query":"SELECT campaign.name, metrics.cost_micros, metrics.clicks, metrics.conversions FROM campaign WHERE segments.date DURING LAST_30_DAYS ORDER BY metrics.cost_micros DESC"
 }' "$BASE/customers/$CID/googleAds:searchStream" \

@@ -29,18 +29,18 @@ Helper for the optional team param:
 
 ```bash
 TEAM=""; [ -n "$VERCEL_TEAM_ID" ] && TEAM="?teamId=$VERCEL_TEAM_ID"
-AUTH=(-H "Authorization: Bearer $VERCEL_ACCESS_TOKEN")
+AUTH="Authorization: Bearer $VERCEL_ACCESS_TOKEN"
 ```
 
 ## Projects & deployments
 
 ```bash
 # Projects
-curl -sS "${AUTH[@]}" "https://api.vercel.com/v9/projects$TEAM" \
+curl -sS -H "$AUTH" "https://api.vercel.com/v9/projects$TEAM" \
   | jq '.projects[] | {name, framework, latestProduction: .latestDeployments[0].url}'
 
 # Recent deployments (optionally filter by ?projectId=… or &state=ERROR)
-curl -sS "${AUTH[@]}" "https://api.vercel.com/v6/deployments${TEAM:-?}&limit=20" \
+curl -sS -H "$AUTH" "https://api.vercel.com/v6/deployments${TEAM:-?}&limit=20" \
   | jq '.deployments[] | {uid, name, url, state, readyState, created}'
 ```
 
@@ -48,11 +48,11 @@ curl -sS "${AUTH[@]}" "https://api.vercel.com/v6/deployments${TEAM:-?}&limit=20"
 
 ```bash
 # Deployment detail
-curl -sS "${AUTH[@]}" "https://api.vercel.com/v13/deployments/DEPLOYMENT_ID${TEAM:+&teamId=$VERCEL_TEAM_ID}" \
+curl -sS -H "$AUTH" "https://api.vercel.com/v13/deployments/DEPLOYMENT_ID${TEAM:+&teamId=$VERCEL_TEAM_ID}" \
   | jq '{name, url, state: .readyState, error: .errorMessage}'
 
 # Build / runtime events (the actual logs)
-curl -sS "${AUTH[@]}" "https://api.vercel.com/v3/deployments/DEPLOYMENT_ID/events${TEAM:+?teamId=$VERCEL_TEAM_ID}" \
+curl -sS -H "$AUTH" "https://api.vercel.com/v3/deployments/DEPLOYMENT_ID/events${TEAM:+?teamId=$VERCEL_TEAM_ID}" \
   | jq -r '.[] | select(.type=="stdout" or .type=="stderr") | .payload.text'
 ```
 
@@ -60,7 +60,7 @@ curl -sS "${AUTH[@]}" "https://api.vercel.com/v3/deployments/DEPLOYMENT_ID/event
 
 ```bash
 # Project domains
-curl -sS "${AUTH[@]}" "https://api.vercel.com/v9/projects/PROJECT_ID/domains${TEAM:+?teamId=$VERCEL_TEAM_ID}" \
+curl -sS -H "$AUTH" "https://api.vercel.com/v9/projects/PROJECT_ID/domains${TEAM:+?teamId=$VERCEL_TEAM_ID}" \
   | jq '.domains[] | {name, verified}'
 ```
 

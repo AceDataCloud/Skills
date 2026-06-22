@@ -25,9 +25,9 @@ means the token expired (re-install). `403`/`ErrorAccessDenied` on a write means
 the user only granted `Tasks.Read` → ask them to re-connect with read+write.
 
 ```bash
-G="https://graph.microsoft.com/v1.0"; AUTH=(-H "Authorization: Bearer $MICROSOFT_TODO_TOKEN")
+G="https://graph.microsoft.com/v1.0"; AUTH="Authorization: Bearer $MICROSOFT_TODO_TOKEN"
 # Task lists
-curl -sS "${AUTH[@]}" "$G/me/todo/lists" | jq '.value[] | {id, displayName, wellknownListName}'
+curl -sS -H "$AUTH" "$G/me/todo/lists" | jq '.value[] | {id, displayName, wellknownListName}'
 ```
 
 ## Tasks
@@ -35,17 +35,17 @@ curl -sS "${AUTH[@]}" "$G/me/todo/lists" | jq '.value[] | {id, displayName, well
 ```bash
 LIST="LIST_ID"
 # Open tasks in a list (filter notStarted/inProgress; $top caps page size)
-curl -sS "${AUTH[@]}" \
+curl -sS -H "$AUTH" \
   "$G/me/todo/lists/$LIST/tasks?\$filter=status ne 'completed'&\$top=50" \
   | jq '.value[] | {id, title, status, due: .dueDateTime.dateTime}'
 
 # Create (confirm first). dueDateTime/reminderDateTime are optional.
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"title":"Follow up with Alex","dueDateTime":{"dateTime":"2026-06-30T17:00:00","timeZone":"UTC"}}' \
   "$G/me/todo/lists/$LIST/tasks" | jq '{id, title, status}'
 
 # Complete: PATCH the task with {"status":"completed"}
-curl -sS -X PATCH "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X PATCH -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"status":"completed"}' "$G/me/todo/lists/$LIST/tasks/TASK_ID" | jq '{title, status}'
 ```
 
