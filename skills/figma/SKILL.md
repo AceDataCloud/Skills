@@ -27,11 +27,11 @@ segment of a pasted URL. A **node id** is in `?node-id=1-23` (Figma shows `1:23`
 the API also accepts `1:23`).
 
 ```bash
-F="https://api.figma.com/v1"; AUTH=(-H "Authorization: Bearer $FIGMA_TOKEN")
+F="https://api.figma.com/v1"; AUTH="Authorization: Bearer $FIGMA_TOKEN"
 # Who am I (account card)
-curl -sS "${AUTH[@]}" "$F/me" | jq '{handle, email}'
+curl -sS -H "$AUTH" "$F/me" | jq '{handle, email}'
 # File document tree (name + top-level frames). Big files: prefer /nodes below.
-curl -sS "${AUTH[@]}" "$F/files/FILE_KEY?depth=2" \
+curl -sS -H "$AUTH" "$F/files/FILE_KEY?depth=2" \
   | jq '{name, pages: [.document.children[] | {name, frames: [.children[]?.name]}]}'
 ```
 
@@ -40,11 +40,11 @@ curl -sS "${AUTH[@]}" "$F/files/FILE_KEY?depth=2" \
 ```bash
 KEY="FILE_KEY"
 # Just the nodes you care about (faster than the whole file)
-curl -sS "${AUTH[@]}" "$F/files/$KEY/nodes?ids=1:23,1:45" \
+curl -sS -H "$AUTH" "$F/files/$KEY/nodes?ids=1:23,1:45" \
   | jq '.nodes | to_entries[] | {id: .key, name: .value.document.name, type: .value.document.type}'
 
 # Render nodes to images — returns temporary CDN URLs (this is the "see it" tool)
-curl -sS "${AUTH[@]}" "$F/images/$KEY?ids=1:23&format=png&scale=2" \
+curl -sS -H "$AUTH" "$F/images/$KEY?ids=1:23&format=png&scale=2" \
   | jq '.images'   # { "1:23": "https://...png" }
 ```
 
@@ -54,10 +54,10 @@ For design-to-code, render the frame to PNG (to view) and read its node JSON
 ## Comments & projects
 
 ```bash
-curl -sS "${AUTH[@]}" "$F/files/FILE_KEY/comments" \
+curl -sS -H "$AUTH" "$F/files/FILE_KEY/comments" \
   | jq '.comments[] | {user: .user.handle, at: .created_at, message}'
 # Team projects → files (needs a team id from the Figma URL /team/<id>/...)
-curl -sS "${AUTH[@]}" "$F/teams/TEAM_ID/projects" | jq '.projects'
+curl -sS -H "$AUTH" "$F/teams/TEAM_ID/projects" | jq '.projects'
 ```
 
 ## Gotchas

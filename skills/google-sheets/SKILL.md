@@ -29,9 +29,9 @@ with read+write.
 The spreadsheet id is the `…/spreadsheets/d/<ID>/edit` segment of the URL.
 
 ```bash
-S="https://sheets.googleapis.com/v4/spreadsheets"; AUTH=(-H "Authorization: Bearer $GOOGLE_SHEETS_TOKEN")
+S="https://sheets.googleapis.com/v4/spreadsheets"; AUTH="Authorization: Bearer $GOOGLE_SHEETS_TOKEN"
 # Tabs + title
-curl -sS "${AUTH[@]}" "$S/SPREADSHEET_ID?fields=properties.title,sheets.properties(title,sheetId)" \
+curl -sS -H "$AUTH" "$S/SPREADSHEET_ID?fields=properties.title,sheets.properties(title,sheetId)" \
   | jq '{title: .properties.title, tabs: [.sheets[].properties.title]}'
 ```
 
@@ -40,15 +40,15 @@ curl -sS "${AUTH[@]}" "$S/SPREADSHEET_ID?fields=properties.title,sheets.properti
 ```bash
 ID="SPREADSHEET_ID"
 # Read a range (A1 notation; values are rows of cells)
-curl -sS "${AUTH[@]}" "$S/$ID/values/Sheet1!A1:D20" | jq '.values'
+curl -sS -H "$AUTH" "$S/$ID/values/Sheet1!A1:D20" | jq '.values'
 
 # Append rows (confirm first). valueInputOption=USER_ENTERED parses formulas/dates.
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"values":[["2026-06-21","Acme",4200]]}' \
   "$S/$ID/values/Sheet1!A1:append?valueInputOption=USER_ENTERED" | jq '.updates'
 
 # Update a fixed range: PUT /values/{range}?valueInputOption=USER_ENTERED
-curl -sS -X PUT "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X PUT -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"values":[["done"]]}' \
   "$S/$ID/values/Sheet1!E2?valueInputOption=USER_ENTERED" | jq '.updatedCells'
 ```
@@ -57,11 +57,11 @@ curl -sS -X PUT "${AUTH[@]}" -H "Content-Type: application/json" \
 
 ```bash
 # New spreadsheet
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"properties":{"title":"Report 2026"}}' "$S" | jq '{spreadsheetId, spreadsheetUrl}'
 
 # Add a tab via batchUpdate (addSheet request)
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"requests":[{"addSheet":{"properties":{"title":"Q3"}}}]}' \
   "$S/$ID:batchUpdate" | jq '.replies'
 ```

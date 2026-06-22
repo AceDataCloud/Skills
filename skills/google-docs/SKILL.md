@@ -26,9 +26,9 @@ re-install. `403 PERMISSION_DENIED` on a write = read-only scope.
 The doc id is the `…/document/d/<ID>/edit` segment of the URL.
 
 ```bash
-D="https://docs.googleapis.com/v1/documents"; AUTH=(-H "Authorization: Bearer $GOOGLE_DOCS_TOKEN")
+D="https://docs.googleapis.com/v1/documents"; AUTH="Authorization: Bearer $GOOGLE_DOCS_TOKEN"
 # Read the document. The body is a tree of structural elements; pull plain text:
-curl -sS "${AUTH[@]}" "$D/DOC_ID" \
+curl -sS -H "$AUTH" "$D/DOC_ID" \
   | jq -r '.title, ([.body.content[]?.paragraph?.elements[]?.textRun?.content] | join(""))'
 ```
 
@@ -36,16 +36,16 @@ curl -sS "${AUTH[@]}" "$D/DOC_ID" \
 
 ```bash
 # Create an empty doc
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"title":"Meeting notes 2026-06-21"}' "$D" | jq '{documentId, title}'
 
 # Insert text at the start (index 1) via batchUpdate (confirm first)
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"requests":[{"insertText":{"location":{"index":1},"text":"Hello\n"}}]}' \
   "$D/DOC_ID:batchUpdate" | jq '.documentId'
 
 # Replace all occurrences of a placeholder
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"requests":[{"replaceAllText":{"containsText":{"text":"{{name}}","matchCase":true},"replaceText":"Alex"}}]}' \
   "$D/DOC_ID:batchUpdate" | jq '.replies'
 ```

@@ -25,9 +25,9 @@ re-install. `403`/`Forbidden` on send = the user granted read-only
 (`Chat.Read`) → re-connect with `Chat.ReadWrite` + `ChatMessage.Send`.
 
 ```bash
-G="https://graph.microsoft.com/v1.0"; AUTH=(-H "Authorization: Bearer $MICROSOFT_TEAMS_TOKEN")
+G="https://graph.microsoft.com/v1.0"; AUTH="Authorization: Bearer $MICROSOFT_TEAMS_TOKEN"
 # My chats (1:1 + group), most recent first; expand members for names
-curl -sS "${AUTH[@]}" "$G/me/chats?\$top=20&\$expand=members" \
+curl -sS -H "$AUTH" "$G/me/chats?\$top=20&\$expand=members" \
   | jq '.value[] | {id, chatType, topic, members: [.members[].displayName]}'
 ```
 
@@ -36,11 +36,11 @@ curl -sS "${AUTH[@]}" "$G/me/chats?\$top=20&\$expand=members" \
 ```bash
 CHAT="CHAT_ID"
 # Recent messages
-curl -sS "${AUTH[@]}" "$G/chats/$CHAT/messages?\$top=20" \
+curl -sS -H "$AUTH" "$G/chats/$CHAT/messages?\$top=20" \
   | jq '.value[] | {from: .from.user.displayName, created: .createdDateTime, text: .body.content}'
 
 # Send a message (confirm content with the user first). contentType html|text.
-curl -sS -X POST "${AUTH[@]}" -H "Content-Type: application/json" \
+curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"body":{"contentType":"html","content":"Hi from the assistant 👋"}}' \
   "$G/chats/$CHAT/messages" | jq '{id, created: .createdDateTime}'
 ```
