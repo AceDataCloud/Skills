@@ -201,3 +201,57 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+
+## Scheduled Tasks Endpoint
+
+Run AI agents on a recurring schedule via `POST /aichat2/scheduled-tasks`. All CRUD operations use the same endpoint, distinguished by the `action` field.
+
+### Create a task
+
+```bash
+curl -X POST https://api.acedata.cloud/aichat2/scheduled-tasks \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "create",
+    "name": "Daily news summary",
+    "schedule": {"type": "cron", "cron": "0 9 * * *", "tz": "Asia/Shanghai"},
+    "template": {"model": "gpt-4o-mini", "question": "Summarize today'\''s top 3 AI news items.", "max_turns": 5}
+  }'
+```
+
+### Schedule types
+
+| `schedule.type` | Required fields | Description |
+|-----------------|-----------------|-------------|
+| `cron` | `cron` (5-part expression), `tz` | Most flexible — e.g. `"0 9 * * 1-5"` (weekdays 9 AM) |
+| `interval` | `interval_seconds`, `tz` | Fixed interval — e.g. `3600` (hourly) |
+| `once` | `at` (Unix timestamp), `tz` | Run exactly once |
+
+### Other actions
+
+| `action` | Required fields | Description |
+|----------|-----------------|-------------|
+| `retrieve_batch` | — | List all tasks |
+| `update` | `id`, plus fields to change | Update name, schedule, state, or template |
+| `retrieve_runs` | `id` | Get execution history for a task |
+| `delete` | `id` | Permanently delete a task |
+
+### Template variables
+
+Use these placeholders in the `template.question` string:
+
+| Variable | Value injected |
+|----------|---------------|
+| `{{date}}` | Today's date (localized, e.g. `2026/6/22`) |
+| `{{date_iso}}` | ISO date (e.g. `2026-06-22`) |
+| `{{run_count}}` | How many times this task has run (starts at 1) |
+| `{{task_name}}` | The task's `name` field |
+| `{{last_output}}` | First 500 chars of the previous run's output (empty on first run) |
+
+### Gotchas
+
+- Tasks default to stopping 3 months after creation unless `ends_at` (Unix timestamp) is set
+- A task is auto-paused after 5 consecutive failures (e.g. insufficient balance)
+- Each run shares the full agentic tool-chain of `/aichat2/conversations` (web search, file reading, MCP servers)
+- Interactive tools (`ask_user_question`, `request_user_consent`) are disabled in scheduled runs
