@@ -354,11 +354,60 @@ def cmd_publish(jar, args):
                      f"web editor. Detail: {(r or {}).get('message') if r else text[:200]}"})
 
 
+def _drafts_of(d: dict) -> list:
+    al = (d.get("data") or {}).get("artlist") or d.get("artlist") or {}
+    return al.get("drafts") or []
+
+
+def cmd_drafts(jar, args):
+    # 专栏 drafts are capped at 999; this lists them so they can be pruned.
+    d = get_json(f"{API}/x/article/creative/draft/list?pn={args.page}&ps={args.limit}",
+                 jar, referer="https://member.bilibili.com/")
+    if d.get("code"):  # 0 = ok; anything truthy is an auth/API error
+        die(f"draft list error (code={d.get('code')}): {d.get('message')} — "
+            f"cookie may be expired; reconnect at https://auth.acedata.cloud/user/connections.")
+    items = _drafts_of(d)
+    out({"page": args.page, "count": len(items), "drafts": [{
+        "aid": x.get("id"),
+        "title": x.get("title"),
+        "edit_url": f"https://member.bilibili.com/article-text/home?aid={x.get('id')}",
+    } for x in items]})
+
+
+def cmd_delete_draft(jar, args):
+    if not args.aids:
+        die("provide one or more draft aids: delete-draft <aid> [<aid> ...] --confirm")
+    bad = [a for a in args.aids if not str(a).isdigit()]
+    if bad:
+        die(f"invalid draft aid(s) — must be numeric: {bad}")
+    csrf = cookie_value(jar, "bili_jct")
+    if not csrf:
+        die("no bili_jct cookie (CSRF token) — reconnect Bilibili.")
+    if not CONFIRM:
+        out({"dry_run": True, "command": "delete-draft", "platform": "bilibili",
+             "aids": args.aids, "note": "Deletion is PERMANENT. Re-run with --confirm "
+             "as the LAST argument to actually delete these draft(s)."})
+        return
+    results = []
+    for aid in args.aids:
+        _, text = request("POST", f"{API}/x/article/creative/draft/delete", jar,
+                          referer="https://member.bilibili.com/", form={"aid": aid, "csrf": csrf})
+        try:
+            code = json.loads(text).get("code")
+        except json.JSONDecodeError:
+            code = None
+        results.append({"aid": aid, "deleted": code == 0, "code": code})
+    out({"command": "delete-draft", "deleted": sum(1 for r in results if r["deleted"]),
+         "results": results})
+
+
 COMMANDS = {
     "whoami": cmd_whoami,
     "articles": cmd_articles,
     "article": cmd_article,
     "publish": cmd_publish,
+    "drafts": cmd_drafts,
+    "delete-draft": cmd_delete_draft,
 }
 
 
@@ -375,6 +424,11 @@ def main() -> None:
     sp.add_argument("--content", help="HTML content inline")
     sp.add_argument("--content-file", help="path to an HTML file")
     sp.add_argument("--draft-only", action="store_true", help="save a draft; do NOT submit")
+    sp = sub.add_parser("drafts", help="list 专栏 drafts (id+title); use to prune the 999-draft cap")
+    sp.add_argument("--limit", type=int, default=50)
+    sp.add_argument("--page", type=int, default=1)
+    sp = sub.add_parser("delete-draft", help="delete draft(s) by aid (GATED by trailing --confirm)")
+    sp.add_argument("aids", nargs="*", help="one or more draft aids to delete")
     args = p.parse_args(ARGV)
     jar = load_cookies()
     COMMANDS[args.command](jar, args)

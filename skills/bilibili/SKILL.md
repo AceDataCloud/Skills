@@ -38,6 +38,7 @@ BILI=$SKILL_DIR/scripts/bilibili.py
 python3 $BILI whoami                       # who is logged in (mid, name)
 python3 $BILI articles --limit 20          # my 专栏 articles + stats
 python3 $BILI article <cvid>               # one article's stats (cv id)
+python3 $BILI drafts --limit 50            # list saved drafts (aid + title)
 ```
 
 Stats come straight from Bilibili: `view` (阅读), `like` (点赞), `reply` (评论),
@@ -69,6 +70,22 @@ python3 $BILI publish --title "标题" --content-file a.html --confirm          
 - The **submit** (go public) step is frequently rate-limited by Bilibili
   risk-control (HTTP 412). When that happens the CLI reports the saved draft +
   edit URL so the user can publish from the web editor. Default to `--draft-only`.
+
+## Managing drafts (the 999-draft cap)
+
+Bilibili caps 专栏 drafts at **999**; once full, saving a new draft fails with
+`code 37106 草稿数已达最大上限`. List drafts and delete the ones you don't need:
+
+```sh
+python3 $BILI drafts --limit 50                       # list (aid + title)
+python3 $BILI delete-draft <aid> <aid2> ...           # dry-run (shows what would delete)
+python3 $BILI delete-draft <aid> <aid2> ... --confirm # PERMANENTLY delete those drafts
+```
+
+- `delete-draft` is **GATED** (dry-run unless trailing `--confirm`) and deletion
+  is **permanent** — always show the dry-run + the titles and get an explicit
+  "yes" before `--confirm`. Pass multiple aids to batch a few per call.
+- Never bulk-delete blindly: list first, confirm the titles are junk/duplicates.
 
 ## Gotchas
 
