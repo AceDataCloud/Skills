@@ -30,6 +30,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -147,8 +148,15 @@ def request(method, url, jar, *, headers=None, body=None, accept="application/js
         die(f"network error reaching {url}: {e.reason}")
 
 
-def api(method, url, jar, *, body=None):
+def api(method, url, jar, *, body=None, _retried=False):
     status, text = request(method, url, jar, body=body)
+    # Medium sits behind Cloudflare, which intermittently 403s/429s an otherwise
+    # valid session; one retry after a short pause clears the transient block.
+    # Only retry idempotent GETs — never replay a POST (new-story/deltas/publish),
+    # which could duplicate a write if the origin already processed it.
+    if status in (403, 429) and method == "GET" and not _retried:
+        time.sleep(1.5)
+        return api(method, url, jar, body=body, _retried=True)
     if status in (401, 403):
         die(f"auth failed ({status}) on {url} — cookie likely expired. "
             f"Reconnect at https://auth.acedata.cloud/user/connections.")

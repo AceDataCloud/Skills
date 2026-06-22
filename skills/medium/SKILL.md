@@ -71,6 +71,8 @@ publish). `--draft-only` stops at the draft (visible only at the user's
 - Markdown→Medium conversion is paragraph-level (headings, quotes, code, body);
   complex inline formatting / images aren't converted — the user can polish in
   the Medium editor before going public.
-- Medium sits behind Cloudflare; an occasional 403/429 is transient.
+- Medium sits behind Cloudflare; an occasional 403/429 is transient — the CLI
+  auto-retries once after a short pause. A *persistent* 403 means the cookie is
+  genuinely expired (reconnect).
 - **Never print `MEDIUM_COOKIES`** — it is full account access.
 - **ToS**: acts only on the user's own account with their own captured cookie.
