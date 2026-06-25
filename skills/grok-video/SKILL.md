@@ -82,9 +82,9 @@ POST /grok/videos
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `prompt` | No | string | Video description |
+| `prompt` | Recommended | string | Video description — required for text-to-video; optional for image-to-video |
 | `model` | No | `"grok-imagine-video"`, `"grok-imagine-video-1.5-preview"` | Model to use |
-| `image_url` | No | string | Source image URL for image-to-video |
+| `image_url` | For i2v | string | Source image URL — required for image-to-video workflows |
 | `reference_image_urls` | No | array of strings | Reference image URLs for guided generation |
 | `aspect_ratio` | No | `"1:1"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"`, `"3:2"`, `"2:3"` | Output aspect ratio |
 | `resolution` | No | `"480p"`, `"720p"` | Output resolution |
@@ -113,8 +113,9 @@ POST /grok/tasks
 
 ## Gotchas
 
-- Both `prompt` and `image_url` are optional; provide at least one for meaningful results
-- `reference_image_urls` enables multi-image guided generation
+- For **text-to-video**, always provide a `prompt` — the API accepts it as optional but results are meaningless without it
+- For **image-to-video**, provide `image_url` (and optionally a `prompt` for animation guidance)
+- `reference_image_urls` enables multi-image guided generation alongside or instead of `image_url`
 - `grok-imagine-video-1.5-preview` is a preview model and may change
 - Default resolution is `720p` if not specified
 - Task polling uses `id` (not `task_id`) in the `/grok/tasks` request body
