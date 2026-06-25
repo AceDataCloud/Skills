@@ -1,49 +1,52 @@
 {
-  "name": "acedatacloud-skills",
-  "owner": {
-    "name": "Ace Data Cloud",
-    "email": "dev@acedata.cloud"
-  },
-  "metadata": {
-    "description": "AI-powered data services skills for music, image, video generation, web search, and more",
-    "version": "3.0.0"
-  },
-  "plugins": [
-    {
-      "name": "acedatacloud-ai-media",
-      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Midjourney, Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Kling, Hailuo, Seedance)",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/suno-music",
-        "./skills/producer-music",
-        "./skills/fish-audio",
-        "./skills/midjourney-image",
-        "./skills/flux-image",
-        "./skills/seedream-image",
-        "./skills/nano-banana-image",
-        "./skills/luma-video",
-        "./skills/sora-video",
-        "./skills/veo-video",
-        "./skills/kling-video",
-        "./skills/hailuo-video",
-        "./skills/seedance-video",
-        "./skills/wan-video"
-      ]
+    "name": "acedatacloud-skills",
+    "owner": {
+        "name": "Ace Data Cloud",
+        "email": "dev@acedata.cloud"
     },
-    {
-      "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web search, face transform, short URLs, HTML→single-page PDF, API guide",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/ai-chat",
-        "./skills/google-search",
-        "./skills/face-transform",
-        "./skills/short-url",
-        "./skills/onepage-pdf",
-        "./skills/acedatacloud-api"
-      ]
-    }
-  ]
+    "metadata": {
+        "description": "AI-powered data services skills for music, image, video generation, web search, and more",
+        "version": "3.0.0"
+    },
+    "plugins": [
+        {
+            "name": "acedatacloud-ai-media",
+            "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Midjourney, Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Kling, Hailuo, Seedance, Grok, Dreamina)",
+            "source": "./",
+            "strict": false,
+            "skills": [
+                "./skills/suno-music",
+                "./skills/producer-music",
+                "./skills/fish-audio",
+                "./skills/midjourney-image",
+                "./skills/flux-image",
+                "./skills/seedream-image",
+                "./skills/nano-banana-image",
+                "./skills/luma-video",
+                "./skills/sora-video",
+                "./skills/veo-video",
+                "./skills/kling-video",
+                "./skills/hailuo-video",
+                "./skills/seedance-video",
+                "./skills/wan-video",
+                "./skills/grok-video",
+                "./skills/dreamina-video"
+            ]
+        },
+        {
+            "name": "acedatacloud-ai-tools",
+            "description": "AI utility skills: LLM chat (incl. Gemini dedicated), web search, face transform, short URLs, HTML→single-page PDF, API guide",
+            "source": "./",
+            "strict": false,
+            "skills": [
+                "./skills/ai-chat",
+                "./skills/gemini",
+                "./skills/google-search",
+                "./skills/face-transform",
+                "./skills/short-url",
+                "./skills/onepage-pdf",
+                "./skills/acedatacloud-api"
+            ]
+        }
+    ]
 }

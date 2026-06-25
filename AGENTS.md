@@ -25,9 +25,12 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **hailuo-video** — Generate videos with Hailuo / MiniMax
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
+- **grok-video** — Generate videos with xAI Grok
+- **dreamina-video** — Generate talking avatar videos with ByteDance Dreamina
 
 ### AI Chat & Tools
 - **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models)
+- **gemini** — Google Gemini chat completions and video generation (dedicated endpoint)
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs

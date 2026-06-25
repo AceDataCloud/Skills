@@ -76,8 +76,13 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest capability |
+| `gemini-3.1-pro-preview` | Preview of latest pro |
+| `gemini-3-pro-preview` | Next-gen pro preview |
+| `gemini-3.1-flash-lite-preview` | Fast, lightweight preview |
+| `gemini-3.1-flash-image-preview` | Image generation preview |
+| `gemini-2.5-flash-lite` | Fast, cost-effective |
+| `gemini-2.0-flash-lite` | Lightweight, efficient |
 
 ### xAI Grok
 

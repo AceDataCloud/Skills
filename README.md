@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills (33)
 
 ### AI Music & Audio
 
@@ -41,12 +41,15 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [grok-video](skills/grok-video/) | Generate videos with xAI Grok |
+| [dreamina-video](skills/dreamina-video/) | Generate talking avatar videos with ByteDance Dreamina |
 
 ### AI Chat & Tools
 
 | Skill | Description |
 |-------|-------------|
 | [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models) |
+| [gemini](skills/gemini/) | Google Gemini chat completions and video generation (dedicated endpoint) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
