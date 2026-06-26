@@ -1,6 +1,6 @@
 ---
 name: seedance-video
-description: Generate AI dance and motion videos with Seedance (ByteDance) via AceDataCloud API. Use when creating videos from text prompts or animating images into motion videos. Supports multiple models with configurable resolution, aspect ratio, duration, and optional audio/video reference and audio generation.
+description: Generate AI dance and motion videos with Seedance (ByteDance) via AceDataCloud API. Use when creating videos from text prompts or animating images into motion videos. Supports multiple models with configurable resolution, aspect ratio, duration, and optional reference audio, reference video, and audio generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
