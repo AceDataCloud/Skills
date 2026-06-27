@@ -69,6 +69,7 @@ These skills drive third-party connectors users wire up at [auth.acedata.cloud/u
 | [notion](skills/notion/) | Read and search Notion pages, databases, and blocks | `notion` |
 | [slack](skills/slack/) | Read Slack channels, messages, and user info via Web API | `slack` |
 | [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
+| [personal-wechat](skills/personal-wechat/) | Operate a personal WeChat account through a self-hosted Personal WeChat service | `personalwechat` (BYOC) |
 
 ## Prerequisites
 
