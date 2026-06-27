@@ -39,9 +39,12 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 |-------|------|----------|
 | `doubao-seedance-1-0-pro-250528` | Text+Image-to-Video | General-purpose, reliable quality |
 | `doubao-seedance-1-0-pro-fast-251015` | Text+Image-to-Video | Faster Pro generation |
-| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
+| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest 1.x model, highest quality, audio support |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
+| `doubao-seedance-2-0-260128` | Text+Image-to-Video | Seedance 2.0, high quality |
+| `doubao-seedance-2-0-fast-260128` | Text+Image-to-Video | Seedance 2.0 fast variant |
+| `doubao-seedance-2-0-mini-260615` | Text+Image-to-Video | Seedance 2.0 mini, compact and efficient |
 
 ## Workflows
 
@@ -104,16 +107,55 @@ POST /seedance/videos
 }
 ```
 
+### 4. Reference Audio
+
+Provide a reference audio clip to guide audio generation in the video:
+
+```json
+POST /seedance/videos
+{
+  "model": "doubao-seedance-1-5-pro-251215",
+  "content": [
+    {"type": "text", "text": "a lively street performance"},
+    {
+      "type": "audio_url",
+      "role": "reference_audio",
+      "audio_url": {"url": "https://example.com/background-music.mp3"}
+    }
+  ],
+  "generate_audio": true
+}
+```
+
+### 5. Reference Video
+
+Provide a reference video to guide style or motion in the generated video:
+
+```json
+POST /seedance/videos
+{
+  "model": "doubao-seedance-2-0-260128",
+  "content": [
+    {"type": "text", "text": "a dancer performing the same moves in a different setting"},
+    {
+      "type": "video_url",
+      "role": "reference_video",
+      "video_url": {"url": "https://example.com/reference-dance.mp4"}
+    }
+  ]
+}
+```
+
 ## Parameters
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | see Models table | Model to use (required) |
-| `content` | array | Input items: text and/or image_url objects (required) |
-| `resolution` | `"480p"`, `"720p"`, `"1080p"` | Output resolution (default: 720p for pro, 480p for lite) |
+| `content` | array | Input items: text, image_url, audio_url, and/or video_url objects (required) |
+| `resolution` | `"480p"`, `"720p"`, `"1080p"`, `"4k"` | Output resolution (default: 720p for pro, 480p for lite) |
 | `ratio` | `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"21:9"`, `"adaptive"` | Aspect ratio (default: 16:9) |
-| `duration` | `2` – `12` | Duration in seconds |
-| `frames` | 29–289 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
+| `duration` | `2` – `15` | Duration in seconds |
+| `frames` | 29–361 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
 | `generate_audio` | `true` / `false` | Generate audio (only supported by `doubao-seedance-1-5-pro-251215`) |
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
@@ -136,13 +178,13 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 
 - Model names use the `doubao-*` convention (e.g. `doubao-seedance-1-0-pro-250528`) — old short names like `seedance-1.0` are not valid
 - The `content` array replaces the old `prompt` + `image_url` fields; always use `content`
-- Image and text scenarios are mutually exclusive per content item — each item has either `text` or `image_url`, not both
+- Image and text scenarios are mutually exclusive per content item — each item has either `text`, `image_url`, `audio_url`, or `video_url`, not multiple
 - `first_frame`, `last_frame`, and `reference_image` roles are mutually exclusive scenarios — pick one pattern per request
 - `generate_audio: true` is only supported by `doubao-seedance-1-5-pro-251215`; other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
-- Resolution options are `480p`, `720p`, `1080p` — there is no 360p or 540p
+- Resolution options are `480p`, `720p`, `1080p`, `4k` — there is no 360p or 540p
 - `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
-- Duration range is **2–12 seconds** — values outside this range will fail
+- Duration range is **2–15 seconds** — values outside this range will fail
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
