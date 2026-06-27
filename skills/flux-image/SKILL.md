@@ -31,6 +31,7 @@ curl -X POST https://api.acedata.cloud/flux/images \
 |-------|---------|-------|-------|----------|
 | `flux-dev` | Good | Fast | 256–1440px | Quick generation (default) |
 | `flux-pro` | High | Medium | 256–1440px | Production work |
+| `flux-2-klein` | Good | Fastest | 256–1440px | Lowest-latency Flux 2 generation |
 | `flux-2-flex` | High | Fast | 256–1440px | Faster high-quality generation |
 | `flux-2-pro` | Higher | Medium | 256–1440px | Better prompt following |
 | `flux-2-max` | Highest | Slow | 256–1440px | Maximum quality generation |
