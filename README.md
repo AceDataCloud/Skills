@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills (29)
 
 ### AI Music & Audio
 
@@ -26,7 +26,6 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [midjourney-image](skills/midjourney-image/) | Generate, edit, blend, describe, and upscale images with Midjourney |
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
 | [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
@@ -92,7 +91,7 @@ export ACEDATACLOUD_API_TOKEN="your-token-here"
 npx skills add acedatacloud/skills --skill '*' --yes
 
 # Install specific skills only
-npx skills add acedatacloud/skills --skill suno-music --skill midjourney-image --yes
+npx skills add acedatacloud/skills --skill suno-music --skill flux-image --yes
 ```
 
 The [`skills` CLI](https://github.com/vercel-labs/skills) auto-detects your agent and installs to the correct path.
@@ -197,7 +196,6 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | Skill | MCP Server | Install | Hosted Endpoint |
 |-------|-----------|---------|-----------------|
 | suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
-| midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | [mcp-flux-pro](https://pypi.org/project/mcp-flux-pro/) | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
 | luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |

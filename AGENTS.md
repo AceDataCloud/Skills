@@ -12,7 +12,6 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **fish-audio** — Text-to-speech and voice synthesis with Fish Audio
 
 ### AI Image Generation
-- **midjourney-image** — Generate, edit, blend, describe, and upscale images with Midjourney
 - **flux-image** — Generate and edit images with Flux (Black Forest Labs)
 - **seedream-image** — Generate and edit images with ByteDance Seedream
 - **nano-banana-image** — Generate and edit images with Google Gemini (NanoBanana)
