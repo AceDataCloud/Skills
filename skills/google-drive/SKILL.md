@@ -1,14 +1,11 @@
 ---
 name: google-drive
-description: Read, search, upload, rename, move and delete Google Drive files / folders / shared content via the Drive v3 REST API. Use when the user mentions Drive files, "my drive", shared documents, Google Docs / Sheets / Slides, exporting / downloading a Drive file, searching by name / owner / folder, uploading a new file, renaming or moving files, or organising folders.
+description: Read, export, upload, rename, move and delete Google Drive files explicitly selected or shared with the app via the Drive v3 REST API. Use when the user provides a Drive file ID/link or has selected files for the Google Drive connector.
 when_to_use: |
-  Trigger when the user wants to list, search, read, download or
-  modify files in their Google Drive — including Google-native docs
-  (Docs / Sheets / Slides) which need a special "export" call to get
-  plain content, as well as uploads, renames, folder moves, and
-  trashing files. The installed connector always grants `drive.readonly`;
-  the user opts in to the broader `drive` scope (full read + write)
-  at install time — confirm before performing destructive writes.
+  Trigger when the user wants to read, download, export or modify Google
+  Drive files they explicitly selected, created, opened, or shared with
+  this app. The installed connector currently grants only `drive.file`,
+  so do not browse, search, or summarize the user's entire Drive.
 connections: [google/drive]
 allowed_tools: [Bash]
 license: Apache-2.0
@@ -19,17 +16,21 @@ metadata:
 
 Drive Google Drive via `curl + jq`. The user's OAuth bearer token is
 in `$GOOGLE_DRIVE_TOKEN`; every call needs it as
-`Authorization: Bearer $GOOGLE_DRIVE_TOKEN`. At minimum the token
-carries `drive.readonly` plus the identity scopes
-(`openid email profile`); if the user opted in to write at install
-time it also carries the broader `drive` scope (full read + write).
+`Authorization: Bearer $GOOGLE_DRIVE_TOKEN`. The token carries
+`drive.file` plus identity scopes (`openid email profile`) and can only
+access files the user selected, opened, created, or shared with this app.
 
 The Drive API returns standard JSON; failures surface as
 `{"error": {"code": 401|403|..., "message": "..."}}` — show that
 error verbatim to the user. `401` means the token expired and the
 user must re-install the connector. `403 insufficientPermissions`
-on a write means the user did not grant the `drive` scope at install
-— ask them to re-install with the read+write box checked.
+means the file was not shared with this app, or the action needs a
+broader Drive scope that is temporarily disabled during Google review.
+
+Do not use this skill for broad Drive discovery: no "list my recent
+files", full-text search across Drive, shared-with-me scans, root-folder
+cleanup, or bulk moves based on a Drive-wide query. Ask the user to pick
+or paste the exact file/folder IDs first.
 
 **Before any destructive write** (renaming, moving, trashing, or
 bulk-mutating files) show the exact target list and ask the user to
@@ -52,8 +53,8 @@ upload protocol.
 hand-formatted `multipart/related` body with a JSON metadata part and a
 binary file part separated by a boundary string — easy to get wrong from
 curl. `gws drive +upload` does it correctly. **For everything else**
-(list, search, get, export, rename, move, trash, delete) the curl recipes
-below are equivalent and shorter — stay on those.
+(get, export, rename, move, trash, delete) the curl recipes below are
+equivalent and shorter — stay on those.
 
 ### Install
 
@@ -90,9 +91,7 @@ gws drive files create \
 ```
 
 Both exit non-zero with a structured JSON error on stderr if Google
-rejects the request — surface that verbatim. Uploads need the broader
-`drive` scope; on `403 insufficientPermissions` ask the user to
-re-install the connector with read+write checked.
+rejects the request — surface that verbatim.
 
 ## Recipes
 
@@ -104,56 +103,9 @@ curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
   | jq '{user, quota: .storageQuota}'
 ```
 
-### List recent files (last modified first)
+### List children of a selected folder
 
-```sh
-curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-  "https://www.googleapis.com/drive/v3/files?orderBy=modifiedTime%20desc&pageSize=20&fields=files(id,name,mimeType,modifiedTime,owners(emailAddress),webViewLink,parents)" \
-  | jq '.files[] | {id, name, mimeType, modified: .modifiedTime, owner: .owners[0].emailAddress, webViewLink}'
-```
-
-`pageSize` max is 1000; default is 100. Use `pageToken` from the
-response (`nextPageToken`) for follow-up pages.
-
-### Search by name / fulltext
-
-```sh
-# Exact-name fragments — note "name contains" supports tokens, not regex
-Q='name contains "季度复盘" and trashed = false'
-curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-  --get "https://www.googleapis.com/drive/v3/files" \
-  --data-urlencode "q=$Q" \
-  --data-urlencode 'fields=files(id,name,mimeType,modifiedTime,webViewLink,owners(emailAddress))' \
-  --data-urlencode 'pageSize=20' \
-  | jq '.files[] | {id, name, modified: .modifiedTime, owner: .owners[0].emailAddress}'
-
-# Full-text search (body + title)
-Q='fullText contains "OKR 2026Q2" and trashed = false'
-curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-  --get "https://www.googleapis.com/drive/v3/files" \
-  --data-urlencode "q=$Q" \
-  --data-urlencode 'fields=files(id,name,modifiedTime,webViewLink)' \
-  | jq '.files[]'
-```
-
-The `q` param uses [Drive's mini query language](https://developers.google.com/drive/api/guides/search-files):
-`name`, `fullText`, `mimeType`, `parents`, `'<email>' in owners`,
-`'<email>' in writers`, `modifiedTime > '2026-01-01T00:00:00'`,
-`sharedWithMe`, `trashed`, joined by `and` / `or` / `not`.
-
-### List files shared with me
-
-```sh
-curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-  --get "https://www.googleapis.com/drive/v3/files" \
-  --data-urlencode 'q=sharedWithMe and trashed = false' \
-  --data-urlencode 'orderBy=sharedWithMeTime desc' \
-  --data-urlencode 'fields=files(id,name,mimeType,sharedWithMeTime,owners(displayName,emailAddress))' \
-  --data-urlencode 'pageSize=30' \
-  | jq '.files[] | {name, sharedAt: .sharedWithMeTime, sharedBy: .owners[0]}'
-```
-
-### List children of a folder
+Only use this after the user explicitly selected or provided the folder ID.
 
 ```sh
 FOLDER_ID='1A2B3CdEfGhIjKlMn'
@@ -234,28 +186,11 @@ curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
   | jq '.permissions[] | {who: (.emailAddress // .domain // .type), role}'
 ```
 
-### Pagination boilerplate
-
-```sh
-PAGE_TOKEN=''
-while : ; do
-  RESP=$(curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-    --get "https://www.googleapis.com/drive/v3/files" \
-    --data-urlencode 'q=trashed = false' \
-    --data-urlencode 'fields=files(id,name),nextPageToken' \
-    --data-urlencode 'pageSize=200' \
-    ${PAGE_TOKEN:+--data-urlencode "pageToken=$PAGE_TOKEN"})
-  echo "$RESP" | jq -c '.files[]'
-  PAGE_TOKEN=$(echo "$RESP" | jq -r '.nextPageToken // empty')
-  [ -z "$PAGE_TOKEN" ] && break
-done
-```
-
 ## Write recipes
 
-These all need the broader `drive` scope. If the user only granted
-`drive.readonly` you'll get `403 insufficientPermissions` — surface
-that and suggest re-installing with the read+write box checked.
+These only work for files and folders available through `drive.file`.
+If Google returns `403 insufficientPermissions`, surface the error and
+ask the user to select/share the target file with the app.
 **Always echo the target name + path back to the user before
 trashing or bulk-moving anything.**
 
@@ -365,39 +300,14 @@ Prefer `trashed:true` over `DELETE` — `DELETE` is permanent and the
 user can't undo it. Only use `DELETE` when they explicitly say
 "permanently delete".
 
-### Bulk "move every PDF in the root to /Documents/PDF" (confirmation pattern)
-
-```sh
-# 1. List candidates and show the user before doing anything
-DST_FOLDER_ID='1XYZdocsPdfFolder'
-ROOT_ID='root'
-
-CANDS=$(curl -sS -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-  --get "https://www.googleapis.com/drive/v3/files" \
-  --data-urlencode "q='$ROOT_ID' in parents and mimeType='application/pdf' and trashed=false" \
-  --data-urlencode 'fields=files(id,name,webViewLink)' \
-  | jq '.files')
-echo "$CANDS" | jq -r '.[] | "- \(.name)"'
-
-# 2. (after user confirms) actually move
-echo "$CANDS" | jq -r '.[] | .id' | while read FID; do
-  curl -sS -X PATCH -H "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" \
-    --data '' \
-    "https://www.googleapis.com/drive/v3/files/$FID?addParents=$DST_FOLDER_ID&removeParents=$ROOT_ID&fields=id,name,parents" \
-    | jq -c '{id, name, parents}'
-done
-```
-
 ## Common error codes
 
 | HTTP | meaning | what to tell the user |
 |---|---|---|
 | `401 UNAUTHENTICATED` | token expired / revoked | "Reconnect the Google Drive connector on the Connections page." |
-| `403 insufficientPermissions` | write scope missing | "This action needs the Drive read+write scope, but only `drive.readonly` was granted at install. Re-install the connector and check the read+write box." |
+| `403 insufficientPermissions` | target not shared with app / broader Drive scope disabled | "This file isn't available to the app under the current `drive.file` permission. Select or share the exact file with the Google Drive connector, then try again." |
 | `403 userRateLimitExceeded` | quota | retry once after 5–10s; if it persists, tell the user. |
-| `404 notFound` | wrong file id OR file isn't visible to this account | double-check the id; if shared, use `sharedWithMe` query above. |
+| `404 notFound` | wrong file id OR file isn't visible to this app | double-check the id; ask the user to select or share the file with the connector. |
 | `400 invalidQuery` | malformed `q` | print the `q` you sent + the error message back to the user. |
-
-Never log or echo `$GOOGLE_DRIVE_TOKEN` — treat it as a secret.
 
 Never log or echo `$GOOGLE_DRIVE_TOKEN` — treat it as a secret.
