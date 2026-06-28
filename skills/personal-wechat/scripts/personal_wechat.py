@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -15,6 +16,7 @@ import urllib.request
 BASE_URL = os.environ.get("PERSONALWECHAT_BASE_URL", "").rstrip("/")
 API_TOKEN = os.environ.get("PERSONALWECHAT_API_TOKEN", "")
 MAX_TEXT_CHARS = 800
+SKILL_SLUGS = {"personal-wechat", "acedatacloud/personal-wechat"}
 
 
 def _die(message: str, code: int = 1) -> None:
@@ -24,6 +26,34 @@ def _die(message: str, code: int = 1) -> None:
 
 def _json(data) -> None:
     print(json.dumps(data, ensure_ascii=False, default=str))
+
+
+def unattended_confirm_allowed() -> tuple[bool, str]:
+    if os.environ.get("AICHAT_UNATTENDED_MODE") != "true":
+        return False, "not running in AceDataCloud unattended scheduled-task mode"
+
+    active_skill = os.environ.get("AICHAT_ACTIVE_SKILL", "")
+    if active_skill not in SKILL_SLUGS:
+        return False, f"active skill {active_skill or '<empty>'!r} is not personal-wechat"
+
+    raw_allowed = os.environ.get("AICHAT_UNATTENDED_ALLOWED_SKILLS", "[]")
+    try:
+        allowed = json.loads(raw_allowed)
+    except json.JSONDecodeError:
+        return False, "AICHAT_UNATTENDED_ALLOWED_SKILLS is not valid JSON"
+    if not isinstance(allowed, list) or active_skill not in allowed:
+        return False, f"skill {active_skill!r} is not pre-authorized for unattended confirmation"
+
+    expires_raw = os.environ.get("AICHAT_UNATTENDED_EXPIRES_AT", "")
+    if expires_raw:
+      try:
+          expires_at = int(expires_raw)
+      except ValueError:
+          return False, "AICHAT_UNATTENDED_EXPIRES_AT is invalid"
+      if expires_at < int(time.time()):
+          return False, "unattended authorization has expired"
+
+    return True, "ok"
 
 
 def request(method: str, path: str, *, params: dict | None = None, body: dict | None = None):
@@ -127,6 +157,7 @@ def main() -> None:
     send.add_argument("target")
     send.add_argument("text")
     send.add_argument("--confirm", action="store_true")
+    send.add_argument("--unattended-confirm", action="store_true")
 
     refresh = sub.add_parser("refresh-history")
     refresh.set_defaults(cmd="refresh-history")
@@ -166,8 +197,13 @@ def main() -> None:
     elif args.cmd == "search":
         _json(request("POST", "/api/search", body={"query": args.query}))
     elif args.cmd == "send":
-        if not args.confirm:
-            _json({"dry_run": True, "target": args.target, "text": args.text, "note": "Re-run with --confirm only after the user explicitly approves sending this exact message."})
+        if args.unattended_confirm:
+            allowed, reason = unattended_confirm_allowed()
+            if not allowed:
+                _json({"dry_run": True, "target": args.target, "text": args.text, "error": "unattended_confirmation_denied", "reason": reason})
+                return
+        elif not args.confirm:
+            _json({"dry_run": True, "target": args.target, "text": args.text, "note": "Re-run with --confirm after explicit user approval, or --unattended-confirm when this Skill is pre-authorized for an AceDataCloud scheduled task."})
             return
         _json(request("POST", "/api/messages/send", body={"target": args.target, "type": "text", "text": args.text}))
     elif args.cmd == "refresh-history":
