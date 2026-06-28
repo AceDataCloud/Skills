@@ -18,6 +18,7 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | nano-banana-image | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
+| acedatacloud-platform | `pip install mcp-acedata-platform` | `https://platform.mcp.acedata.cloud/mcp` |
 
 ## Configuration Example
 
