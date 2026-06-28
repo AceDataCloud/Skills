@@ -201,3 +201,52 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+| `max_turns` | integer | Limit how many tool-using self-turns the model may take |
+| `async` | boolean | Return immediately with a queued task instead of waiting for the full answer |
+| `callback_url` | string | Optional HTTP/HTTPS webhook for async completion notifications |
+| `allowed_skills` | array of strings | Skill slugs pre-authorized for unattended execution in this request |
+| `allowed_mcp_servers` | array of strings | MCP server slugs pre-authorized for unattended execution in this request |
+| `unattended_policy` | object | Fine-grained unattended policy: `mode`, `allowed_skills`, `allowed_mcp_servers`, `expires_at` |
+
+### Async execution + unattended authorization
+
+Use async mode when the conversation may run in the background (alerts, CI/CD, monitoring, scheduled jobs):
+
+```json
+POST /aichat2/conversations
+{
+  "model": "gpt-5.5",
+  "question": "My service is down. Notify the ops group and summarize the likely cause.",
+  "async": true,
+  "callback_url": "https://example.com/aichat-callback"
+}
+```
+
+This returns a queued `task_id` / conversation `id` immediately. To fetch the final result later, call the **same endpoint** with `{"action":"retrieve","id":"<conversation_id>"}`.
+
+`callback_url` must be `http` or `https`, and cannot point directly to `localhost` or a private IP literal.
+
+If the request may need side-effecting Skills or MCP Servers in unattended mode, pre-authorize them explicitly:
+
+```json
+{
+  "model": "gpt-5.5",
+  "question": "Post the incident summary to personal WeChat.",
+  "async": true,
+  "allowed_skills": ["acedatacloud/personal-wechat"],
+  "allowed_mcp_servers": []
+}
+```
+
+For finer control, use `unattended_policy` instead of the top-level lists:
+
+```json
+{
+  "unattended_policy": {
+    "mode": "allow_selected",
+    "allowed_skills": ["acedatacloud/personal-wechat"],
+    "allowed_mcp_servers": [],
+    "expires_at": 1790000000
+  }
+}
+```

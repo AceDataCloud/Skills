@@ -26,6 +26,7 @@
         "./skills/veo-video",
         "./skills/kling-video",
         "./skills/hailuo-video",
+        "./skills/grok-video",
         "./skills/seedance-video",
         "./skills/wan-video"
       ]

@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Supports the default `gpt-image-2` model plus explicit `:reverse` and `:official` variants. Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -42,6 +42,12 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
 
 Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `data[0].url`.
 
+## Model variants
+
+- `gpt-image-2` — default route; currently equivalent to the reverse pipeline.
+- `gpt-image-2:reverse` — explicit reverse route; same behavior and pricing as the default `gpt-image-2`.
+- `gpt-image-2:official` — official relay route. Supports `n > 1` and true 2K / 4K output, but charges **per returned image** at **2×** the default `gpt-image-2` price. If that route is unavailable, the API returns an error instead of falling back to reverse.
+
 ## Sizes
 
 `size` is `WxH` (a preset) or `"auto"`. Common presets:
@@ -61,4 +67,5 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 - For **character/scene consistency** across video beats, generate one hero image, then
   `edits` it per beat instead of regenerating from scratch.
 - Text in images renders legibly — good for titles/labels you don't want to overlay in HTML.
+- Default / reverse routing typically uses `n=1`; use `gpt-image-2:official` if you need `n > 1`.
 - Both endpoints are synchronous; no `/tasks` polling.

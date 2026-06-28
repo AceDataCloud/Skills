@@ -1,6 +1,6 @@
 ---
 name: seedance-video
-description: Generate AI dance and motion videos with Seedance (ByteDance) via AceDataCloud API. Use when creating videos from text prompts or animating images into motion videos. Supports multiple models with configurable resolution, aspect ratio, duration, and optional audio generation.
+description: Generate AI dance and motion videos with Seedance (ByteDance) via AceDataCloud API. Use when creating videos from text prompts, animating images into motion videos, or guiding Seedance 2.0 with human/character, audio, and video references. Supports multiple models with configurable resolution, aspect ratio, duration, and optional audio generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -42,6 +42,9 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 | `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | Latest model, highest quality, audio support |
 | `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
 | `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
+| `doubao-seedance-2-0-260128` | Multi-modal Video | Seedance 2.0 standard — supports character, audio, and video references; up to 4k |
+| `doubao-seedance-2-0-fast-260128` | Multi-modal Video | Seedance 2.0 fast — identity/reference workflows with quicker turnaround |
+| `doubao-seedance-2-0-mini-260615` | Multi-modal Video | Seedance 2.0 lightweight — faster, lower-cost reference generation |
 
 ## Workflows
 
@@ -86,7 +89,11 @@ POST /seedance/videos
 Image roles:
 - `first_frame` — image is used as the opening frame
 - `last_frame` — image is used as the closing frame
-- `reference_image` — image is used as a style/content reference
+- `reference_image` — Seedance 2.0 human / character / subject reference
+
+Seedance 2.0 also accepts:
+- `{"type": "audio_url", "role": "reference_audio", "audio_url": {"url": "https://example.com/ref.mp3"}}`
+- `{"type": "video_url", "role": "reference_video", "video_url": {"url": "https://example.com/ref.mp4"}}`
 
 ### 3. First-frame + Last-frame
 
@@ -104,16 +111,40 @@ POST /seedance/videos
 }
 ```
 
+### 4. Character / identity reference (Seedance 2.0)
+
+Use `reference_image` to keep the same person or character across a new scene or motion:
+
+```json
+POST /seedance/videos
+{
+  "model": "doubao-seedance-2-0-fast-260128",
+  "content": [
+    {"type": "text", "text": "the same person smiles and waves at the camera in soft studio light"},
+    {
+      "type": "image_url",
+      "role": "reference_image",
+      "image_url": {"url": "https://example.com/person.jpg"}
+    }
+  ],
+  "resolution": "720p",
+  "ratio": "9:16",
+  "duration": 5
+}
+```
+
+`reference_image` is only for Seedance 2.0 models. It cannot be combined with `first_frame` or `last_frame` in the same request.
+
 ## Parameters
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | see Models table | Model to use (required) |
-| `content` | array | Input items: text and/or image_url objects (required) |
-| `resolution` | `"480p"`, `"720p"`, `"1080p"` | Output resolution (default: 720p for pro, 480p for lite) |
+| `content` | array | Input items: `text`, `image_url`, `audio_url`, and `video_url` objects (required) |
+| `resolution` | `"480p"`, `"720p"`, `"1080p"`, `"4k"` | Output resolution (`4k` is only available on `doubao-seedance-2-0-260128`; `2-0-fast` / `2-0-mini` top out at `720p`) |
 | `ratio` | `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"21:9"`, `"adaptive"` | Aspect ratio (default: 16:9) |
-| `duration` | `2` – `12` | Duration in seconds |
-| `frames` | 29–289 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
+| `duration` | `2` – `15` | Duration in seconds (`1.x` models top out at 12; `2.0` models allow up to 15) |
+| `frames` | 29–361 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
 | `generate_audio` | `true` / `false` | Generate audio (only supported by `doubao-seedance-1-5-pro-251215`) |
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
@@ -136,13 +167,14 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 
 - Model names use the `doubao-*` convention (e.g. `doubao-seedance-1-0-pro-250528`) — old short names like `seedance-1.0` are not valid
 - The `content` array replaces the old `prompt` + `image_url` fields; always use `content`
-- Image and text scenarios are mutually exclusive per content item — each item has either `text` or `image_url`, not both
-- `first_frame`, `last_frame`, and `reference_image` roles are mutually exclusive scenarios — pick one pattern per request
+- Each content item should contain only one content type: `text`, `image_url`, `audio_url`, or `video_url`
+- `reference_image` is only supported on Seedance 2.0 models, and cannot be mixed with `first_frame` / `last_frame`
+- `reference_audio` and `reference_video` are Seedance 2.0-only roles
 - `generate_audio: true` is only supported by `doubao-seedance-1-5-pro-251215`; other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
-- Resolution options are `480p`, `720p`, `1080p` — there is no 360p or 540p
+- `4k` output is only available on `doubao-seedance-2-0-260128`; `2-0-fast` / `2-0-mini` max out at `720p`
 - `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
-- Duration range is **2–12 seconds** — values outside this range will fail
+- Duration range is **2–15 seconds** overall, but `1.x` models are still effectively capped at **12 seconds**
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

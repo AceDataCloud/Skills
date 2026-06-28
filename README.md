@@ -39,6 +39,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
+| [grok-video](skills/grok-video/) | Generate videos with Grok Imagine (xAI) |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 
 ### AI Chat & Tools
