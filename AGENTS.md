@@ -31,7 +31,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs
 - **onepage-pdf** — Convert an HTML page into one tall single-page PDF (local; no API token; needs Python + pymupdf + Chrome/Edge)
-- **acedatacloud-api** — API usage guide — authentication, SDKs, error handling
+- **acedatacloud** — Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements
 
 ## Authentication
 

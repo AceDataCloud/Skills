@@ -1,19 +1,19 @@
 ---
-name: acedatacloud-platform
+name: acedatacloud
 description: |
-  Manage your AceDataCloud platform account through the management API
+  Manage your AceDataCloud account through the management API
   (platform.acedata.cloud). Use when the user wants to check their balance /
   remaining credits, look up API call (usage) records and spend, list or create
   or delete API keys (credentials), list subscribed services, list/create/pay
   recharge orders, manage platform tokens, list available models, or (admins)
   publish an announcement. This is the self-service "console" API — distinct
-  from the data-generation APIs (image/video/music/search) covered by
-  acedatacloud-api.
+  from the data-generation APIs (image/video/music/search).
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_PLATFORM_TOKEN (a platform or user token) in .env. Optionally pair with mcp-platform for tool-use.
+connections: [acedatacloud]
+compatibility: Requires ACEDATACLOUD_PLATFORM_TOKEN (a platform or user token). Auto-injected when the AceDataCloud connector is installed; otherwise set it in .env. Optionally pair with mcp-acedatacloud for tool-use.
 ---
 
 # AceDataCloud Platform Management
@@ -23,7 +23,7 @@ keys, services, orders, platform tokens, models, and announcements.
 
 This is the **management / console** API at `https://platform.acedata.cloud/api/v1`
 — the same surface the web console uses. It is **different** from the
-data-generation API (`api.acedata.cloud`, see [acedatacloud-api](../acedatacloud-api/SKILL.md)).
+data-generation API at `api.acedata.cloud` (image / video / music / search generation).
 
 ## Setup — use a PLATFORM token, not a service token
 
@@ -32,7 +32,12 @@ user token), **not** the per-service API token used for `api.acedata.cloud`.
 
 1. Create one at [platform.acedata.cloud/console/platform-tokens](https://platform.acedata.cloud/console/platform-tokens)
    (or `POST /api/v1/platform-tokens/`). It starts with `platform-` and never expires.
-2. Put it in `.env`:
+2. Provide it one of two ways:
+   - **Connector (recommended in studio / chat):** install the **AceDataCloud**
+     connector at [auth.acedata.cloud/user/connections](https://auth.acedata.cloud/user/connections)
+     and paste the token once — the runtime injects `ACEDATACLOUD_PLATFORM_TOKEN`
+     into the sandbox automatically (this skill declares `connections: [acedatacloud]`).
+   - **Local `.env`:**
 
 ```bash
 ACEDATACLOUD_PLATFORM_TOKEN=platform-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -48,11 +53,11 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 
 ## CLI (preferred)
 
-The skill ships [`scripts/platform.py`](scripts/platform.py) — a self-contained
+The skill ships [`scripts/acedatacloud.py`](scripts/acedatacloud.py) — a self-contained
 CLI (stdlib only) for the most common operations.
 
 ```bash
-ADC=$SKILL_DIR/scripts/platform.py
+ADC=$SKILL_DIR/scripts/acedatacloud.py
 
 # Read
 python3 $ADC balance                         # remaining credits per subscription
@@ -236,4 +241,4 @@ publishing announcements are **irreversible or money-related**. Always:
 - Announcement endpoints under `/admin/` require a **superuser** token; a normal
   token gets `403`.
 
-> **MCP:** `pip install mcp-platform` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`platform_get_balance`, `platform_list_usage`, `platform_create_credential`, `platform_create_announcement`, …) with the same write-confirmation guard.
+> **MCP:** `pip install mcp-acedatacloud` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`platform_get_balance`, `platform_list_usage`, `platform_create_credential`, `platform_create_announcement`, …) with the same write-confirmation guard.

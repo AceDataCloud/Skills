@@ -41,8 +41,7 @@
         "./skills/face-transform",
         "./skills/short-url",
         "./skills/onepage-pdf",
-        "./skills/acedatacloud-api",
-        "./skills/acedatacloud-platform"
+        "./skills/acedatacloud"
       ]
     }
   ]

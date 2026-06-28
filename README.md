@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills (29)
 
 ### AI Music & Audio
 
@@ -50,8 +50,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
-| [acedatacloud-api](skills/acedatacloud-api/) | API usage guide — authentication, SDKs, error handling |
-| [acedatacloud-platform](skills/acedatacloud-platform/) | Manage your account — balance, usage/spend, API keys, services, orders, announcements |
+| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements |
 
 ### Connectors
 
@@ -208,7 +207,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
-| acedatacloud-platform | [mcp-acedata-platform](https://pypi.org/project/mcp-acedata-platform/) | `pip install mcp-acedata-platform` | `https://platform.mcp.acedata.cloud/mcp` |
+| acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://acedatacloud.mcp.acedata.cloud/mcp` |
 
 **Using hosted MCP endpoints** (no local install needed):
 
