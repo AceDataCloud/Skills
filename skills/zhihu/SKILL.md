@@ -12,7 +12,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
 # zhihu — read & publish on Zhihu via your own cookies
@@ -71,7 +71,7 @@ never silently go live. Always show the dry-run to the user, get an explicit
 "yes", then re-run with `--confirm` last.
 
 ```sh
-# Content is HTML. For Markdown, convert to HTML first.
+# Content is HTML. For Markdown, convert to HTML first (e.g. `pandoc -f gfm -t html`).
 python3 $BLOG publish --title "标题" --content-file article.html               # dry-run
 python3 $BLOG publish --title "标题" --content-file article.html --draft-only --confirm  # save a private draft
 python3 $BLOG publish --title "标题" --content-file article.html --confirm     # PUBLIC, goes live
@@ -80,8 +80,13 @@ python3 $BLOG publish --title "标题" --content-file article.html --confirm    
 - `--draft-only` stops after saving a private draft (safe — nothing public).
 - Without `--draft-only`, the article is **published publicly** under the user's
   name. Default to `--draft-only` unless the user clearly asked to go live.
-- Images: only image URLs already reachable on the public web are kept as-is;
-  this CLI does not re-upload local images to Zhihu's CDN.
+- **Images are auto-hosted.** Zhihu strips any `<img>` whose `src` is not on its
+  own CDN, so on `--confirm` the CLI re-uploads every external image (HTML
+  `<img src>` **and** Markdown `![](url)`, plus `data:` URIs) to Zhihu's image
+  service and rewrites the URLs first — images already on `*.zhimg.com` are left
+  untouched. The result reports `images: {found, rehosted, failed}`; the dry-run
+  reports `images_found`. Pass `--no-images` to skip this. So you can hand the
+  CLI HTML/Markdown with normal public image URLs and the pictures survive.
 
 ## Gotchas — surface before the user is surprised
 

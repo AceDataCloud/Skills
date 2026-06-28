@@ -24,13 +24,19 @@ Quick examples:
 from __future__ import annotations
 
 import argparse
+import base64
 import gzip
+import hashlib
+import hmac
 import json
 import os
+import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from email.utils import formatdate
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -239,6 +245,201 @@ def cmd_article(jar, args):
     out(res)
 
 
+# ── Image re-hosting ────────────────────────────────────────
+#
+# Zhihu silently drops any <img> whose src is not on its own CDN, so external
+# images must be re-hosted first. Primary path: hand Zhihu the remote URL and
+# let it fetch (uploaded_images). Fallback: download the bytes and PUT them to
+# Zhihu's Aliyun-OSS bucket with an HMAC-SHA1-signed request. Ported from
+# PlatformPublisher app/publisher/zhihu.py (proven in production).
+
+ZH_UPLOADED_IMAGES = "https://zhuanlan.zhihu.com/api/uploaded_images"
+ZH_IMAGES = "https://api.zhihu.com/images"
+OSS_ENDPOINT = "https://zhihu-pics-upload.zhimg.com"
+OSS_BUCKET = "zhihu-pics"
+_ZHIMG = "zhimg.com"  # a src already on Zhihu's CDN needs no re-upload
+_IMG_SRC_RE = re.compile(r'(<img[^>]*?\ssrc=["\'])([^"\']+)(["\'])', re.IGNORECASE)
+_MD_IMG_RE = re.compile(r'(!\[[^\]]*\]\()(\s*<?)([^)\s>]+)(>?\s*\))')
+
+
+def _raw(method, url, jar, *, headers=None, data=None, timeout=60):
+    """Low-level request returning (status, raw_bytes); handles gzip + binary."""
+    hdrs = {"User-Agent": UA, "Cookie": cookie_header(jar, url)}
+    if headers:
+        hdrs.update(headers)
+    req = urllib.request.Request(url, data=data, headers=hdrs, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read()
+            if resp.headers.get("Content-Encoding") == "gzip":
+                raw = gzip.decompress(raw)
+            return resp.status, raw
+    except urllib.error.HTTPError as e:
+        raw = e.read()
+        try:
+            if e.headers.get("Content-Encoding") == "gzip":
+                raw = gzip.decompress(raw)
+        except Exception:
+            pass
+        return e.code, raw
+    except urllib.error.URLError:
+        return 0, b""
+
+
+def _img_content_type(data: bytes) -> str:
+    if data[:8].startswith(b"\x89PNG"):
+        return "image/png"
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return "application/octet-stream"
+
+
+def _upload_image_url(jar, src: str):
+    """Primary path: Zhihu fetches the remote URL server-side and hosts it."""
+    body = urllib.parse.urlencode({"url": src, "source": "article"}).encode("utf-8")
+    status, raw = _raw(
+        "POST", ZH_UPLOADED_IMAGES, jar,
+        headers={"x-requested-with": "fetch", "Content-Type": "application/x-www-form-urlencoded"},
+        data=body,
+    )
+    if status and status < 400:
+        try:
+            d = json.loads(raw.decode("utf-8", "replace"))
+        except json.JSONDecodeError:
+            return None
+        if isinstance(d, dict) and d.get("src"):
+            return d["src"]
+    return None
+
+
+def _oss_put(object_key: str, data: bytes, token: dict) -> bool:
+    access_id = token.get("access_id", "")
+    access_key = token.get("access_key", "")
+    access_token = token.get("access_token", "")
+    if not (access_id and access_key and object_key):
+        return False
+    ctype = _img_content_type(data)
+    oss_date = formatdate(usegmt=True)
+    oss_ua = "aliyun-sdk-js/6.8.0"
+    oss_headers = {
+        "x-oss-date": oss_date,
+        "x-oss-security-token": access_token,
+        "x-oss-user-agent": oss_ua,
+    }
+    canon = "\n".join(f"{k}:{oss_headers[k]}" for k in sorted(oss_headers))
+    string_to_sign = f"PUT\n\n{ctype}\n{oss_date}\n{canon}\n/{OSS_BUCKET}/{object_key}"
+    sig = base64.b64encode(
+        hmac.new(access_key.encode("utf-8"), string_to_sign.encode("utf-8"), hashlib.sha1).digest()
+    ).decode("utf-8")
+    status, _ = _raw(
+        "PUT", f"{OSS_ENDPOINT}/{object_key}", [],
+        headers={
+            "Content-Type": ctype,
+            "Authorization": f"OSS {access_id}:{sig}",
+            "x-oss-date": oss_date,
+            "x-oss-security-token": access_token,
+            "x-oss-user-agent": oss_ua,
+        },
+        data=data,
+    )
+    return bool(status) and status < 400
+
+
+def _wait_image_ready(jar, image_id: str) -> str:
+    for _ in range(10):
+        status, raw = _raw("GET", f"https://api.zhihu.com/images/{image_id}", jar, headers=ZH_FETCH)
+        try:
+            d = json.loads(raw.decode("utf-8", "replace"))
+        except json.JSONDecodeError:
+            d = {}
+        if d.get("status") == "completed" or d.get("original_hash"):
+            return d.get("original_hash", "")
+        time.sleep(1.0)
+    return ""
+
+
+def _upload_image_binary(jar, data: bytes):
+    """Fallback: MD5 -> request OSS token -> (dedup or) signed PUT to OSS."""
+    image_hash = hashlib.md5(data).hexdigest()
+    status, raw = _raw(
+        "POST", ZH_IMAGES, jar,
+        headers={"x-requested-with": "fetch", "Content-Type": "application/json"},
+        data=json.dumps({"image_hash": image_hash, "source": "article"}).encode("utf-8"),
+    )
+    if not status or status >= 400:
+        return None
+    try:
+        token_data = json.loads(raw.decode("utf-8", "replace"))
+    except json.JSONDecodeError:
+        return None
+    upload_file = token_data.get("upload_file") or {}
+    upload_token = token_data.get("upload_token") or {}
+    if upload_file.get("state") == 1:  # already on Zhihu — just resolve its hash
+        object_key = _wait_image_ready(jar, upload_file.get("image_id", ""))
+        return f"https://pic4.zhimg.com/{object_key}" if object_key else None
+    object_key = upload_file.get("object_key", "")
+    if not object_key or not _oss_put(object_key, data, upload_token):
+        return None
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        object_key += ".gif"
+    return f"https://pic4.zhimg.com/{object_key}"
+
+
+def _download_image(src: str):
+    # Route through _raw so a gzip-encoded response is decompressed (otherwise we
+    # would upload gzipped bytes and Zhihu would reject/garble the image). jar=[]
+    # so no cookie is ever sent to a third-party image host.
+    status, raw = _raw("GET", src, [], headers={"User-Agent": UA}, timeout=30)
+    return raw if status and status < 400 and raw else None
+
+
+def count_images(content: str) -> int:
+    srcs = {m.group(2) for m in _IMG_SRC_RE.finditer(content or "")}
+    srcs |= {m.group(3) for m in _MD_IMG_RE.finditer(content or "")}
+    return sum(1 for s in srcs if _ZHIMG not in s)
+
+
+def rehost_images(jar, content: str):
+    """Replace every non-Zhihu image URL (HTML <img> + markdown ![]()) with a
+    Zhihu-CDN URL. Returns (new_content, stats)."""
+    cache: dict = {}
+    stats = {"found": 0, "rehosted": 0, "failed": 0}
+
+    def resolve(src: str) -> str:
+        if not src or _ZHIMG in src:
+            return src
+        if src in cache:
+            return cache[src]
+        stats["found"] += 1
+        new = None
+        if src.startswith("data:"):
+            try:
+                new = _upload_image_binary(jar, base64.b64decode(src.split(",", 1)[1]))
+            except Exception:
+                new = None
+        else:
+            new = _upload_image_url(jar, src)
+            if not new:
+                data = _download_image(src)
+                if data:
+                    new = _upload_image_binary(jar, data)
+        if new:
+            stats["rehosted"] += 1
+            cache[src] = new
+            return new
+        stats["failed"] += 1
+        cache[src] = src  # leave as-is; don't corrupt the doc if upload fails
+        return src
+
+    content = _IMG_SRC_RE.sub(lambda m: m.group(1) + resolve(m.group(2)) + m.group(3), content or "")
+    content = _MD_IMG_RE.sub(lambda m: m.group(1) + m.group(2) + resolve(m.group(3)) + m.group(4), content)
+    return content, stats
+
+
 def cmd_publish(jar, args):
     if not args.title:
         die("--title is required")
@@ -260,6 +461,7 @@ def cmd_publish(jar, args):
             "title": args.title,
             "draft_only": args.draft_only,
             "content_bytes": len(content or ""),
+            "images_found": count_images(content or ""),
             "note": "re-run with --confirm as the LAST argument to actually write. "
                     "Without --draft-only this publishes a PUBLIC article on the user's real account.",
         })
@@ -278,7 +480,12 @@ def cmd_publish(jar, args):
     if not draft_id:
         die(f"create-draft failed ({status}): {str(created)[:300]}")
 
-    # 2. set draft content
+    # 2. re-host external images to Zhihu's CDN (Zhihu strips foreign <img>)
+    image_stats = {"found": 0, "rehosted": 0, "failed": 0}
+    if not args.no_images:
+        content, image_stats = rehost_images(jar, content)
+
+    # 3. set draft content
     status, text = request(
         "PATCH", f"https://zhuanlan.zhihu.com/api/articles/{draft_id}/draft", jar,
         headers=ZH_FETCH, body={"title": args.title, "content": content},
@@ -291,11 +498,12 @@ def cmd_publish(jar, args):
             "ok": True,
             "draft_only": True,
             "draft_id": str(draft_id),
+            "images": image_stats,
             "edit_url": f"https://zhuanlan.zhihu.com/write?draftId={draft_id}",
         })
         return
 
-    # 3. publish (go live)
+    # 4. publish (go live)
     status, text = request(
         "PUT", f"https://zhuanlan.zhihu.com/api/articles/{draft_id}/publish", jar,
         headers=ZH_FETCH, body={},
@@ -306,6 +514,7 @@ def cmd_publish(jar, args):
         "ok": True,
         "published": True,
         "article_id": str(draft_id),
+        "images": image_stats,
         "url": f"https://zhuanlan.zhihu.com/p/{draft_id}",
     })
 
@@ -339,6 +548,8 @@ def main() -> None:
     sp.add_argument("--content-file", help="path to an HTML file")
     sp.add_argument("--draft-only", action="store_true",
                     help="create a draft only; do NOT go public")
+    sp.add_argument("--no-images", action="store_true",
+                    help="skip re-hosting external images to Zhihu's CDN")
 
     args = p.parse_args(ARGV)
     jar = load_cookies(args.platform)
