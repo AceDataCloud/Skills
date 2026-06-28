@@ -1,13 +1,14 @@
 ---
 name: acedatacloud
 description: |
-  Manage your AceDataCloud account through the management API
-  (platform.acedata.cloud). Use when the user wants to check their balance /
-  remaining credits, look up API call (usage) records and spend, list or create
-  or delete API keys (credentials), list subscribed services, list/create/pay
-  recharge orders, manage platform tokens, list available models, or (admins)
-  publish an announcement. This is the self-service "console" API — distinct
-  from the data-generation APIs (image/video/music/search).
+  Browse the AceDataCloud catalog & docs (services, APIs, OpenAPI specs, pricing,
+  models, documentation — no token) and manage your account (balance, usage/spend,
+  API keys, services, orders, platform tokens, referral earnings, announcements —
+  with a platform token) through the management API (platform.acedata.cloud). Use
+  when the user asks about AceDataCloud services / APIs / pricing / docs / models,
+  or wants to check their balance, usage, keys, orders, or referral earnings. This
+  is the self-service "console" + catalog API — distinct from the data-generation
+  APIs (image/video/music/search).
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -59,15 +60,25 @@ CLI (stdlib only) for the most common operations.
 ```bash
 ADC=$SKILL_DIR/scripts/acedatacloud.py
 
-# Read
-python3 $ADC balance                         # remaining credits per subscription
-python3 $ADC services --search suno          # list/search subscribed services
-python3 $ADC usage --days 7                   # recent API call records
-python3 $ADC usage-summary --days 30          # spend aggregated by day + API
-python3 $ADC keys                             # list API keys (credentials)
-python3 $ADC orders --state Finished          # recharge orders
-python3 $ADC tokens                           # platform tokens
+# Catalog & docs — PUBLIC, no token required
+python3 $ADC services --search suno           # list/search the service catalog
+python3 $ADC service suno                     # one service: its APIs + pricing
+python3 $ADC apis --service suno              # public API endpoints
+python3 $ADC spec --path /suno/audios         # OpenAPI spec for an API
+python3 $ADC pricing --service suno           # display pricing (unit/free/cost)
+python3 $ADC docs-search "suno music api"     # search the documentation
+python3 $ADC docs-list --type Api             # browse doc pages
+python3 $ADC doc suno-audios                  # read a doc page
 python3 $ADC models                           # available chat models
+
+# Account — need a platform token
+python3 $ADC balance                          # remaining credits per subscription
+python3 $ADC usage --days 7                    # recent API call records
+python3 $ADC usage-summary --days 30           # spend aggregated by API
+python3 $ADC keys                              # list API keys (credentials)
+python3 $ADC orders --state Finished           # recharge orders
+python3 $ADC tokens                            # platform tokens
+python3 $ADC distributions                     # referral status + commissions
 
 # Safe write (require --yes to actually execute)
 python3 $ADC create-key  --application <app-id> --name "ci" --yes
@@ -81,6 +92,9 @@ python3 $ADC delete-token --id <token-id> --yes
 python3 $ADC send-announcement --title "..." --content "..." --yes
 ```
 
+The **catalog & docs** commands (`services`, `service`, `apis`, `spec`, `pricing`,
+`docs-search`, `docs-list`, `doc`, `models`) read public endpoints and need **no
+token**. The **account** commands need `ACEDATACLOUD_PLATFORM_TOKEN`.
 Every command accepts `--json` for machine-readable output and `--token` to
 override the env token. Without `--yes`, write commands print a dry-run preview
 and exit without calling the API.
@@ -241,4 +255,4 @@ publishing announcements are **irreversible or money-related**. Always:
 - Announcement endpoints under `/admin/` require a **superuser** token; a normal
   token gets `403`.
 
-> **MCP:** `pip install mcp-acedatacloud` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`platform_get_balance`, `platform_list_usage`, `platform_create_credential`, `platform_create_announcement`, …) with the same write-confirmation guard.
+> **MCP:** `pip install mcp-acedatacloud` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes the same operations as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_create_credential`, `acedatacloud_create_announcement`, plus the public catalog/docs tools `acedatacloud_search_docs`, `acedatacloud_get_service`, …) with the same write-confirmation guard.

@@ -43,7 +43,8 @@ def _token(args: argparse.Namespace) -> str:
 
 
 def _request(args: argparse.Namespace, method: str, path: str,
-             params: dict | None = None, body: dict | None = None) -> tuple[int, object]:
+             params: dict | None = None, body: dict | None = None,
+             auth_required: bool = True, lang: str | None = None) -> tuple[int, object]:
     base = args.base_url.rstrip("/")
     url = f"{base}/api/v1{path}"
     if params:
@@ -51,11 +52,15 @@ def _request(args: argparse.Namespace, method: str, path: str,
         if clean:
             url += "?" + urllib.parse.urlencode(clean, doseq=True)
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(url, data=data, method=method, headers={
-        "accept": "application/json",
-        "authorization": f"Bearer {_token(args)}",
-        "content-type": "application/json",
-    })
+    headers = {"accept": "application/json", "content-type": "application/json"}
+    if lang:
+        headers["accept-language"] = lang
+    token = args.token or os.environ.get("ACEDATACLOUD_PLATFORM_TOKEN", "")
+    if not token and auth_required:
+        token = _token(args)  # dies with a helpful message
+    if token:
+        headers["authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=args.timeout) as resp:
             raw = resp.read().decode("utf-8")
@@ -261,6 +266,116 @@ def cmd_announcements(args):
     _emit(args, payload, rows, ("id", "title", "rank", "publish_at"))
 
 
+# ---- public catalog / docs commands (no token required) ------------------
+
+def cmd_service(args):
+    status, payload = _request(args, "GET", f"/services/{args.service}", auth_required=False)
+    _check_ok(status, payload)
+    if not args.json and isinstance(payload, dict):
+        print(f"# {payload.get('title')} ({payload.get('alias')}) — unit {payload.get('unit')}, "
+              f"free {payload.get('free_amount')}; {len(payload.get('apis') or [])} APIs, "
+              f"{len(payload.get('packages') or [])} packages\n")
+    _emit(args, payload)
+
+
+def cmd_apis(args):
+    status, payload = _request(args, "GET", "/apis/",
+                               {"service": args.service, "stage": ["Beta", "Production"]},
+                               auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", payload) if isinstance(payload, dict) else payload
+    items = [a for a in (items or []) if isinstance(a, dict) and a.get("stage") in ("Beta", "Production")]
+    rows = [(a.get("method"), a.get("path"), (a.get("title") or "")[:36], a.get("stage")) for a in items]
+    _emit(args, {"count": len(items), "items": items}, rows, ("method", "path", "title", "stage"))
+
+
+def cmd_spec(args):
+    if not args.path and not args.service:
+        _die("provide --path (e.g. /suno/audios) or --service")
+    status, payload = _request(args, "GET", "/apis/",
+                               {"service": args.service, "path": args.path,
+                                "stage": ["Beta", "Production"]}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", payload) if isinstance(payload, dict) else payload
+    items = [a for a in (items or []) if isinstance(a, dict) and a.get("stage") in ("Beta", "Production")]
+    if args.path:
+        items = [a for a in items if args.path in (a.get("path"), a.get("path2"))]
+    specs = [{"name": a.get("name"), "path": a.get("path"), "method": a.get("method"),
+              "definition": a.get("definition")} for a in items if a.get("definition")]
+    if not specs:
+        _die("no public API spec matched")
+    print(json.dumps(specs, ensure_ascii=False, indent=2))
+
+
+def cmd_pricing(args):
+    total, items = _get_all_public(args, "/services/")
+    rows = []
+    for s in items:
+        if args.service and s.get("alias") != args.service and str(s.get("id")) != args.service:
+            continue
+        rows.append((s.get("alias"), (s.get("title") or "")[:26], s.get("unit"), s.get("free_amount"), json.dumps(s.get("cost"), ensure_ascii=False)[:40]))
+    _emit(args, {"items": [r for r in items if not args.service or r.get("alias") == args.service]},
+          rows, ("alias", "title", "unit", "free", "cost"))
+
+
+def cmd_docs_search(args):
+    status, payload = _request(args, "GET", "/search/",
+                               {"q": args.query, "lang": args.lang, "limit": args.limit},
+                               auth_required=False)
+    _check_ok(status, payload)
+    results = payload.get("results", payload) if isinstance(payload, dict) else payload
+    rows = [((r.get("title") or r.get("name") or "")[:44], r.get("alias") or r.get("id", "")) for r in (results or []) if isinstance(r, dict)]
+    _emit(args, results, rows, ("title", "alias"))
+
+
+def cmd_docs_list(args):
+    status, payload = _request(args, "GET", "/documents/",
+                               {"private": "false", "limit": args.limit, "offset": args.offset, "type": args.type},
+                               auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", payload) if isinstance(payload, dict) else payload
+    rows = [(d.get("alias"), (d.get("title") or d.get("name") or "")[:42], d.get("type")) for d in (items or []) if isinstance(d, dict)]
+    _emit(args, {"items": items}, rows, ("alias", "title", "type"))
+
+
+def cmd_doc(args):
+    status, payload = _request(args, "GET", f"/documents/{args.ref}", auth_required=False, lang=args.lang)
+    _check_ok(status, payload)
+    if not args.json and isinstance(payload, dict):
+        print(f"# {payload.get('title')} ({payload.get('alias')})\n")
+        print(payload.get("content") or "")
+        return
+    _emit(args, payload)
+
+
+def cmd_distributions(args):
+    s_status, s_payload = _request(args, "GET", "/distribution-statuses/", {"limit": 1})
+    _check_ok(s_status, s_payload)
+    h_status, h_payload = _request(args, "GET", "/distribution-histories/", {"limit": args.limit})
+    _check_ok(h_status, h_payload)
+    s_items = s_payload.get("items", []) if isinstance(s_payload, dict) else []
+    h_items = h_payload.get("items", []) if isinstance(h_payload, dict) else []
+    _emit(args, {"status": s_items[0] if s_items else None, "histories": h_items},
+          [( (it.get("created_at") or "")[:10], it.get("price"), it.get("reward")) for it in h_items],
+          ("date", "price", "reward"))
+
+
+def _get_all_public(args: argparse.Namespace, path: str, page: int = 200, cap: int = 2000) -> tuple[int, list]:
+    out: list = []
+    offset = 0
+    total = 0
+    while len(out) < cap:
+        status, payload = _request(args, "GET", path, {"private": "false", "limit": page, "offset": offset}, auth_required=False)
+        _check_ok(status, payload)
+        items = payload.get("items", []) if isinstance(payload, dict) else []
+        total = payload.get("count", 0) if isinstance(payload, dict) else 0
+        out.extend(items)
+        offset += page
+        if not items or offset >= total:
+            break
+    return total, out
+
+
 # ---- write commands (gated by --yes) -------------------------------------
 
 def _guard(args, action: str, detail: dict) -> bool:
@@ -403,6 +518,37 @@ def build_parser() -> argparse.ArgumentParser:
     add("models", cmd_models, "list available chat models")
 
     sp = add("announcements", cmd_announcements, "list announcements")
+    sp.add_argument("--limit", type=int, default=20)
+
+    # public catalog / docs (no token needed)
+    sp = add("service", cmd_service, "service detail (apis + pricing) [public]")
+    sp.add_argument("service", help="service alias or UUID")
+
+    sp = add("apis", cmd_apis, "list public API endpoints [public]")
+    sp.add_argument("--service", help="filter to one service alias/id")
+
+    sp = add("spec", cmd_spec, "OpenAPI spec for an API [public]")
+    sp.add_argument("--path", help="API path, e.g. /suno/audios")
+    sp.add_argument("--service", help="service alias for all its specs")
+
+    sp = add("pricing", cmd_pricing, "display pricing for services [public]")
+    sp.add_argument("--service", help="filter to one service alias/id")
+
+    sp = add("docs-search", cmd_docs_search, "search the documentation [public]")
+    sp.add_argument("query", help="keywords or a question")
+    sp.add_argument("--lang", default="zh-cn")
+    sp.add_argument("--limit", type=int, default=10)
+
+    sp = add("docs-list", cmd_docs_list, "list documentation pages [public]")
+    sp.add_argument("--limit", type=int, default=20)
+    sp.add_argument("--offset", type=int, default=0)
+    sp.add_argument("--type", help="Api/Proxy/Integration/Dataset/Text")
+
+    sp = add("doc", cmd_doc, "read a documentation page [public]")
+    sp.add_argument("ref", help="doc alias, UUID, or documents/<alias> URL")
+    sp.add_argument("--lang", default="zh-cn")
+
+    sp = add("distributions", cmd_distributions, "referral status + commissions")
     sp.add_argument("--limit", type=int, default=20)
 
     sp = add("create-key", cmd_create_key, "create an API key (needs --yes)")
