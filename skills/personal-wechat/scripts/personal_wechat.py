@@ -93,6 +93,28 @@ def request(method: str, path: str, *, params: dict | None = None, body: dict | 
         _die(f"Cannot reach Wisdom at {BASE_URL}: {reason}", code=3)
 
 
+def wait_task(task_id: str, *, timeout: float = 600.0):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        task = request("GET", f"/api/tasks/{task_id}")
+        status = task.get("status")
+        if status == "succeeded":
+            return task.get("result")
+        if status == "failed":
+            error = task.get("error") or {}
+            _die(f"Task failed: {error.get('message') or error}", code=2)
+        time.sleep(0.35)
+    _die(f"Task {task_id} did not finish within {timeout:g}s", code=2)
+
+
+def request_task(method: str, path: str, *, params: dict | None = None, body: dict | None = None, timeout: float = 600.0):
+    task = request(method, path, params=params, body=body)
+    task_id = task.get("id")
+    if not task_id:
+        return task
+    return wait_task(task_id, timeout=timeout)
+
+
 def compact_conversation(item: dict) -> dict:
     return {
         "id": item.get("id") or item.get("strUsrName"),
@@ -195,7 +217,7 @@ def main() -> None:
         data = request("POST", "/api/messages/history/query", body={"db": args.db, "sql": args.sql})
         _json(data)
     elif args.cmd == "search":
-        _json(request("POST", "/api/search", body={"query": args.query}))
+        _json(request_task("POST", "/api/search", body={"query": args.query}, timeout=120))
     elif args.cmd == "send":
         if args.unattended_confirm:
             allowed, reason = unattended_confirm_allowed()
@@ -205,7 +227,7 @@ def main() -> None:
         elif not args.confirm:
             _json({"dry_run": True, "target": args.target, "text": args.text, "note": "Re-run with --confirm after explicit user approval, or --unattended-confirm when this Skill is pre-authorized for an AceDataCloud scheduled task."})
             return
-        _json(request("POST", "/api/messages/send", body={"target": args.target, "type": "text", "text": args.text}))
+        _json(request_task("POST", "/api/messages/send", body={"target": args.target, "type": "text", "text": args.text}))
     elif args.cmd == "refresh-history":
         _json(request("POST", "/api/messages/history/refresh"))
 

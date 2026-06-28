@@ -27,7 +27,9 @@ Credentials are injected by the `personalwechat` BYOC connector:
 - `PERSONALWECHAT_API_TOKEN` — Wisdom `API_TOKEN`. Secret — never echo, print, or log it.
 
 The helper sends the token as `Authorization: Bearer ...`; it never puts the
-token in the URL.
+token in the URL. For queued UI operations such as search and send, the helper
+submits the task and waits for `/api/tasks/{id}` before printing the final
+result.
 
 This is the user's **real personal WeChat account**. Read operations can run
 directly. Sending messages or files must be dry-run first, then performed only
