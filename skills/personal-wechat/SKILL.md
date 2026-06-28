@@ -135,7 +135,9 @@ Search drives the WeChat UI, so it may be slower than local DB history reads.
 
 ## Sending Messages — GATED
 
-`send` dry-runs by default. It never sends unless `--confirm` is present.
+`send` dry-runs by default. It never sends unless `--confirm` is present, or
+unless an AceDataCloud scheduled task pre-authorized this Skill and you use
+`--unattended-confirm`.
 
 ```bash
 python3 $WX send "Alice" "今晚 8 点开会吗？"
@@ -152,11 +154,32 @@ python3 $WX send "Alice" "今晚 8 点开会吗？" --confirm
 Never add `--confirm` in the first attempt. Never infer consent from vague text.
 The user must clearly approve sending this exact message.
 
+### Scheduled-task unattended confirmation
+
+When running inside an AceDataCloud scheduled task, the platform may pre-authorize
+specific Skills for unattended execution. If all of these are true:
+
+- `AICHAT_UNATTENDED_MODE=true`
+- `AICHAT_ACTIVE_SKILL` is `personal-wechat` or `acedatacloud/personal-wechat`
+- `AICHAT_ACTIVE_SKILL` appears in `AICHAT_UNATTENDED_ALLOWED_SKILLS`
+
+then the user has pre-authorized this Skill for that scheduled task. In that
+case, use:
+
+```bash
+python3 $WX send "Alice" "今晚 8 点开会吗？" --unattended-confirm
+```
+
+If the helper returns `unattended_confirmation_denied`, do not retry with
+`--confirm`; report the dry-run and explain that the task needs this Skill to be
+selected in its unattended authorization settings.
+
 ## Safety Rules
 
 - Never print `PERSONALWECHAT_API_TOKEN`.
 - Treat `PERSONALWECHAT_BASE_URL + API_TOKEN` as full remote control of the user's WeChat.
-- For any write/send operation: dry-run first, ask for explicit approval, then re-run with `--confirm`.
+- For normal chat write/send operations: dry-run first, ask for explicit approval, then re-run with `--confirm`.
+- For scheduled-task unattended writes: use `--unattended-confirm` only when the platform env says this Skill is pre-authorized.
 - Do not call logout/restart endpoints from the skill unless the user explicitly asks to repair the Wisdom service.
 - If Wisdom returns 503 for history, run `python3 $WX refresh-history` once, then retry the read.
 - If the server is unreachable, ask the user to check the Windows host / security group / port 8000.
@@ -176,4 +199,4 @@ The helper wraps these Wisdom endpoints:
 - `POST /api/messages/history/query`
 - `POST /api/messages/history/refresh`
 - `POST /api/search`
-- `POST /api/messages/send` (only after `--confirm`)
+- `POST /api/messages/send` (only after `--confirm` or verified `--unattended-confirm`)
