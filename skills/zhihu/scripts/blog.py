@@ -257,9 +257,29 @@ ZH_UPLOADED_IMAGES = "https://zhuanlan.zhihu.com/api/uploaded_images"
 ZH_IMAGES = "https://api.zhihu.com/images"
 OSS_ENDPOINT = "https://zhihu-pics-upload.zhimg.com"
 OSS_BUCKET = "zhihu-pics"
-_ZHIMG = "zhimg.com"  # a src already on Zhihu's CDN needs no re-upload
+# A src already on Zhihu's own CDN needs no re-upload. uploaded_images hands back
+# a pic-private.zhihu.com URL for draft-scoped images, so skip those too.
+_ZHIMG_HOSTS = ("zhimg.com", "pic-private.zhihu.com")
 _IMG_SRC_RE = re.compile(r'(<img[^>]*?\ssrc=["\'])([^"\']+)(["\'])', re.IGNORECASE)
 _MD_IMG_RE = re.compile(r'(!\[[^\]]*\]\()(\s*<?)([^)\s>]+)(>?\s*\))')
+# uploaded_images returns a DRAFT-SCOPED signed pic-private URL whose auth_key
+# expires; reduce any Zhihu image URL to the durable public form Zhihu serves
+# after publish (picx.zhimg.com/v2-<hash>.<ext>).
+_ZH_IMG_HASH = re.compile(r'(v2-[0-9a-f]+)(?:~[^."?\']*)?\.(png|jpe?g|gif|webp)', re.IGNORECASE)
+
+
+def _on_zhihu_cdn(src: str) -> bool:
+    # Match on the parsed host (not a substring) so an external host that merely
+    # contains "zhimg.com" (e.g. my-zhimg.com) isn't wrongly treated as hosted.
+    host = (urllib.parse.urlsplit(src).hostname or "") if src else ""
+    return any(host == h or host.endswith("." + h) for h in _ZHIMG_HOSTS)
+
+
+def _canonical_zhimg(url):
+    if not url:
+        return url
+    m = _ZH_IMG_HASH.search(url)
+    return f"https://picx.zhimg.com/{m.group(1)}.{m.group(2).lower()}" if m else url
 
 
 def _raw(method, url, jar, *, headers=None, data=None, timeout=60):
@@ -312,7 +332,7 @@ def _upload_image_url(jar, src: str):
         except json.JSONDecodeError:
             return None
         if isinstance(d, dict) and d.get("src"):
-            return d["src"]
+            return _canonical_zhimg(d["src"])
     return None
 
 
@@ -380,13 +400,13 @@ def _upload_image_binary(jar, data: bytes):
     upload_token = token_data.get("upload_token") or {}
     if upload_file.get("state") == 1:  # already on Zhihu — just resolve its hash
         object_key = _wait_image_ready(jar, upload_file.get("image_id", ""))
-        return f"https://pic4.zhimg.com/{object_key}" if object_key else None
+        return _canonical_zhimg(f"https://pic4.zhimg.com/{object_key}") if object_key else None
     object_key = upload_file.get("object_key", "")
     if not object_key or not _oss_put(object_key, data, upload_token):
         return None
     if data[:6] in (b"GIF87a", b"GIF89a"):
         object_key += ".gif"
-    return f"https://pic4.zhimg.com/{object_key}"
+    return _canonical_zhimg(f"https://pic4.zhimg.com/{object_key}")
 
 
 def _download_image(src: str):
@@ -400,7 +420,7 @@ def _download_image(src: str):
 def count_images(content: str) -> int:
     srcs = {m.group(2) for m in _IMG_SRC_RE.finditer(content or "")}
     srcs |= {m.group(3) for m in _MD_IMG_RE.finditer(content or "")}
-    return sum(1 for s in srcs if _ZHIMG not in s)
+    return sum(1 for s in srcs if not _on_zhihu_cdn(s))
 
 
 def rehost_images(jar, content: str):
@@ -410,7 +430,7 @@ def rehost_images(jar, content: str):
     stats = {"found": 0, "rehosted": 0, "failed": 0}
 
     def resolve(src: str) -> str:
-        if not src or _ZHIMG in src:
+        if not src or _on_zhihu_cdn(src):
             return src
         if src in cache:
             return cache[src]
