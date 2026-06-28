@@ -18,6 +18,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -32,18 +33,9 @@ def _die(msg: str, code: int = 1) -> None:
     sys.exit(code)
 
 
-def _token(args: argparse.Namespace) -> str:
-    token = args.token or os.environ.get("ACEDATACLOUD_PLATFORM_TOKEN", "")
-    if not token:
-        _die(
-            "no platform token. Set ACEDATACLOUD_PLATFORM_TOKEN or pass --token.\n"
-            "Create one at https://platform.acedata.cloud/console/platform-tokens"
-        )
-    return token
-
-
 def _request(args: argparse.Namespace, method: str, path: str,
-             params: dict | None = None, body: dict | None = None) -> tuple[int, object]:
+             params: dict | None = None, body: dict | None = None,
+             auth_required: bool = True) -> tuple[int, object]:
     base = args.base_url.rstrip("/")
     url = f"{base}/api/v1{path}"
     if params:
@@ -51,11 +43,16 @@ def _request(args: argparse.Namespace, method: str, path: str,
         if clean:
             url += "?" + urllib.parse.urlencode(clean, doseq=True)
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(url, data=data, method=method, headers={
-        "accept": "application/json",
-        "authorization": f"Bearer {_token(args)}",
-        "content-type": "application/json",
-    })
+    headers = {"accept": "application/json", "content-type": "application/json"}
+    token = args.token or os.environ.get("ACEDATACLOUD_PLATFORM_TOKEN", "")
+    if token:
+        headers["authorization"] = f"Bearer {token}"
+    elif auth_required:
+        _die(
+            "no platform token. Set ACEDATACLOUD_PLATFORM_TOKEN or pass --token.\n"
+            "Create one at https://platform.acedata.cloud/console/platform-tokens"
+        )
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=args.timeout) as resp:
             raw = resp.read().decode("utf-8")
@@ -72,7 +69,7 @@ def _request(args: argparse.Namespace, method: str, path: str,
 
 
 def _get_all(args: argparse.Namespace, path: str, params: dict | None = None,
-             page: int = 200, cap: int = 2000) -> tuple[int, list]:
+             page: int = 200, cap: int = 2000, auth_required: bool = True) -> tuple[int, list]:
     """Fetch every page of a {count, items} list endpoint (capped)."""
     base = dict(params or {})
     out: list = []
@@ -80,7 +77,7 @@ def _get_all(args: argparse.Namespace, path: str, params: dict | None = None,
     total = 0
     while len(out) < cap:
         base.update({"limit": page, "offset": offset})
-        status, payload = _request(args, "GET", path, base)
+        status, payload = _request(args, "GET", path, base, auth_required=auth_required)
         _check_ok(status, payload)
         items = payload.get("items", []) if isinstance(payload, dict) else []
         total = payload.get("count", 0) if isinstance(payload, dict) else 0
@@ -140,6 +137,29 @@ def _since(days: int | None) -> str | None:
     if not days:
         return None
     return (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+_UUID = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
+
+def _resolve_service(args, ref: str) -> dict | None:
+    """Resolve a service by UUID (services/?id=) or alias (paginated match).
+
+    The platform's services/?alias= filter is ignored server-side, so alias
+    lookups page through the catalog and match client-side.
+    """
+    ref = ref.strip()
+    if _UUID.match(ref):
+        status, payload = _request(args, "GET", "/services/", {"id": ref}, auth_required=False)
+        _check_ok(status, payload)
+        items = payload.get("items", []) if isinstance(payload, dict) else []
+        return items[0] if items else None
+    target = ref.lower()
+    _, items = _get_all(args, "/services/", page=50, cap=600, auth_required=False)
+    for it in items:
+        if (it.get("alias") or "").lower() == target:
+            return it
+    return None
 
 
 # ---- read commands -------------------------------------------------------
@@ -259,6 +279,179 @@ def cmd_announcements(args):
     items = payload.get("items", []) if isinstance(payload, dict) else []
     rows = [(it.get("id", "")[:8], (it.get("title") or "")[:40], it.get("rank"), (it.get("publish_at") or "")[:10]) for it in items]
     _emit(args, payload, rows, ("id", "title", "rank", "publish_at"))
+
+
+# ---- catalog & docs commands (public, no token needed) ------------------
+
+def cmd_get_service(args):
+    svc = _resolve_service(args, args.service)
+    if not svc:
+        _die(f"no service matched '{args.service}'", code=2)
+    _emit(args, svc)
+
+
+def cmd_pricing(args):
+    svc = _resolve_service(args, args.service)
+    if not svc:
+        _die(f"no service matched '{args.service}'", code=2)
+    out = {
+        "service_id": svc.get("id"),
+        "alias": svc.get("alias"),
+        "title": svc.get("title"),
+        "type": svc.get("type"),
+        "unit": svc.get("unit"),
+        "free_amount": svc.get("free_amount"),
+        "cost": svc.get("cost"),
+    }
+    _emit(args, out)
+
+
+def cmd_apis(args):
+    sid = None
+    if args.service:
+        svc = _resolve_service(args, args.service)
+        if not svc:
+            _die(f"no service matched '{args.service}'", code=2)
+        sid = svc.get("id")
+    # apis/?service_id= is ignored server-side, so filter client-side.
+    _, items = _get_all(args, "/apis/", page=50, cap=2000, auth_required=False)
+    if sid:
+        items = [it for it in items if it.get("service_id") == sid]
+    items = items[: args.limit]
+    slim = [{k: v for k, v in it.items() if k != "definition"} for it in items]
+    rows = [(
+        (it.get("path") or ""),
+        it.get("method"),
+        it.get("stage"),
+        (it.get("title") or "")[:30],
+    ) for it in items]
+    _emit(args, {"count": len(slim), "items": slim}, rows, ("path", "method", "stage", "title"))
+
+
+def cmd_spec(args):
+    status, payload = _request(args, "GET", "/apis/", {"path": args.path}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    if not items:
+        _die(f"no API matched path '{args.path}'", code=2)
+    api = items[0]
+    _emit(args, {
+        "id": api.get("id"),
+        "service_id": api.get("service_id"),
+        "title": api.get("title"),
+        "path": api.get("path"),
+        "method": api.get("method"),
+        "stage": api.get("stage"),
+        "cost": api.get("cost"),
+        "definition": api.get("definition"),
+    })
+
+
+def cmd_datasets(args):
+    status, payload = _request(args, "GET", "/datasets/", {"limit": args.limit}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    rows = [(it.get("id", "")[:8], (it.get("title") or "")[:30], it.get("price"), (it.get("part") or "")) for it in items]
+    _emit(args, payload, rows, ("id", "title", "price", "part"))
+
+
+def cmd_integrations(args):
+    status, payload = _request(args, "GET", "/integrations/", {"limit": args.limit}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    rows = [(it.get("id", "")[:8], (it.get("title") or "")[:34], it.get("stage")) for it in items]
+    _emit(args, payload, rows, ("id", "title", "stage"))
+
+
+def cmd_docs_search(args):
+    status, payload = _request(args, "GET", "/search/", {"query": args.query, "lang": args.lang}, auth_required=False)
+    _check_ok(status, payload)
+    results = payload.get("results", []) if isinstance(payload, dict) else []
+    rows = [((r.get("title") or "")[:44], r.get("type"), r.get("matched_lang"), (r.get("id") or "")[:8]) for r in results]
+    _emit(args, payload, rows, ("title", "type", "lang", "id"))
+
+
+def cmd_docs_list(args):
+    status, payload = _request(args, "GET", "/documents/", {"limit": args.limit, "type": args.type}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    rows = [(it.get("id", "")[:8], (it.get("title") or "")[:40], it.get("type"), it.get("alias")) for it in items]
+    _emit(args, {"count": payload.get("count") if isinstance(payload, dict) else None, "items": items}, rows,
+          ("id", "title", "type", "alias"))
+
+
+def cmd_doc(args):
+    if not _UUID.match(args.id.strip()):
+        _die("doc id must be a document UUID", code=2)
+    status, payload = _request(args, "GET", "/documents/", {"id": args.id.strip()}, auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    if not items:
+        _die(f"no document with id '{args.id}'", code=2)
+    _emit(args, items[0])
+
+
+def cmd_model_catalog(args):
+    status, payload = _request(args, "GET", "/models/catalog/", auth_required=False)
+    _check_ok(status, payload)
+    items = payload.get("items", []) if isinstance(payload, dict) else []
+    if args.modality:
+        m = args.modality.lower()
+        items = [it for it in items if (it.get("modality") or "").lower() == m]
+    if args.provider:
+        pv = args.provider.lower()
+        items = [it for it in items if pv in (it.get("provider") or "").lower()]
+    rows = [(
+        it.get("id"),
+        it.get("provider"),
+        it.get("modality"),
+        (it.get("pricing") or {}).get("input_credits"),
+        (it.get("pricing") or {}).get("output_credits"),
+    ) for it in items]
+    out = {"modalities": payload.get("modalities") if isinstance(payload, dict) else None,
+           "count": len(items), "items": items}
+    _emit(args, out, rows, ("id", "provider", "modality", "in_credits", "out_credits"))
+
+
+def cmd_model(args):
+    status, payload = _request(args, "GET", "/models/catalog/", auth_required=False)
+    _check_ok(status, payload)
+    q = args.model.strip().lower()
+    items = [it for it in (payload.get("items", []) if isinstance(payload, dict) else [])
+             if q in (it.get("id") or "").lower() or q in (it.get("name") or "").lower()]
+    if not items:
+        _die(f"no model matched '{args.model}'", code=2)
+    rows = [(
+        it.get("id"),
+        it.get("provider"),
+        it.get("modality"),
+        (it.get("pricing") or {}).get("input_credits"),
+        (it.get("pricing") or {}).get("output_credits"),
+    ) for it in items]
+    _emit(args, {"count": len(items), "items": items}, rows,
+          ("id", "provider", "modality", "in_credits", "out_credits"))
+
+
+def cmd_distributions(args):
+    status, status_payload = _request(args, "GET", "/distribution-statuses/", {"limit": 1})
+    _check_ok(status, status_payload)
+    st_items = status_payload.get("items", []) if isinstance(status_payload, dict) else []
+    hstatus, hist = _request(args, "GET", "/distribution-histories/", {"limit": args.limit})
+    _check_ok(hstatus, hist)
+    hitems = hist.get("items", []) if isinstance(hist, dict) else []
+    out = {
+        "status": st_items[0] if st_items else None,
+        "history_count": hist.get("count") if isinstance(hist, dict) else None,
+        "history": hitems,
+    }
+    rows = [(
+        (it.get("created_at") or "")[:10],
+        it.get("price"),
+        it.get("reward"),
+        it.get("percentage"),
+        "invalid" if it.get("invalid") else "ok",
+    ) for it in hitems]
+    _emit(args, out, rows, ("date", "price", "reward", "pct", "state"))
 
 
 # ---- write commands (gated by --yes) -------------------------------------
@@ -404,6 +597,47 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = add("announcements", cmd_announcements, "list announcements")
     sp.add_argument("--limit", type=int, default=20)
+
+    sp = add("distributions", cmd_distributions, "referral status + commission history")
+    sp.add_argument("--limit", type=int, default=20)
+
+    # ---- catalog & docs (public, no token needed) ----
+    sp = add("get-service", cmd_get_service, "one service's detail by alias or id")
+    sp.add_argument("--service", required=True, help="service alias or UUID")
+
+    sp = add("pricing", cmd_pricing, "a service's unit, free_amount and cost")
+    sp.add_argument("--service", required=True, help="service alias or UUID")
+
+    sp = add("apis", cmd_apis, "list API endpoints (optionally per service)")
+    sp.add_argument("--service", help="scope to a service alias or UUID")
+    sp.add_argument("--limit", type=int, default=50)
+
+    sp = add("spec", cmd_spec, "one API's OpenAPI definition + cost, by path")
+    sp.add_argument("--path", required=True, help="API path, e.g. /suno/audios")
+
+    sp = add("datasets", cmd_datasets, "list downloadable datasets")
+    sp.add_argument("--limit", type=int, default=50)
+
+    sp = add("integrations", cmd_integrations, "list third-party integrations")
+    sp.add_argument("--limit", type=int, default=50)
+
+    sp = add("docs-search", cmd_docs_search, "full-text search the documentation")
+    sp.add_argument("--query", required=True)
+    sp.add_argument("--lang", help="language code, e.g. en, zh-cn")
+
+    sp = add("docs-list", cmd_docs_list, "browse documentation pages")
+    sp.add_argument("--limit", type=int, default=30)
+    sp.add_argument("--type", help="document type filter, e.g. Text")
+
+    sp = add("doc", cmd_doc, "fetch one doc's full content by UUID")
+    sp.add_argument("--id", required=True, help="document UUID")
+
+    sp = add("model-catalog", cmd_model_catalog, "rich model catalog with credit pricing")
+    sp.add_argument("--modality", help="chat/video/image/music/search/embedding")
+    sp.add_argument("--provider", help="filter by provider substring")
+
+    sp = add("model", cmd_model, "look up a model by id/name")
+    sp.add_argument("--model", required=True)
 
     sp = add("create-key", cmd_create_key, "create an API key (needs --yes)")
     sp.add_argument("--application", required=True)
