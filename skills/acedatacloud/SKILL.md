@@ -5,8 +5,11 @@ description: |
   (platform.acedata.cloud). Use when the user wants to check their balance /
   remaining credits, look up API call (usage) records and spend, list or create
   or delete API keys (credentials), list subscribed services, list/create/pay
-  recharge orders, manage platform tokens, list available models, or (admins)
-  publish an announcement. This is the self-service "console" API — distinct
+  recharge orders, manage platform tokens, view referral/affiliate earnings, or
+  (admins) publish an announcement. Also covers the PUBLIC catalog & docs (no
+  token needed): service detail & pricing, API list & OpenAPI specs, datasets,
+  integrations, full-text documentation search, and the model catalog with
+  per-model credit pricing. This is the self-service "console" API — distinct
   from the data-generation APIs (image/video/music/search).
 license: Apache-2.0
 metadata:
@@ -19,7 +22,9 @@ compatibility: Requires ACEDATACLOUD_PLATFORM_TOKEN (a platform or user token). 
 # AceDataCloud Platform Management
 
 Programmatically manage your AceDataCloud account: balances, usage records, API
-keys, services, orders, platform tokens, models, and announcements.
+keys, services, orders, platform tokens, models, announcements and referral
+earnings — plus browse the public catalog & docs (service pricing, API specs,
+datasets, integrations, documentation search, model catalog) without a token.
 
 This is the **management / console** API at `https://platform.acedata.cloud/api/v1`
 — the same surface the web console uses. It is **different** from the
@@ -68,6 +73,20 @@ python3 $ADC keys                             # list API keys (credentials)
 python3 $ADC orders --state Finished          # recharge orders
 python3 $ADC tokens                           # platform tokens
 python3 $ADC models                           # available chat models
+python3 $ADC distributions                    # referral status + commission history
+
+# Catalog & docs (PUBLIC — work without a token)
+python3 $ADC get-service --service suno       # one service's detail
+python3 $ADC pricing --service suno           # unit, free_amount and cost
+python3 $ADC apis --service suno              # API endpoints for a service
+python3 $ADC spec --path /suno/audios         # one API's OpenAPI definition + cost
+python3 $ADC datasets                         # downloadable datasets
+python3 $ADC integrations                     # third-party integrations
+python3 $ADC docs-search --query "suno lyrics" --lang en   # full-text doc search
+python3 $ADC docs-list                        # browse documentation pages
+python3 $ADC doc --id <document-uuid>         # one doc's full content
+python3 $ADC model-catalog --modality chat    # rich model catalog + credit pricing
+python3 $ADC model --model claude             # look up a model by id/name
 
 # Safe write (require --yes to actually execute)
 python3 $ADC create-key  --application <app-id> --name "ci" --yes
@@ -206,6 +225,22 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 OpenAI-style (no pagination): `{ "object": "list", "data": [ { "id": "gpt-4.1",
 "label": "GPT-4.1", "owned_by": "openai", "type": "chat", "capabilities": ["vision"] } ] }`
 
+### Catalog & docs (PUBLIC — no token required)
+
+These work without auth (send the token if you have one; not required):
+
+- **Service detail / pricing** — `GET /services/?id=<uuid>` → `items[0]` (full: `cost`, `unit`,
+  `free_amount`, `title`). The `services/?alias=` filter is **ignored** server-side, so resolve an
+  alias by paging `services/` and matching `alias` client-side. The `services/{id}/` detail route is broken (500).
+- **APIs** — `GET /apis/?path=<path>` → exactly one item with its OpenAPI `definition` + `cost`.
+  `apis/?service_id=` is **ignored** server-side; filter by `service_id` client-side. `apis/{id}/` is broken (500).
+- **Datasets / integrations** — `GET /datasets/`, `GET /integrations/`.
+- **Doc search** — `GET /search/?query=<text>&lang=<code>` → `{ results: [ { id, alias, title, type, snippet, url } ] }`.
+  The param is **`query`** (not `keyword`).
+- **Doc content** — `GET /documents/?id=<uuid>` → `items[0].content`. `documents/{id}/` (id or slug) is broken (404).
+- **Model catalog** — `GET /models/catalog/` → `{ rates, modalities, count, items:[{ id, name, provider,
+  modality, unit, capabilities, pricing:{ input_credits, output_credits, official_* } }] }`. Filter client-side.
+
 ### Announcements — `GET /announcements/`
 
 Public read: `{ "count": 20, "items": [ { "id", "title", "content",
@@ -241,4 +276,4 @@ publishing announcements are **irreversible or money-related**. Always:
 - Announcement endpoints under `/admin/` require a **superuser** token; a normal
   token gets `403`.
 
-> **MCP:** `pip install mcp-acedatacloud` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`platform_get_balance`, `platform_list_usage`, `platform_create_credential`, `platform_create_announcement`, …) with the same write-confirmation guard.
+> **MCP:** `pip install mcp-acedatacloud` | Hosted: `https://mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_get_pricing`, `acedatacloud_search_docs`, `acedatacloud_get_api_spec`, `acedatacloud_create_credential`, …) with the same write-confirmation guard.
