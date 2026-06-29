@@ -64,7 +64,7 @@ print(response.choices[0].message.content)
 |-------|------|----------|
 | `claude-opus-4-8` | Latest Opus | Highest capability |
 | `claude-opus-4-7` | Opus 4.7 | High capability |
-| `claude-opus-4-6` | Opus 4.6 | Highest capability |
+| `claude-opus-4-6` | Opus 4.6 | High capability |
 | `claude-opus-4-1-20250805` | Opus 4.1 | Premium tasks |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
@@ -120,7 +120,7 @@ print(response.choices[0].message.content)
 |-------|----------|
 | `glm-5.2` | Latest generation |
 | `glm-5.1` | High quality |
-| `glm-4.7` | General-purpose |
+| `glm-4.7` | High quality, general-purpose |
 | `glm-4.6` | Balanced quality/speed |
 | `glm-3-turbo` | Fast, legacy |
 
