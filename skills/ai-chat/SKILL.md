@@ -63,7 +63,9 @@ print(response.choices[0].message.content)
 | Model | Type | Best For |
 |-------|------|----------|
 | `claude-opus-4-8` | Latest Opus | Highest capability |
-| `claude-opus-4-6` | Latest Opus | Highest capability |
+| `claude-opus-4-7` | Opus 4.7 | High capability |
+| `claude-opus-4-6` | Opus 4.6 | Highest capability |
+| `claude-opus-4-1-20250805` | Opus 4.1 | Premium tasks |
 | `claude-sonnet-4-6` | Latest Sonnet | Balanced quality/speed |
 | `claude-opus-4-5-20251101` | Opus 4.5 | Premium tasks |
 | `claude-sonnet-4-5-20250929` | Sonnet 4.5 | High-quality balance |
@@ -76,8 +78,13 @@ print(response.choices[0].message.content)
 
 | Model | Best For |
 |-------|----------|
-| `gemini-1.5-pro` | Long context, complex tasks |
-| `gemini-1.5-flash` | Fast, efficient |
+| `gemini-3.1-pro` | Latest, highest quality |
+| `gemini-3.1-pro-preview` | Preview of Gemini 3.1 Pro |
+| `gemini-3.0-pro` | High quality generation |
+| `gemini-3.5-flash` | Fast, efficient |
+| `gemini-2.5-pro` | Complex reasoning tasks |
+| `gemini-2.5-flash` | Balanced speed and quality |
+| `gemini-2.0-flash` | Fast, cost-effective |
 
 ### xAI Grok
 
@@ -86,7 +93,36 @@ print(response.choices[0].message.content)
 | `grok-4` | Latest, highest capability |
 | `grok-3` | General-purpose |
 | `grok-3-fast` | Speed-optimized |
-| `grok-3-mini` | Compact, efficient |
+
+### Moonshot Kimi
+
+| Model | Best For |
+|-------|----------|
+| `kimi-k2-thinking-turbo` | Fast deep reasoning |
+| `kimi-k2.5` | Latest generation, balanced |
+| `kimi-k2-thinking` | Deep reasoning |
+| `kimi-k2-instruct-0905` | Instruction following |
+| `kimi-k2-0711-preview` | Preview variant |
+
+### DeepSeek
+
+| Model | Best For |
+|-------|----------|
+| `deepseek-r1` | Reasoning tasks |
+| `deepseek-r1-0528` | Updated reasoning model |
+| `deepseek-v3` | General-purpose |
+| `deepseek-v3-250324` | Updated general model |
+| `deepseek-v4-flash` | Fast, cost-effective |
+
+### Zhipu GLM
+
+| Model | Best For |
+|-------|----------|
+| `glm-5.2` | Latest generation |
+| `glm-5.1` | High quality |
+| `glm-4.7` | General-purpose |
+| `glm-4.6` | Balanced quality/speed |
+| `glm-3-turbo` | Fast, legacy |
 
 ## Features
 

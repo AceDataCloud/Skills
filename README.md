@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (29)
+## Available Skills (31)
 
 ### AI Music & Audio
 
@@ -40,6 +40,8 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [grok-video](skills/grok-video/) | Generate videos with xAI Grok Imagine Video |
+| [dreamina-video](skills/dreamina-video/) | Generate human portrait videos with Dreamina OmniHuman |
 
 ### AI Chat & Tools
 
