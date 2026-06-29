@@ -46,6 +46,7 @@ print(response.choices[0].message.content)
 
 | Model | Type | Best For |
 |-------|------|----------|
+| `gpt-oss:free` | Free/OSS | Free open-source model |
 | `gpt-4.1` | Latest | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
