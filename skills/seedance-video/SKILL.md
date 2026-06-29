@@ -35,13 +35,25 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 
 ## Models
 
-The Seedance 2.0 series adds multimodal reference inputs: real-person / character **image** references, reference **audio**, and reference **video** (see the workflows below).
+### Seedance 2.0 (current generation — multimodal reference)
+
+The 2.0 series adds multimodal reference inputs: real-person / character **image** references, reference **audio**, and reference **video** (see the workflows below).
 
 | Model | Best For | Max resolution |
 |-------|----------|----------------|
 | `doubao-seedance-2-0-260128` | Highest quality, real-person/character reference, 4k output | `4k` |
 | `doubao-seedance-2-0-fast-260128` | Faster 2.0 generation | `720p` |
 | `doubao-seedance-2-0-mini-260615` | Lightweight / most cost-effective 2.0 | `720p` |
+
+### Seedance 1.x
+
+| Model | Type | Best For |
+|-------|------|----------|
+| `doubao-seedance-1-5-pro-251215` | Text+Image-to-Video | 1.5 flagship, audio support |
+| `doubao-seedance-1-0-pro-250528` | Text+Image-to-Video | General-purpose, reliable quality |
+| `doubao-seedance-1-0-pro-fast-251015` | Text+Image-to-Video | Faster Pro generation |
+| `doubao-seedance-1-0-lite-t2v-250428` | Text-to-Video only | Lightweight text-to-video |
+| `doubao-seedance-1-0-lite-i2v-250428` | Image-to-Video only | Lightweight image-to-video |
 
 ## Workflows
 
@@ -52,7 +64,7 @@ Pass a text content item in the `content` array.
 ```json
 POST /seedance/videos
 {
-  "model": "doubao-seedance-2-0-260128",
+  "model": "doubao-seedance-1-0-pro-250528",
   "content": [
     {"type": "text", "text": "a street dancer doing breakdancing moves in an urban setting"}
   ],
@@ -69,7 +81,7 @@ Include an image content item (with an optional `role`) alongside the text.
 ```json
 POST /seedance/videos
 {
-  "model": "doubao-seedance-2-0-260128",
+  "model": "doubao-seedance-1-5-pro-251215",
   "content": [
     {"type": "text", "text": "the person starts dancing gracefully"},
     {
@@ -154,7 +166,7 @@ POST /seedance/videos
 | `duration` | `2` – `15` | Duration in seconds (Seedance 2.0 supports 4–15) |
 | `frames` | 29–361 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
-| `generate_audio` | `true` / `false` | Generate audio (supported by the `doubao-seedance-2-0` series; other models ignore it) |
+| `generate_audio` | `true` / `false` | Generate audio (supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore it) |
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
@@ -173,11 +185,11 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 
 ## Gotchas
 
-- Model names use the `doubao-*` convention (e.g. `doubao-seedance-2-0-260128`) — old short names like `seedance-1.0` are not valid
+- Model names use the `doubao-*` convention (e.g. `doubao-seedance-1-0-pro-250528`) — old short names like `seedance-1.0` are not valid
 - The `content` array replaces the old `prompt` + `image_url` fields; always use `content`
 - Image and text scenarios are mutually exclusive per content item — each item has either `text` or `image_url`, not both
 - `first_frame` and `last_frame` may be combined in one request, but `reference_image` is mutually exclusive with `first_frame` / `last_frame` — do not mix a reference image with first/last frames
-- `generate_audio: true` is supported by the `doubao-seedance-2-0` series; other models ignore this field
+- `generate_audio: true` is supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
 - `audio_url` and `video_url` reference items are used by the **Seedance 2.0 series only**
 - Resolution options are `480p`, `720p`, `1080p`, and `4k` (`4k` is `doubao-seedance-2-0-260128` only; `2-0-fast` / `2-0-mini` max out at `720p`) — there is no 360p or 540p
