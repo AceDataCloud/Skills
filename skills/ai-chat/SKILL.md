@@ -57,6 +57,12 @@ print(response.choices[0].message.content)
 | `gpt-5` | Latest gen | Next-gen intelligence |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-oss:free` | Free tier | Free OpenAI-compatible model |
+| `gpt-5.5:free` | Free tier | Free GPT-5.5 alias |
+| `gpt-5:free` | Free tier | Free GPT-5 alias |
+| `gpt-4.1:free` | Free tier | Free GPT-4.1 alias |
+| `gpt-4o:free` | Free tier | Free GPT-4o alias |
+| `gpt-4o-mini:free` | Free tier | Free GPT-4o-mini alias |
 
 ### Anthropic Claude
 
