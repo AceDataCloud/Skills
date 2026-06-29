@@ -201,3 +201,17 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+| `async` | boolean | Run the conversation asynchronously (default: `false`). Returns a task ID immediately; poll `/aichat2/tasks` for the result |
+| `callback_url` | string | Webhook URL to receive the async result when complete |
+| `allowed_skills` | array | Skills (by name) the agent is permitted to invoke |
+| `allowed_mcp_servers` | array | MCP server IDs the agent is permitted to call |
+| `unattended_policy` | object | Governs autonomous tool use; see below |
+
+#### `unattended_policy` object
+
+| Field | Type | Values / Description |
+|-------|------|----------------------|
+| `mode` | string | `"deny_all"` — block all autonomous calls; `"allow_selected"` — only allow skills/servers listed below |
+| `allowed_skills` | array | Skills permitted in unattended mode (when `mode` is `"allow_selected"`) |
+| `allowed_mcp_servers` | array | MCP server IDs permitted in unattended mode (when `mode` is `"allow_selected"`) |
+| `expires_at` | integer | Unix timestamp after which the unattended policy expires |

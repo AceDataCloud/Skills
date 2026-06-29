@@ -178,7 +178,8 @@ Ending lyrics
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
-- `vocal_gender` ("f"/"m") is only supported on v4.5+ models
+- `title` max length: 80 characters for `chirp-v3-5`/`chirp-v4`; 100 characters for `chirp-v4-5` and above
+- `vocal_gender` ("f"/"m") is a **preference** (not strictly enforced) on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from

@@ -40,6 +40,15 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
   -F "n=1"
 ```
 
+The `image` field (and each item in an array) also accepts a **base64** string — either `data:image/png;base64,...` or bare base64 — sent as JSON (no file upload needed):
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\":\"gpt-image-2\",\"image\":\"data:image/png;base64,$(base64 -w0 input.png)\",\"prompt\":\"Convert to dark mode\",\"size\":\"1024x1536\"}"
+```
+
 Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `data[0].url`.
 
 ## Sizes
