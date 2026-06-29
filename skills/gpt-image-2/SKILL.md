@@ -14,13 +14,19 @@ OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Model variants
+
+- `gpt-image-2` (default): reverse route
+- `gpt-image-2:reverse`: explicit reverse route (same behavior/pricing as default)
+- `gpt-image-2:official`: official relay route (supports `n > 1`; priced per image at 2× default)
+
 ## 1. Generate (text → image)
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/generations \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-image-2","prompt":"a clean dark tech hero background with a glowing API hub, lots of negative space","size":"1792x1024","n":1}'
+  -d '{"model":"gpt-image-2:official","prompt":"a clean dark tech hero background with a glowing API hub, lots of negative space","size":"1792x1024","n":2}'
 ```
 
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
@@ -32,7 +38,7 @@ consistent across scenes, or restyle a screenshot.
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -F "model=gpt-image-2" \
+  -F "model=gpt-image-2:reverse" \
   -F "prompt=Place this logo crisply in the top-left on the tech background; keep the logo's exact colors and shape." \
   -F "image[]=@background.png" \
   -F "image[]=@logo.png" \

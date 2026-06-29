@@ -201,3 +201,26 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+| `async` | boolean | Run asynchronously and return a task ID immediately |
+| `callback_url` | string | Optional webhook URL for async completion callbacks |
+| `allowed_skills` | array of strings | Skill slugs pre-authorized for unattended execution |
+| `allowed_mcp_servers` | array of strings | MCP server slugs pre-authorized for unattended execution |
+| `unattended_policy` | object | Fine-grained unattended policy (`mode`, allowed lists, optional `expires_at`) |
+
+### Async + unattended policy example
+
+```json
+POST /aichat2/conversations
+{
+  "model": "gpt-5.4",
+  "question": "Check my account usage and send a summary via personal wechat.",
+  "async": true,
+  "callback_url": "https://example.com/webhooks/aichat",
+  "unattended_policy": {
+    "mode": "allow_selected",
+    "allowed_skills": ["acedatacloud/personal-wechat"],
+    "allowed_mcp_servers": [],
+    "expires_at": 1790000000
+  }
+}
+```
