@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 2, Veo 3, and Veo 3.1 models including fast variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 2 Fast, Veo 3, and Veo 3.1 models including fast and ingredient variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -37,7 +37,6 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 
 | Model | Audio | Best For |
 |-------|-------|----------|
-| `veo2` | No | Cost-effective generation |
 | `veo2-fast` | No | Fast, cost-effective generation (default) |
 | `veo3` | Yes (native) | Full audiovisual generation |
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
@@ -69,7 +68,7 @@ POST /veo/videos
   "action": "image2video",
   "prompt": "the scene gently comes to life with wind and subtle motion",
   "image_urls": ["https://example.com/landscape.jpg"],
-  "model": "veo2",
+  "model": "veo2-fast",
   "aspect_ratio": "16:9"
 }
 ```
@@ -110,7 +109,7 @@ POST /veo/videos
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
 | `model` | see Models table | Model to use (default: `veo2-fast`) |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
-| `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"`, `"4:3"`, `"3:4"` | Aspect ratio — only valid for `image2video` |
+| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
@@ -206,11 +205,12 @@ POST /veo/objects
 
 ## Gotchas
 
-- Veo 3 and 3.1 models generate **native audio** — `veo2`/`veo2-fast` do NOT support audio
+- Veo 3 and 3.1 models generate **native audio** — `veo2-fast` does NOT support audio
 - The `get1080p` action uses `video_id` (from a prior generation), not a URL
 - `aspect_ratio` is **only valid** for the `image2video` action
 - `image_urls` accepts an array — up to 2 images for `image2video`, up to 3 for `ingredients2video`
 - `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
+- Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
 - Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
