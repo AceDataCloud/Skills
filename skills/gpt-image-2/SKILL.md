@@ -14,6 +14,14 @@ OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Models
+
+| Model | Description |
+|-------|-------------|
+| `gpt-image-2` | Standard gpt-image-2 |
+| `gpt-image-2:reverse` | Reverse-proxy variant |
+| `gpt-image-2:official` | Official endpoint variant |
+
 ## 1. Generate (text → image)
 
 ```bash

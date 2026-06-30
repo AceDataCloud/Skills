@@ -57,6 +57,12 @@ print(response.choices[0].message.content)
 | `gpt-5` | Latest gen | Next-gen intelligence |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-oss:free` | Free tier | OSS-level free access |
+| `gpt-5.5:free` | Free tier | gpt-5.5 free quota |
+| `gpt-5:free` | Free tier | gpt-5 free quota |
+| `gpt-4.1:free` | Free tier | gpt-4.1 free quota |
+| `gpt-4o:free` | Free tier | gpt-4o free quota |
+| `gpt-4o-mini:free` | Free tier | gpt-4o-mini free quota |
 
 ### Anthropic Claude
 
@@ -201,3 +207,17 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 | `preset` | string | Preset/system prompt for the conversation |
 | `stateful` | boolean | Enable stateful conversation (maintains history server-side) |
 | `references` | array | Additional context documents to include |
+| `async` | boolean | Run the conversation asynchronously (default: false) |
+| `callback_url` | string | Webhook URL to receive the response when `async` is true |
+| `allowed_skills` | array | List of skill names the agent is permitted to use |
+| `allowed_mcp_servers` | array | List of MCP server names the agent is permitted to use |
+| `unattended_policy` | object | Autonomous execution policy (see below) |
+
+### `unattended_policy` object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `mode` | `"deny_all"` \| `"allow_selected"` | Whether to deny all tools or allow a subset |
+| `allowed_skills` | array | Skills allowed in unattended mode |
+| `allowed_mcp_servers` | array | MCP servers allowed in unattended mode |
+| `expires_at` | integer | Unix timestamp when this policy expires |
