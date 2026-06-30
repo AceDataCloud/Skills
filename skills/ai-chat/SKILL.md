@@ -40,6 +40,10 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+Raw REST calls are also available under the OpenAI namespace, for example
+`POST /openai/chat/completions`. If you are using the official OpenAI SDK, keep
+using the compatible `base_url="https://api.acedata.cloud/v1"` form shown above.
+
 ## Available Models
 
 ### OpenAI GPT
@@ -49,14 +53,32 @@ print(response.choices[0].message.content)
 | `gpt-4.1` | Latest | General-purpose, high quality |
 | `gpt-4.1-mini` | Small | Fast, cost-effective |
 | `gpt-4.1-nano` | Tiny | Ultra-fast, lowest cost |
+| `gpt-4.1:free` | Free alias | Free-tier general chat |
 | `gpt-4o` | Multimodal | Vision + text |
+| `gpt-4o:free` | Free alias | Free-tier multimodal chat |
 | `gpt-4o-mini` | Small multimodal | Fast vision tasks |
+| `gpt-4o-mini:free` | Free alias | Free-tier fast multimodal chat |
+| `gpt-4o-image` | Image chat | Generate or restyle images in chat completions |
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
+| `o3` | Reasoning | Stronger reasoning + tool use |
+| `o3-mini` | Small reasoning | Faster lower-cost reasoning |
+| `o3-pro` | Pro reasoning | Highest-end reasoning |
+| `o4-mini` | Mini reasoning | Fast next-gen reasoning |
+| `gpt-4` | Legacy flagship | Older GPT-4 compatibility |
+| `gpt-5.5` | Latest gen | Highest-end GPT-5 generation |
+| `gpt-5.5-pro` | Pro gen | Premium GPT-5.5 quality |
 | `gpt-5` | Latest gen | Next-gen intelligence |
+| `gpt-5:free` | Free alias | Free-tier GPT-5 chat |
 | `gpt-5.4` | Gen 5.4 | High-performance next-gen |
+| `gpt-5.2` | Gen 5.2 | Mid-cycle GPT-5 variant |
+| `gpt-5.1` | Gen 5.1 | Earlier GPT-5 release |
+| `gpt-5.1-all` | Gen 5.1 aggregate | Wider GPT-5.1 routing |
 | `gpt-5-mini` | Mini gen 5 | Fast next-gen |
+| `gpt-5-nano` | Nano gen 5 | Lowest-cost GPT-5 option |
+| `gpt-5.5:free` | Free alias | Free-tier GPT-5.5 chat |
+| `gpt-oss:free` | Free OSS alias | Free open-weight chat access |
 
 ### Anthropic Claude
 
@@ -138,6 +160,31 @@ POST /v1/chat/completions
 }
 ```
 
+### Image Generation in Chat
+
+`gpt-4o-image` can generate images directly from chat completions, including from
+text-only prompts or one or more reference images.
+
+```json
+POST /openai/chat/completions
+{
+  "model": "gpt-4o-image",
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {"type": "text", "text": "Generate an anime-style portrait with a hat"},
+        {"type": "image_url", "image_url": {"url": "https://example.com/photo.jpg"}}
+      ]
+    }
+  ],
+  "stream": false
+}
+```
+
+The generated image is returned inside `choices[0].message.content` as Markdown
+with a temporary downloadable image URL.
+
 ## Parameters
 
 | Parameter | Type | Description |
@@ -147,9 +194,12 @@ POST /v1/chat/completions
 | `temperature` | 0–2 | Randomness (default: 1) |
 | `top_p` | 0–1 | Nucleus sampling |
 | `max_tokens` | integer | Maximum output tokens |
+| `max_completion_tokens` | integer | Newer OpenAI-style cap for completion output |
 | `stream` | boolean | Enable SSE streaming |
 | `tools` | array | Function calling definitions |
 | `tool_choice` | string/object | Tool selection strategy |
+| `response_format` | object | Structured JSON/text output controls |
+| `reasoning_effort` | string | Reasoning budget (`minimal`/`low`/`medium`/`high`) for supported models |
 
 ## Response
 
