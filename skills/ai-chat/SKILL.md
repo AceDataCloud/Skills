@@ -54,7 +54,7 @@ print(response.choices[0].message.content)
 | `o1` | Reasoning | Complex reasoning tasks |
 | `o1-mini` | Small reasoning | Quick reasoning |
 | `o1-pro` | Pro reasoning | Advanced reasoning |
-| `gpt-5.5` | Latest gen | Highest-quality GPT generation |
+| `gpt-5.5` | Gen 5.5 | Highest-quality GPT generation |
 | `gpt-5` | Latest gen | Next-gen intelligence |
 | `gpt-5.5:free` | Free tier | Zero-cost GPT-5.5 access |
 | `gpt-5:free` | Free tier | Zero-cost GPT-5 access |
