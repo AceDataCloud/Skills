@@ -1,6 +1,6 @@
 ---
 name: fish-audio
-description: Generate AI text-to-speech audio and clone voices with Fish Audio via AceDataCloud API. Use when creating voiceover/narration audio (TTS), synthesizing speech, or cloning a reference voice. Chinese + multilingual.
+description: Generate AI text-to-speech audio with Fish Audio and browse public reference voices via AceDataCloud API. Use when creating voiceover/narration audio (TTS), synthesizing multilingual speech, or selecting a Fish reference voice from the model catalog.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -8,76 +8,111 @@ metadata:
 compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md).
 ---
 
-# Fish Audio — Text-to-Speech & Voice Cloning
+# Fish Audio — Text-to-Speech
 
-Generate narration / voiceover and clone voices through AceDataCloud's Fish Audio API.
+Generate narration / voiceover through AceDataCloud's Fish Audio API.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
-## Quick Start (TTS — synchronous, ~3s)
+## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/fish/audios \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+curl -X POST https://api.acedata.cloud/fish/tts \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action":"speech","model":"fish-tts","voice_id":"543e4181d81b4ef6874b0e8fbdf27c78","prompt":"你好,欢迎使用 AceData Cloud。"}'
+  -H "model: s2-pro" \
+  -d '{"text":"你好，欢迎使用 AceData Cloud。","reference_id":"d7900c21663f485ab63ebdb7e5905036","format":"mp3"}'
 ```
 
-Response (synchronous — no polling needed for `speech`):
+Synchronous responses return a direct audio URL:
 
 ```json
-{"success": true, "data": [{"audio_url": "https://platform.r2.fish.audio/task/....mp3"}]}
+{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
 ```
-
-→ download `data[0].audio_url`. `voice_id` is **required**. A good default Mandarin
-news-anchor voice is **`543e4181d81b4ef6874b0e8fbdf27c78`**.
 
 ## Endpoints
 
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /fish/audios` | TTS (`action: "speech"`) — synchronous |
-| `POST /fish/voices` | List / register (clone) voices |
+| `POST /fish/tts` | Text-to-speech generation |
+| `GET /fish/model` | Browse/search public Fish reference voices |
+| `POST /fish/tasks` | Poll async TTS jobs when `async: true` |
 
 ## Workflows
 
-### 1. Text-to-Speech (the common case)
+### 1. Find a reference voice
+
+```bash
+curl "https://api.acedata.cloud/fish/model?page_size=10&page_number=1&title=Marcus" \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN"
+```
+
+The response includes `items[]` with public voice metadata such as `_id`, `title`,
+`languages`, `tags`, `visibility`, and `state`. Use an item `_id` as
+`reference_id` in TTS requests.
+
+### 2. Text-to-Speech
 
 ```json
-POST /fish/audios
+POST /fish/tts
+Headers:
+  model: s2-pro
+
 {
-  "action": "speech",
-  "model": "fish-tts",
-  "voice_id": "543e4181d81b4ef6874b0e8fbdf27c78",
-  "prompt": "你的旁白文本。"
+  "text": "Your narration text.",
+  "reference_id": "d7900c21663f485ab63ebdb7e5905036",
+  "format": "mp3"
 }
 ```
 
-### 2. Clone a voice from a reference sample
+### 3. Async TTS
 
 ```json
-POST /fish/voices
+POST /fish/tts
+Headers:
+  model: s1
+
 {
-  "voice_url": "https://example.com/reference-voice.mp3",
-  "title": "My Custom Voice",
-  "description": "Clear, neutral-toned speaker"
+  "text": "Longer narration for background processing.",
+  "async": true,
+  "callback_url": "https://api.acedata.cloud/health"
 }
 ```
 
-Then pass the returned id as `voice_id` in workflow 1.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"..."}`.
 
-## Parameters — `/fish/audios`
+## Parameters — `/fish/tts`
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `action` | string | yes | Use `"speech"` for TTS |
-| `model` | string | yes | `"fish-tts"` |
-| `voice_id` | string | yes | A Fish reference/cloned voice id (default Mandarin: `543e4181d81b4ef6874b0e8fbdf27c78`) |
-| `prompt` | string | yes | Text to synthesize |
+### Header
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `model` | `"s1"`, `"s2-pro"` | Fish TTS engine selection |
+
+### JSON body
+
+| Parameter | Type / Values | Description |
+|-----------|---------------|-------------|
+| `text` | string | Text to synthesize (required) |
+| `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
+| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format |
+| `sample_rate` | integer | Optional output sample rate |
+| `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
+| `opus_bitrate` | integer | Opus bitrate |
+| `latency` | `"normal"`, `"balanced"` | TTS latency mode |
+| `chunk_length` / `min_chunk_length` | integer | Chunking controls |
+| `temperature`, `top_p`, `repetition_penalty` | number | Sampling controls |
+| `max_new_tokens` | integer | Maximum generated tokens |
+| `normalize` | boolean | Normalize generated audio |
+| `prosody` | object | Prosody tuning |
+| `references` | array | Additional reference objects |
+| `callback_url` | string | Async callback URL |
+| `async` | boolean | Run asynchronously and poll `/fish/tasks` |
 
 ## Gotchas
 
-- **TTS (`action:"speech"`) is synchronous** — the response carries `data[0].audio_url`; do NOT poll `/fish/tasks` for it.
-- `voice_id` is **required** — a bare `{"prompt": "..."}` returns `400 voice_id is required when action is speech`.
-- `model` must be `"fish-tts"` for speech (NOT `speech-1.5`); sending a different model returns `400 model is invalid if action is speech`.
-- Pricing is based on the **byte count** of the generated audio. Multilingual is automatic.
+- The documented TTS endpoint is `POST /fish/tts` — not `/fish/audios`.
+- Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
+- Use `reference_id` from `GET /fish/model` — not `voice_id`.
+- Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
+- The current OpenAPI spec documents voice browsing via `GET /fish/model`; it does **not** document a voice-cloning write endpoint.
