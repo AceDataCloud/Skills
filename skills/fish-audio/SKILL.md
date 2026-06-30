@@ -18,7 +18,7 @@ Generate narration / voiceover through AceDataCloud's Fish Audio API.
 
 ```bash
 curl -X POST https://api.acedata.cloud/fish/tts \
-  -H "Authorization: ******" \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -H "model: s2-pro" \
   -d '{"text":"你好，欢迎使用 AceData Cloud。","reference_id":"d7900c21663f485ab63ebdb7e5905036","format":"mp3"}'
@@ -44,7 +44,7 @@ Synchronous responses return a direct audio URL:
 
 ```bash
 curl "https://api.acedata.cloud/fish/model?page_size=10&page_number=1&title=Marcus" \
-  -H "Authorization: ******"
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN"
 ```
 
 The response includes `items[]` with public voice metadata such as `_id`, `title`,

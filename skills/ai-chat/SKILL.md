@@ -27,7 +27,7 @@ AceDataCloud exposes two documented chat surfaces:
 
 ```bash
 curl -X POST https://api.acedata.cloud/aichat2/conversations \
-  -H "Authorization: ******" \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-4.1","question":"Summarize the latest release notes.","stateful":true}'
 ```
