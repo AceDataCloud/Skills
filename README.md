@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (29)
+## Available Skills (30)
 
 ### AI Music & Audio
 
@@ -46,6 +46,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models) |
+| [gemini](skills/gemini/) | Native Google Gemini APIs — chat completions, generateContent, streaming, and Omni video |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
