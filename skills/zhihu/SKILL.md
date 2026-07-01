@@ -1,35 +1,102 @@
 ---
 name: zhihu
-description: Read and publish on Zhihu (知乎) with the user's own login cookies (BYOC) — list published articles & answers with vote/comment stats, inspect an article/answer/question, publish an article, and answer or edit answers to questions. Use when the user mentions 知乎 / Zhihu, "我的知乎文章/回答", reading their stats (点赞/评论), 发文, or 回答/编辑某个问题的回答.
+description: Search Zhihu & the web, get trending topics, and read/publish on Zhihu (知乎) — search Zhihu content or the entire web via the official Developer Platform API, get hot topics (热榜), list published articles & answers with stats, inspect content, publish articles, and answer questions. Use when the user mentions 知乎 / Zhihu, 搜索知乎, 全网搜索, 热榜, "我的知乎文章/回答", reading stats, 发文, or 回答问题.
 when_to_use: |
-  Trigger for anything on the user's Zhihu (知乎) account driven by their own
-  login cookie: show who they are, list their published articles or answers
-  with vote/comment counts, look at one article / answer / question, publish a
-  new article, post a new answer to a question, or edit an existing answer.
-  This acts as the user's real account, so writes are gated behind an explicit
-  confirmation.
+  Trigger for anything involving Zhihu (知乎):
+  - Searching Zhihu content (站内搜索) or the entire web (全网搜索)
+  - Getting Zhihu trending topics (热榜)
+  - Reading the user's own articles/answers with stats
+  - Publishing articles or answering questions (gated behind confirmation)
+  Search commands use the Zhihu Developer Platform API (Bearer token auth).
+  Read/write commands use the user's login cookies (BYOC).
 connections: [zhihu]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.2"
+  version: "2.0"
 ---
 
-# zhihu — read & publish on Zhihu via your own cookies
+# zhihu — search, read & publish on Zhihu
 
-Drives the user's **real** Zhihu account through the same web APIs the site's
-own editor uses, authenticated by the login cookie they captured with the ACE
-extension. No browser, no third-party deps — just `urllib`.
+Two authentication layers, two scripts:
 
-The connector injects the cookie jar as an env var:
+| Script | Auth | Capabilities |
+|---|---|---|
+| `scripts/search.py` | `ZHIHU_DEVELOPER_TOKEN` (Bearer) | Search Zhihu, search the web, get hot topics |
+| `scripts/blog.py` | `ZHIHU_COOKIES` (login cookie) | Read/write own articles & answers |
 
+No browser, no third-party deps — just `urllib`.
+
+The connector injects credentials as env vars:
+
+- `ZHIHU_DEVELOPER_TOKEN` — Zhihu Developer Platform access secret (Bearer token).
+  Used for search and hot-list queries. **Secret — never echo or print it.**
 - `ZHIHU_COOKIES` — a JSON array of `{name, value, domain, path, ...}` cookies.
-  **Secret — never echo or print it.** The CLI reads it for you.
+  Used for reading/writing the user's own content. **Secret — never echo or print it.**
 
-## CLI
+## Search CLI (search.py)
+
+[`scripts/search.py`](scripts/search.py) — search Zhihu and the web. Requires
+only `ZHIHU_DEVELOPER_TOKEN` (no cookies needed).
+
+```sh
+SEARCH=$SKILL_DIR/scripts/search.py
+
+# Search Zhihu content (站内搜索) — questions, answers, articles
+python3 $SEARCH search "Python 爬虫"
+python3 $SEARCH search "Python 爬虫" --count 5
+
+# Search the entire web (全网搜索) — all indexed sites
+python3 $SEARCH global "AI Agent"
+python3 $SEARCH global "AI Agent" --count 15
+
+# Filter by site or time
+python3 $SEARCH global "React" --filter 'host=="github.com"'
+python3 $SEARCH global "新闻" --filter 'publish_time>=1720000000'
+python3 $SEARCH global "技术" --filter 'host=="github.com" AND publish_time>=1720000000'
+python3 $SEARCH global "实时新闻" --db realtime
+
+# Get Zhihu trending topics (热榜)
+python3 $SEARCH hot
+python3 $SEARCH hot --limit 10
+```
+
+### Search commands
+
+| Goal | Command |
+|---|---|
+| Search Zhihu (max 10 results) | `python3 $SEARCH search "<query>" --count N` |
+| Search entire web (max 20) | `python3 $SEARCH global "<query>" --count N` |
+| Filter by site | `--filter 'host=="example.com"'` |
+| Filter by time | `--filter 'publish_time>=<unix_ts>'` |
+| Search only realtime/static index | `--db realtime` or `--db static` |
+| Zhihu trending topics (max 30) | `python3 $SEARCH hot --limit N` |
+
+### Search result fields
+
+**zhihu_search** returns: title, type (Article/Answer), content_id, url,
+excerpt, vote_up (赞同), comments, author, authority level, edit_time.
+
+**global_search** returns the same fields plus has_more indicator. The `url`
+includes utm tracking params from Zhihu's platform.
+
+**hot_list** returns: rank, title, url, summary, thumbnail.
+
+### global_search Filter syntax
+
+- `host=="example.com"` — filter by domain (note: `host=="zhihu.com"` not
+  supported — use `search` command instead)
+- `publish_time>=1720000000` — filter by publish time (unix seconds)
+- Logical operators: `AND`, `OR` (must be uppercase)
+- Parentheses for grouping: `(host=="a.com" OR host=="b.com") AND publish_time>=T`
+
+---
+
+## Blog CLI (blog.py)
 
 The skill ships [`scripts/blog.py`](scripts/blog.py) — self-contained, stdlib only.
+Requires `ZHIHU_COOKIES` (login cookie).
 
 ```sh
 BLOG=$SKILL_DIR/scripts/blog.py
