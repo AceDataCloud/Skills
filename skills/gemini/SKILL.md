@@ -54,7 +54,7 @@ curl -X POST https://api.acedata.cloud/gemini/chat/completions \
 
 ### Native API (`/v1beta/models/{model}:generateContent`)
 
-Same model list as above, plus `gemini-3.0-pro`.
+Supports the same model list as chat completions above.
 
 ## OpenAI-Compatible Chat
 
