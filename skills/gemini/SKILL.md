@@ -126,7 +126,7 @@ POST /v1beta/models/gemini-3.1-flash-image:generateContent
 
 Streaming version:
 
-```
+```bash
 POST /v1beta/models/gemini-3.5-flash:streamGenerateContent
 ```
 (same body as `generateContent`)
