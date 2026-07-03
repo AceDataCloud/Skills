@@ -10,6 +10,7 @@ when_to_use: |
   notes, so create / append / move / delete are GATED behind an explicit
   confirmation.
 allowed_tools: [Bash]
+surfaces: [mac]
 license: Apache-2.0
 compatibility: macOS-only. No API token, no connector — Apple Notes has no cloud API. Drives the local Notes.app via AppleScript (osascript); zero external dependencies (Python 3 standard library only). Requires granting Automation access to Notes.app on first run. Does not call api.acedata.cloud.
 metadata:
@@ -22,8 +23,15 @@ metadata:
 Drives the user's **real** Apple Notes through `Notes.app` on macOS. Apple never
 shipped a cloud API for Notes, so there is nothing to OAuth into and no token to
 inject — this skill runs **on the user's own Mac** and talks to Notes.app with
-AppleScript (`osascript`). It works when Claude Code runs on macOS directly, or
-remotely through a CodingBridge node running on the user's Mac.
+AppleScript (`osascript`). It works wherever an agent runs on macOS: the
+**AceDataCloud desktop app** (which executes local tools / local MCP on the
+user's Mac), Claude Code on macOS, or a CodingBridge node on the user's Mac.
+
+> **`surfaces: [mac]`** in the frontmatter marks this skill as **macOS-desktop
+> only** — it cannot run on the web / iOS / Android / Windows surfaces (there is
+> no local `Notes.app` there). The skill/connector directory UI reads this to
+> badge the card ("macOS desktop") and steer users to install it from the macOS
+> desktop app. Absent `surfaces`, a skill is assumed available everywhere.
 
 The skill ships [`scripts/notes.py`](scripts/notes.py) — self-contained, Python
 **standard library only** (it shells out to `osascript`; no `pip install`, no
