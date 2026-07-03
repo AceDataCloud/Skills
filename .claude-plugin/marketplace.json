@@ -32,7 +32,7 @@
     },
     {
       "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web search, face transform, short URLs, HTML→single-page PDF, API guide, account management",
+      "description": "AI utility skills: LLM chat, web search, face transform, short URLs, HTML→single-page PDF, Apple Notes (macOS), API guide, account management",
       "source": "./",
       "strict": false,
       "skills": [
@@ -41,6 +41,7 @@
         "./skills/face-transform",
         "./skills/short-url",
         "./skills/onepage-pdf",
+        "./skills/apple-notes",
         "./skills/acedatacloud"
       ]
     }
