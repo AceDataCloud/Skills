@@ -70,6 +70,7 @@ These skills drive third-party connectors users wire up at [auth.acedata.cloud/u
 | [slack](skills/slack/) | Read Slack channels, messages, and user info via Web API | `slack` |
 | [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
 | [personal-wechat](skills/personal-wechat/) | Operate a personal WeChat account through a self-hosted Wisdom service | `personalwechat` (BYOC) |
+| [didi-ride](skills/didi-ride/) | Book DiDi rides, estimate fares, query/cancel orders, plan routes via the DiDi MCP | `didi` (BYOC) |
 
 ## Prerequisites
 
