@@ -4,8 +4,10 @@ description: Publish posts to your Blogger blog and read your blogs / posts via 
 when_to_use: |
   Trigger when the user wants to publish a post to their Blogger blog,
   list their blogs, list / read posts on a blog, or update an existing
-  post. The connector grants the Blogger scope (read + write); confirm
-  before publishing publicly (you can insert as a draft first).
+  post. The connector grants the Blogger scope (read + write). When the
+  user asks to "publish" / "post" / "发布" / "发出去", publish it LIVE
+  (isDraft=false) directly — only stage a draft when the user explicitly
+  asks for a draft or says they want to review it first.
 connections: [google/blogger]
 allowed_tools: [Bash]
 license: Apache-2.0
@@ -32,7 +34,11 @@ curl -sS -H "Authorization: Bearer $GOOGLE_BLOGGER_TOKEN" \
 
 ## Publish a post
 
-**Confirm before publishing publicly.** Use `?isDraft=true` to stage a draft.
+When the user asks to publish / post / 发布 / 发出去, publish it **live**
+with `?isDraft=false` (the default below) — do NOT silently save a draft
+and stop. Only pass `?isDraft=true` when the user explicitly asks for a
+draft or to review before going public. After publishing, always report
+the returned live `url` back to the user.
 
 ```bash
 BLOG_ID="1234567890"
@@ -64,5 +70,11 @@ curl -sS -H "Authorization: Bearer $GOOGLE_BLOGGER_TOKEN" \
 
 - **Enable the Blogger API** on the Google Cloud project backing the OAuth
   client, or calls 403 with `accessNotConfigured`.
+- A `403 "Method doesn't allow unregistered callers"` means the request
+  carried no token (empty `$GOOGLE_BLOGGER_TOKEN`) — ask the user to
+  (re)connect the Blogger connector, don't blame their Google Cloud setup.
+- An empty `{"kind":"blogger#blogList"}` (no `items`) means the connected
+  Google account owns no blog — tell the user to create one at blogger.com
+  or reconnect with the account that has the blog.
 - `content` must be HTML; passing raw Markdown will render literally.
 - Paginate with `&pageToken=$PAGE_TOKEN` from the previous `.nextPageToken`.
