@@ -56,7 +56,8 @@ On an auth error the cookie is expired — have the user reconnect at
 to Medium paragraph blocks: `#`/`##`→heading, `###`→sub-heading, `>`→quote,
 ```` ``` ````→code, `-`/`*`→bullet list, `1.`→numbered list, tables→aligned
 code block). Inline **bold**, *italic*, `code`, and `[links](url)` render as
-real Medium formatting (clickable links included).
+real Medium formatting (clickable links included). Bare `https://…` URLs in text
+are auto-linked too (URLs inside code spans are left untouched).
 Without a trailing `--confirm` it dry-runs. `--confirm` is honored **only as the
 last argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
@@ -83,8 +84,10 @@ to a link paragraph (never blocks the post).
 - **This is the user's real Medium account.** Confirm before any publish.
 - Markdown→Medium conversion covers headings, quotes, fenced code, bullet/
   numbered lists, images, and inline markups (bold/italic/code/links). Medium's
-  editor has no table element, so markdown tables render as an aligned monospace
-  code block — readable, but not an interactive table.
+  editor has no table element: a narrow markdown table renders as an aligned
+  monospace code block, while a wide one (long cells / URLs, which would wrap into
+  an unreadable grid) is rendered as per-row records — the first column bolded as
+  a lead-in, the remaining columns as `header: value` bullets.
 - Medium sits behind Cloudflare; an occasional 403/429 is transient — the CLI
   auto-retries once after a short pause. A *persistent* 403 means the cookie is
   genuinely expired (reconnect).

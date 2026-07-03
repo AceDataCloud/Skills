@@ -362,15 +362,20 @@ def medium_upload_image(jar, post_id, img_bytes, content_type):
     return val["fileId"], val.get("imgWidth"), val.get("imgHeight")
 
 
-# Inline markdown → Medium markups. Groups: 1/2 link, 3 bold, 4 code, 5 italic.
+# Inline markdown → Medium markups. Groups: 1/2 link, 3 bold, 4 code, 5 italic,
+# 6 bare URL (autolinked).
 _INLINE = re.compile(
     r"\[([^\]]+)\]\((https?://[^)\s]+)\)"
     r"|\*\*([^*]+)\*\*"
     r"|`([^`]+)`"
     r"|(?<![\w*])\*([^*\n]+)\*(?![\w*])"
+    r"|(https?://[^\s<>()\[\]]+)"
 )
 _TABLE_SEP = re.compile(r"^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$")
 _LIST_ITEM = re.compile(r"^\s*([-*+]|\d+\.)\s+(.*)$")
+# Medium's code column wraps past ~66 monospace chars; wider tables are rendered
+# as per-row records instead of an unreadable wrapped grid.
+_TABLE_MAX_W = 66
 
 
 def _u16(s: str) -> int:
@@ -416,6 +421,17 @@ def _inline(text: str):
         elif m.group(5) is not None:          # italic
             off += _nest(m.group(5), start)
             markups.append({"type": 2, "start": start, "end": off})
+        elif m.group(6) is not None:          # bare URL → autolink
+            url = m.group(6)
+            tail = ""
+            while url and url[-1] in ".,;:!?。，；：！？":
+                tail = url[-1] + tail
+                url = url[:-1]
+            plain.append(url); off += _u16(url)
+            markups.append({"type": 3, "start": start, "end": off,
+                            "href": url, "title": "", "rel": "", "anchorType": 0})
+            if tail:
+                plain.append(tail); off += _u16(tail)
         pos = m.end()
     if pos < len(text):
         plain.append(text[pos:])
@@ -450,6 +466,43 @@ def _render_table(lines):
     return "\n".join(body)
 
 
+def _table_paras(lines):
+    """Markdown table → Medium paragraphs. A table that fits Medium's ~66-char
+    code column keeps the aligned monospace grid; a wider one (long notes / full
+    URLs would wrap into an unreadable mess) becomes a per-row record — the first
+    cell as a bold lead-in, the remaining columns as ``header: value`` bullets.
+    Both paths stay inside the stdlib-only, no-image contract."""
+    grid = _render_table(lines)
+    if max((len(ln) for ln in grid.split("\n")), default=0) <= _TABLE_MAX_W:
+        return [{"type": 8, "text": grid}]
+    rows = [_split_row(ln) for i, ln in enumerate(lines) if i != 1]
+    header = rows[0] if rows else []
+    out = []
+    for r in rows[1:]:
+        cells = [c.strip() for c in r]
+        if not any(cells):
+            continue
+        if cells[0]:                               # lead cell → whole-cell bold
+            txt, mk = _inline(cells[0])
+            mk.append({"type": 1, "start": 0, "end": _u16(txt)})
+            out.append({"type": 1, "text": txt, "markups": mk})
+        for i in range(1, len(cells)):
+            if not cells[i]:
+                continue
+            vtxt, vmk = _inline(cells[i])
+            label = header[i].strip() if i < len(header) else ""
+            if label:                              # "label: value", label bolded
+                prefix = f"{label}: "
+                shift = _u16(prefix)
+                markups = [{"type": 1, "start": 0, "end": _u16(f"{label}:")}]
+                markups += [{**x, "start": x["start"] + shift, "end": x["end"] + shift}
+                            for x in vmk]
+                out.append({"type": 9, "text": prefix + vtxt, "markups": markups})
+            else:
+                out.append({"type": 9, "text": vtxt, "markups": vmk})
+    return out or [{"type": 8, "text": grid}]
+
+
 def _is_list(lines):
     ls = [ln for ln in lines if ln.strip()]
     return bool(ls) and all(_LIST_ITEM.match(ln) for ln in ls)
@@ -458,8 +511,8 @@ def _is_list(lines):
 def _build_deltas(jar, post_id, title, content, rehost=True):
     """Markdown → Medium paragraph deltas. Handles standalone ``![alt](url)``
     images (uploaded → type-4 image paragraph), headings, quotes, fenced code,
-    tables (→ aligned code block), bullet/ordered lists, and inline markups
-    (links/bold/italic/code) on ordinary text."""
+    tables (narrow → aligned code block; wide → per-row records), bullet/ordered
+    lists, and inline markups (links/bold/italic/code) on ordinary text."""
     paras = [{"type": 3, "text": title}]
     for block in re.split(r"\n\s*\n", content.strip()):
         b = block.strip("\n")
@@ -489,7 +542,7 @@ def _build_deltas(jar, post_id, title, content, rehost=True):
         if first.startswith("```"):
             paras.append({"type": 8, "text": re.sub(r"^```[^\n]*\n?|\n?```$", "", b)})
         elif _is_table(lines):
-            paras.append({"type": 8, "text": _render_table(lines)})
+            paras.extend(_table_paras(lines))
         elif _is_list(lines):
             for ln in lines:
                 lm = _LIST_ITEM.match(ln)
