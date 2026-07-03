@@ -71,6 +71,7 @@ These skills drive third-party connectors users wire up at [auth.acedata.cloud/u
 | [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
 | [personal-wechat](skills/personal-wechat/) | Operate a personal WeChat account through a self-hosted Wisdom service | `personalwechat` (BYOC) |
 | [wecom](skills/wecom/) | WeCom (企业微信) self-built app — contacts, app messages, WeDoc, schedules, meetings | `wecom` (BYOC) |
+| [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
 
 ## Prerequisites
 
