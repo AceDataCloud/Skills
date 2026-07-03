@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (29)
+## Available Skills (30)
 
 ### AI Music & Audio
 
@@ -50,6 +50,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
+| [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
 | [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements |
 
 ### Connectors
