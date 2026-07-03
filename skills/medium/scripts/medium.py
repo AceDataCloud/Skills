@@ -174,6 +174,32 @@ def api(method, url, jar, *, body=None, _retried=False):
     return d
 
 
+def prime_xsrf(jar) -> None:
+    """Ensure the jar carries an ``xsrf`` cookie. Captured jars frequently lack
+    it, but Medium hands one out on any GET of the site; without it the
+    ``x-xsrf-token`` header is absent and every write fails ('Missing xsrf token')."""
+    if cookie_value(jar, "xsrf"):
+        return
+    url = BASE + "/"
+    hdrs = {"User-Agent": UA, "Accept": "text/html",
+            "X-Requested-With": "XMLHttpRequest"}
+    req = urllib.request.Request(url, headers=hdrs, method="GET")
+    req.add_unredirected_header("Cookie", cookie_header(jar, url))
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            set_cookies = resp.headers.get_all("Set-Cookie") or []
+    except urllib.error.HTTPError as e:
+        set_cookies = e.headers.get_all("Set-Cookie") or []
+    except urllib.error.URLError:
+        return
+    for sc in set_cookies:
+        m = re.match(r"\s*xsrf=([^;]+)", sc)
+        if m:
+            jar.append({"name": "xsrf", "value": m.group(1).strip('"'),
+                        "domain": ".medium.com", "path": "/"})
+            return
+
+
 # ── commands ────────────────────────────────────────────────────────
 
 def md_me(jar):
@@ -336,15 +362,163 @@ def medium_upload_image(jar, post_id, img_bytes, content_type):
     return val["fileId"], val.get("imgWidth"), val.get("imgHeight")
 
 
+# Inline markdown → Medium markups. Groups: 1/2 link, 3 bold, 4 code, 5 italic,
+# 6 bare URL (autolinked).
+_INLINE = re.compile(
+    r"\[([^\]]+)\]\((https?://[^)\s]+)\)"
+    r"|\*\*([^*]+)\*\*"
+    r"|`([^`]+)`"
+    r"|(?<![\w*])\*([^*\n]+)\*(?![\w*])"
+    r"|(https?://[^\s<>()\[\]]+)"
+)
+_TABLE_SEP = re.compile(r"^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$")
+_LIST_ITEM = re.compile(r"^\s*([-*+]|\d+\.)\s+(.*)$")
+# Medium's code column wraps past ~66 monospace chars; wider tables are rendered
+# as per-row records instead of an unreadable wrapped grid.
+_TABLE_MAX_W = 66
+
+
+def _u16(s: str) -> int:
+    """Length in UTF-16 code units — Medium indexes markup offsets like JS."""
+    return len(s.encode("utf-16-le")) // 2
+
+
+def _inline(text: str):
+    """Parse inline markdown → (plain_text, markups). Emits Medium markups for
+    links (type 3), bold (1), italic (2) and inline code (10) so they render as
+    real formatting instead of literal ``**`` / ``[..](..)`` characters. Bold,
+    italic and link labels are parsed recursively so nested markup (e.g. a link
+    inside bold) is preserved as overlapping markups rather than dropped."""
+    plain: list[str] = []
+    markups: list[dict] = []
+    pos = 0
+    off = 0  # running UTF-16 offset into the assembled plain text
+
+    def _nest(inner: str, start: int):
+        sub_plain, sub_mk = _inline(inner)
+        plain.append(sub_plain)
+        for x in sub_mk:
+            markups.append({**x, "start": x["start"] + start, "end": x["end"] + start})
+        return _u16(sub_plain)
+
+    for m in _INLINE.finditer(text):
+        if m.start() > pos:
+            seg = text[pos:m.start()]
+            plain.append(seg)
+            off += _u16(seg)
+        start = off
+        if m.group(1) is not None:            # link
+            off += _nest(m.group(1), start)
+            markups.append({"type": 3, "start": start, "end": off,
+                            "href": m.group(2), "title": "", "rel": "", "anchorType": 0})
+        elif m.group(3) is not None:          # bold
+            off += _nest(m.group(3), start)
+            markups.append({"type": 1, "start": start, "end": off})
+        elif m.group(4) is not None:          # inline code — literal, no recursion
+            inner = m.group(4)
+            plain.append(inner); off += _u16(inner)
+            markups.append({"type": 10, "start": start, "end": off})
+        elif m.group(5) is not None:          # italic
+            off += _nest(m.group(5), start)
+            markups.append({"type": 2, "start": start, "end": off})
+        elif m.group(6) is not None:          # bare URL → autolink
+            url = m.group(6)
+            tail = ""
+            while url and url[-1] in ".,;:!?。，；：！？":
+                tail = url[-1] + tail
+                url = url[:-1]
+            plain.append(url); off += _u16(url)
+            markups.append({"type": 3, "start": start, "end": off,
+                            "href": url, "title": "", "rel": "", "anchorType": 0})
+            if tail:
+                plain.append(tail); off += _u16(tail)
+        pos = m.end()
+    if pos < len(text):
+        plain.append(text[pos:])
+    return "".join(plain), markups
+
+
+def _is_table(lines):
+    return (len(lines) >= 2 and "|" in lines[0]
+            and "-" in lines[1] and _TABLE_SEP.match(lines[1]) is not None)
+
+
+def _split_row(line):
+    line = line.strip()
+    if line.startswith("|"):
+        line = line[1:]
+    if line.endswith("|"):
+        line = line[:-1]
+    return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", line)]
+
+
+def _render_table(lines):
+    """Markdown table → aligned monospace text (rendered as a PRE code block, the
+    closest faithful representation since Medium's editor has no table element)."""
+    rows = [_split_row(ln) for i, ln in enumerate(lines) if i != 1]
+    ncol = max(len(r) for r in rows)
+    rows = [r + [""] * (ncol - len(r)) for r in rows]
+    widths = [max(len(r[c]) for r in rows) for c in range(ncol)]
+    def fmt(r):
+        return " | ".join(r[c].ljust(widths[c]) for c in range(ncol)).rstrip()
+    sep = "-+-".join("-" * widths[c] for c in range(ncol))
+    body = [fmt(rows[0]), sep] + [fmt(r) for r in rows[1:]]
+    return "\n".join(body)
+
+
+def _table_paras(lines):
+    """Markdown table → Medium paragraphs. A table that fits Medium's ~66-char
+    code column keeps the aligned monospace grid; a wider one (long notes / full
+    URLs would wrap into an unreadable mess) becomes a per-row record — the first
+    cell as a bold lead-in, the remaining columns as ``header: value`` bullets.
+    Both paths stay inside the stdlib-only, no-image contract."""
+    grid = _render_table(lines)
+    if max((len(ln) for ln in grid.split("\n")), default=0) <= _TABLE_MAX_W:
+        return [{"type": 8, "text": grid}]
+    rows = [_split_row(ln) for i, ln in enumerate(lines) if i != 1]
+    header = rows[0] if rows else []
+    out = []
+    for r in rows[1:]:
+        cells = [c.strip() for c in r]
+        if not any(cells):
+            continue
+        if cells[0]:                               # lead cell → whole-cell bold
+            txt, mk = _inline(cells[0])
+            mk.append({"type": 1, "start": 0, "end": _u16(txt)})
+            out.append({"type": 1, "text": txt, "markups": mk})
+        for i in range(1, len(cells)):
+            if not cells[i]:
+                continue
+            vtxt, vmk = _inline(cells[i])
+            label = header[i].strip() if i < len(header) else ""
+            if label:                              # "label: value", label bolded
+                prefix = f"{label}: "
+                shift = _u16(prefix)
+                markups = [{"type": 1, "start": 0, "end": _u16(f"{label}:")}]
+                markups += [{**x, "start": x["start"] + shift, "end": x["end"] + shift}
+                            for x in vmk]
+                out.append({"type": 9, "text": prefix + vtxt, "markups": markups})
+            else:
+                out.append({"type": 9, "text": vtxt, "markups": vmk})
+    return out or [{"type": 8, "text": grid}]
+
+
+def _is_list(lines):
+    ls = [ln for ln in lines if ln.strip()]
+    return bool(ls) and all(_LIST_ITEM.match(ln) for ln in ls)
+
+
 def _build_deltas(jar, post_id, title, content, rehost=True):
-    """Markdown → Medium paragraph deltas (image-aware). A standalone
-    ``![alt](url)`` block is uploaded to Medium and emitted as an image
-    paragraph (type 4); on upload failure it degrades to a link paragraph."""
+    """Markdown → Medium paragraph deltas. Handles standalone ``![alt](url)``
+    images (uploaded → type-4 image paragraph), headings, quotes, fenced code,
+    tables (narrow → aligned code block; wide → per-row records), bullet/ordered
+    lists, and inline markups (links/bold/italic/code) on ordinary text."""
     paras = [{"type": 3, "text": title}]
     for block in re.split(r"\n\s*\n", content.strip()):
         b = block.strip("\n")
         if not b.strip():
             continue
+        lines = b.split("\n")
         first = b.lstrip()
         m = _MD_IMG.fullmatch(first)
         if m:
@@ -367,19 +541,34 @@ def _build_deltas(jar, post_id, title, content, rehost=True):
             continue
         if first.startswith("```"):
             paras.append({"type": 8, "text": re.sub(r"^```[^\n]*\n?|\n?```$", "", b)})
+        elif _is_table(lines):
+            paras.extend(_table_paras(lines))
+        elif _is_list(lines):
+            for ln in lines:
+                lm = _LIST_ITEM.match(ln)
+                if not lm:
+                    continue
+                ptype = 10 if lm.group(1).endswith(".") else 9
+                txt, mk = _inline(lm.group(2).strip())
+                paras.append({"type": ptype, "text": txt, "markups": mk})
         elif first.startswith("# "):
-            paras.append({"type": 12, "text": first[2:].strip()})
+            txt, mk = _inline(first[2:].strip())
+            paras.append({"type": 2, "text": txt, "markups": mk})
         elif first.startswith("## "):
-            paras.append({"type": 2, "text": first[3:].strip()})
+            txt, mk = _inline(first[3:].strip())
+            paras.append({"type": 2, "text": txt, "markups": mk})
         elif first.startswith("### "):
-            paras.append({"type": 3, "text": first[4:].strip()})
+            txt, mk = _inline(first[4:].strip())
+            paras.append({"type": 3, "text": txt, "markups": mk})
         elif first.startswith("> "):
-            paras.append({"type": 6, "text": first[2:].strip()})
+            txt, mk = _inline(first[2:].strip())
+            paras.append({"type": 6, "text": txt, "markups": mk})
         else:
-            paras.append({"type": 1, "text": b.replace("\n", " ").strip()})
+            txt, mk = _inline(b.replace("\n", " ").strip())
+            paras.append({"type": 1, "text": txt, "markups": mk})
     out_deltas = []
     for i, p in enumerate(paras):
-        para = {"type": p["type"], "text": p["text"], "markups": []}
+        para = {"type": p["type"], "text": p["text"], "markups": p.get("markups") or []}
         if "layout" in p:
             para["layout"] = p["layout"]
         if "metadata" in p:
@@ -412,6 +601,12 @@ def cmd_publish(jar, args):
                     "--draft-only it publishes a PUBLIC story on the user's account.",
         })
         return
+
+    # Captured jars often lack an xsrf cookie; mint one so writes don't 400.
+    prime_xsrf(jar)
+    if not cookie_value(jar, "xsrf"):
+        die("could not obtain an xsrf token from Medium (cookie may be expired) — "
+            "reconnect at https://auth.acedata.cloud/user/connections.")
 
     # 1. create empty draft
     d = api("POST", f"{BASE}/new-story", jar, body={})
