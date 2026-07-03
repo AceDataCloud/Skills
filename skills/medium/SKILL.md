@@ -25,7 +25,9 @@ The connector injects the cookie jar as an env var:
 
 - `MEDIUM_COOKIES` — a JSON array of cookies (`sid`, `uid`, `xsrf`). **Secret —
   never echo or print it.** The CLI echoes the `xsrf` cookie as the
-  `x-xsrf-token` header on writes for you.
+  `x-xsrf-token` header on writes for you. If the captured jar has no `xsrf`
+  cookie (common), the CLI mints one automatically before writing, so publishes
+  no longer fail with "Missing xsrf token".
 
 ## CLI
 
@@ -51,7 +53,10 @@ On an auth error the cookie is expired — have the user reconnect at
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 
 `publish` writes to the user's real account. Content is **Markdown** (converted
-to Medium paragraph blocks: `#`→H1, `##`→H2, `>`→quote, ```` ``` ````→code).
+to Medium paragraph blocks: `#`/`##`→heading, `###`→sub-heading, `>`→quote,
+```` ``` ````→code, `-`/`*`→bullet list, `1.`→numbered list, tables→aligned
+code block). Inline **bold**, *italic*, `code`, and `[links](url)` render as
+real Medium formatting (clickable links included).
 Without a trailing `--confirm` it dry-runs. `--confirm` is honored **only as the
 last argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
@@ -76,9 +81,10 @@ to a link paragraph (never blocks the post).
 ## Gotchas
 
 - **This is the user's real Medium account.** Confirm before any publish.
-- Markdown→Medium conversion is paragraph-level (headings, quotes, code, body);
-  complex inline formatting / images aren't converted — the user can polish in
-  the Medium editor before going public.
+- Markdown→Medium conversion covers headings, quotes, fenced code, bullet/
+  numbered lists, images, and inline markups (bold/italic/code/links). Medium's
+  editor has no table element, so markdown tables render as an aligned monospace
+  code block — readable, but not an interactive table.
 - Medium sits behind Cloudflare; an occasional 403/429 is transient — the CLI
   auto-retries once after a short pause. A *persistent* 403 means the cookie is
   genuinely expired (reconnect).
