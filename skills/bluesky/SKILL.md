@@ -22,20 +22,33 @@ Privacy and Security → App Passwords**, NOT the account login password) and
 `$BLUESKY_SERVICE` (the PDS base URL, default `https://bsky.social`).
 
 Errors come back as JSON `{"error":"<name>","message":"<detail>"}` — show it
-verbatim. A `401 {"error":"AuthenticationRequired"}` on session creation means
-the handle or App Password is wrong/revoked → the user must re-connect the
-Bluesky connector (or generate a fresh App Password).
+verbatim. A `401 {"error":"AuthenticationRequired","message":"Invalid identifier
+or password"}` on session creation means the identifier or App Password is
+wrong/revoked. The **#1 cause is a bare handle**: the identifier must be the
+FULL handle (`alice.bsky.social`), a DID, or the account email — a bare
+`alice` will NOT resolve. Step 1 auto-appends `.bsky.social` to a bare handle
+on the default PDS; if it still fails, the user must re-connect the Bluesky
+connector with the full handle (or generate a fresh App Password).
 
 ## Step 1 — always create a session first
 
 Everything needs a short-lived `accessJwt` and your account `did`. Do this once
-per task and reuse the values:
+per task and reuse the values. The identifier must be a full handle, DID or
+email — normalize a bare username (no `.` / `@`) to `<name>.bsky.social` when
+using the default PDS, otherwise `createSession` returns `AuthenticationRequired`:
 
 ```bash
 SVC="${BLUESKY_SERVICE:-https://bsky.social}"
+ID="$BLUESKY_HANDLE"
+# Bare username → full handle on the default bsky.social PDS. A dotted handle
+# (custom domain), a DID (`did:...`) or an email are already valid — leave them.
+case "$ID" in
+  *.* | *@* | did:*) : ;;
+  *) [ "$SVC" = "https://bsky.social" ] && ID="$ID.bsky.social" ;;
+esac
 SESSION=$(curl -sS -X POST "$SVC/xrpc/com.atproto.server.createSession" \
   -H "Content-Type: application/json" \
-  -d "$(jq -n --arg id "$BLUESKY_HANDLE" --arg pw "$BLUESKY_APP_PASSWORD" \
+  -d "$(jq -n --arg id "$ID" --arg pw "$BLUESKY_APP_PASSWORD" \
         '{identifier:$id, password:$pw}')")
 echo "$SESSION" | jq '{did, handle, active}'
 JWT=$(echo "$SESSION" | jq -r .accessJwt)
@@ -43,7 +56,9 @@ DID=$(echo "$SESSION" | jq -r .did)
 ```
 
 If `JWT` / `DID` are empty or `null`, print the raw `$SESSION` (it contains the
-error) and stop — do not continue to post.
+error) and stop — do not continue to post. On `AuthenticationRequired`, tell the
+user to reconnect the connector using their **full** handle (e.g.
+`name.bsky.social`, not `name`) and a valid App Password.
 
 ## Post to Bluesky
 
@@ -64,8 +79,9 @@ curl -sS -X POST "$SVC/xrpc/com.atproto.repo.createRecord" \
 ```
 
 The returned `uri` looks like `at://did:plc:xxxx/app.bsky.feed.post/<rkey>`. The
-public web URL is `https://bsky.app/profile/$BLUESKY_HANDLE/post/<rkey>` where
-`<rkey>` is the last path segment of the `uri`.
+public web URL is `https://bsky.app/profile/$ID/post/<rkey>` where `$ID` is the
+normalized handle from Step 1 (or use the `did`) and `<rkey>` is the last path
+segment of the `uri`.
 
 ### Clickable links, mentions and hashtags (facets)
 
