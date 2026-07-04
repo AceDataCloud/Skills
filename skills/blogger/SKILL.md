@@ -78,3 +78,17 @@ curl -sS -H "Authorization: Bearer $GOOGLE_BLOGGER_TOKEN" \
   or reconnect with the account that has the blog.
 - `content` must be HTML; passing raw Markdown will render literally.
 - Paginate with `&pageToken=$PAGE_TOKEN` from the previous `.nextPageToken`.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="blogger", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

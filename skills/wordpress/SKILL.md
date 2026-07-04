@@ -141,3 +141,17 @@ echo "media id=$MEDIA_ID"
 - **Never publish silently.** Even if the user says "post it", prefer creating a
   draft and returning the `wp-admin` edit link unless they explicitly asked to
   go live.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="wordpress", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

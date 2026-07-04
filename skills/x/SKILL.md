@@ -107,3 +107,17 @@ python3 $X delete --id 123456 --confirm                        # delete one of M
   suspended. Keep volume human-like.
 - **Never print `X_COOKIES`** — it is full account access.
 - **DMs are intentionally not exposed** by this skill.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="message", channel="x", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

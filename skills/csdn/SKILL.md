@@ -91,3 +91,17 @@ image that fails to upload keeps its original URL (never blocks the post).
 - **Never print `CSDN_COOKIES`** — it is full account access.
 - **ToS**: cookie automation acts only on the user's own account with their own
   captured cookie; the user owns that risk.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="csdn", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

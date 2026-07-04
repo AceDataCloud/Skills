@@ -218,3 +218,17 @@ python3 $BLOG edit-answer --id <answer-id> --content-file ans.html --confirm   #
 - **Scope**: Zhihu only. Other Chinese platforms (掘金 / CSDN / …) ship as their
   own per-platform skills (e.g. `csdn`, `juejin`), each with its own connector —
   not a `--platform` switch here.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="zhihu", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

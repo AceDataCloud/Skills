@@ -93,3 +93,17 @@ to a link paragraph (never blocks the post).
   genuinely expired (reconnect).
 - **Never print `MEDIUM_COOKIES`** — it is full account access.
 - **ToS**: acts only on the user's own account with their own captured cookie.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="medium", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

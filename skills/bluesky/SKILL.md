@@ -112,3 +112,17 @@ extracts the `rkey`. An empty result / `deleted:true` is success.
   there; all XRPC calls target that host, not `bsky.social`.
 - The CLI creates a fresh short-lived session on **every** invocation, so an
   expiring `accessJwt` is never a concern — just run the command again.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="message", channel="bluesky", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.
