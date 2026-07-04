@@ -24,14 +24,22 @@ Instagram publishes only **images / videos / reels** to a **professional**
 
 ### Resolve the Instagram account id
 
-If `$INSTAGRAM_IG_USER_ID` is set, use it. Otherwise derive it from the linked Page:
+If `$INSTAGRAM_IG_USER_ID` is set, use it. Otherwise derive it from the token —
+try the **Page-token** path first (`/me` is the Page), then fall back to the
+**user-token** path (`/me/accounts` → linked Page → IG account), so either token
+type the connector accepts resolves cleanly:
 
 ```bash
 if [ -n "$INSTAGRAM_IG_USER_ID" ]; then
   IGID="$INSTAGRAM_IG_USER_ID"
 else
-  PAGE=$(curl -sS "https://graph.facebook.com/v21.0/me/accounts?access_token=$INSTAGRAM_ACCESS_TOKEN" | jq -r '.data[0].id')
-  IGID=$(curl -sS "https://graph.facebook.com/v21.0/$PAGE?fields=instagram_business_account&access_token=$INSTAGRAM_ACCESS_TOKEN" | jq -r '.instagram_business_account.id')
+  # Page access token: /me IS the Page, read its linked IG account directly
+  IGID=$(curl -sS "https://graph.facebook.com/v21.0/me?fields=instagram_business_account&access_token=$INSTAGRAM_ACCESS_TOKEN" | jq -r '.instagram_business_account.id // empty')
+  if [ -z "$IGID" ]; then
+    # User access token: list the managed Page, then its linked IG account
+    PAGE=$(curl -sS "https://graph.facebook.com/v21.0/me/accounts?access_token=$INSTAGRAM_ACCESS_TOKEN" | jq -r '.data[0].id // empty')
+    IGID=$(curl -sS "https://graph.facebook.com/v21.0/$PAGE?fields=instagram_business_account&access_token=$INSTAGRAM_ACCESS_TOKEN" | jq -r '.instagram_business_account.id // empty')
+  fi
 fi
 echo "ig_user_id=$IGID"
 ```
