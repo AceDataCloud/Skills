@@ -1,6 +1,6 @@
 ---
 name: bluesky
-description: Publish, delete and read your own posts on Bluesky via the AT Protocol (XRPC). Use when the user wants to post to their Bluesky account, cross-post an article as a short dev-focused post, delete a post, or list their own recent posts with engagement stats (reposts, likes, replies). Auth uses the user's handle plus an App Password.
+description: Publish (with optional images), delete and read your own posts on Bluesky via the AT Protocol (XRPC). Use when the user wants to post to their Bluesky account (text or 带图 / with a picture), cross-post an article as a short dev-focused post, attach an image, delete a post, or list their own recent posts with engagement stats (reposts, likes, replies). Auth uses the user's handle plus an App Password.
 when_to_use: |
   Trigger when the user wants to publish a post to their Bluesky account,
   delete one, or review their own recent posts and engagement. Bluesky runs on
@@ -12,152 +12,103 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
-Call the **Bluesky AT Protocol** XRPC endpoints with `curl + jq`. Three
-connector credentials are injected: `$BLUESKY_HANDLE` (e.g. `name.bsky.social`),
-`$BLUESKY_APP_PASSWORD` (an App Password created in Bluesky **Settings →
-Privacy and Security → App Passwords**, NOT the account login password) and
-`$BLUESKY_SERVICE` (the PDS base URL, default `https://bsky.social`).
+Everything runs through the shipped CLI [`scripts/bluesky.py`](scripts/bluesky.py)
+— self-contained (`requests` + `Pillow`, both preinstalled in the sandbox). One
+call creates the session, auto-computes clickable **facets** (links, #hashtags,
+@mentions with correct UTF-8 byte offsets), and for image posts downloads the
+file, **resizes/recompresses it to Bluesky's ~1 MB blob limit**, `uploadBlob`s it
+and builds the `app.bsky.embed.images` embed — so there's no fragile
+`curl + jq + heredoc` to hand-assemble (the old inline recipe kept breaking on
+shell quoting, especially once an image + facets were involved).
 
-Errors come back as JSON `{"error":"<name>","message":"<detail>"}` — show it
-verbatim. A `401 {"error":"AuthenticationRequired","message":"Invalid identifier
-or password"}` on session creation means the identifier or App Password is
-wrong/revoked. The **#1 cause is a bare handle**: the identifier must be the
-FULL handle (`alice.bsky.social`), a DID, or the account email — a bare
-`alice` will NOT resolve. Step 1 auto-appends `.bsky.social` to a bare handle
-on the default PDS; if it still fails, the user must re-connect the Bluesky
-connector with the full handle (or generate a fresh App Password).
+Three connector credentials are injected: `$BLUESKY_HANDLE`
+(e.g. `name.bsky.social`), `$BLUESKY_APP_PASSWORD` (an App Password from Bluesky
+**Settings → Privacy and Security → App Passwords**, NOT the login password) and
+`$BLUESKY_SERVICE` (PDS base URL, default `https://bsky.social`). The CLI reads
+them from the env — never echo them.
 
-## Step 1 — always create a session first
-
-Everything needs a short-lived `accessJwt` and your account `did`. Do this once
-per task and reuse the values. The identifier must be a full handle, DID or
-email — normalize a bare username (no `.` / `@`) to `<name>.bsky.social` when
-using the default PDS, otherwise `createSession` returns `AuthenticationRequired`:
-
-```bash
-SVC="${BLUESKY_SERVICE:-https://bsky.social}"
-ID="$BLUESKY_HANDLE"
-# Bare username → full handle on the default bsky.social PDS. A dotted handle
-# (custom domain), a DID (`did:...`) or an email are already valid — leave them.
-case "$ID" in
-  *.* | *@* | did:*) : ;;
-  *) [ "$SVC" = "https://bsky.social" ] && ID="$ID.bsky.social" ;;
-esac
-SESSION=$(curl -sS -X POST "$SVC/xrpc/com.atproto.server.createSession" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg id "$ID" --arg pw "$BLUESKY_APP_PASSWORD" \
-        '{identifier:$id, password:$pw}')")
-echo "$SESSION" | jq '{did, handle, active}'
-JWT=$(echo "$SESSION" | jq -r .accessJwt)
-DID=$(echo "$SESSION" | jq -r .did)
+```sh
+BSKY="$SKILL_DIR/scripts/bluesky.py"
+python3 "$BSKY" whoami          # verify the session → {did, handle, service}
 ```
 
-If `JWT` / `DID` are empty or `null`, print the raw `$SESSION` (it contains the
-error) and stop — do not continue to post. On `AuthenticationRequired`, tell the
-user to reconnect the connector using their **full** handle (e.g.
-`name.bsky.social`, not `name`) and a valid App Password.
+If `whoami` fails with `session_failed` / `AuthenticationRequired`, the
+identifier or App Password is wrong. The **#1 cause is a bare handle** — the CLI
+auto-appends `.bsky.social` to a bare username on the default PDS, but if it
+still fails the user must reconnect the connector with their **full** handle
+(`name.bsky.social`, a custom domain, a DID, or the account email) and a valid
+App Password.
 
-## Post to Bluesky
+## Post — text, images and links in one call
 
-**Confirm the text with the user before posting.** Text is limited to **300
-graphemes**; longer text → `400 {"error":"InvalidRequest"}`. `createdAt` must be
-an ISO-8601 UTC timestamp.
+**Confirm the text with the user before posting** (it publishes as their real
+account). Text ≤ **300 graphemes**. Clickable links / #hashtags / @mentions are
+turned into facets automatically — just write them in the text, no byte-offset
+math needed.
 
-```bash
-TEXT="Hello Bluesky 👋 shipping with the AT Protocol"
-NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
-curl -sS -X POST "$SVC/xrpc/com.atproto.repo.createRecord" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg did "$DID" --arg text "$TEXT" --arg now "$NOW" \
-        '{repo:$did, collection:"app.bsky.feed.post",
-          record:{ "$type":"app.bsky.feed.post", text:$text, createdAt:$now, langs:["en"] }}')" \
-  | jq '{uri, cid}'
+```sh
+# plain text post
+python3 "$BSKY" post --text "Hello Bluesky 👋 shipping with the AT Protocol"
+
+# 带图发送 / post WITH an image (URL or local path) — the image is downloaded,
+# resized to fit the blob limit, uploaded and embedded automatically:
+python3 "$BSKY" post \
+  --text "Stop wiring 3 image APIs. One endpoint → posters, cards, mockups. https://platform.acedata.cloud/documents/openai-images-generations-integration #AI #API" \
+  --image "https://cdn.acedata.cloud/xxxx.png" --alt "AI image API hero"
+
+# up to 4 images, each with its own --alt (paired by order)
+python3 "$BSKY" post --text "gallery" --image a.png --alt "one" --image b.png --alt "two"
 ```
 
-The returned `uri` looks like `at://did:plc:xxxx/app.bsky.feed.post/<rkey>`. The
-public web URL is `https://bsky.app/profile/$ID/post/<rkey>` where `$ID` is the
-normalized handle from Step 1 (or use the `did`) and `<rkey>` is the last path
-segment of the `uri`.
+Multi-line text or lots of emoji? Skip shell-quoting headaches by writing the
+text to a file and using `--text-file` (or pipe via `--text -`):
 
-### Clickable links, mentions and hashtags (facets)
+```sh
+cat > /tmp/post.txt <<'EOF'
+Line one 🎨
 
-Plain URLs/hashtags in `text` are shown but **not clickable** — Bluesky needs
-`facets` with UTF-8 **byte** offsets. Add a hashtag link like this (byteStart/
-byteEnd are byte indices into the UTF-8 text, not character indices):
-
-```bash
-# text = "New post about #ai" — "#ai" starts at byte 15, ends at byte 18
-curl -sS -X POST "$SVC/xrpc/com.atproto.repo.createRecord" \
-  -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
-  -d "$(jq -n --arg did "$DID" --arg now "$NOW" '
-    {repo:$did, collection:"app.bsky.feed.post",
-     record:{ "$type":"app.bsky.feed.post", text:"New post about #ai", createdAt:$now,
-       facets:[ { index:{byteStart:15, byteEnd:18},
-                  features:[{ "$type":"app.bsky.richtext.facet#tag", tag:"ai" }] } ] }}')" \
-  | jq '{uri, cid}'
+Line two with a link https://platform.acedata.cloud #AI
+EOF
+python3 "$BSKY" post --text-file /tmp/post.txt --image "https://cdn.acedata.cloud/xxxx.png"
 ```
 
-For a link, use feature `app.bsky.richtext.facet#link` with a `uri` field; for a
-mention, `app.bsky.richtext.facet#mention` with a `did`. Compute byte offsets
-with e.g. `printf '%s' "$prefix" | wc -c`.
+Success prints
+`{"posted":true,"uri":"at://…","url":"https://bsky.app/profile/<handle>/post/<rkey>", ...}`.
+The `url` is the public, shareable link — hand it to the user verbatim.
 
 ## List my recent posts + engagement
 
-```bash
-curl -sS "$SVC/xrpc/app.bsky.feed.getAuthorFeed?actor=$DID&limit=20&filter=posts_no_replies" \
-  -H "Authorization: Bearer $JWT" \
-  | jq '.feed[] | {uri: .post.uri,
-                   text: .post.record.text,
-                   reposts: .post.repostCount,
-                   likes: .post.likeCount,
-                   replies: .post.replyCount,
-                   at: .post.indexedAt}'
+```sh
+python3 "$BSKY" list --limit 20                    # default filter: posts_no_replies
+python3 "$BSKY" list --limit 50 --filter posts_with_media
 ```
 
-`limit` max 100. `filter` options: `posts_with_replies`, `posts_no_replies`,
-`posts_with_media`, `posts_and_author_threads`.
+`--filter`: `posts_no_replies` | `posts_with_replies` | `posts_with_media` |
+`posts_and_author_threads`. `--limit` max 100.
 
 ## Delete a post
 
-`deleteRecord` needs the `rkey` (the last path segment of the post `uri`):
-
-```bash
-POST_URI="at://$DID/app.bsky.feed.post/3kabc123xyz"
-RKEY="${POST_URI##*/}"
-curl -sS -X POST "$SVC/xrpc/com.atproto.repo.deleteRecord" \
-  -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
-  -d "$(jq -n --arg did "$DID" --arg rkey "$RKEY" \
-        '{repo:$did, collection:"app.bsky.feed.post", rkey:$rkey}')" \
-  | jq '{deleted: true, rkey: "'"$RKEY"'"}'
+```sh
+python3 "$BSKY" delete --uri "at://did:plc:xxxx/app.bsky.feed.post/3kabc123xyz"
 ```
 
-An empty `{}` response is success. `400 {"error":"InvalidRequest"}` usually
-means the record is already gone or the `rkey` is wrong.
-
-## Attaching images (optional)
-
-Upload each image via `POST $SVC/xrpc/com.atproto.repo.uploadBlob`
-(`Content-Type: image/jpeg`, raw bytes body, Bearer `$JWT`) → returns a `blob`
-object. Then set `record.embed` to
-`{ "$type":"app.bsky.embed.images", images:[{ alt:"<desc>", image:<blob> }] }`.
-Max 4 images per post; each blob ≲ 1 MB (resize/compress first).
+Pass the full `at://…` post `uri` (from `list` or a prior `post`); the CLI
+extracts the `rkey`. An empty result / `deleted:true` is success.
 
 ## Gotchas
 
 - **App Password, not account password:** creating a session with the real
   login password may be rejected or trip 2FA. Always the App Password from
   Settings → App Passwords.
-- **Byte offsets, not char offsets:** facet `byteStart`/`byteEnd` are UTF-8
-  byte indices — emoji and CJK take multiple bytes. Get them wrong and the
-  link highlights the wrong span.
+- **Facets & image resizing are automatic** — the CLI computes link/#tag/@mention
+  byte offsets and shrinks oversized images to the ~1 MB blob limit for you.
 - **300 graphemes**, counted as user-perceived characters (emoji = 1).
 - **Rate limits:** the PDS rate-limits writes per account; space out bulk posts
   or you'll get `429 {"error":"RateLimitExceeded"}`.
 - **Self-hosted PDS:** if the user runs their own PDS, `$BLUESKY_SERVICE` points
   there; all XRPC calls target that host, not `bsky.social`.
-- The `accessJwt` is short-lived (~2h). For a single task it's fine; if it
-  expires mid-task, just re-run Step 1.
+- The CLI creates a fresh short-lived session on **every** invocation, so an
+  expiring `accessJwt` is never a concern — just run the command again.
