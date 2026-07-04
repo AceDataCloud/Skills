@@ -19,25 +19,26 @@ metadata:
 # x — read & post on X (Twitter) via your own cookies
 
 Drives the user's **real** X account through X's internal web API via
-[`twikit`](https://github.com/d60/twikit), authenticated by the login cookie they
-captured with the ACE extension. No official API key, no cost.
+[`tweety-ns`](https://github.com/mahrtayyab/tweety), authenticated by the login
+cookie they captured with the ACE extension. No official API key, no cost.
 
-> ⚠️ **Not yet E2E-verified.** Built against twikit's documented API but not run
-> against a live account at build time. The first live run is the verification —
-> if X's internal API drifted it surfaces as a clear error, not silent breakage.
+> ⚠️ **Not yet E2E-verified.** Built against tweety-ns's documented API but not
+> run against a live account at build time. The first live run is the
+> verification — if X's internal API drifted it surfaces as a clear error, not
+> silent breakage.
 
 The connector injects the cookie jar as an env var:
 
 - `X_COOKIES` — a JSON array of cookies (needs at least `auth_token` + `ct0`).
   **Secret — full account access. Never echo or print it.**
 
-## Setup — install twikit once per session
+## Setup — call the shipped CLI
 
-`twikit` may not be preinstalled; bootstrap it (same pattern as the telegram
-skill), then call the shipped CLI:
+`tweety-ns` is preinstalled in the sandbox. If it's ever missing, bootstrap it
+(same pattern as the telegram skill), then call the CLI:
 
 ```sh
-python3 -c "import twikit" 2>/dev/null || pip install --user --quiet twikit 2>/dev/null || true
+python3 -c "import tweety" 2>/dev/null || pip install --user --quiet tweety-ns 2>/dev/null || true
 X=$SKILL_DIR/scripts/x.py
 python3 $X whoami          # who is logged in
 ```
@@ -48,13 +49,13 @@ python3 $X whoami          # who is logged in
 python3 $X whoami                                            # the logged-in account
 python3 $X search --query "ai agents" --product Latest --limit 20   # Top | Latest | Media
 python3 $X search-users --query "openai" --limit 10
-python3 $X timeline --limit 20                               # my home timeline
-python3 $X user-tweets --user elonmusk --type Tweets --limit 20     # Tweets|Replies|Media|Likes
-python3 $X tweet --id 1234567890123456789                    # single tweet detail
-python3 $X trends --category trending --limit 20             # trending|for-you|news|sports|entertainment
+python3 $X timeline --limit 20                               # my home timeline (latest)
+python3 $X user-tweets --user elonmusk --type Tweets --limit 20     # Tweets | Replies | Media
+python3 $X tweet --id 1234567890123456789                    # single tweet (id or URL)
+python3 $X trends --limit 20                                 # local trending topics
 ```
 
-`--user` accepts either an `@screen_name` (the `@` is optional) or a numeric id.
+`--user` accepts an `@screen_name` (the `@` is optional) or a numeric id.
 
 ## Verify the connection first
 
@@ -79,7 +80,7 @@ python3 $X post --text "hello world"                          # dry-run
 python3 $X post --text "hello world" --confirm                # LIVE tweet
 python3 $X post --text "look at this" --media a.jpg,b.png --confirm     # up to 4 images (or 1 video)
 python3 $X post --text "great point" --reply-to 123456 --confirm        # reply
-python3 $X post --text "worth reading" --quote-url https://x.com/u/status/123 --confirm  # quote
+python3 $X post --text "worth reading" --quote https://x.com/u/status/123 --confirm  # quote (id or URL)
 python3 $X thread --text "1/2 first" --text "2/2 second" --confirm       # thread (2+ segments)
 python3 $X like --id 123456 --confirm
 python3 $X retweet --id 123456 --confirm
@@ -98,12 +99,14 @@ python3 $X delete --id 123456 --confirm                        # delete one of M
 - **This is the user's real X account.** Confirm before any write — posts are
   immediate and public.
 - **Not E2E-verified** (see the warning above) — expect to validate the first run.
-- **twikit is a scraper of X's non-public API.** It can break when X changes its
-  internal endpoints. A `Couldn't get KEY_BYTE indices` / transaction-id error
-  means twikit needs upgrading: `pip install --user -U twikit`. An auth error
-  means the cookie expired → reconnect.
+- **tweety-ns is a scraper of X's non-public API.** It can break when X changes
+  its internal endpoints (though it is actively maintained). A "Couldn't get
+  … indices" / transaction-id error means tweety needs upgrading:
+  `pip install --user -U tweety-ns`. An auth error means the cookie expired →
+  reconnect.
 - **ToS / rate-limit / ban risk.** This acts through the web API, not the
   official API — high-frequency automation can get the account rate-limited or
-  suspended. Keep volume human-like.
-- **Never print `X_COOKIES`** — it is full account access.
+  set to read-only / suspended. Keep volume human-like.
+- **Never print `X_COOKIES`** — it is full account access. The CLI writes the
+  session to an ephemeral temp dir and deletes it; the cookie is never left on disk.
 - **DMs are intentionally not exposed** by this skill.
