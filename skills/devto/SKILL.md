@@ -76,3 +76,17 @@ curl -sS -H "api-key: $DEVTO_API_KEY" -H "Accept: application/vnd.forem.api-v1+j
   bulk publishes or you'll get `429`.
 - `body_markdown` is the source of truth — if you put a `---` front-matter block
   at the top, its fields override the JSON `article` fields.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="devto", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

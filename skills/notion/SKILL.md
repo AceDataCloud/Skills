@@ -120,3 +120,17 @@ curl -sS -X POST "https://api.notion.com/v1/pages" \
 - Most write failures (400/404) come from a property type mismatch —
   e.g. sending `{"select": "Open"}` instead of `{"select": {"name": "Open"}}`.
   Read the database schema once via `GET /v1/databases/<id>` if unsure.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="document", channel="notion", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

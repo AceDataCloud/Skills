@@ -73,3 +73,17 @@ python3 $JJ publish --title "标题" --content-file a.md \
 - Publishing without a category + tag is rejected in 审核; prefer `--draft-only`.
 - **Never print `JUEJIN_COOKIES`** — it is full account access.
 - **ToS**: acts only on the user's own account with their own captured cookie.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="juejin", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

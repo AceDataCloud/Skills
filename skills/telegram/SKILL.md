@@ -122,3 +122,17 @@ user verbatim as the confirmation prompt.
   return an error (no shareable link exists).
 - **`edit`/`delete`** generally only apply to the user's own messages (admins can delete others
   in groups they manage).
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="message", channel="telegram", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.

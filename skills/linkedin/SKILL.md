@@ -71,3 +71,17 @@ If the versioned endpoint is unavailable for the app, the older
   Page posts need `w_organization_social` + an admin role (not in this connector).
 - The `LinkedIn-Version` header is mandatory for `/rest/*`; a stale value
   returns a version error — bump to the current `YYYYMM`.
+
+
+## Record the output
+
+After you successfully publish and obtain the live result URL, call the built-in
+`publish_artifact` tool ONCE so the user can track this deliverable in **My Outputs**:
+
+```
+publish_artifact(kind="article", channel="linkedin", title="<title>", url="<the REAL returned URL>", status="delivered")
+```
+
+Use the real returned URL — never fabricate one. Call it once per published item,
+only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+See `_shared/artifacts.md`.
