@@ -25,7 +25,10 @@ Manage EdgeOne zones — purge cache, prefetch URLs, manage DNS records on the z
 The skill ships [`scripts/edgeone.py`](scripts/edgeone.py) — wraps zone discovery, purge / prefetch, task tracking, EdgeOne DNS records, and WAF inspection.
 
 ```bash
-EO=$SKILL_DIR/scripts/edgeone.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+EO="$SKILL_DIR/scripts/edgeone.py"; [ -f "$EO" ] || EO=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/edgeone.py' 2>/dev/null | head -1)
+[ -f "$EO" ] || { echo "tencentcloud-edgeone script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 $EO zones                                                  # list zones
 python3 $EO zone zone-xxxxxxxx                                     # one zone's details

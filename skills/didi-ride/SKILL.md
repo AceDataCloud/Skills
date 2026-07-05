@@ -34,10 +34,13 @@ If `DIDI_MCP_KEY` is missing, tell the user to connect the DiDi connector at
 ## CLI
 
 The skill ships a stdlib-only helper that speaks the MCP Streamable-HTTP
-protocol to DiDi. Point at it once:
+protocol to DiDi. **Run this resolver at the top of every Bash block below** —
+each Bash call is a fresh shell, and `$SKILL_DIR` points at the LAST skill loaded
+this turn, so anchor on our own script:
 
 ```bash
-DIDI=$SKILL_DIR/scripts/didi.py
+DIDI="$SKILL_DIR/scripts/didi.py"; [ -f "$DIDI" ] || DIDI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/didi.py' 2>/dev/null | head -1)
+[ -f "$DIDI" ] || { echo "didi-ride script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 ```
 
 Two commands:

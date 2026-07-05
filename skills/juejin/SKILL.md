@@ -30,10 +30,13 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/juejin.py`](scripts/juejin.py) — self-contained, stdlib only.
 
 ```sh
-JJ=$SKILL_DIR/scripts/juejin.py
-python3 $JJ whoami                       # who is logged in (+ totals)
-python3 $JJ articles --limit 20          # my published articles + stats
-python3 $JJ article <article-id>         # one article's stats
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+JJ="$SKILL_DIR/scripts/juejin.py"; [ -f "$JJ" ] || JJ=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/juejin.py' 2>/dev/null | head -1)
+[ -f "$JJ" ] || { echo "juejin script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$JJ" whoami                     # who is logged in (+ totals)
+python3 "$JJ" articles --limit 20        # my published articles + stats
+python3 "$JJ" article <article-id>       # one article's stats
 ```
 
 Stats come straight from 掘金: `view_count` (阅读), `digg_count` (点赞),
@@ -42,7 +45,8 @@ Stats come straight from 掘金: `view_count` (阅读), `digg_count` (点赞),
 ## Verify the connection first
 
 ```sh
-python3 $JJ whoami
+JJ="$SKILL_DIR/scripts/juejin.py"; [ -f "$JJ" ] || JJ=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/juejin.py' 2>/dev/null | head -1)
+python3 "$JJ" whoami
 # → {"user_id": "...", "name": "...", "post_article_count": 336}
 ```
 
@@ -56,9 +60,10 @@ trailing `--confirm` it dry-runs. `--confirm` is honored **only as the last
 argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
 ```sh
-python3 $JJ publish --title "标题" --content-file a.md                       # dry-run
-python3 $JJ publish --title "标题" --content-file a.md --draft-only --confirm   # private draft
-python3 $JJ publish --title "标题" --content-file a.md \
+JJ="$SKILL_DIR/scripts/juejin.py"; [ -f "$JJ" ] || JJ=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/juejin.py' 2>/dev/null | head -1)
+python3 "$JJ" publish --title "标题" --content-file a.md                       # dry-run
+python3 "$JJ" publish --title "标题" --content-file a.md --draft-only --confirm   # private draft
+python3 "$JJ" publish --title "标题" --content-file a.md \
     --category-id 6809637769959178254 --tag-ids 6809640407484334093 --confirm # PUBLIC
 ```
 

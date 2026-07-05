@@ -34,11 +34,14 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/bilibili.py`](scripts/bilibili.py) — self-contained, stdlib only.
 
 ```sh
-BILI=$SKILL_DIR/scripts/bilibili.py
-python3 $BILI whoami                       # who is logged in (mid, name)
-python3 $BILI articles --limit 20          # my 专栏 articles + stats
-python3 $BILI article <cvid>               # one article's stats (cv id)
-python3 $BILI drafts --limit 50            # list saved drafts (aid + title)
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bilibili.py' 2>/dev/null | head -1)
+[ -f "$BILI" ] || { echo "bilibili script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$BILI" whoami                     # who is logged in (mid, name)
+python3 "$BILI" articles --limit 20        # my 专栏 articles + stats
+python3 "$BILI" article <cvid>             # one article's stats (cv id)
+python3 "$BILI" drafts --limit 50          # list saved drafts (aid + title)
 ```
 
 Stats come straight from Bilibili: `view` (阅读), `like` (点赞), `reply` (评论),
@@ -47,7 +50,8 @@ Stats come straight from Bilibili: `view` (阅读), `like` (点赞), `reply` (�
 ## Verify the connection first
 
 ```sh
-python3 $BILI whoami
+BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bilibili.py' 2>/dev/null | head -1)
+python3 "$BILI" whoami
 # → {"mid": 91207595, "name": "...", "level": 4}
 ```
 
@@ -61,9 +65,10 @@ trailing `--confirm` it dry-runs. `--confirm` is honored **only as the last
 argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
 ```sh
-python3 $BILI publish --title "标题" --content-file a.html                       # dry-run
-python3 $BILI publish --title "标题" --content-file a.html --draft-only --confirm   # save a draft
-python3 $BILI publish --title "标题" --content-file a.html --confirm                # save draft + submit (publish)
+BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bilibili.py' 2>/dev/null | head -1)
+python3 "$BILI" publish --title "标题" --content-file a.html                       # dry-run
+python3 "$BILI" publish --title "标题" --content-file a.html --draft-only --confirm   # save a draft
+python3 "$BILI" publish --title "标题" --content-file a.html --confirm                # save draft + submit (publish)
 ```
 
 - `--draft-only` saves a draft (no submit) — safe; finish/publish in the editor.
@@ -77,9 +82,10 @@ Bilibili caps 专栏 drafts at **999**; once full, saving a new draft fails with
 `code 37106 草稿数已达最大上限`. List drafts and delete the ones you don't need:
 
 ```sh
-python3 $BILI drafts --limit 50                       # list (aid + title)
-python3 $BILI delete-draft <aid> <aid2> ...           # dry-run (shows what would delete)
-python3 $BILI delete-draft <aid> <aid2> ... --confirm # PERMANENTLY delete those drafts
+BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bilibili.py' 2>/dev/null | head -1)
+python3 "$BILI" drafts --limit 50                       # list (aid + title)
+python3 "$BILI" delete-draft <aid> <aid2> ...           # dry-run (shows what would delete)
+python3 "$BILI" delete-draft <aid> <aid2> ... --confirm # PERMANENTLY delete those drafts
 ```
 
 - `delete-draft` is **GATED** (dry-run unless trailing `--confirm`) and deletion

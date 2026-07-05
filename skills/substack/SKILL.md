@@ -34,15 +34,19 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/substack.py`](scripts/substack.py) — self-contained, stdlib only.
 
 ```sh
-SUB=$SKILL_DIR/scripts/substack.py
-python3 $SUB whoami                       # who is logged in + primary publication
-python3 $SUB articles --limit 20          # my published posts + stats
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+SUB="$SKILL_DIR/scripts/substack.py"; [ -f "$SUB" ] || SUB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/substack.py' 2>/dev/null | head -1)
+[ -f "$SUB" ] || { echo "substack script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$SUB" whoami                     # who is logged in + primary publication
+python3 "$SUB" articles --limit 20        # my published posts + stats
 ```
 
 ## Verify the connection first
 
 ```sh
-python3 $SUB whoami
+SUB="$SKILL_DIR/scripts/substack.py"; [ -f "$SUB" ] || SUB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/substack.py' 2>/dev/null | head -1)
+python3 "$SUB" whoami
 # → {"user_id": ..., "name": "...", "handle": "...", "publication": "...", "publication_url": "https://<sub>.substack.com"}
 ```
 
@@ -61,17 +65,18 @@ Without a trailing `--confirm` it dry-runs. `--confirm` is honored **only as the
 last argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
 ```sh
+SUB="$SKILL_DIR/scripts/substack.py"; [ -f "$SUB" ] || SUB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/substack.py' 2>/dev/null | head -1)
 # dry-run (shows the plan, writes nothing)
-python3 $SUB publish --title "Title" --content-file post.md
+python3 "$SUB" publish --title "Title" --content-file post.md
 
 # private draft (visible only in the user's dashboard)
-python3 $SUB publish --title "Title" --content-file post.md --draft-only --confirm
+python3 "$SUB" publish --title "Title" --content-file post.md --draft-only --confirm
 
 # go LIVE on the web (does NOT email subscribers)
-python3 $SUB publish --title "Title" --content-file post.md --confirm
+python3 "$SUB" publish --title "Title" --content-file post.md --confirm
 
 # go LIVE and email subscribers (use only when the user explicitly asks)
-python3 $SUB publish --title "Title" --content-file post.md --send-email --confirm
+python3 "$SUB" publish --title "Title" --content-file post.md --send-email --confirm
 ```
 
 - `--draft-only` stops at a draft — **default to this** unless the user asked to
