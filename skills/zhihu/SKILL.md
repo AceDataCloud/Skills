@@ -35,43 +35,64 @@ The connector injects credentials as env vars:
 - `ZHIHU_COOKIES` — a JSON array of `{name, value, domain, path, ...}` cookies.
   Used for reading/writing the user's own content. **Secret — never echo or print it.**
 
+## Locate the scripts first (every Bash block)
+
+The connector sets `$SKILL_DIR` to this skill's directory, so the scripts live at
+`$SKILL_DIR/scripts/`. **Do NOT hard-code `python3 $SKILL_DIR/scripts/…` directly.**
+If more than one skill was loaded in the same turn, `$SKILL_DIR` can point at the
+*other* skill and the call fails with `No such file or directory` (this is the #1
+cause of a Zhihu run silently not finishing). Resolve the path defensively at the
+top of **every** Bash block — each Bash call is a fresh shell, so the variable does
+not carry over:
+
+```sh
+# blog.py is unique to this skill, so it anchors zhihu's dir even if $SKILL_DIR is wrong.
+ZDIR="$SKILL_DIR"; [ -f "$ZDIR/scripts/blog.py" ] || ZDIR=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/blog.py' 2>/dev/null | head -1 | sed 's#/scripts/blog.py##')
+[ -f "$ZDIR/scripts/blog.py" ] || { echo "zhihu scripts not found (SKILL_DIR=$SKILL_DIR) — is the skill loaded?" >&2; exit 1; }
+SEARCH="$ZDIR/scripts/search.py"; BLOG="$ZDIR/scripts/blog.py"
+```
+
+Then use `"$SEARCH"` / `"$BLOG"` (always quoted) as shown below.
+
 ## Search CLI (search.py)
 
 [`scripts/search.py`](scripts/search.py) — search Zhihu and the web. Requires
 only `ZHIHU_DEVELOPER_TOKEN` (no cookies needed).
 
 ```sh
-SEARCH=$SKILL_DIR/scripts/search.py
+# Resolve the scripts first (see "Locate the scripts first" above) — robust to $SKILL_DIR.
+ZDIR="$SKILL_DIR"; [ -f "$ZDIR/scripts/blog.py" ] || ZDIR=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/blog.py' 2>/dev/null | head -1 | sed 's#/scripts/blog.py##')
+SEARCH="$ZDIR/scripts/search.py"
 
 # Search Zhihu content (站内搜索) — questions, answers, articles
-python3 $SEARCH search "Python 爬虫"
-python3 $SEARCH search "Python 爬虫" --count 5
+python3 "$SEARCH" search "Python 爬虫"
+python3 "$SEARCH" search "Python 爬虫" --count 5
 
 # Search the entire web (全网搜索) — all indexed sites
-python3 $SEARCH global "AI Agent"
-python3 $SEARCH global "AI Agent" --count 15
+python3 "$SEARCH" global "AI Agent"
+python3 "$SEARCH" global "AI Agent" --count 15
 
 # Filter by site or time
-python3 $SEARCH global "React" --filter 'host=="github.com"'
-python3 $SEARCH global "新闻" --filter 'publish_time>=1720000000'
-python3 $SEARCH global "技术" --filter 'host=="github.com" AND publish_time>=1720000000'
-python3 $SEARCH global "实时新闻" --db realtime
+python3 "$SEARCH" global "React" --filter 'host=="github.com"'
+python3 "$SEARCH" global "新闻" --filter 'publish_time>=1720000000'
+python3 "$SEARCH" global "技术" --filter 'host=="github.com" AND publish_time>=1720000000'
+python3 "$SEARCH" global "实时新闻" --db realtime
 
 # Get Zhihu trending topics (热榜)
-python3 $SEARCH hot
-python3 $SEARCH hot --limit 10
+python3 "$SEARCH" hot
+python3 "$SEARCH" hot --limit 10
 ```
 
 ### Search commands
 
 | Goal | Command |
 |---|---|
-| Search Zhihu (max 10 results) | `python3 $SEARCH search "<query>" --count N` |
-| Search entire web (max 20) | `python3 $SEARCH global "<query>" --count N` |
+| Search Zhihu (max 10 results) | `python3 "$SEARCH" search "<query>" --count N` |
+| Search entire web (max 20) | `python3 "$SEARCH" global "<query>" --count N` |
 | Filter by site | `--filter 'host=="example.com"'` |
 | Filter by time | `--filter 'publish_time>=<unix_ts>'` |
 | Search only realtime/static index | `--db realtime` or `--db static` |
-| Zhihu trending topics (max 30) | `python3 $SEARCH hot --limit N` |
+| Zhihu trending topics (max 30) | `python3 "$SEARCH" hot --limit N` |
 
 ### Search result fields
 
@@ -99,22 +120,25 @@ The skill ships [`scripts/blog.py`](scripts/blog.py) — self-contained, stdlib 
 Requires `ZHIHU_COOKIES` (login cookie).
 
 ```sh
-BLOG=$SKILL_DIR/scripts/blog.py
+# Resolve the scripts first (see "Locate the scripts first" above) — robust to $SKILL_DIR.
+ZDIR="$SKILL_DIR"; [ -f "$ZDIR/scripts/blog.py" ] || ZDIR=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/blog.py' 2>/dev/null | head -1 | sed 's#/scripts/blog.py##')
+BLOG="$ZDIR/scripts/blog.py"
 
 # Read (run directly)
-python3 $BLOG whoami                       # who is logged in
-python3 $BLOG articles --limit 20          # my published articles + stats
-python3 $BLOG article <article-id>         # one article's details + stats
-python3 $BLOG answers --limit 20           # my published answers + stats
-python3 $BLOG answer <answer-id>           # one answer's details + stats
-python3 $BLOG question <question-id>       # a question's info + whether I answered it
+python3 "$BLOG" whoami                     # who is logged in
+python3 "$BLOG" articles --limit 20        # my published articles + stats
+python3 "$BLOG" article <article-id>       # one article's details + stats
+python3 "$BLOG" answers --limit 20         # my published answers + stats
+python3 "$BLOG" answer <answer-id>         # one answer's details + stats
+python3 "$BLOG" question <question-id>     # a question's info + whether I answered it
 ```
 
 ## Verify the connection first
 
 ```sh
-python3 $BLOG whoami
-# → {"id": "...", "name": "崔庆才丨静觅", "url_token": "cui-qing-cai", ...}
+ZDIR="$SKILL_DIR"; [ -f "$ZDIR/scripts/blog.py" ] || ZDIR=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/blog.py' 2>/dev/null | head -1 | sed 's#/scripts/blog.py##')
+python3 "$ZDIR/scripts/blog.py" whoami
+# → {"id": "...", "name": "崔庆才丨静觅", "url_token": "Germey", ...}
 ```
 
 On a `401`/`403` the cookie is expired — tell the user to reconnect at
@@ -125,13 +149,13 @@ extension). Do **not** retry in a loop.
 
 | Goal | Command |
 |---|---|
-| Who am I | `python3 $BLOG whoami` |
-| My latest articles + vote/comment counts | `python3 $BLOG articles --limit 20` |
-| My latest answers + like/favorite/comment counts | `python3 $BLOG answers --limit 20` |
+| Who am I | `python3 "$BLOG" whoami` |
+| My latest articles + vote/comment counts | `python3 "$BLOG" articles --limit 20` |
+| My latest answers + like/favorite/comment counts | `python3 "$BLOG" answers --limit 20` |
 | Next page (any list) | add `--offset 20` |
-| One article's stats | `python3 $BLOG article <id>` |
-| One answer's stats (incl. 赞同 voteup) | `python3 $BLOG answer <id>` |
-| A question's info + my answer id (if any) | `python3 $BLOG question <id>` |
+| One article's stats | `python3 "$BLOG" article <id>` |
+| One answer's stats (incl. 赞同 voteup) | `python3 "$BLOG" answer <id>` |
+| A question's info + my answer id (if any) | `python3 "$BLOG" question <id>` |
 
 Article stats: `voteup_count` (赞同), `comment_count` (评论). Zhihu does not
 expose per-article read counts on these endpoints.
@@ -153,9 +177,9 @@ never silently go live. Always show the dry-run to the user, get an explicit
 
 ```sh
 # Content is HTML. For Markdown, convert to HTML first (e.g. `pandoc -f gfm -t html`).
-python3 $BLOG publish --title "标题" --content-file article.html               # dry-run
-python3 $BLOG publish --title "标题" --content-file article.html --draft-only --confirm  # save a private draft
-python3 $BLOG publish --title "标题" --content-file article.html --confirm     # PUBLIC, goes live
+python3 "$BLOG" publish --title "标题" --content-file article.html               # dry-run
+python3 "$BLOG" publish --title "标题" --content-file article.html --draft-only --confirm  # save a private draft
+python3 "$BLOG" publish --title "标题" --content-file article.html --confirm     # PUBLIC, goes live
 ```
 
 - `--draft-only` stops after saving a private draft (safe — nothing public).
@@ -180,13 +204,13 @@ re-run with `--confirm` last.
 # Content is HTML (same as articles). For Markdown, convert to HTML first.
 
 # Post a NEW answer to a question
-python3 $BLOG answer-question --question <qid> --content-file ans.html                       # dry-run
-python3 $BLOG answer-question --question <qid> --content-file ans.html --draft-only --confirm  # PRIVATE draft (safe)
-python3 $BLOG answer-question --question <qid> --content-file ans.html --confirm               # PUBLIC, goes live
+python3 "$BLOG" answer-question --question <qid> --content-file ans.html                       # dry-run
+python3 "$BLOG" answer-question --question <qid> --content-file ans.html --draft-only --confirm  # PRIVATE draft (safe)
+python3 "$BLOG" answer-question --question <qid> --content-file ans.html --confirm               # PUBLIC, goes live
 
 # Edit an EXISTING answer (replaces its live, public content)
-python3 $BLOG edit-answer --id <answer-id> --content-file ans.html             # dry-run
-python3 $BLOG edit-answer --id <answer-id> --content-file ans.html --confirm   # overwrites live answer
+python3 "$BLOG" edit-answer --id <answer-id> --content-file ans.html             # dry-run
+python3 "$BLOG" edit-answer --id <answer-id> --content-file ans.html --confirm   # overwrites live answer
 ```
 
 - **One answer per question.** Zhihu allows a single answer per user per

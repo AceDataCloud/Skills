@@ -13,12 +13,18 @@ Read commands run directly. ``publish`` is GATED: without a trailing
 ``--confirm`` is honored ONLY as the last argument, so a title/content that
 merely contains "--confirm" can never silently go live.
 
-Quick examples:
-  python3 $SKILL_DIR/scripts/blog.py whoami
-  python3 $SKILL_DIR/scripts/blog.py articles --limit 20
-  python3 $SKILL_DIR/scripts/blog.py article <article-id>
-  python3 $SKILL_DIR/scripts/blog.py drafts
-  python3 $SKILL_DIR/scripts/blog.py publish --title "T" --content-file a.html --draft-only --confirm
+Invocation: resolve this script's path robustly first (see SKILL.md "Locate the
+scripts first"), then call it via $BLOG. Do NOT hard-code
+``python3 $SKILL_DIR/scripts/blog.py`` — $SKILL_DIR points at the LAST skill
+loaded in the turn, so if another skill was loaded too it breaks with
+"No such file or directory".
+
+Quick examples (after ``BLOG=<resolved-dir>/blog.py``):
+  python3 "$BLOG" whoami
+  python3 "$BLOG" articles --limit 20
+  python3 "$BLOG" article <article-id>
+  python3 "$BLOG" question <question-id>
+  python3 "$BLOG" publish --title "T" --content-file a.html --draft-only --confirm
 """
 
 from __future__ import annotations
