@@ -34,16 +34,20 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/medium.py`](scripts/medium.py) — self-contained, stdlib only.
 
 ```sh
-MED=$SKILL_DIR/scripts/medium.py
-python3 $MED whoami                       # who is logged in
-python3 $MED articles --limit 20          # my posts + clap/response stats
-python3 $MED article <post-id>            # one post's details
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+MED="$SKILL_DIR/scripts/medium.py"; [ -f "$MED" ] || MED=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/medium.py' 2>/dev/null | head -1)
+[ -f "$MED" ] || { echo "medium script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$MED" whoami                     # who is logged in
+python3 "$MED" articles --limit 20        # my posts + clap/response stats
+python3 "$MED" article <post-id>          # one post's details
 ```
 
 ## Verify the connection first
 
 ```sh
-python3 $MED whoami
+MED="$SKILL_DIR/scripts/medium.py"; [ -f "$MED" ] || MED=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/medium.py' 2>/dev/null | head -1)
+python3 "$MED" whoami
 # → {"user_id": "...", "name": "...", "username": "..."}
 ```
 
@@ -62,9 +66,10 @@ Without a trailing `--confirm` it dry-runs. `--confirm` is honored **only as the
 last argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
 ```sh
-python3 $MED publish --title "Title" --content-file a.md                       # dry-run
-python3 $MED publish --title "Title" --content-file a.md --draft-only --confirm   # private draft
-python3 $MED publish --title "Title" --content-file a.md --confirm                # PUBLIC story
+MED="$SKILL_DIR/scripts/medium.py"; [ -f "$MED" ] || MED=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/medium.py' 2>/dev/null | head -1)
+python3 "$MED" publish --title "Title" --content-file a.md                       # dry-run
+python3 "$MED" publish --title "Title" --content-file a.md --draft-only --confirm   # private draft
+python3 "$MED" publish --title "Title" --content-file a.md --confirm                # PUBLIC story
 ```
 
 Publishing is Medium's multi-step editor flow (new-story → write deltas →
