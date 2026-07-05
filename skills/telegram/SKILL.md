@@ -34,7 +34,10 @@ The skill ships [`scripts/tg.py`](scripts/tg.py) — self-contained (the only th
 to re-create per turn, so a multi-step flow (dry-run → confirm) can't lose the helper between calls:
 
 ```sh
-TG="$SKILL_DIR/scripts/tg.py"
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block below).
+TG="$SKILL_DIR/scripts/tg.py"; [ -f "$TG" ] || TG=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tg.py' 2>/dev/null | head -1)
+[ -f "$TG" ] || { echo "telegram script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 python3 "$TG" whoami
 ```
 

@@ -26,7 +26,10 @@ Search and run CQL / SQL analytics over Tencent Cloud CLS log topics.
 The skill ships [`scripts/cls.py`](scripts/cls.py) — a self-contained CLI for the most common operations.
 
 ```bash
-CLS=$SKILL_DIR/scripts/cls.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+CLS="$SKILL_DIR/scripts/cls.py"; [ -f "$CLS" ] || CLS=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/cls.py' 2>/dev/null | head -1)
+[ -f "$CLS" ] || { echo "tencentcloud-cls script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 $CLS topics                                              # list topics
 python3 $CLS search --topic <topic-id> --query 'level:ERROR' --time 1h

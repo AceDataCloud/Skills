@@ -37,9 +37,12 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/weibo.py`](scripts/weibo.py) — self-contained, stdlib only.
 
 ```sh
-WB=$SKILL_DIR/scripts/weibo.py
-python3 $WB whoami                       # who is logged in (+ counts)
-python3 $WB posts --limit 20             # my recent 微博 + engagement
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+WB="$SKILL_DIR/scripts/weibo.py"; [ -f "$WB" ] || WB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/weibo.py' 2>/dev/null | head -1)
+[ -f "$WB" ] || { echo "weibo script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$WB" whoami                     # who is logged in (+ counts)
+python3 "$WB" posts --limit 20           # my recent 微博 + engagement
 ```
 
 Engagement comes straight from 微博: `reposts_count` (转发), `comments_count`
@@ -48,7 +51,8 @@ Engagement comes straight from 微博: `reposts_count` (转发), `comments_count
 ## Verify the connection first
 
 ```sh
-python3 $WB whoami
+WB="$SKILL_DIR/scripts/weibo.py"; [ -f "$WB" ] || WB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/weibo.py' 2>/dev/null | head -1)
+python3 "$WB" whoami
 # → {"uid": "...", "name": "...", "statuses_count": ...}
 ```
 
@@ -62,8 +66,9 @@ Without a trailing `--confirm` it dry-runs. `--confirm` is honored **only as the
 last argument**. Always show the dry-run, get an explicit "yes", then re-run.
 
 ```sh
-python3 $WB post --content "你好，这是一条微博"            # dry-run
-python3 $WB post --content "你好，这是一条微博" --confirm   # PUBLIC 微博 (immediate)
+WB="$SKILL_DIR/scripts/weibo.py"; [ -f "$WB" ] || WB=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/weibo.py' 2>/dev/null | head -1)
+python3 "$WB" post --content "你好，这是一条微博"            # dry-run
+python3 "$WB" post --content "你好，这是一条微博" --confirm   # PUBLIC 微博 (immediate)
 ```
 
 - There is **no draft and no private mode** on 微博 — a confirmed post is

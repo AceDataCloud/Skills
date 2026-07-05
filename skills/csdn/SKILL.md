@@ -36,10 +36,13 @@ The connector injects the cookie jar as an env var:
 The skill ships [`scripts/csdn.py`](scripts/csdn.py) — self-contained, stdlib only.
 
 ```sh
-CSDN=$SKILL_DIR/scripts/csdn.py
-python3 $CSDN whoami                       # who is logged in (+ total article count)
-python3 $CSDN articles --limit 20          # my published articles + stats
-python3 $CSDN article <article-id>         # one article's stats
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script, and re-run this at the top of every Bash block (fresh shell each time).
+CSDN="$SKILL_DIR/scripts/csdn.py"; [ -f "$CSDN" ] || CSDN=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/csdn.py' 2>/dev/null | head -1)
+[ -f "$CSDN" ] || { echo "csdn script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$CSDN" whoami                     # who is logged in (+ total article count)
+python3 "$CSDN" articles --limit 20        # my published articles + stats
+python3 "$CSDN" article <article-id>       # one article's stats
 ```
 
 Stats come straight from CSDN: `view_count` (阅读), `digg_count` (点赞),
@@ -48,7 +51,8 @@ Stats come straight from CSDN: `view_count` (阅读), `digg_count` (点赞),
 ## Verify the connection first
 
 ```sh
-python3 $CSDN whoami
+CSDN="$SKILL_DIR/scripts/csdn.py"; [ -f "$CSDN" ] || CSDN=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/csdn.py' 2>/dev/null | head -1)
+python3 "$CSDN" whoami
 # → {"username": "...", "nickname": "...", "articles_total": 1597}
 ```
 
@@ -63,9 +67,10 @@ argument**. Always show the dry-run, get an explicit "yes", then re-run with
 `--confirm` last.
 
 ```sh
-python3 $CSDN publish --title "标题" --content-file a.md                      # dry-run
-python3 $CSDN publish --title "标题" --content-file a.md --draft-only --confirm  # private draft (status=2)
-python3 $CSDN publish --title "标题" --content-file a.md --tags "AI,Python" --confirm  # PUBLIC, goes live
+CSDN="$SKILL_DIR/scripts/csdn.py"; [ -f "$CSDN" ] || CSDN=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/csdn.py' 2>/dev/null | head -1)
+python3 "$CSDN" publish --title "标题" --content-file a.md                      # dry-run
+python3 "$CSDN" publish --title "标题" --content-file a.md --draft-only --confirm  # private draft (status=2)
+python3 "$CSDN" publish --title "标题" --content-file a.md --tags "AI,Python" --confirm  # PUBLIC, goes live
 ```
 
 - `--draft-only` saves a private draft (CSDN `status=2`) — safe, nothing public.

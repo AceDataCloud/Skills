@@ -25,7 +25,10 @@ Manage TKE clusters and the workloads inside them.
 The skill ships [`scripts/tke.py`](scripts/tke.py) — wraps cluster discovery, kubeconfig retrieval, and the most common in-cluster operations.
 
 ```bash
-TKE=$SKILL_DIR/scripts/tke.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+TKE="$SKILL_DIR/scripts/tke.py"; [ -f "$TKE" ] || TKE=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tke.py' 2>/dev/null | head -1)
+[ -f "$TKE" ] || { echo "tencentcloud-tke script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 $TKE clusters                                              # list clusters
 python3 $TKE cluster cls-xxxxxxxx                                  # one cluster's details

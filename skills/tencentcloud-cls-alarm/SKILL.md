@@ -27,23 +27,26 @@ CRUD on CLS alarm policies, notice groups, mute shields, and the alarm execution
 The skill ships [`scripts/cls_alarm.py`](scripts/cls_alarm.py) — wraps every alarm / notice / shield operation as a subcommand.
 
 ```bash
-A=$SKILL_DIR/scripts/cls_alarm.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+CLSA="$SKILL_DIR/scripts/cls_alarm.py"; [ -f "$CLSA" ] || CLSA=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/cls_alarm.py' 2>/dev/null | head -1)
+[ -f "$CLSA" ] || { echo "tencentcloud-cls-alarm script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
-python3 $A alarms                              # list policies
-python3 $A alarm <alarm-id>                    # full detail
-python3 $A alarm-disable <alarm-id>            # quick mute (Status=false)
-python3 $A alarm-enable  <alarm-id>
-python3 $A alarm-create --json /tmp/alarm.json --dry-run
-python3 $A alarm-modify <alarm-id> --condition '$1.cnt > 20'
-python3 $A alarm-delete <alarm-id> --yes       # destructive
+python3 "$CLSA" alarms                          # list policies
+python3 "$CLSA" alarm <alarm-id>                # full detail
+python3 "$CLSA" alarm-disable <alarm-id>        # quick mute (Status=false)
+python3 "$CLSA" alarm-enable  <alarm-id>
+python3 "$CLSA" alarm-create --json /tmp/alarm.json --dry-run
+python3 "$CLSA" alarm-modify <alarm-id> --condition '$1.cnt > 20'
+python3 "$CLSA" alarm-delete <alarm-id> --yes   # destructive
 
-python3 $A notices                             # notice groups
-python3 $A notice <notice-id>
+python3 "$CLSA" notices                         # notice groups
+python3 "$CLSA" notice <notice-id>
 
-python3 $A shields                             # mute rules
-python3 $A shield-create --notice-id <notice-id> --start $(date +%s) --end $(date -v+2H +%s) --type 1 --reason "deploy"
+python3 "$CLSA" shields                         # mute rules
+python3 "$CLSA" shield-create --notice-id <notice-id> --start $(date +%s) --end $(date -v+2H +%s) --type 1 --reason "deploy"
 
-python3 $A alarm-log --time 6h                 # firing history
+python3 "$CLSA" alarm-log --time 6h             # firing history
 ```
 
 For the rare schema field the CLI doesn't surface, fall through to the raw SDK examples below.

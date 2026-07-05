@@ -37,10 +37,13 @@ after the user explicitly approves the exact target and content.
 
 ## CLI
 
-The skill ships a stdlib-only helper:
+The skill ships a stdlib-only helper. **Run this resolver at the top of every
+Bash block below** — each Bash call is a fresh shell, and `$SKILL_DIR` points at
+the LAST skill loaded this turn, so anchor on our own script:
 
 ```bash
-WX=$SKILL_DIR/scripts/personal_wechat.py
+WX="$SKILL_DIR/scripts/personal_wechat.py"; [ -f "$WX" ] || WX=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/personal_wechat.py' 2>/dev/null | head -1)
+[ -f "$WX" ] || { echo "personal-wechat script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 ```
 
 ## Verify Connection First

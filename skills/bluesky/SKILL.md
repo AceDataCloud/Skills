@@ -31,7 +31,10 @@ Three connector credentials are injected: `$BLUESKY_HANDLE`
 them from the env — never echo them.
 
 ```sh
-BSKY="$SKILL_DIR/scripts/bluesky.py"
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block below).
+BSKY="$SKILL_DIR/scripts/bluesky.py"; [ -f "$BSKY" ] || BSKY=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bluesky.py' 2>/dev/null | head -1)
+[ -f "$BSKY" ] || { echo "bluesky script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 python3 "$BSKY" whoami          # verify the session → {did, handle, service}
 ```
 

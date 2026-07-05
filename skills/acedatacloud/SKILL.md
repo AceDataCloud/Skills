@@ -62,7 +62,10 @@ The skill ships [`scripts/acedatacloud.py`](scripts/acedatacloud.py) — a self-
 CLI (stdlib only) for the most common operations.
 
 ```bash
-ADC=$SKILL_DIR/scripts/acedatacloud.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+ADC="$SKILL_DIR/scripts/acedatacloud.py"; [ -f "$ADC" ] || ADC=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/acedatacloud.py' 2>/dev/null | head -1)
+[ -f "$ADC" ] || { echo "acedatacloud script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 # Read
 python3 $ADC balance                         # remaining credits per subscription

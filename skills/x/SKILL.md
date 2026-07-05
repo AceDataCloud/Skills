@@ -38,8 +38,11 @@ skill), then call the shipped CLI:
 
 ```sh
 python3 -c "import twikit" 2>/dev/null || pip install --user --quiet twikit 2>/dev/null || true
-X=$SKILL_DIR/scripts/x.py
-python3 $X whoami          # who is logged in
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this setup at the top of every fresh-shell Bash block below).
+X="$SKILL_DIR/scripts/x.py"; [ -f "$X" ] || X=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/x.py' 2>/dev/null | head -1)
+[ -f "$X" ] || { echo "x script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$X" whoami          # who is logged in
 ```
 
 ## Read commands (run directly)

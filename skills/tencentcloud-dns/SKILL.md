@@ -26,7 +26,10 @@ Manage DNS records via the DNSPod API.
 The skill ships [`scripts/dns.py`](scripts/dns.py) — wraps every common DNSPod v3 operation.
 
 ```bash
-DNS=$SKILL_DIR/scripts/dns.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+DNS="$SKILL_DIR/scripts/dns.py"; [ -f "$DNS" ] || DNS=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/dns.py' 2>/dev/null | head -1)
+[ -f "$DNS" ] || { echo "tencentcloud-dns script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 $DNS domains                                       # list domains
 python3 $DNS list example.com                              # records on one domain

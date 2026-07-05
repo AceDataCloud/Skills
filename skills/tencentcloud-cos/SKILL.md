@@ -24,7 +24,10 @@ Manage Tencent Cloud COS buckets and objects via the official `cos-python-sdk-v5
 The skill ships [`scripts/cos.py`](scripts/cos.py) — a self-contained CLI that wraps every COS operation below. **Prefer this over hand-rolled SDK calls** when the user's request maps cleanly onto one of its subcommands; it's what the maintained code paths exercise.
 
 ```bash
-COS=$SKILL_DIR/scripts/cos.py
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our own
+# script (re-run this at the top of every fresh-shell Bash block).
+COS="$SKILL_DIR/scripts/cos.py"; [ -f "$COS" ] || COS=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/cos.py' 2>/dev/null | head -1)
+[ -f "$COS" ] || { echo "tencentcloud-cos script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 $COS buckets                                  # list all buckets
 python3 $COS ls mydata-1250000000 --prefix images/    # list objects
