@@ -11,14 +11,20 @@ Endpoints:
   global_search — search the entire web with optional filters
   hot_list      — current Zhihu trending topics
 
-Quick examples:
-  python3 $SKILL_DIR/scripts/search.py search "Python 爬虫"
-  python3 $SKILL_DIR/scripts/search.py search "Python 爬虫" --count 5
-  python3 $SKILL_DIR/scripts/search.py global "AI Agent" --count 10
-  python3 $SKILL_DIR/scripts/search.py global "React" --filter 'host=="github.com"'
-  python3 $SKILL_DIR/scripts/search.py global "新闻" --db realtime
-  python3 $SKILL_DIR/scripts/search.py hot
-  python3 $SKILL_DIR/scripts/search.py hot --limit 10
+Invocation: resolve this script's path robustly first (see SKILL.md "Locate the
+scripts first"), then call it via $SEARCH. Do NOT hard-code
+``python3 $SKILL_DIR/scripts/search.py`` — $SKILL_DIR points at the LAST skill
+loaded in the turn, so if another skill was loaded too it breaks with
+"No such file or directory".
+
+Quick examples (after ``SEARCH=<resolved-dir>/search.py``):
+  python3 "$SEARCH" search "Python 爬虫"
+  python3 "$SEARCH" search "Python 爬虫" --count 5
+  python3 "$SEARCH" global "AI Agent" --count 10
+  python3 "$SEARCH" global "React" --filter 'host=="github.com"'
+  python3 "$SEARCH" global "新闻" --db realtime
+  python3 "$SEARCH" hot
+  python3 "$SEARCH" hot --limit 10
 """
 
 from __future__ import annotations
