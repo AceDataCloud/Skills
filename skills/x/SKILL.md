@@ -103,8 +103,9 @@ python3 $X delete --id 123456 --confirm                        # delete one of M
 - **Not E2E-verified** (see the warning above) — expect to validate the first run.
 - **twikit is a scraper of X's non-public API.** It can break when X changes its
   internal endpoints. A `Couldn't get KEY_BYTE indices` / transaction-id error
-  means twikit needs upgrading: `pip install --user -U twikit`. An auth error
-  means the cookie expired → reconnect.
+  means twikit's transaction-id bootstrap is currently broken against X; do NOT
+  ask the user to reconnect cookies for that error. Report it as upstream drift
+  and retry only after the twikit/X compatibility issue is fixed.
 - **ToS / rate-limit / ban risk.** This acts through the web API, not the
   official API — high-frequency automation can get the account rate-limited or
   suspended. Keep volume human-like.
