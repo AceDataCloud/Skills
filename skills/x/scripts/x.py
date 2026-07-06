@@ -36,7 +36,9 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
+from urllib.parse import unquote
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -88,8 +90,17 @@ def load_cookie_dict() -> dict:
     return cookies
 
 
+def current_user_id_from_cookies() -> str | None:
+    twid = load_cookie_dict().get("twid", "")
+    decoded = unquote(twid)
+    match = re.search(r"(?:^|[&?])u=(\d+)", decoded) or re.search(r"u=(\d+)", decoded)
+    return match.group(1) if match else None
+
+
 def make_client():
     from twikit import Client
+    patch_twikit_transaction_resolver()
+    patch_twikit_model_defaults()
     proxy = (
         os.environ.get("X_PROXY")
         or os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
@@ -99,6 +110,74 @@ def make_client():
     client = Client("en-US", proxy=proxy, user_agent=UA)
     client.set_cookies(load_cookie_dict())
     return client
+
+
+def patch_twikit_transaction_resolver() -> None:
+    from twikit.x_client_transaction import transaction as tx
+
+    if getattr(tx.ClientTransaction, "_acedata_chunk_patch", False):
+        return
+    original_get_indices = tx.ClientTransaction.get_indices
+
+    async def get_indices(self, home_page_response, session, headers):
+        try:
+            return await original_get_indices(self, home_page_response, session, headers)
+        except Exception as exc:
+            if "KEY_BYTE indices" not in str(exc):
+                raise
+
+        response = self.validate_response(home_page_response) or self.home_page_response
+        html = str(response)
+        chunk_id_match = re.search(r'(\d+):"ondemand\.s"', html)
+        if not chunk_id_match:
+            raise Exception("Couldn't find ondemand.s chunk id")
+        chunk_id = chunk_id_match.group(1)
+        hash_match = re.search(rf'{chunk_id}:"([a-f0-9]+)"', html)
+        if not hash_match:
+            raise Exception("Couldn't find ondemand.s chunk hash")
+        url = f"https://abs.twimg.com/responsive-web/client-web/ondemand.s.{hash_match.group(1)}a.js"
+        js_response = await session.request(method="GET", url=url, headers=headers)
+        indices = [item.group(2) for item in tx.INDICES_REGEX.finditer(str(js_response.text))]
+        if not indices:
+            raise Exception("Couldn't get KEY_BYTE indices")
+        indices = list(map(int, indices))
+        return indices[0], indices[1:]
+
+    tx.ClientTransaction.get_indices = get_indices
+    tx.ClientTransaction._acedata_chunk_patch = True
+
+
+def patch_twikit_model_defaults() -> None:
+    from twikit.tweet import Tweet
+    from twikit.user import User
+
+    if getattr(User, "_acedata_defaults_patch", False):
+        return
+
+    user_init = User.__init__
+    tweet_init = Tweet.__init__
+
+    def patched_user_init(self, client, data):
+        legacy = data.setdefault("legacy", {})
+        entities = legacy.setdefault("entities", {})
+        entities.setdefault("description", {}).setdefault("urls", [])
+        entities.setdefault("url", {}).setdefault("urls", [])
+        legacy.setdefault("pinned_tweet_ids_str", [])
+        legacy.setdefault("withheld_in_countries", [])
+        return user_init(self, client, data)
+
+    def patched_tweet_init(self, client, data, user=None):
+        legacy = data.setdefault("legacy", {})
+        entities = legacy.setdefault("entities", {})
+        entities.setdefault("urls", [])
+        entities.setdefault("hashtags", [])
+        entities.setdefault("media", [])
+        data.setdefault("edit_control", {})
+        return tweet_init(self, client, data, user)
+
+    User.__init__ = patched_user_init
+    Tweet.__init__ = patched_tweet_init
+    User._acedata_defaults_patch = True
 
 
 # ── formatting ──────────────────────────────────────────────────────
@@ -146,7 +225,8 @@ async def resolve_user(client, target: str):
 # ── read commands ───────────────────────────────────────────────────
 
 async def cmd_whoami(client, _args):
-    u = await client.user()
+    user_id = current_user_id_from_cookies()
+    u = await client.get_user_by_id(user_id) if user_id else await client.user()
     out(fmt_user(u))
 
 
@@ -179,12 +259,18 @@ async def cmd_user_tweets(client, args):
 
 
 async def cmd_tweet(client, args):
-    t = await client.get_tweet_by_id(args.id)
+    try:
+        tweets = await client.get_tweets_by_ids([args.id])
+        t = tweets[0] if tweets else None
+    except Exception:
+        t = None
+    if t is None:
+        t = await client.get_tweet_by_id(args.id)
     out(fmt_tweet(t))
 
 
 async def cmd_trends(client, args):
-    trends = await client.get_trends(args.category, count=args.limit)
+    trends = await client.get_trends(args.category, count=args.limit, retry=False)
     out({"category": args.category,
          "trends": [{"name": getattr(x, "name", None),
                      "tweets_count": getattr(x, "tweets_count", None)}

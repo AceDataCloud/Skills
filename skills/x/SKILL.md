@@ -22,9 +22,10 @@ Drives the user's **real** X account through X's internal web API via
 [`twikit`](https://github.com/d60/twikit), authenticated by the login cookie they
 captured with the ACE extension. No official API key, no cost.
 
-> ⚠️ **Not yet E2E-verified.** Built against twikit's documented API but not run
-> against a live account at build time. The first live run is the verification —
-> if X's internal API drifted it surfaces as a clear error, not silent breakage.
+> E2E-verified on 2026-07-06 with a real connected account for: cookie load,
+> whoami, tweet search, user search, home timeline, trends, tweet detail, and
+> post dry-run. Live writes still require explicit confirmation and were not
+> executed in the verification run.
 
 The connector injects the cookie jar as an env var:
 
@@ -103,10 +104,11 @@ python3 $X delete --id 123456 --confirm                        # delete one of M
   immediate and public.
 - **Not E2E-verified** (see the warning above) — expect to validate the first run.
 - **twikit is a scraper of X's non-public API.** It can break when X changes its
-  internal endpoints. A `Couldn't get KEY_BYTE indices` / transaction-id error
-  means twikit's transaction-id bootstrap is currently broken against X; do NOT
-  ask the user to reconnect cookies for that error. Report it as upstream drift
-  and retry only after the twikit/X compatibility issue is fixed.
+  internal endpoints. The bundled script carries an AceDataCloud compatibility
+  patch for the current `ondemand.s` webpack chunk map used to generate
+  transaction IDs. If `Couldn't get KEY_BYTE indices` appears again, report it
+  as X/twikit upstream drift — do NOT ask the user to reconnect cookies for that
+  specific error.
 - **ToS / rate-limit / ban risk.** This acts through the web API, not the
   official API — high-frequency automation can get the account rate-limited or
   suspended. Keep volume human-like.
