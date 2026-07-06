@@ -405,12 +405,17 @@ def main() -> None:
     except Exception as e:
         # twikit scrapes X's non-public API; a bare error here usually means an
         # expired cookie OR that X changed its internal endpoints and twikit
-        # needs upgrading (e.g. "Couldn't get KEY_BYTE indices" = transaction-id
-        # bootstrap drift → `pip install --user -U twikit`).
+        # needs a compatibility fix.
+        if "Couldn't get KEY_BYTE indices" in str(e):
+            die(
+                "X request failed because twikit cannot derive X's current "
+                "transaction-id keys (`Couldn't get KEY_BYTE indices`). This is "
+                "upstream drift in X's internal web API, not a missing/expired "
+                "cookie. Retry after twikit/X compatibility is fixed."
+            )
         die(f"X request failed ({type(e).__name__}: {e}). Likely an expired "
             f"cookie — reconnect at https://auth.acedata.cloud/user/connections "
-            f"— or twikit drift vs X's internal API (try `pip install --user -U "
-            f"twikit`).")
+            f"— or twikit drift vs X's internal API.")
 
 
 if __name__ == "__main__":
