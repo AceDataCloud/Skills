@@ -31,13 +31,14 @@ The connector injects the cookie jar as an env var:
 - `X_COOKIES` — a JSON array of cookies (needs at least `auth_token` + `ct0`).
   **Secret — full account access. Never echo or print it.**
 
-## Setup — install twikit once per session
+## Setup — verify the shipped CLI
 
-`twikit` may not be preinstalled; bootstrap it (same pattern as the telegram
-skill), then call the shipped CLI:
+`twikit` is preinstalled in the hosted sandbox image. Do not `pip install` it at
+runtime; if import fails, report that the sandbox image is missing the X skill
+dependency and stop.
 
 ```sh
-python3 -c "import twikit" 2>/dev/null || pip install --user --quiet twikit 2>/dev/null || true
+python3 -c "import twikit" || { echo "sandbox missing twikit; deploy the sandbox skill dependencies image" >&2; exit 1; }
 # $SKILL_DIR can point at another skill loaded this turn — anchor on our own
 # script (re-run this setup at the top of every fresh-shell Bash block below).
 X="$SKILL_DIR/scripts/x.py"; [ -f "$X" ] || X=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/x.py' 2>/dev/null | head -1)
