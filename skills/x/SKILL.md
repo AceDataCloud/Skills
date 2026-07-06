@@ -9,7 +9,7 @@ when_to_use: |
   as the user's REAL account, so every write is gated behind an explicit
   confirmation.
 connections: [x]
-allowed_tools: [Bash]
+allowed_tools: [Bash, publish_artifact]
 license: Apache-2.0
 metadata:
   author: acedatacloud
