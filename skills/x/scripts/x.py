@@ -385,8 +385,10 @@ def main() -> None:
             AccountLocked, AccountSuspended, TwitterException,
         )
     except Exception as e:  # twikit not importable
-        die(f"twikit is not available: {e}. Install with "
-            f"`pip install --user twikit`.")
+        die(
+            f"twikit is not available in the sandbox image: {e}. "
+            "Deploy the sandbox skill dependencies image; do not pip-install it at runtime."
+        )
     try:
         asyncio.run(run(args))
     except (Unauthorized,) as e:
