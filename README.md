@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills (31)
 
 ### AI Music & Audio
 
@@ -40,6 +40,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [grok-video](skills/grok-video/) | Generate videos with xAI Grok Imagine |
 
 ### AI Chat & Tools
 
@@ -211,6 +212,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
+| grok-video | [mcp-grok](https://pypi.org/project/mcp-grok/) | `pip install mcp-grok` | `https://grok.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
 
 **Using hosted MCP endpoints** (no local install needed):
