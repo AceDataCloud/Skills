@@ -58,6 +58,7 @@ POST /serp/google
 | `range` | string | Time filter (see below) |
 | `number` | int | Number of results per page |
 | `page` | int | Page number for pagination |
+| `image_size` | string | **Images only.** Filter by size for high-res sources: `large` / `medium` / `icon`, or a megapixel minimum `2mp`…`70mp` (e.g. `4mp` = larger than 4 megapixels). Use `large` (or a `*mp` value) whenever the image will be shown large / full-screen / zoomed. |
 
 ## Time Range Options
 
@@ -82,7 +83,7 @@ Web search returns structured data including:
 - Country and language codes affect result localization significantly
 - `number` controls results per page, not total results — use `page` for pagination
 - Time range (`range`) only applies to web search and news, not images or places
-- Image search returns thumbnail and full-size URLs — use full-size for downloads
+- **Image resolution (important for video / full-screen use):** results include `image_url` (full-size), `thumbnail_url`, and `image_width`/`image_height`. Pass **`image_size: "large"`** (or a megapixel minimum like `"4mp"`) to get sharp sources, and pick the result with the largest `image_width`×`image_height`. Always download `image_url` — **never** use `thumbnail_url` as a final asset (it is tiny and blurry).
 - Places search works best with location-specific queries (e.g., "restaurants near Times Square")
 
 > **MCP:** `pip install mcp-serp` | Hosted: `https://serp.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
