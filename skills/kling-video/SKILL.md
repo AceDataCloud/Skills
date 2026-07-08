@@ -149,6 +149,9 @@ POST /kling/talking-photo
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion-control model |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Preserve original audio from the reference video |
+| `watermark_info` (`/kling/motion`) | object `{"enabled": bool}` | Watermark settings |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
 | `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |
 | `audio_url` (`/kling/lip-sync`) | URL | Audio source URL (for `audio2video`) |

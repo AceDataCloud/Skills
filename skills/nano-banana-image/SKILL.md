@@ -29,9 +29,11 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
 | Model | Best For |
 |-------|----------|
 | `nano-banana` | Standard image generation (default) |
+| `nano-banana-2-lite` | Lightweight second-generation model |
 | `nano-banana-2` | Improved quality, second generation |
 | `nano-banana-pro` | Highest quality, most detailed output |
 | `nano-banana:official` | Official channel variant of `nano-banana` |
+| `nano-banana-2-lite:official` | Official channel variant of `nano-banana-2-lite` |
 | `nano-banana-2:official` | Official channel variant of `nano-banana-2` |
 | `nano-banana-pro:official` | Official channel variant of `nano-banana-pro` |
 
