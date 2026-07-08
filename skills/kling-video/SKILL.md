@@ -100,7 +100,10 @@ Apply precise camera/motion control from an image + reference video.
 POST /kling/motion
 {
   "image_url": "https://example.com/subject.jpg",
-  "video_url": "https://example.com/motion-reference.mp4"
+  "video_url": "https://example.com/motion-reference.mp4",
+  "character_orientation": "image",
+  "mode": "std",
+  "model_name": "kling-v3"
 }
 ```
 
@@ -147,6 +150,12 @@ POST /kling/talking-photo
 | `camera_control` | object | Camera movement parameters |
 | `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion control model |
+| `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion quality mode |
+| `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Orientation source (required) |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Whether to retain the original audio |
+| `watermark_info` (`/kling/motion`) | `{"enabled": bool}` | Watermark settings |
+| `prompt` (`/kling/motion`) | string | Optional motion description |
 | `callback_url` | string | Async callback URL |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
@@ -170,7 +179,7 @@ POST /kling/talking-photo
 - `mode=4k` is only available for `kling-v3` and `kling-v3-omni` and is incompatible with `camera_control`
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
-- Motion control (`/kling/motion`) is a separate endpoint from video generation
+- Motion control (`/kling/motion`) is a separate endpoint; requires `image_url`, `video_url`, `character_orientation`, and `mode`; supports `model_name` (`kling-v2-6`, `kling-v3`), `keep_original_sound`, `watermark_info`, and optional `prompt`
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
