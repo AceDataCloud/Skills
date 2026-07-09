@@ -100,7 +100,9 @@ Apply precise camera/motion control from an image + reference video.
 POST /kling/motion
 {
   "image_url": "https://example.com/subject.jpg",
-  "video_url": "https://example.com/motion-reference.mp4"
+  "video_url": "https://example.com/motion-reference.mp4",
+  "character_orientation": "image",
+  "mode": "std"
 }
 ```
 
@@ -149,6 +151,14 @@ POST /kling/talking-photo
 | `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion model |
+| `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion quality mode (required) |
+| `image_url` (`/kling/motion`) | URL | Source image (required) |
+| `video_url` (`/kling/motion`) | URL | Motion reference video (required) |
+| `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Orientation source (required) |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Preserve original sound |
+| `watermark_info` (`/kling/motion`) | `{"enabled": bool}` | Watermark settings |
+| `prompt` (`/kling/motion`) | string | Additional prompt for motion guidance |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
 | `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |
 | `audio_url` (`/kling/lip-sync`) | URL | Audio source URL (for `audio2video`) |
