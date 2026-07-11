@@ -45,6 +45,18 @@ The 2.0 series adds multimodal reference inputs: real-person / character **image
 | `doubao-seedance-2-0-fast-260128` | Faster 2.0 generation | `720p` |
 | `doubao-seedance-2-0-mini-260615` | Lightweight / most cost-effective 2.0 | `720p` |
 
+### Agent Production Quality Mapping
+
+When an upstream workflow provides a production quality tier, choose the Seedance 2.0 model by quality:
+
+| Production quality | Model |
+|--------------------|-------|
+| `draft` | `doubao-seedance-2-0-mini-260615` |
+| `standard` or unset | `doubao-seedance-2-0-fast-260128` |
+| `premium` | `doubao-seedance-2-0-260128` |
+
+This quality mapping is an agent/workflow policy, not the API `service_tier` parameter (`default` / `flex`). Only premium work should start on the pro model; standard work defaults to fast, and draft work defaults to mini.
+
 ### Seedance 1.x
 
 | Model | Type | Best For |
