@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, blending ingredients from multiple images, or upscaling to 1080p. Supports Veo 3 and Veo 3.1 models including fast and ingredient variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, blending ingredients from multiple images, or upscaling to 1080p via `get1080p`. Supports Veo 3 and Veo 3.1 models including fast and ingredient variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -106,7 +106,7 @@ POST /veo/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
-| `model` | see Models table | Model to use |
+| `model` | see Models table | Optional model selection |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
 | `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
