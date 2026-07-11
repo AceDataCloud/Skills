@@ -163,7 +163,7 @@ POST /seedance/videos
 | `content` | array | Input items: `text`, `image_url`, `audio_url` (2.0), `video_url` (2.0) (required) |
 | `resolution` | `"480p"`, `"720p"`, `"1080p"`, `"4k"` | Output resolution. `4k` is `doubao-seedance-2-0-260128` (standard) only; `2-0-fast` / `2-0-mini` max out at `720p` (default: 720p for pro/2.0, 480p for lite) |
 | `ratio` | `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"21:9"`, `"adaptive"` | Aspect ratio (default: 16:9) |
-| `duration` | integer | Duration in seconds (typically `2`–`15`; Seedance 2.0 models support `4`–`15`). Negative values are unsupported. |
+| `duration` | integer | Duration in seconds (typically `2`–`15`; Seedance 2.0 models support `4`–`15`). |
 | `frames` | 29–361 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
 | `generate_audio` | `true` / `false` | Generate audio (supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore it) |
