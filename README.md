@@ -40,6 +40,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [happyhorse-video](skills/happyhorse-video/) | Generate videos with HappyHorse (text, image, reference, edit) |
 
 ### AI Chat & Tools
 
