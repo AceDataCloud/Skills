@@ -29,7 +29,7 @@ curl -X POST https://api.acedata.cloud/seedream/images \
 | Model | Version | Best For |
 |-------|---------|----------|
 | `doubao-seedream-5-0-pro-260628` | Seedream 5.0 Pro | Highest quality Seedream model |
-| `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, high quality (default) |
+| `doubao-seedream-5-0-260128` | Seedream 5.0 | High quality general model |
 | `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
 | `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
 | `doubao-seedream-3-0-t2i-250415` | Seedream 3.0 T2I | Text-to-image, precise prompt following |
