@@ -28,6 +28,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 ### AI Chat & Tools
 - **ai-chat** — Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models)
 - **google-search** — Search the web, images, news, maps, places, and videos via Google
+- **tgstat** — Discover and analyze public Telegram channels/groups (no login; optional TGStat API Token)
 - **face-transform** — Face analysis, beautification, age/gender transform, swap, cartoon
 - **short-url** — Create and manage short URLs
 - **onepage-pdf** — Convert an HTML page into one tall single-page PDF (local; no API token; needs Python + pymupdf + Chrome/Edge)
