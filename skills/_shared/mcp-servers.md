@@ -15,6 +15,7 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | veo-video | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | seedream-image | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
+| maestro-video | `pip install mcp-maestro` | `https://maestro.mcp.acedata.cloud/mcp` |
 | nano-banana-image | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
