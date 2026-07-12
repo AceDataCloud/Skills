@@ -1,0 +1,2 @@
+urllib3==2.2.3
+cryptography==43.0.1

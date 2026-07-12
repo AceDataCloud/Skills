@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills (35)
 
 ### AI Music & Audio
 
@@ -74,6 +74,7 @@ These skills drive third-party connectors users wire up at [auth.acedata.cloud/u
 | [didi-ride](skills/didi-ride/) | Book DiDi rides, estimate fares, query/cancel orders, plan routes via the DiDi MCP | `didi` (BYOC) |
 | [wecom](skills/wecom/) | WeCom (企业微信) self-built app — contacts, app messages, WeDoc, schedules, meetings | `wecom` (BYOC) |
 | [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
+| [xiaohongshu](skills/xiaohongshu/) | Search, preview, and publish image/video/long-form notes; comment, like, and favorite on Xiaohongshu | `xiaohongshu` (BYOC cookies) |
 
 ## Prerequisites
 

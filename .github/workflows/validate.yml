@@ -12,6 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Test Xiaohongshu runtime
+        run: |
+          python3 -m pip install -r skills/xiaohongshu/requirements.txt
+          python3 skills/xiaohongshu/tests/test_xiaohongshu.py
+          python3 -m py_compile \
+            skills/xiaohongshu/scripts/xiaohongshu.py \
+            skills/xiaohongshu/scripts/vendor/xhs/*.py
+
       - name: Validate SKILL.md structure
         run: |
           errors=0

@@ -33,6 +33,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **onepage-pdf** — Convert an HTML page into one tall single-page PDF (local; no API token; needs Python + pymupdf + Chrome/Edge)
 - **apple-notes** — Manage Apple Notes on macOS: create, search, read, export, organize notes (macOS-only; local; no API token; drives Notes.app via AppleScript)
 - **acedatacloud** — Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements
+- **xiaohongshu** — Search, preview, publish image/video/long-form notes, and interact through an encrypted BYOC cookie connector
 
 ## Authentication
 
