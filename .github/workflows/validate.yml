@@ -117,6 +117,9 @@ jobs:
 
           echo "marketplace.json validated successfully"
 
+      - name: Test Reddit skill helper
+        run: python3 -m unittest discover -s skills/reddit/tests -p 'test_*.py'
+
       - name: Check for orphaned skills
         run: |
           # Find skills not referenced in marketplace.json

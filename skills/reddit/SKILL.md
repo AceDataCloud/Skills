@@ -1,6 +1,6 @@
 ---
 name: reddit
-description: Submit posts (link or text) to subreddits and read your Reddit identity / content via the Reddit API. Use when the user mentions Reddit, posting to a subreddit, submitting a link or self-post, or checking their Reddit profile / submissions.
+description: Submit posts (link or text) to subreddits and read your Reddit identity / submissions using either official OAuth or your own Reddit login cookies. Use when the user mentions Reddit, posting to a subreddit, submitting a link or self-post, or checking their Reddit profile / submissions.
 when_to_use: |
   Trigger when the user wants to submit a post to a subreddit (link or
   self/text post), or read their own Reddit identity and submissions.
@@ -8,75 +8,88 @@ when_to_use: |
   / karma requirements — confirm the target subreddit, title and body
   before submitting.
 connections: [reddit]
-allowed_tools: [Bash]
+allowed_tools: [Bash, publish_artifact]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "2.0"
 ---
 
-Call the **Reddit API** (OAuth endpoints) with `curl + jq`. The user's bearer
-token is in `$REDDIT_TOKEN`. **Every call MUST send a `User-Agent` header** or
-Reddit returns `429`. Use the OAuth host `https://oauth.reddit.com`.
+# Reddit — OAuth or login-cookie access
 
-```bash
-UA="web:cloud.acedata.connectors:v1.0 (by /u/acedatacloud)"
+The connector injects exactly one of these credentials:
+
+- `REDDIT_COOKIES`: JSON cookie array captured by the ACE browser extension.
+  It includes `reddit_session` and grants full account access. **Secret — never
+  echo, print, log or return it.**
+- `REDDIT_TOKEN`: official OAuth bearer token (`identity read submit`).
+
+The helper automatically prefers Cookie when present and otherwise uses OAuth.
+It sends Reddit's required descriptive User-Agent and never forwards cookies
+outside `reddit.com`.
+
+## Script resolution
+
+Bash calls do not share shell variables. Resolve the helper inside **every**
+fenced Bash invocation before using it:
+
+```sh
+R="${SKILL_DIR:-}/scripts/reddit.py"; [ -f "$R" ] || R=$(find /tmp -maxdepth 8 -path '*/skills/*/reddit/scripts/reddit.py' -print -quit 2>/dev/null)
+[ -f "$R" ] || { echo "reddit script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$R" whoami
 ```
 
-Errors are JSON; a submit returns `{"json":{"errors":[...], "data":{...}}}` —
-if `errors` is non-empty, show them verbatim. `401` → token expired, re-connect.
+If authentication fails, ask the user to reconnect at
+<https://auth.acedata.cloud/user/connections>. Do not loop-retry a blocked or
+expired session.
 
-**Always start by confirming identity:**
+## Read
 
-```bash
-curl -sS -H "Authorization: Bearer $REDDIT_TOKEN" -H "User-Agent: $UA" \
-  "https://oauth.reddit.com/api/v1/me" | jq '{name, total_karma, link_karma}'
+```sh
+R="${SKILL_DIR:-}/scripts/reddit.py"; [ -f "$R" ] || R=$(find /tmp -maxdepth 8 -path '*/skills/*/reddit/scripts/reddit.py' -print -quit 2>/dev/null)
+[ -f "$R" ] || { echo "reddit script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$R" whoami
+python3 "$R" submissions --limit 10
 ```
 
-## Submit a post
+## Submit a post — GATED
 
-**Confirm the subreddit + title + body with the user first.** `sr` is the
-subreddit name WITHOUT the `r/` prefix.
+Posting is public. **Always show the subreddit, final title and final body/URL,
+then obtain explicit confirmation.** Without a trailing `--confirm`, both write
+commands are dry-runs and make no network request.
 
-```bash
-# Self (text) post: kind=self + text. Link post: kind=link + url.
-curl -sS -X POST "https://oauth.reddit.com/api/submit" \
-  -H "Authorization: Bearer $REDDIT_TOKEN" -H "User-Agent: $UA" \
-  --data-urlencode "sr=test" \
-  --data-urlencode "kind=self" \
-  --data-urlencode "title=My title" \
-  --data-urlencode "text=My self-post body in markdown" \
-  --data-urlencode "api_type=json" \
-  | jq '.json | {errors, url: .data.url, id: .data.id}'
+```sh
+R="${SKILL_DIR:-}/scripts/reddit.py"; [ -f "$R" ] || R=$(find /tmp -maxdepth 8 -path '*/skills/*/reddit/scripts/reddit.py' -print -quit 2>/dev/null)
+[ -f "$R" ] || { echo "reddit script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+
+# Text post: use a file for long Markdown.
+python3 "$R" submit-text --subreddit test --title "My title" --text-file post.md
+python3 "$R" submit-text --subreddit test --title "My title" --text-file post.md --confirm
+
+# Link post.
+python3 "$R" submit-link --subreddit test --title "My title" --url "https://example.com"
+python3 "$R" submit-link --subreddit test --title "My title" --url "https://example.com" --confirm
 ```
 
-For a link post:
+`--confirm` is honored only when it is the final argument. A title or body that
+contains the text `--confirm` can never trigger a write.
 
-```bash
-curl -sS -X POST "https://oauth.reddit.com/api/submit" \
-  -H "Authorization: Bearer $REDDIT_TOKEN" -H "User-Agent: $UA" \
-  --data-urlencode "sr=test" --data-urlencode "kind=link" \
-  --data-urlencode "title=My title" --data-urlencode "url=https://example.com" \
-  --data-urlencode "api_type=json" | jq '.json'
-```
+## Safety and failure handling
 
-## Read my submissions
-
-```bash
-curl -sS -H "Authorization: Bearer $REDDIT_TOKEN" -H "User-Agent: $UA" \
-  "https://oauth.reddit.com/user/USERNAME/submitted?limit=10" \
-  | jq '.data.children[] | .data | {title, subreddit, ups, num_comments, permalink}'
-```
-
-## Gotchas
-
-- **User-Agent is mandatory** on every request — omitting it → `429`.
-- Many subreddits gate posting on **account age / karma / flair**; a submit can
-  return `errors` like `[["SUBREDDIT_NOTALLOWED", ...]]` — surface it and try
-  `r/test` to validate the flow.
-- Respect rate limits: read the `X-Ratelimit-Remaining` response header; space
-  out bulk submits.
-- Use `r/test` as a safe target when validating that the connection works.
+- Never print `REDDIT_COOKIES`, `REDDIT_TOKEN`, `reddit_session` or the modhash.
+- Do not vote, send private messages, evade bans, automate engagement, or
+  cross-post identical content. This skill intentionally exposes none of those
+  operations.
+- Follow each subreddit's rules. Account age, karma and flair requirements can
+  reject a post; report the rejection without exposing Reddit's raw authenticated
+  response, which may contain reflected credential material.
+- Do not retry a write automatically. A timeout may occur after Reddit accepted
+  it, and replaying could create a duplicate.
+- Respect rate limits and never bulk-submit. Use `r/test` only for a deliberate
+  end-to-end validation.
+- Cookie mode drives Reddit's first-party web JSON endpoints and may drift when
+  Reddit changes its site. Report unexpected HTML or route errors as upstream
+  drift instead of guessing another private endpoint.
 
 
 ## Record the output
