@@ -98,6 +98,7 @@ def current_user_id_from_cookies() -> str | None:
 
 
 def make_client():
+    import httpx
     from twikit import Client
     patch_twikit_transaction_resolver()
     patch_twikit_model_defaults()
@@ -107,7 +108,12 @@ def make_client():
         or os.environ.get("ALL_PROXY") or os.environ.get("all_proxy")
         or None
     )
-    client = Client("en-US", proxy=proxy, user_agent=UA)
+    # twikit builds its httpx.AsyncClient with httpx's 5s default timeout, which
+    # trips a ReadTimeout on media uploads (INIT/APPEND/FINALIZE + status poll)
+    # from datacenter egress — a text-only tweet is one fast call and squeaks
+    # under 5s, but --media does not. Give network ops generous headroom.
+    timeout = httpx.Timeout(60.0, connect=15.0)
+    client = Client("en-US", proxy=proxy, user_agent=UA, timeout=timeout)
     client.set_cookies(load_cookie_dict())
     return client
 
@@ -494,6 +500,14 @@ def main() -> None:
         # twikit scrapes X's non-public API; a bare error here usually means an
         # expired cookie OR that X changed its internal endpoints and twikit
         # needs a compatibility fix.
+        import httpx
+        if isinstance(e, httpx.TimeoutException):
+            die(
+                "X request timed out talking to X (network was slow, not an "
+                "auth problem) — this is transient, retry the same command. "
+                "Timeouts are most common on --media because the image upload "
+                "is the slow leg; if it recurs, try a smaller image."
+            )
         if "Couldn't get KEY_BYTE indices" in str(e):
             die(
                 "X request failed because twikit cannot derive X's current "
