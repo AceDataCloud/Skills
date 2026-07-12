@@ -1,171 +1,119 @@
 ---
 name: hashnode
-description: Publish, update and read blog posts on Hashnode via its GraphQL API. Use when the user mentions Hashnode, publishing a blog post to Hashnode, cross-posting an article to their Hashnode blog, saving a Hashnode draft, updating a published Hashnode post, or listing their Hashnode publications and posts.
+description: Publish, draft and read blog posts on the user's Hashnode blog using their own login cookies (BYOC) — no Hashnode Pro plan required. Use when the user mentions Hashnode, publishing/cross-posting an article to their Hashnode blog, saving a Hashnode draft, or listing their Hashnode publications.
 when_to_use: |
-  Trigger when the user wants to publish a Markdown article to their
-  Hashnode blog, save it as a draft, update a previously published
-  post, or list / inspect their own Hashnode publications and posts.
-  The connector stores a Hashnode Personal Access Token with full
-  account access — confirm before publishing publicly (you can save a
-  draft first with the createDraft mutation).
+  Trigger when the user wants to publish a Markdown article to their Hashnode
+  blog, save it as a private draft, or list their Hashnode publications. This
+  drives the user's REAL blog, so publishing is gated behind an explicit
+  confirmation (save a draft first if unsure).
 connections: [hashnode]
-allowed_tools: [Bash]
+allowed_tools: [Bash, publish_artifact]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "2.0"
 ---
 
-Call the **Hashnode GraphQL API** with `curl + jq`. The user's Personal Access
-Token is in `$HASHNODE_TOKEN`. Single endpoint: `https://gql-beta.hashnode.com`
-(always `POST` a JSON body `{query, variables}`).
+# hashnode — publish to your Hashnode blog via your own cookies (no Pro)
 
-> The old `https://gql.hashnode.com` host is **deprecated** — it now 301-redirects
-> to a changelog page and returns HTML, not JSON. Always use `gql-beta.hashnode.com`.
+Hashnode moved its **public GraphQL API behind a paid Pro plan** (2026-05-13), so
+a Personal Access Token can no longer publish for free. This skill instead drives
+the **same first-party REST API the Hashnode web editor uses**
+(`https://hashnode.com/api/...`), authenticated by the user's login **session
+cookie** — which is free and needs no Pro plan.
 
-Every request needs these headers:
+The connector injects the cookie jar as `HASHNODE_COOKIES` (a JSON array; the
+session cookie is `hashnode-session`). **Secret — full account access. Never echo
+or print it.**
 
-```
-Authorization: Bearer $HASHNODE_TOKEN
-Content-Type: application/json
-```
+> E2E-verified 2026-07-12 on a real connected blog: list publications, create +
+> save draft (title / subtitle / cover / tags / Markdown), publish, and delete —
+> all via cookie auth, no Pro.
 
-GraphQL always returns HTTP `200`; real failures live in the JSON `errors`
-array — always inspect it and show it verbatim. Two error cases matter:
+## Setup — anchor on our own script
 
-- `Unauthorized` / `not authenticated` → the token is invalid → the user must
-  re-connect the Hashnode connector.
-- `extensions.code == "FORBIDDEN"` with a message like *"Publication does not have
-  an active Pro plan"* → this is **not** a token problem. As of 2026-05-13 Hashnode
-  moved its API behind a paid plan: **every write mutation** (`publishPost`,
-  `createDraft`, `updatePost`) **and publication-scoped reads require the target
-  publication to be on [Hashnode Pro](https://hashnode.com/pro)**. Do NOT tell the
-  user to reconnect and do NOT retry in a loop — tell them the publication owner
-  must upgrade to Hashnode Pro (blog dashboard → Billing → Upgrade to Pro), after
-  which the API works immediately. Public reads (posts/feeds/users/tags) stay free.
-
-Helper — send a query/mutation (`$1` = query string, `$2` = variables JSON):
-
-```bash
-gql() {
-  jq -n --arg q "$1" --argjson v "${2:-null}" '{query:$q, variables:$v}' \
-  | curl -sS -X POST https://gql-beta.hashnode.com \
-      -H "Authorization: Bearer $HASHNODE_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d @-
-}
+```sh
+# $SKILL_DIR can point at another skill loaded this turn — anchor on our script.
+H="$SKILL_DIR/scripts/hashnode.py"; [ -f "$H" ] || H=$(find /tmp -maxdepth 8 -path '*/skills/*/hashnode/scripts/hashnode.py' 2>/dev/null | head -1)
+[ -f "$H" ] || { echo "hashnode script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$H" publications          # list the user's blogs (verifies the cookie)
 ```
 
-## Always start by confirming the token and finding the publication id
+On an auth error the cookie is expired — have the user reconnect at
+<https://auth.acedata.cloud/user/connections>. Do **not** loop-retry.
 
-`publishPost` / `createDraft` need a `publicationId`. Fetch the account and its
-publications first (a user can have several blogs):
+## ⚠️ Non-Pro blogs are automoderated — write EDITORIAL, not ads
 
-```bash
-gql 'query { me { id username publications(first: 10) { edges { node { id title url } } } } }' \
-  | jq '{me: .data.me.username, publications: [.data.me.publications.edges[].node | {id, title, url}], errors: .errors}'
+This is the single most important rule. A **non-Pro** publication is subject to
+Hashnode **automoderation**: an overtly promotional post (hypey language,
+"free credits!!", the *same* CTA link repeated 3–4 times) is **auto-removed
+within seconds** — the publish call still returns success, but the live URL then
+404s. (Pro's one benefit here is "protection from automoderation removal".)
+
+To stay live, write a genuinely useful **how-to / guide** that happens to feature
+the product:
+
+- Educational framing and a concrete title (e.g. *"… (Beginner's Guide)"*).
+- At most a couple of **tasteful** links, not the same CTA repeated.
+- No "limited-time!! grab now!!" marketing voice.
+
+`publish` re-fetches the live URL after publishing and returns a `warning` if the
+post was moderated away — if you see that, rewrite it editorially and republish.
+
+## Read
+
+```sh
+python3 "$H" publications        # {publications:[{id,title,url}]}
 ```
 
-Pick the target blog's `id` (that is the `publicationId`). If the user has
-exactly one publication, use it; otherwise ask which blog to post to.
+## Save a private draft (safe, non-public)
 
-## Publish a post
-
-**Confirm with the user before publishing publicly.** If they are not sure, save
-a draft first (see below). `tags` is required — supply 1–5 tags, each as
-`{name, slug}` (slug lowercase, no spaces).
-
-```bash
-PUB_ID="PUBLICATION_ID"          # from the me query above
-TITLE="My title"
-BODY_MD="$(cat article.md)"      # full Markdown body
-
-VARS=$(jq -n --arg p "$PUB_ID" --arg t "$TITLE" --arg b "$BODY_MD" '{
-  input: {
-    publicationId: $p,
-    title: $t,
-    contentMarkdown: $b,
-    tags: [{name:"AI", slug:"ai"}, {name:"Web Development", slug:"web-development"}]
-  }
-}')
-
-gql 'mutation PublishPost($input: PublishPostInput!) {
-  publishPost(input: $input) { post { id slug url title } }
-}' "$VARS" | jq '{post: .data.publishPost.post, errors: .errors}'
+```sh
+python3 "$H" draft \
+  --title "My Title" \
+  --subtitle "Optional subtitle" \
+  --content-file article.md \
+  --cover "https://cdn.example.com/cover.jpg" \
+  --tags ai,apis
+# → {draft_id, editor_url}. Nothing is public yet.
 ```
 
-Useful optional `input` fields:
+- `--content-file` is the Markdown body (use a file for long posts; `--content`
+  for a short inline string). Inline **images** and **links** are just Markdown.
+- `--cover` sets the header/cover image (also used as the OG image).
+- `--tags` are comma-separated slugs (`ai,apis,web-development`); they're resolved
+  to real Hashnode tag ids automatically (up to 5).
+- `--publication <id>` is only needed if the account has more than one blog.
 
-- `subtitle` — post subtitle.
-- `slug` — custom URL slug (otherwise derived from the title).
-- `canonicalUrl` / `originalArticleURL` — when cross-posting, point SEO back to
-  the original source. Set this whenever the same article also lives elsewhere.
-- `coverImageOptions: { coverImageURL: "https://..." }` — cover image.
-- `publishedAt` — ISO-8601 timestamp to backdate; `disableComments` etc. live
-  under `settings`.
+## Publish — GATED (dry-run unless trailing `--confirm`)
 
-## Save a draft (safe, non-public)
-
-Use this when the user has not explicitly approved public publishing:
-
-```bash
-VARS=$(jq -n --arg p "$PUB_ID" --arg t "$TITLE" --arg b "$BODY_MD" '{
-  input: { publicationId: $p, title: $t, contentMarkdown: $b }
-}')
-
-gql 'mutation CreateDraft($input: CreateDraftInput!) {
-  createDraft(input: $input) { draft { id slug title } }
-}' "$VARS" | jq '{draft: .data.createDraft.draft, errors: .errors}'
+```sh
+python3 "$H" publish --title "My Title" --content-file article.md --cover "https://…" --tags ai,apis          # dry-run
+python3 "$H" publish --title "My Title" --content-file article.md --cover "https://…" --tags ai,apis --confirm # LIVE
+# → {ok, url}  (or {ok:false, warning:"…automoderation removed…"} — rewrite editorially)
 ```
 
-## Update a published post
+A confirmed `publish` is **immediately public** on the user's real blog. Always
+show the final title + body, get an explicit "yes", then run with `--confirm` as
+the **last** argument.
 
-`updatePost` needs the post `id` (from `publishPost`, or the list query below):
+## Delete a draft or post — GATED
 
-```bash
-VARS=$(jq -n --arg id "POST_ID" --arg b "$(cat article.md)" '{
-  input: { id: $id, contentMarkdown: $b }
-}')
-
-gql 'mutation UpdatePost($input: UpdatePostInput!) {
-  updatePost(input: $input) { post { id url title } }
-}' "$VARS" | jq '{post: .data.updatePost.post, errors: .errors}'
-```
-
-## List / inspect my posts
-
-```bash
-gql 'query { me { posts(pageSize: 20, page: 1) { nodes { id title slug url views reactionCount responseCount publishedAt } } } }' \
-  | jq '[.data.me.posts.nodes[] | {id, title, url, views, reactions: .reactionCount, responses: .responseCount}]'
-```
-
-Single post with full content + stats:
-
-```bash
-gql 'query GetPost($id: ObjectId!) { post(id: $id) { title url views reactionCount responseCount content { markdown } } }' \
-  "$(jq -n --arg id "POST_ID" '{id:$id}')" | jq '.data.post | {title, url, views, reactions: .reactionCount}'
+```sh
+python3 "$H" delete --id <draftOrPostId>            # dry-run
+python3 "$H" delete --id <draftOrPostId> --confirm  # delete
 ```
 
 ## Gotchas
 
-- **Endpoint is `https://gql-beta.hashnode.com`** — the old `gql.hashnode.com`
-  host is deprecated (301 → HTML changelog page, never valid GraphQL JSON).
-- **`Authorization: Bearer $HASHNODE_TOKEN`** — send the token with the `Bearer`
-  prefix (this is what Hashnode's own official skill uses).
-- **Pro plan required for writes** — since 2026-05-13, `publishPost` / `createDraft`
-  / `updatePost` and publication-scoped reads only work if the target publication
-  has an active **Hashnode Pro** plan; otherwise the call returns a `FORBIDDEN`
-  *"does not have an active Pro plan"* error. That is a billing state on the user's
-  blog, not something the skill or a reconnect can fix — surface it and stop.
-- **`publicationId` is mandatory** for publishing/drafting — never guess it, read
-  it from the `me` query.
-- **`tags` is required on `publishPost`** — supply at least one `{name, slug}`;
-  slug must be lowercase with hyphens (e.g. `machine-learning`).
-- **`errors` on HTTP 200** — GraphQL reports failures in the `errors` array, not
-  via status codes; always surface them.
-- **Idempotency** — re-running `publishPost` creates a *new* post each time; to
-  change an existing one use `updatePost` with its `id`.
-
+- **No Pro, no PAT.** This uses the cookie-authed `hashnode.com/api/*` editor API,
+  not `gql-beta.hashnode.com` (which requires a paid Pro plan).
+- **Automoderation** (above) is the main failure mode on free blogs — keep it
+  editorial.
+- **This is the user's real blog.** Confirm before any publish/delete.
+- **Never print `HASHNODE_COOKIES`** — it is full account access.
+- **First-party internal API** — it can change when Hashnode updates the editor;
+  if a call starts returning HTML/404 unexpectedly, report it as upstream drift.
 
 ## Record the output
 
