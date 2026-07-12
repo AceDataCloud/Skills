@@ -16,29 +16,41 @@ metadata:
   version: "1.0"
 ---
 
-Call the **Hashnode Public GraphQL API** with `curl + jq`. The user's Personal
-Access Token is in `$HASHNODE_TOKEN`. Single endpoint: `https://gql.hashnode.com`
+Call the **Hashnode GraphQL API** with `curl + jq`. The user's Personal Access
+Token is in `$HASHNODE_TOKEN`. Single endpoint: `https://gql-beta.hashnode.com`
 (always `POST` a JSON body `{query, variables}`).
+
+> The old `https://gql.hashnode.com` host is **deprecated** — it now 301-redirects
+> to a changelog page and returns HTML, not JSON. Always use `gql-beta.hashnode.com`.
 
 Every request needs these headers:
 
 ```
-Authorization: $HASHNODE_TOKEN      # raw token — NO "Bearer " prefix
+Authorization: Bearer $HASHNODE_TOKEN
 Content-Type: application/json
 ```
 
 GraphQL always returns HTTP `200`; real failures live in the JSON `errors`
-array — always inspect it and show it verbatim. An `errors` entry mentioning
-`Unauthorized` / `not authenticated` means the token is invalid → the user must
-re-connect the Hashnode connector.
+array — always inspect it and show it verbatim. Two error cases matter:
+
+- `Unauthorized` / `not authenticated` → the token is invalid → the user must
+  re-connect the Hashnode connector.
+- `extensions.code == "FORBIDDEN"` with a message like *"Publication does not have
+  an active Pro plan"* → this is **not** a token problem. As of 2026-05-13 Hashnode
+  moved its API behind a paid plan: **every write mutation** (`publishPost`,
+  `createDraft`, `updatePost`) **and publication-scoped reads require the target
+  publication to be on [Hashnode Pro](https://hashnode.com/pro)**. Do NOT tell the
+  user to reconnect and do NOT retry in a loop — tell them the publication owner
+  must upgrade to Hashnode Pro (blog dashboard → Billing → Upgrade to Pro), after
+  which the API works immediately. Public reads (posts/feeds/users/tags) stay free.
 
 Helper — send a query/mutation (`$1` = query string, `$2` = variables JSON):
 
 ```bash
 gql() {
   jq -n --arg q "$1" --argjson v "${2:-null}" '{query:$q, variables:$v}' \
-  | curl -sS -X POST https://gql.hashnode.com \
-      -H "Authorization: $HASHNODE_TOKEN" \
+  | curl -sS -X POST https://gql-beta.hashnode.com \
+      -H "Authorization: Bearer $HASHNODE_TOKEN" \
       -H "Content-Type: application/json" \
       -d @-
 }
@@ -136,7 +148,15 @@ gql 'query GetPost($id: ObjectId!) { post(id: $id) { title url views reactionCou
 
 ## Gotchas
 
-- **No `Bearer` prefix** — the `Authorization` header carries the raw token.
+- **Endpoint is `https://gql-beta.hashnode.com`** — the old `gql.hashnode.com`
+  host is deprecated (301 → HTML changelog page, never valid GraphQL JSON).
+- **`Authorization: Bearer $HASHNODE_TOKEN`** — send the token with the `Bearer`
+  prefix (this is what Hashnode's own official skill uses).
+- **Pro plan required for writes** — since 2026-05-13, `publishPost` / `createDraft`
+  / `updatePost` and publication-scoped reads only work if the target publication
+  has an active **Hashnode Pro** plan; otherwise the call returns a `FORBIDDEN`
+  *"does not have an active Pro plan"* error. That is a billing state on the user's
+  blog, not something the skill or a reconnect can fix — surface it and stop.
 - **`publicationId` is mandatory** for publishing/drafting — never guess it, read
   it from the `me` query.
 - **`tags` is required on `publishPost`** — supply at least one `{name, slug}`;
