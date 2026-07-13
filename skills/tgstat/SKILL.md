@@ -1,44 +1,35 @@
 ---
 name: tgstat
-description: "Research public Telegram channels and groups with TGStat. Use when discovering communities by topic, comparing audience size/reach/activity, checking a known @username, shortlisting ad or outreach sources, or querying TGStat API quota. Works without a TGStat login using web search plus public TGStat pages; an optional TGSTAT_TOKEN enables official structured search and full statistics. Read-only: does not join groups, scrape members, or send messages."
+description: "Research public Telegram channels and groups with TGStat. Use when discovering communities by topic, comparing public audience/reach/activity, checking a known @username, or shortlisting ad and outreach sources. The connector supplies TGSTAT_USERNAME as the default profile. Read-only: does not log in, join groups, scrape members, or send messages."
 when_to_use: |
   Use for Telegram source discovery, competitor research, ad-channel
   selection, and public audience analysis. It can find channels/chats by
-  keyword, inspect known public usernames, compare ranking metrics, and
-  check optional TGStat API quota. Use the separate telegram connector for
-  reading or sending messages in the user's own account.
+  keyword, inspect known public usernames, compare visible metrics, and use
+  the connected Telegram username as the default target. Use the separate
+  telegram connector for reading or sending messages in the user's account.
 connections: [tgstat]
 allowed_tools: [Bash, web_search, web_fetch]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "2.0"
+  version: "2.1"
 ---
 
 # TGStat Research
 
-Use [scripts/tgstat.py](./scripts/tgstat.py) for public TGStat pages and the
-optional official API. It uses only the Python standard library.
+Use [scripts/tgstat.py](./scripts/tgstat.py) for public TGStat research. It uses
+only the Python standard library. Resolve the script at the start of every Bash
+call because each call runs in a fresh shell:
 
 ```bash
 TGSTAT="$SKILL_DIR/scripts/tgstat.py"; [ -f "$TGSTAT" ] || TGSTAT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tgstat.py' 2>/dev/null | head -1)
 [ -f "$TGSTAT" ] || { echo "tgstat script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
-python3 "$TGSTAT" mode
+python3 "$TGSTAT" profile
 ```
 
-The connector has two modes:
-
-- **Public research (default):** no TGStat account or token. Uses `web_search`
-  for discovery and public TGStat ranking/entity pages for verification.
-- **TGStat API Token (optional):** when the connector injects
-  `$TGSTAT_TOKEN`, the same commands automatically use the official Stat API.
-
-Commands default to `--access-mode auto`. Use `--access-mode public` before the
-subcommand when a configured Token lacks access to a paid API method; use
-`--access-mode api` to require API mode and fail clearly if no Token exists.
-
-Never ask the user to paste a token into chat or pass it on the command line.
-If they want API mode, ask them to add the Token through the TGStat connector.
+The connector injects `$TGSTAT_USERNAME`. It is not a login credential; it is
+only the default public channel/group target. Never print the full environment
+or treat the username as proof that the user owns the Telegram account.
 
 ## Discover Sources by Topic
 
@@ -47,8 +38,7 @@ Run `search` first:
 ```bash
 TGSTAT="$SKILL_DIR/scripts/tgstat.py"; [ -f "$TGSTAT" ] || TGSTAT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tgstat.py' 2>/dev/null | head -1)
 [ -f "$TGSTAT" ] || { echo "tgstat script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
-python3 "$TGSTAT" search "Claude API" --type all --language english --country us
-python3 "$TGSTAT" --access-mode api search --category technology --type channel
+python3 "$TGSTAT" search "Claude API" --type all --language English --country US
 ```
 
 In public mode the command returns `web_queries`. Call `web_search` once per
@@ -65,20 +55,8 @@ TGStat's own keyword-search result endpoint requires sign-in. Do not try to
 bypass it, replay private AJAX endpoints, or claim public mode searches the
 full TGStat index.
 
-Official API mode also supports category-only search. Category values are
-TGStat reference keys; if a key is rejected, query the user's intended topic by
-keyword in public mode instead of guessing another category.
-
-With `$TGSTAT_TOKEN`, `search` calls the official `channels/search` endpoint
-instead. That endpoint may require a paid Stat API plan. `--language` must be a
-TGStat language key such as `english` or `russian`; `--country` must be a
-two-letter country code such as `us` or `ru`.
-
-If API search reports plan access denied, rerun explicitly in public mode:
-
-```bash
-python3 "$TGSTAT" --access-mode public search "Claude API" --type all
-```
+`--language` and `--country` are search terms for the web index, not guaranteed
+TGStat database filters.
 
 ## Browse Public Rankings
 
@@ -104,12 +82,13 @@ results as web-index discoveries, not as an authoritative TGStat rank.
 
 ## Inspect a Known Channel or Group
 
-Accept only a public `@username`, bare username, `t.me/<username>` link, or a
-TGStat entity URL:
+Accept a public `@username`, bare username, `t.me/<username>` link, or a TGStat
+entity URL. Omit the target to inspect `$TGSTAT_USERNAME` from the connector:
 
 ```bash
 TGSTAT="$SKILL_DIR/scripts/tgstat.py"; [ -f "$TGSTAT" ] || TGSTAT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tgstat.py' 2>/dev/null | head -1)
 [ -f "$TGSTAT" ] || { echo "tgstat script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
+python3 "$TGSTAT" info
 python3 "$TGSTAT" info @durov
 python3 "$TGSTAT" stat https://t.me/example_public_chat
 ```
@@ -119,28 +98,20 @@ returns public metadata, and enriches it with ranking metrics when the entity
 appears in the current public ranking. Empty metrics mean TGStat did not expose
 them publicly; do not call that full statistics.
 
-With `$TGSTAT_TOKEN`:
-
-- `info` uses `channels/get` for structured identity/category metadata.
-- `stat` uses `channels/stat` for fuller channel reach/ER or chat activity.
-
 For ad selection, rank by relevant reach/activity rather than subscriber count
 alone. High subscribers with weak reach or chat MAU can indicate an inactive or
 inflated audience. Present metrics as evidence, not a guarantee of lead quality.
 
-## Check API Mode and Quota
+## Check the Connected Profile
 
 ```bash
 TGSTAT="$SKILL_DIR/scripts/tgstat.py"; [ -f "$TGSTAT" ] || TGSTAT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tgstat.py' 2>/dev/null | head -1)
 [ -f "$TGSTAT" ] || { echo "tgstat script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
-python3 "$TGSTAT" mode
-python3 "$TGSTAT" quota
+python3 "$TGSTAT" profile
 ```
 
-Without a Token, `quota` returns `null`. With a Token it calls `usage/stat`.
-If TGStat reports an inactive plan or insufficient access, explain that the
-public workflow still works and that API search/full stats depend on the user's
-TGStat plan.
+`profile` reports the normalized public username used by target-less `info` and
+`stat`. It does not verify ownership or authenticate to Telegram/TGStat.
 
 ## Outreach Research Workflow
 
@@ -162,5 +133,4 @@ For prospecting or partnership research:
 - Public pages and HTML can change; if parsing fails, use `web_fetch` for a
   single public page and report only values visible in that page.
 - Public web discovery is incomplete and regional TGStat pages may differ.
-- Never print `$TGSTAT_TOKEN`, include it in reports, or expose command errors
-  containing secrets.
+- Treat `$TGSTAT_USERNAME` as public profile context, not authentication.

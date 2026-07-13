@@ -48,7 +48,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 |-------|-------------|
 | [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
-| [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups; no login required, optional TGStat API Token |
+| [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
@@ -76,7 +76,7 @@ These skills drive third-party connectors users wire up at [auth.acedata.cloud/u
 | [didi-ride](skills/didi-ride/) | Book DiDi rides, estimate fares, query/cancel orders, plan routes via the DiDi MCP | `didi` (BYOC) |
 | [wecom](skills/wecom/) | WeCom (企业微信) self-built app — contacts, app messages, WeDoc, schedules, meetings | `wecom` (BYOC) |
 | [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
-| [tgstat](skills/tgstat/) | Public Telegram source discovery, rankings, and audience research | `tgstat` (public; optional Token) |
+| [tgstat](skills/tgstat/) | Public Telegram source discovery, rankings, and audience research | `tgstat` (BYOC username) |
 
 ## Prerequisites
 

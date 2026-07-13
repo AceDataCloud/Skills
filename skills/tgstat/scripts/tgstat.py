@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TGStat research CLI with a zero-auth public mode and optional API mode."""
+"""Public TGStat research CLI with a connected Telegram username."""
 
 from __future__ import annotations
 
@@ -15,7 +15,6 @@ from html.parser import HTMLParser
 from typing import Dict, List, Optional, Tuple, Union
 
 DEFAULT_PUBLIC_BASE = "https://tgstat.com"
-DEFAULT_API_BASE = "https://api.tgstat.ru"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
@@ -24,7 +23,6 @@ PUBLIC_USERNAME_RE = re.compile(r"[A-Za-z0-9_]{3,}")
 TGSTAT_HOST_RE = re.compile(r"^(?:[a-z]{2,3}\.)?tgstat\.com$", re.IGNORECASE)
 TGSTAT_INPUT_HOST_RE = re.compile(r"^(?:(?:[a-z]{2,3}\.)?tgstat\.com|tgstat\.ru)$", re.IGNORECASE)
 ENTITY_PATH_RE = re.compile(r"/(channel|chat)/(@[A-Za-z0-9_]{3,}|id\d+)/stat/?", re.IGNORECASE)
-API_HOST = urllib.parse.urlparse(DEFAULT_API_BASE).hostname or ""
 
 
 class TGStatError(RuntimeError):
@@ -66,12 +64,8 @@ def _safe_url(url: str) -> str:
     return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
 
 
-def _safe_error_body(body: str, url: str) -> str:
-    compact = _compact(body)
-    token = urllib.parse.parse_qs(urllib.parse.urlsplit(url).query).get("token", [""])[0]
-    if token:
-        compact = compact.replace(token, "[REDACTED]")
-    return compact[:200]
+def _safe_error_body(body: str) -> str:
+    return _compact(body)[:200]
 
 
 def _validate_request_url(url: str, initial_host: Optional[str] = None) -> None:
@@ -83,9 +77,6 @@ def _validate_request_url(url: str, initial_host: Optional[str] = None) -> None:
     if TGSTAT_HOST_RE.fullmatch(allowed_from):
         if not TGSTAT_HOST_RE.fullmatch(host):
             raise TGStatError(f"TGStat redirected to an unexpected host: {host}")
-    elif allowed_from == API_HOST:
-        if host != API_HOST:
-            raise TGStatError(f"TGStat API redirected to an unexpected host: {host}")
     else:
         raise TGStatError(f"unsupported TGStat request host: {allowed_from}")
 
@@ -325,9 +316,9 @@ def _request_with_url(
             return response.read().decode("utf-8", "replace"), response.geturl()
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", "replace")
-        raise TGStatError(f"HTTP {exc.code} from {_safe_url(url)}: {_safe_error_body(body, url)}") from exc
+        raise TGStatError(f"HTTP {exc.code} from {_safe_url(url)}: {_safe_error_body(body)}") from exc
     except urllib.error.URLError as exc:
-        raise TGStatError(f"network error for {_safe_url(url)}: {_safe_error_body(str(exc.reason), url)}") from exc
+        raise TGStatError(f"network error for {_safe_url(url)}: {_safe_error_body(str(exc.reason))}") from exc
 
 
 def _request(url: str, timeout: int, data: Optional[bytes] = None, headers: Optional[dict] = None) -> str:
@@ -341,30 +332,7 @@ def _public_base(value: str) -> str:
     return f"https://{parsed.hostname}"
 
 
-def _api_get(args: argparse.Namespace, path: str, params: Optional[dict] = None) -> dict:
-    token = os.environ.get("TGSTAT_TOKEN", "")
-    if not token:
-        raise TGStatError("TGSTAT_TOKEN is required for this API-only operation")
-    query = {"token": token, **{key: value for key, value in (params or {}).items() if value not in (None, "")}}
-    url = f"{DEFAULT_API_BASE}/{path.lstrip('/')}?{urllib.parse.urlencode(query)}"
-    raw = _request(url, args.timeout)
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise TGStatError("TGStat API returned a non-JSON response") from exc
-    if payload.get("status") != "ok":
-        error = str(payload.get("error") or "TGStat API request failed").replace(token, "[REDACTED]")
-        raise TGStatError(error)
-    return payload
-
-
 def _normalize_target(target: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    return _normalize_target_for_mode(target, for_api=False)
-
-
-def _normalize_target_for_mode(
-    target: str, *, for_api: bool
-) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     target = target.strip()
     if target.startswith("http://") or target.startswith("https://"):
         parsed = urllib.parse.urlparse(target)
@@ -375,8 +343,6 @@ def _normalize_target_for_mode(
             if not entity:
                 raise TGStatError("TGStat target must be a channel or chat statistics URL")
             identifier = entity[1]
-            if for_api and identifier.lower().startswith("id"):
-                identifier = identifier[2:]
             canonical_url = target
             if parsed.hostname.casefold() == "tgstat.ru":
                 canonical_url = urllib.parse.urlunsplit(("https", "tgstat.com", parsed.path, "", ""))
@@ -390,45 +356,38 @@ def _normalize_target_for_mode(
     if target.startswith("@") and PUBLIC_USERNAME_RE.fullmatch(target[1:]):
         return target, None, None
     if re.fullmatch(r"\d+", target):
-        return (target if for_api else f"id{target}"), None, None
+        return f"id{target}", None, None
     if re.fullmatch(r"id\d+", target, re.IGNORECASE):
-        digits = target[2:]
-        return (digits if for_api else f"id{digits}"), None, None
+        return f"id{target[2:]}", None, None
     if PUBLIC_USERNAME_RE.fullmatch(target):
         return f"@{target}", None, None
     raise TGStatError("target must be @username, a t.me link, TGStat entity URL, or id<number>")
 
 
-def _normalize_api_filters(language: str, country: str) -> Tuple[str, str]:
-    normalized_language = language.strip().lower()
-    normalized_country = country.strip().lower()
-    if normalized_language and not re.fullmatch(r"[a-z][a-z0-9_-]*", normalized_language):
-        raise TGStatError("language must be a TGStat language key such as english or russian")
-    if normalized_country and not re.fullmatch(r"[a-z]{2}", normalized_country):
-        raise TGStatError("country must be a two-letter code such as us or ru")
-    return normalized_language, normalized_country
+def _connected_username() -> str:
+    value = os.environ.get("TGSTAT_USERNAME", "").strip()
+    if not value:
+        raise TGStatError("TGSTAT_USERNAME is not configured; reconnect TGStat with a public Telegram username")
+    identifier, _, _ = _normalize_target(value)
+    if not identifier or not identifier.startswith("@"):
+        raise TGStatError("TGSTAT_USERNAME must be a public Telegram username such as @durov")
+    return identifier
 
 
-def command_mode(args: argparse.Namespace) -> None:
-    has_token = bool(os.environ.get("TGSTAT_TOKEN"))
-    effective_mode = "api" if _use_api(args) else "public"
+def _target_or_profile(target: str) -> str:
+    return target.strip() or _connected_username()
+
+
+def command_profile(args: argparse.Namespace) -> None:
+    username = _connected_username()
     _json_out(
         {
-            "mode": effective_mode,
-            "access_mode": args.access_mode,
-            "token_configured": has_token,
-            "public_capabilities": ["web-index discovery", "public rankings", "public entity pages"],
-            "api_capabilities": ["quota", "structured channel/chat search", "full channel statistics"],
+            "mode": "public",
+            "username": username,
+            "telegram_url": f"https://t.me/{username[1:]}",
+            "verified": False,
         }
     )
-
-
-def command_quota(args: argparse.Namespace) -> None:
-    if not _use_api(args):
-        _json_out({"mode": "public", "token_configured": False, "quota": None})
-        return
-    payload = _api_get(args, "usage/stat")
-    _json_out({"mode": "api", "quota": payload.get("response")})
 
 
 def _web_queries(query: str, peer_type: str, language: str, country: str) -> List[str]:
@@ -440,54 +399,16 @@ def _web_queries(query: str, peer_type: str, language: str, country: str) -> Lis
     return queries
 
 
-def _use_api(args: argparse.Namespace) -> bool:
-    has_token = bool(os.environ.get("TGSTAT_TOKEN"))
-    if args.access_mode == "public":
-        return False
-    if args.access_mode == "api" and not has_token:
-        raise TGStatError("TGSTAT_TOKEN is required when --access-mode api is selected")
-    return has_token
-
-
 def command_search(args: argparse.Namespace) -> None:
     query = args.query.strip()
-    category = args.category.strip()
-    if not query and not category:
-        raise TGStatError("search requires a query or --category")
-    if query and len(query) < 3:
+    if len(query) < 3:
         raise TGStatError("query must contain at least 3 characters")
-    if _use_api(args):
-        language, country = _normalize_api_filters(args.language, args.country)
-        payload = _api_get(
-            args,
-            "channels/search",
-            {
-                "q": query,
-                "category": category,
-                "peer_type": args.type,
-                "language": language,
-                "country": country,
-                "search_by_description": 1 if args.description else 0,
-                "limit": min(max(args.limit, 1), 100),
-            },
-        )
-        _json_out(
-            {
-                "mode": "api",
-                "query": query or None,
-                "category": category or None,
-                "response": payload.get("response"),
-            }
-        )
-        return
-    discovery_term = query or category
     _json_out(
         {
             "mode": "public",
-            "query": query or None,
-            "category": category or None,
+            "query": query,
             "requires_web_search": True,
-            "web_queries": _web_queries(discovery_term, args.type, args.language, args.country),
+            "web_queries": _web_queries(query, args.type, args.language, args.country),
             "instructions": (
                 "Run web_search for each query, keep only tgstat.com and t.me results, "
                 "deduplicate by username, then inspect shortlisted TGStat URLs with the info command."
@@ -588,41 +509,29 @@ def _public_info(args: argparse.Namespace, target: str, peer_type: str) -> dict:
 
 
 def command_info(args: argparse.Namespace) -> None:
-    if _use_api(args):
-        identifier, _, _ = _normalize_target_for_mode(args.target, for_api=True)
-        payload = _api_get(args, "channels/get", {"channelId": identifier})
-        _json_out({"mode": "api", "response": payload.get("response")})
-        return
-    _json_out({"mode": "public", **_public_info(args, args.target, args.type)})
+    _json_out({"mode": "public", **_public_info(args, _target_or_profile(args.target), args.type)})
 
 
 def command_stat(args: argparse.Namespace) -> None:
-    if _use_api(args):
-        identifier, _, _ = _normalize_target_for_mode(args.target, for_api=True)
-        payload = _api_get(args, "channels/stat", {"channelId": identifier})
-        _json_out({"mode": "api", "response": payload.get("response")})
-        return
-    _json_out({"mode": "public", "limited_metrics": True, **_public_info(args, args.target, args.type)})
+    _json_out(
+        {"mode": "public", "limited_metrics": True, **_public_info(args, _target_or_profile(args.target), args.type)}
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--access-mode", choices=("auto", "public", "api"), default="auto")
     parser.add_argument("--host", default=os.environ.get("TGSTAT_PUBLIC_HOST", DEFAULT_PUBLIC_BASE))
     parser.add_argument("--timeout", type=int, default=30)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("mode").set_defaults(func=command_mode)
-    sub.add_parser("quota").set_defaults(func=command_quota)
+    sub.add_parser("profile").set_defaults(func=command_profile)
 
     search = sub.add_parser("search")
-    search.add_argument("query", nargs="?", default="")
-    search.add_argument("--category", default="")
+    search.add_argument("query")
     search.add_argument("--type", choices=("channel", "chat", "all"), default="all")
     search.add_argument("--language", default="")
     search.add_argument("--country", default="")
     search.add_argument("--limit", type=int, default=20)
-    search.add_argument("--description", action="store_true")
     search.set_defaults(func=command_search)
 
     rankings = sub.add_parser("rankings")
@@ -633,7 +542,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name, func in (("info", command_info), ("stat", command_stat)):
         command = sub.add_parser(name)
-        command.add_argument("target")
+        command.add_argument("target", nargs="?", default="")
         command.add_argument("--type", choices=("auto", "channel", "chat"), default="auto")
         command.set_defaults(func=func)
     return parser

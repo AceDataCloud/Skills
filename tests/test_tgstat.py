@@ -3,9 +3,9 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import os
 import pathlib
 import unittest
-import urllib.error
 from contextlib import redirect_stdout
 from unittest import mock
 
@@ -83,75 +83,59 @@ class TGStatParserTests(unittest.TestCase):
             with self.subTest(target=target), self.assertRaises(tgstat.TGStatError):
                 tgstat._normalize_target(target)
 
-    @mock.patch.object(tgstat, "_open_url")
-    def test_api_error_redacts_token_from_url_and_body(self, open_url: mock.Mock) -> None:
-        token = "super-secret-token"
-        url = f"https://api.tgstat.ru/channels/get?token={token}&channelId=%40durov"
-        open_url.side_effect = urllib.error.HTTPError(
-            url,
-            403,
-            "Forbidden",
-            {},
-            io.BytesIO(f'{{"error":"bad token {token}"}}'.encode()),
-        )
-        with self.assertRaises(tgstat.TGStatError) as caught:
-            tgstat._request(url, 1)
-        self.assertNotIn(token, str(caught.exception))
-        self.assertIn("[REDACTED]", str(caught.exception))
-
     def test_rejects_cross_host_redirect_before_following(self) -> None:
-        handler = tgstat.SafeRedirectHandler("api.tgstat.ru")
-        request = tgstat.urllib.request.Request("https://api.tgstat.ru/channels/get?token=secret")
+        handler = tgstat.SafeRedirectHandler("tgstat.com")
+        request = tgstat.urllib.request.Request("https://tgstat.com/channel/@durov/stat")
         with self.assertRaises(tgstat.TGStatError):
             handler.redirect_request(request, None, 302, "Found", {}, "https://example.com/steal")
 
-    def test_normalizes_api_filters_and_rejects_friendly_country_names(self) -> None:
-        self.assertEqual(tgstat._normalize_api_filters("English", "US"), ("english", "us"))
-        with self.assertRaises(tgstat.TGStatError):
-            tgstat._normalize_api_filters("english", "USA")
-
-    def test_numeric_ids_are_not_converted_to_usernames(self) -> None:
-        self.assertEqual(tgstat._normalize_target_for_mode("53248", for_api=True)[0], "53248")
-        self.assertEqual(tgstat._normalize_target_for_mode("id53248", for_api=True)[0], "53248")
-        self.assertEqual(tgstat._normalize_target_for_mode("53248", for_api=False)[0], "id53248")
+    def test_numeric_ids_are_normalized_for_public_pages(self) -> None:
+        self.assertEqual(tgstat._normalize_target("53248")[0], "id53248")
+        self.assertEqual(tgstat._normalize_target("id53248")[0], "id53248")
 
     def test_decodes_percent_encoded_entity_paths_once(self) -> None:
         entity = tgstat._entity_from_url("https://tgstat.com/channel/%40durov/stat")
         self.assertEqual(entity, ("channel", "@durov"))
 
     def test_canonicalizes_tgstat_ru_input_to_public_com_host(self) -> None:
-        identifier, peer_type, url = tgstat._normalize_target_for_mode(
-            "https://tgstat.ru/channel/%40durov/stat", for_api=False
-        )
+        identifier, peer_type, url = tgstat._normalize_target("https://tgstat.ru/channel/%40durov/stat")
         self.assertEqual((identifier, peer_type), ("@durov", "channel"))
         self.assertEqual(url, "https://tgstat.com/channel/%40durov/stat")
 
-    def test_explicit_public_mode_ignores_configured_token(self) -> None:
-        args = tgstat.argparse.Namespace(access_mode="public")
-        with mock.patch.dict(tgstat.os.environ, {"TGSTAT_TOKEN": "configured"}):
-            self.assertFalse(tgstat._use_api(args))
+    def test_connected_username_is_normalized(self) -> None:
+        with mock.patch.dict(os.environ, {"TGSTAT_USERNAME": "durov"}, clear=True):
+            self.assertEqual(tgstat._connected_username(), "@durov")
 
-    def test_explicit_api_mode_requires_token(self) -> None:
-        args = tgstat.argparse.Namespace(access_mode="api")
-        with mock.patch.dict(tgstat.os.environ, {}, clear=True), self.assertRaises(tgstat.TGStatError):
-            tgstat._use_api(args)
+    def test_connected_username_is_required_and_must_be_public(self) -> None:
+        with mock.patch.dict(os.environ, {}, clear=True), self.assertRaises(tgstat.TGStatError):
+            tgstat._connected_username()
+        with mock.patch.dict(os.environ, {"TGSTAT_USERNAME": "https://t.me/+private"}, clear=True), self.assertRaises(
+            tgstat.TGStatError
+        ):
+            tgstat._connected_username()
+
+    def test_profile_reports_username_without_claiming_verification(self) -> None:
+        args = tgstat.build_parser().parse_args(["profile"])
+        output = io.StringIO()
+        with mock.patch.dict(os.environ, {"TGSTAT_USERNAME": "@durov"}, clear=True), redirect_stdout(output):
+            args.func(args)
+        payload = json.loads(output.getvalue())
+        self.assertEqual(payload["username"], "@durov")
+        self.assertFalse(payload["verified"])
+
+    def test_info_defaults_to_connected_username(self) -> None:
+        args = tgstat.build_parser().parse_args(["info"])
+        with mock.patch.dict(os.environ, {"TGSTAT_USERNAME": "@durov"}, clear=True), mock.patch.object(
+            tgstat, "_public_info", return_value={"status": "ok", "identifier": "@durov"}
+        ) as public_info, redirect_stdout(io.StringIO()):
+            args.func(args)
+        self.assertEqual(public_info.call_args.args[1], "@durov")
 
     def test_skill_fallback_matches_runtime_bundle_layout(self) -> None:
         skill = SCRIPT.parent.parent / "SKILL.md"
         text = skill.read_text(encoding="utf-8")
         self.assertNotIn("*/skills/*/tgstat/scripts/tgstat.py", text)
         self.assertEqual(text.count("*/skills/*/scripts/tgstat.py"), 5)
-
-    def test_category_only_search_is_forwarded_to_api(self) -> None:
-        args = tgstat.build_parser().parse_args(
-            ["--access-mode", "api", "search", "--category", "technology", "--type", "channel"]
-        )
-        with mock.patch.dict(tgstat.os.environ, {"TGSTAT_TOKEN": "configured"}), mock.patch.object(
-            tgstat, "_api_get", return_value={"response": {"items": []}}
-        ) as api_get, redirect_stdout(io.StringIO()):
-            args.func(args)
-        self.assertEqual(api_get.call_args.args[2]["category"], "technology")
-        self.assertEqual(api_get.call_args.args[2]["q"], "")
 
     def test_ranking_interstitial_returns_web_fallback(self) -> None:
         args = tgstat.build_parser().parse_args(["rankings", "--type", "channel"])
