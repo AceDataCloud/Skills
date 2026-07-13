@@ -1,20 +1,17 @@
 # Publisher Connectors — Go-Live Steps (what YOU need to do)
 
-These connectors + skills are code-complete. To make them **work on production**,
-a human has to register OAuth apps / enable APIs and set secrets, then run the
-sync commands. Per-platform steps below. Order: do the setup, set the env, then
-`python manage.py sync_connectors` (AuthBackend) — the skills sync automatically
-via the Skills catalog.
+These connectors + skills are code-complete. Some need an OAuth app or API
+enablement; Reddit works through ACE Cookie capture while its commercial OAuth
+application is under review. After any platform setup, run
+`python manage.py sync_connectors` (AuthBackend). Skills sync automatically via
+the Skills catalog.
 
-Common OAuth callback (Reddit & LinkedIn) — register **the same redirect base
-the existing Google/GitHub connectors use**, with the provider path appended:
+Common OAuth callback (Reddit & LinkedIn) — register the provider path below:
 
 ```
-https://auth.acedata.cloud/api/v1/connections/callback/reddit
-https://auth.acedata.cloud/api/v1/connections/callback/linkedin
+https://auth.acedata.cloud/oauth/callback/reddit
+https://auth.acedata.cloud/oauth/callback/linkedin
 ```
-(If your Google/GitHub apps use a different callback base, mirror it — the path
-segment is the provider id `reddit` / `linkedin`.)
 
 ---
 
@@ -30,9 +27,18 @@ No new OAuth app (reuses your Google client, same as Drive/Gmail/YouTube):
    (It's a sensitive scope → may need Google verification, like youtube.upload.)
 3. No new env var needed.
 
-## 3. Reddit — register an OAuth app
+## 3. Reddit — Cookie now; OAuth after Reddit approval
+
+The recommended method is Cookie capture: log in to Reddit, then connect with
+the ACE extension. No platform secret is required. The connector injects the
+encrypted cookie jar as `REDDIT_COOKIES`; the skill can read identity / the
+user's own submissions and submit confirmed text or link posts.
+
+Official OAuth remains available as a second auth method, but Reddit now requires
+explicit Data API approval before app registration. After written approval:
+
 1. https://www.reddit.com/prefs/apps → **create app** → type **"web app"**.
-2. **redirect uri** = the Reddit callback above.
+2. **redirect uri** = `https://auth.acedata.cloud/oauth/callback/reddit`.
 3. Copy the client id (under the app name) + secret.
 4. Set K8s secret env on AuthBackend:
    - `REDDIT_OAUTH_CLIENT_ID=...`
@@ -59,11 +65,14 @@ are pulled into the Skill catalog by the normal skills sync; each connector's
 
 ## Verify it works (online)
 1. Open **auth.acedata.cloud → Browse connectors** → the 4 new cards appear.
-2. Click **Connect** on Dev.to (paste a key) and on Blogger/Reddit/LinkedIn (OAuth).
+2. Connect Dev.to with an API key, Blogger/LinkedIn with OAuth, and Reddit with
+   **Browser extension Cookie capture**. Reddit OAuth remains unavailable until
+   Reddit grants written approval and production credentials are configured.
 3. In Studio chat: "把这段发到我的 dev.to / Blogger / Reddit r/test / LinkedIn" →
-   the matching skill runs with the injected token and posts.
+   the matching skill runs with the injected credential and asks for explicit
+   confirmation before posting.
 
 ## Cost note
-Dev.to, Blogger, Reddit, LinkedIn — all free APIs. (We deliberately skipped X,
-which is now pay-per-use $0.01/post, and Facebook, which needs app review +
-Page-token complexity.)
+Dev.to, Blogger and LinkedIn currently expose free API access for these flows.
+Reddit commercial access is pending review and may require a separate agreement
+or fees. X is pay-per-use, while Facebook needs app review and Page-token setup.
