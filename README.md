@@ -12,7 +12,7 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
-## Available Skills (30)
+## Available Skills
 
 ### AI Music & Audio
 
@@ -40,6 +40,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
 
 ### AI Chat & Tools
 
@@ -208,6 +209,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
+| maestro-video | [mcp-maestro](https://pypi.org/project/mcp-maestro/) | `pip install mcp-maestro` | `https://maestro.mcp.acedata.cloud/mcp` |
 | nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
