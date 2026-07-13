@@ -117,8 +117,24 @@ jobs:
 
           echo "marketplace.json validated successfully"
 
-      - name: Test Reddit skill helper
-        run: python3 -m unittest discover -s skills/reddit/tests -p 'test_*.py'
+      - name: Run Python skill tests
+        shell: bash
+        run: |
+          test_list=$(mktemp)
+          trap 'rm -f "$test_list"' EXIT
+          if ! find skills -type f -path '*/tests/*' -name 'test_*.py' -print0 > "$test_list"; then
+            echo "::error::Failed to discover Python skill tests"
+            exit 1
+          fi
+          sort -z -o "$test_list" "$test_list"
+
+          if [ ! -s "$test_list" ]; then
+            echo "No Python skill tests found"
+            exit 0
+          fi
+
+          python3 -m pip install --disable-pip-version-check 'pytest>=8,<10'
+          xargs -0 python3 -m pytest -v --import-mode=importlib < "$test_list"
 
       - name: Check for orphaned skills
         run: |
