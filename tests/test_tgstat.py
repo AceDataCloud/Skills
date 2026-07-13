@@ -17,6 +17,22 @@ tgstat = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(tgstat)
 
 
+class _FakeHTTPResponse:
+    """Minimal context-manager stand-in for urllib's urlopen response."""
+
+    def __init__(self, payload: bytes) -> None:
+        self._payload = payload
+
+    def __enter__(self) -> "_FakeHTTPResponse":
+        return self
+
+    def __exit__(self, *exc: object) -> bool:
+        return False
+
+    def read(self) -> bytes:
+        return self._payload
+
+
 class TGStatParserTests(unittest.TestCase):
     def test_skill_has_one_frontmatter_block(self) -> None:
         skill = SCRIPT.parent.parent / "SKILL.md"
@@ -83,11 +99,37 @@ class TGStatParserTests(unittest.TestCase):
             with self.subTest(target=target), self.assertRaises(tgstat.TGStatError):
                 tgstat._normalize_target(target)
 
-    def test_rejects_cross_host_redirect_before_following(self) -> None:
-        handler = tgstat.SafeRedirectHandler("tgstat.com")
-        request = tgstat.urllib.request.Request("https://tgstat.com/channel/@durov/stat")
+    def test_validate_request_url_rejects_bad_host_and_scheme(self) -> None:
         with self.assertRaises(tgstat.TGStatError):
-            handler.redirect_request(request, None, 302, "Found", {}, "https://example.com/steal")
+            tgstat._validate_request_url("https://example.com/steal")
+        with self.assertRaises(tgstat.TGStatError):
+            tgstat._validate_request_url("http://tgstat.com/channel/@durov")
+
+    def test_render_rejects_offsite_final_url(self) -> None:
+        envelope = json.dumps(
+            {"data": {"html": "<html>ok</html>", "finalUrl": "https://example.com/steal", "status": 200}}
+        ).encode()
+        with mock.patch.dict(os.environ, {"TGSTAT_RENDER_TOKEN": "t"}, clear=True), mock.patch.object(
+            tgstat.urllib.request, "urlopen", return_value=_FakeHTTPResponse(envelope)
+        ):
+            with self.assertRaises(tgstat.TGStatError):
+                tgstat._request_with_url("https://tgstat.com/channel/@durov", 30)
+
+    def test_render_returns_body_on_soft_403(self) -> None:
+        # tgstat returns HTTP 403 to guests but with the real page body.
+        envelope = json.dumps(
+            {"data": {"html": "<html>real</html>", "finalUrl": "https://tgstat.com/channel/@durov", "status": 403}}
+        ).encode()
+        with mock.patch.dict(os.environ, {"TGSTAT_RENDER_TOKEN": "t"}, clear=True), mock.patch.object(
+            tgstat.urllib.request, "urlopen", return_value=_FakeHTTPResponse(envelope)
+        ):
+            html, final = tgstat._request_with_url("https://tgstat.com/channel/@durov", 30)
+        self.assertEqual(html, "<html>real</html>")
+        self.assertEqual(final, "https://tgstat.com/channel/@durov")
+
+    def test_render_requires_configured_token(self) -> None:
+        with mock.patch.dict(os.environ, {}, clear=True), self.assertRaises(tgstat.TGStatError):
+            tgstat._request_with_url("https://tgstat.com/channel/@durov", 30)
 
     def test_numeric_ids_are_normalized_for_public_pages(self) -> None:
         self.assertEqual(tgstat._normalize_target("53248")[0], "id53248")
@@ -157,12 +199,34 @@ class TGStatParserTests(unittest.TestCase):
         html = """
         <html><head><meta property="og:title" content="AI Builders — TGStat">
         <meta property="og:description" content="Public AI developer chat"></head>
-        <body><h4>8.2k</h4><div class="text-muted text-truncate">messages</div></body></html>
+        <body>
+          <div class="col col-6">
+            <h2 class="mb-1 text-dark">8.2k</h2>
+            <div class="text-uppercase font-12">messages</div>
+          </div>
+        </body></html>
         """
         result = tgstat.parse_detail_html(html, "https://tgstat.com/chat/@ai_builders/stat")
         self.assertEqual(result["status"], "ok")
         self.assertEqual(result["identifier"], "@ai_builders")
         self.assertEqual(result["metrics"]["messages"], 8200)
+
+    def test_detail_ignores_stray_uppercase_labels(self) -> None:
+        # A non-metric numeric heading must not pair with a distant text-uppercase
+        # label (only the real `text-uppercase font-12` stat-card label counts).
+        html = """
+        <html><head><title>Pavel Durov — @durov — TGStat</title></head><body>
+          <h2 class="text-dark">2024</h2>
+          <div class="text-uppercase">Latest year</div>
+          <div class="col col-6">
+            <h2 class="mb-1 text-dark">11 694 229</h2>
+            <div class="text-uppercase font-12">subscribers</div>
+          </div>
+        </body></html>
+        """
+        result = tgstat.parse_detail_html(html, "https://tgstat.com/channel/@durov/stat")
+        self.assertEqual(result["metrics"], {"subscribers": 11694229})
+        self.assertNotIn("latest_year", result["metrics"])
 
 
 if __name__ == "__main__":
