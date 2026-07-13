@@ -7,6 +7,8 @@ import logging
 import random
 import re
 import time
+import base64
+from urllib.parse import urlsplit
 
 from .cdp import Page
 from .errors import (
@@ -255,45 +257,160 @@ def click_publish_button(page: Page) -> None:
         """
     )
 
-    # 2) dispatchEvent 触发发布
-    fire_result = page.evaluate(
+    # 2) 点击 closed shadow DOM 内的真实按钮（CDP Input，isTrusted=true）
+    host_state = page.evaluate(
         """
         (() => {
             const host = document.querySelector('xhs-publish-btn[is-publish="true"]');
             if (!host) return 'not_found';
             if (host.getAttribute('submit-disabled') === 'true') return 'disabled';
             window.__xhsPublishStartedAt = Date.now();
-            if (typeof host._onPublish === 'function') host._onPublish();
-            else host.dispatchEvent(new CustomEvent('publish', {
-                bubbles: true, composed: true, cancelable: true
-            }));
-            return 'fired';
+            return 'ready';
         })()
         """
     )
-    if fire_result == "not_found":
+    if host_state == "not_found":
         raise PublishError("未找到 <xhs-publish-btn> 发布按钮容器")
-    if fire_result == "disabled":
+    if host_state == "disabled":
         raise PublishError("发布按钮 submit-disabled=true，不可发布")
+    page._send_session("Network.enable")
+    page.clear_events()
+    if not page.click_pierced_button("xhs-publish-btn", "发布"):
+        raise PublishError("未找到可安全点击的原生发布按钮")
 
-    # 3) 轮询等待 publish API 响应（15s 超时）
+    # 3) 优先从 CDP Network 事件读取响应，页面 hook 仅作兼容兜底
     deadline = time.monotonic() + 15
     result = None
+    requests: dict[str, bool] = {}
+
+    def publish_path_kind(url: str) -> str:
+        segments = {part for part in urlsplit(url).path.lower().split("/") if part}
+        note_segments = {"note", "notes", "publish_note", "create_note"}
+        if not segments & note_segments:
+            return ""
+        if segments & {"publish", "publish_note"}:
+            return "publish"
+        if segments & {"create", "create_note"}:
+            return "create"
+        return ""
+
+    def publish_result(body: str) -> dict[str, Any] | None:
+        try:
+            parsed = json.loads(body)
+        except (json.JSONDecodeError, TypeError):
+            return None
+        if not isinstance(parsed, dict):
+            return None
+        serialized = json.dumps(parsed, ensure_ascii=False)
+        has_publish_evidence = bool(
+            re.search(r'"note_id"\s*:\s*"[^"\s]+"', serialized)
+            or re.search(r'"code"\s*:\s*-913\d', serialized)
+            or "禁止发笔记" in serialized
+            or "HTTPBizError" in serialized
+        )
+        return parsed if has_publish_evidence else None
+
+    def find_field(value: Any, name: str) -> Any:
+        if isinstance(value, dict):
+            if name in value:
+                return value[name]
+            for item in value.values():
+                found = find_field(item, name)
+                if found is not None:
+                    return found
+        elif isinstance(value, list):
+            for item in value:
+                found = find_field(item, name)
+                if found is not None:
+                    return found
+        return None
+
+    def find_risk(value: Any) -> tuple[int, str] | None:
+        if isinstance(value, dict):
+            code_value = value.get("code")
+            if isinstance(code_value, int) and -9140 <= code_value <= -9130:
+                return code_value, str(value.get("msg") or "账号被风控")
+            for item in value.values():
+                found = find_risk(item)
+                if found:
+                    return found
+        elif isinstance(value, list):
+            for item in value:
+                found = find_risk(item)
+                if found:
+                    return found
+        return None
+
     while time.monotonic() < deadline:
-        result = page.evaluate("window.__xhsPublishResult")
+        event = page.wait_for_event(min(0.3, max(0.01, deadline - time.monotonic())))
+        if event and event.get("method") == "Network.requestWillBeSent":
+            params = event.get("params") or {}
+            request = params.get("request") or {}
+            method = str(request.get("method") or "")
+            url = str(request.get("url") or "")
+            path_kind = publish_path_kind(url)
+            if method in {"POST", "PUT", "PATCH"} and path_kind:
+                requests[str(params.get("requestId") or "")] = path_kind == "publish"
+        elif event and event.get("method") == "Network.loadingFinished":
+            params = event.get("params") or {}
+            request_id = str(params.get("requestId") or "")
+            if request_id in requests:
+                authoritative_success = requests[request_id]
+                try:
+                    response_body = page._send_session(
+                        "Network.getResponseBody", {"requestId": request_id}
+                    )
+                    body = response_body.get("body", "")
+                    if response_body.get("base64Encoded") is True:
+                        body = base64.b64decode(body, validate=True).decode("utf-8")
+                    parsed = publish_result(body)
+                    if parsed:
+                        risk = find_risk(parsed)
+                        note_id = find_field(parsed, "note_id")
+                        if risk or authoritative_success or not note_id:
+                            result = {"source": "cdp", **parsed}
+                except (CDPError, ValueError, UnicodeDecodeError):
+                    result = None
+                finally:
+                    requests.pop(request_id, None)
+        elif event and event.get("method") == "Network.loadingFailed":
+            request_id = str((event.get("params") or {}).get("requestId") or "")
+            requests.pop(request_id, None)
+        if not result:
+            fallback = page.evaluate("window.__xhsPublishResult")
+            if isinstance(fallback, dict):
+                fallback_code = fallback.get("code")
+                fallback_msg = str(fallback.get("msg") or "")
+                if (
+                    isinstance(fallback_code, int)
+                    and fallback_code != 0
+                    or "HTTPBizError" in fallback_msg
+                    or "禁止发笔记" in fallback_msg
+                ):
+                    result = fallback
         if result:
             break
-        time.sleep(0.3)
 
     if not result:
         raise PublishError("15s 内未捕获到发布成功反馈")
 
     # 4) 解析业务码
     source = result.get("source", "unknown")
-    code = result.get("code")
-    msg = result.get("msg", "")
+    nested_risk = find_risk(result)
+    if nested_risk:
+        raise AccountRiskControlError(*nested_risk)
+    code = find_field(result, "code")
+    msg = find_field(result, "msg") or ""
     success = result.get("success")
+    note_id = find_field(result, "note_id")
+    if not isinstance(note_id, str):
+        note_id = ""
     logger.info("捕获发布响应（来源=%s code=%s msg=%r）", source, code, msg)
+
+    if note_id:
+        logger.info("发布成功（CDP 已返回 note_id）")
+        time.sleep(2)
+        return
 
     if code == 0 or success is True:
         confirmed = page.evaluate(
@@ -972,13 +1089,16 @@ def _set_visibility(page: Page, visibility: str) -> None:
 
     selected = page.evaluate(
         f"""
-        (() => [...document.querySelectorAll({json.dumps(VISIBILITY_OPTIONS)})]
-            .some(opt => opt.textContent.includes({json.dumps(visibility)}) && (
+        (() => {{
+            const legacySelected = [...document.querySelectorAll({json.dumps(VISIBILITY_OPTIONS)})]
+                .some(opt => opt.textContent.includes({json.dumps(visibility)}) && (
                 opt.classList.contains('active')
                 || opt.classList.contains('selected')
                 || opt.getAttribute('aria-selected') === 'true'
                 || opt.querySelector('input:checked')
-            )))()
+            ));
+            return legacySelected;
+        }})()
         """
     )
     if not selected:
