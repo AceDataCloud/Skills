@@ -282,6 +282,10 @@ def _chromium_child_env(workdir: Path) -> dict[str, str]:
     }
 
 
+def _create_runtime_temp_directory() -> tempfile.TemporaryDirectory[str]:
+    return tempfile.TemporaryDirectory(prefix="acedata-xhs-", dir="/tmp")
+
+
 def _chromium_arguments(
     chromium: str,
     profile_dir: Path,
@@ -693,7 +697,7 @@ class DirectXiaohongshuRuntime:
         from xhs.stealth import STEALTH_ARGS
 
         chromium = _resolve_executable("XIAOHONGSHU_CHROMIUM_BIN", CHROMIUM_PATHS)
-        self.temp_dir = tempfile.TemporaryDirectory(prefix="acedata-xhs-")
+        self.temp_dir = _create_runtime_temp_directory()
         self.workdir = Path(self.temp_dir.name)
         self.workdir.chmod(0o700)
         profile_dir = self.workdir / "profile"

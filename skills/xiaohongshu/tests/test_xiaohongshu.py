@@ -300,6 +300,15 @@ class CommandSafetyTests(unittest.TestCase):
         self.assertNotIn(MODULE.COOKIE_ENV, child_env)
         self.assertEqual(child_env["HOME"], "/tmp/xhs")
 
+    def test_runtime_profile_ignores_long_sandbox_tmpdir(self) -> None:
+        sandbox_tmpdir = "/tmp/sessions/" + "session-" * 20
+        with patch.dict(os.environ, {"TMPDIR": sandbox_tmpdir}, clear=False):
+            temp_dir = MODULE._create_runtime_temp_directory()
+        try:
+            self.assertEqual(Path(temp_dir.name).parent, Path("/tmp"))
+        finally:
+            temp_dir.cleanup()
+
     def test_confirmed_write_dispatches_converted_cookies_in_memory(self) -> None:
         args = argparse.Namespace(
             command="like",
