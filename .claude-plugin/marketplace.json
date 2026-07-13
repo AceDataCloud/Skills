@@ -47,6 +47,15 @@
         "./skills/apple-notes",
         "./skills/acedatacloud"
       ]
+    },
+    {
+      "name": "acedatacloud-content",
+      "description": "Connected content platforms: read, search, publish, and interact through user-authorized accounts",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/xiaohongshu"
+      ]
     }
   ]
 }
