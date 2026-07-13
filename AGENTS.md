@@ -22,6 +22,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **veo-video** — Generate videos with Google Veo (native audio)
 - **kling-video** — Generate videos with Kuaishou Kling (motion control)
 - **hailuo-video** — Generate videos with Hailuo / MiniMax
+- **happyhorse-video** — Generate and edit videos with Happy Horse
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
 - **maestro-video** — Produce complete videos from a brief with scripting, media, voiceover, editing, captions, and multilingual variants
