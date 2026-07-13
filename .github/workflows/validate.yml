@@ -81,6 +81,9 @@ jobs:
 
           echo "All skills validated successfully"
 
+      - name: Run skill script tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+
       - name: Validate marketplace.json
         run: |
           if [ ! -f .claude-plugin/marketplace.json ]; then
