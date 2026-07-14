@@ -12,7 +12,7 @@ allowed_tools: [Bash, web_search, web_fetch]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "2.2"
+  version: "2.3"
 ---
 
 # TGStat Research
@@ -104,6 +104,12 @@ command enriches the result from the ranking snapshot. Empty or missing metrics
 mean TGStat did not expose them on the public page; do not call that full
 statistics. Use `rankings` when you need reach / citation index for large
 public sources.
+
+Individual channel/chat pages are more aggressively bot-protected than the
+ranking pages, so an `info`/`stat` lookup may occasionally return a
+`render blocked` / `could not render` error. It fails fast (well under the
+Bash timeout) — retry once, or fall back to `rankings` and `search` for
+discovery, which are far more reliable.
 
 For ad selection, rank by relevant reach/activity rather than subscriber count
 alone. High subscribers with weak reach or chat MAU can indicate an inactive or
