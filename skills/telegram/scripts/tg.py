@@ -19,10 +19,10 @@ import tempfile
 import urllib.request
 from urllib.parse import urlparse
 
-from telethon import TelegramClient
+from telethon import TelegramClient, errors, utils
 from telethon.sessions import StringSession
 from telethon.tl import functions
-from telethon.tl.types import ReactionEmoji
+from telethon.tl.types import ReactionEmoji, User
 
 API_ID = int(os.environ["TELEGRAM_API_ID"])
 API_HASH = os.environ["TELEGRAM_API_HASH"]
@@ -35,7 +35,7 @@ CONFIRM = bool(_raw) and _raw[-1] == "--confirm"
 a = _raw[:-1] if CONFIRM else list(_raw)
 cmd = a[0] if a else "help"
 args = a[1:]
-GATED = {"send", "reply", "send-file", "forward", "edit", "delete", "react", "mark-read"}
+GATED = {"send", "reply", "send-file", "forward", "edit", "delete", "react", "mark-read", "join", "leave"}
 
 
 def out(o):
@@ -251,6 +251,33 @@ async def run():
             need(1); ent = await resolve(cl, args[0])
             await cl.send_read_acknowledge(ent)
             out({"marked_read": True})
+
+        elif cmd == "join":
+            need(1); target = args[0]
+            # A public @username / t.me/<user> resolves + JoinChannelRequest; a
+            # private invite (t.me/+HASH, joinchat/HASH, tg://join?invite=HASH)
+            # can't be resolved without joining, so import it by hash directly.
+            link_hash, is_invite = utils.parse_username(target)
+            try:
+                if is_invite:
+                    res = await cl(functions.messages.ImportChatInviteRequest(link_hash))
+                    chat = (getattr(res, "chats", None) or [None])[0]
+                    out({"joined": True, "via": "invite",
+                         "id": getattr(chat, "id", None), "title": getattr(chat, "title", None)})
+                else:
+                    ent = await resolve(cl, target)
+                    await cl(functions.channels.JoinChannelRequest(ent))
+                    out({"joined": True, "via": "public", "id": ent.id,
+                         "title": getattr(ent, "title", None), "username": getattr(ent, "username", None)})
+            except errors.UserAlreadyParticipantError:
+                out({"joined": True, "already_member": True, "target": target})
+
+        elif cmd == "leave":
+            need(1); ent = await resolve(cl, args[0])
+            if isinstance(ent, User):
+                out({"error": "leave applies to groups/channels, not private chats"}); return
+            await cl.delete_dialog(ent)
+            out({"left": True, "id": ent.id})
 
         else:
             out({"error": f"unknown command: {cmd}"}); sys.exit(1)

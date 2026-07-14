@@ -1,19 +1,20 @@
 ---
 name: telegram
-description: Full personal Telegram control over MTProto (Telethon) with the user's own account — list/search chats, read & summarize history, see unread, look up contacts & chat info, download media, and send / reply / forward / edit / delete / react / send files / mark read. Use when the user mentions Telegram, a Telegram chat/group/contact, "我的 Telegram", reading/replying/forwarding/summarizing Telegram messages, their unread Telegram, or sending a file/message on Telegram.
+description: Full personal Telegram control over MTProto (Telethon) with the user's own account — list/search chats, read & summarize history, see unread, look up contacts & chat info, download media, and send / reply / forward / edit / delete / react / send files / mark read / join & leave groups. Use when the user mentions Telegram, a Telegram chat/group/contact, "我的 Telegram", reading/replying/forwarding/summarizing Telegram messages, their unread Telegram, joining or leaving a Telegram group/channel, or sending a file/message on Telegram.
 when_to_use: |
   Trigger for anything on the user's personal Telegram account: list recent
   conversations or just the unread ones, read / summarize a chat or group,
   search one chat or across all chats, look up a contact or a chat's info,
   download a photo/file from a message, or take an action — send, reply,
-  forward, edit, delete, react, send a file, or mark a chat read. This drives
-  the user's OWN account over MTProto (not a bot), so it sees everything they see.
+  forward, edit, delete, react, send a file, mark a chat read, or join / leave
+  a group or channel. This drives the user's OWN account over MTProto (not a
+  bot), so it sees everything they see.
 connections: [telegram]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.2"
+  version: "1.3"
 ---
 
 We drive **personal** Telegram over MTProto with [Telethon](https://docs.telethon.dev/) —
@@ -42,7 +43,7 @@ python3 "$TG" whoami
 ```
 
 Every state-changing command (`send`, `reply`, `send-file`, `forward`, `edit`, `delete`,
-`react`, `mark-read`) is **gated**: without a trailing `--confirm` it only DRY-RUNS (prints what
+`react`, `mark-read`, `join`, `leave`) is **gated**: without a trailing `--confirm` it only DRY-RUNS (prints what
 it would do, changes nothing). Read commands run directly. `--confirm` is honored **only as the
 last argument** so a message/caption that merely contains "--confirm" can never silently confirm.
 
@@ -106,7 +107,15 @@ python3 "$TG" edit    <target> <msg_id> "new text" --confirm   # own messages
 python3 "$TG" delete  <target> <msg_id> --confirm              # destructive
 python3 "$TG" react   <target> <msg_id> "👍" --confirm
 python3 "$TG" mark-read <target> --confirm                     # sends read receipts
+python3 "$TG" join    <@username|t.me/link|t.me/+invite> --confirm  # join a public group/channel or a private invite
+python3 "$TG" leave   <target> --confirm                       # leave a group/channel (not private chats)
 ```
+
+`join` accepts a public `@username` / `t.me/<name>` (→ JoinChannelRequest) or a private
+invite link `t.me/+HASH` / `t.me/joinchat/HASH` (→ ImportChatInviteRequest). Joining someone
+else's group is a real membership change on the account — treat it like any other write:
+dry-run, confirm, then `--confirm`. Never auto-join then bulk-message; that gets accounts
+spam-limited.
 
 The dry run returns `{"dry_run": true, "command": ..., "args": [...]}` — present that to the
 user verbatim as the confirmation prompt.
