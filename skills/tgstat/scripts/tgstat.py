@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -15,14 +16,17 @@ from html.parser import HTMLParser
 from typing import Dict, List, Optional, Tuple, Union
 
 DEFAULT_PUBLIC_BASE = "https://tgstat.com"
-USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
-)
+# Public tgstat.com sits behind Cloudflare, so pages are fetched through the
+# platform WebExtrator render service (headless Chromium) instead of directly.
+RENDER_ENDPOINT = os.environ.get("TGSTAT_RENDER_ENDPOINT", "https://api.acedata.cloud/webextrator/render")
+RENDER_TOKEN_ENV = "TGSTAT_RENDER_TOKEN"
+RENDER_DELAY_SECONDS = 2
+RENDER_BLOCK_RESOURCES = ["image", "font", "media", "stylesheet"]
 PUBLIC_USERNAME_RE = re.compile(r"[A-Za-z0-9_]{3,}")
 TGSTAT_HOST_RE = re.compile(r"^(?:[a-z]{2,3}\.)?tgstat\.com$", re.IGNORECASE)
 TGSTAT_INPUT_HOST_RE = re.compile(r"^(?:(?:[a-z]{2,3}\.)?tgstat\.com|tgstat\.ru)$", re.IGNORECASE)
-ENTITY_PATH_RE = re.compile(r"/(channel|chat)/(@[A-Za-z0-9_]{3,}|id\d+)/stat/?", re.IGNORECASE)
+# The /stat suffix is optional: the summary metrics live on the main entity page.
+ENTITY_PATH_RE = re.compile(r"/(channel|chat)/(@[A-Za-z0-9_]{3,}|id\d+)(?:/stat)?/?", re.IGNORECASE)
 
 
 class TGStatError(RuntimeError):
@@ -79,24 +83,6 @@ def _validate_request_url(url: str, initial_host: Optional[str] = None) -> None:
             raise TGStatError(f"TGStat redirected to an unexpected host: {host}")
     else:
         raise TGStatError(f"unsupported TGStat request host: {allowed_from}")
-
-
-class SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
-    def __init__(self, initial_host: str) -> None:
-        super().__init__()
-        self.initial_host = initial_host
-
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        _validate_request_url(newurl, self.initial_host)
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
-
-
-def _open_url(request: urllib.request.Request, timeout: int):
-    initial_url = request.full_url
-    _validate_request_url(initial_url)
-    initial_host = urllib.parse.urlsplit(initial_url).hostname or ""
-    opener = urllib.request.build_opener(SafeRedirectHandler(initial_host))
-    return opener.open(request, timeout=timeout)
 
 
 class RankingParser(HTMLParser):
@@ -215,9 +201,12 @@ class DetailParser(HTMLParser):
         self.metrics: Dict[str, Union[int, float, str]] = {}
         self.metrics_display: Dict[str, str] = {}
         self.text_parts: List[str] = []
+        self._tag_index = 0
+        self._pending_at = -100
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
         attr = {key.lower(): value or "" for key, value in attrs}
+        self._tag_index += 1
         if tag == "meta":
             key = (attr.get("property") or attr.get("name") or "").lower()
             if key in {"og:title", "og:description", "description"} and attr.get("content"):
@@ -229,10 +218,12 @@ class DetailParser(HTMLParser):
         kind = ""
         if tag == "title":
             kind = "title"
-        elif tag == "h4":
+        elif tag in {"h2", "h3", "h4"} and "text-dark" in classes:
             kind = "metric_value"
-        elif tag == "div" and {"text-muted", "text-truncate"}.issubset(classes):
-            if self.pending_metric is not None:
+        elif tag == "div" and {"text-uppercase", "font-12"}.issubset(classes):
+            # Only pair a label that sits right after its value inside the same
+            # stat card, so a stray numeric heading can't grab a distant label.
+            if self.pending_metric is not None and self._tag_index - self._pending_at <= 6:
                 kind = "metric_label"
         if kind:
             self.capture = {"kind": kind, "depth": 1, "parts": []}
@@ -248,13 +239,15 @@ class DetailParser(HTMLParser):
         self.capture = None
         if kind == "title" and value:
             self.meta.setdefault("title", value)
-        elif kind == "metric_value" and value:
+        elif kind == "metric_value" and _metric_number(value) is not None:
             self.pending_metric = value
+            self._pending_at = self._tag_index
         elif kind == "metric_label" and value and self.pending_metric is not None:
-            key = _metric_key(value)
-            self.metrics_display[key] = self.pending_metric
             number = _metric_number(self.pending_metric)
-            self.metrics[key] = number if number is not None else self.pending_metric
+            if number is not None:
+                key = _metric_key(value)
+                self.metrics_display[key] = self.pending_metric
+                self.metrics[key] = number
             self.pending_metric = None
 
     def handle_data(self, data: str) -> None:
@@ -277,13 +270,24 @@ def parse_detail_html(html: str, url: str) -> dict:
     text = " ".join(parser.text_parts)
     entity = _entity_from_url(url)
     title = parser.meta.get("og:title") or parser.meta.get("title")
-    recognized = bool(entity and parser.meta.get("og:title") and title and "tgstat" in title.casefold())
+    # A real entity page echoes the requested @username / id in its title or
+    # emits an og:title; tgstat error / search / interstitial pages do neither
+    # (the bare "TGStat" brand in <title> is not proof the entity exists).
+    identifier_token = str(entity[1]).casefold() if entity else ""
+    recognized = bool(
+        entity and title and (identifier_token in title.casefold() or bool(parser.meta.get("og:title")))
+    )
+    lowered_title = (title or "").casefold()
+    if "not found" in lowered_title or "404" in lowered_title:
+        status = "not_found"
+    elif "authentication required" in text.lower():
+        status = "restricted"
+    elif recognized:
+        status = "ok"
+    else:
+        status = "unrecognized"
     result = {
-        "status": (
-            "restricted"
-            if "authentication required" in text.lower()
-            else "ok" if recognized else "unrecognized"
-        ),
+        "status": status,
         "type": entity[0] if entity else None,
         "identifier": entity[1] if entity else None,
         "title": title,
@@ -301,28 +305,88 @@ def _json_out(payload: object) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
-def _request_with_url(
-    url: str, timeout: int, data: Optional[bytes] = None, headers: Optional[dict] = None
-) -> Tuple[str, str]:
-    request_headers = {
-        "User-Agent": USER_AGENT,
-        "Accept": "application/json, text/html;q=0.9, */*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        **(headers or {}),
-    }
-    request = urllib.request.Request(url, data=data, headers=request_headers)
-    try:
-        with _open_url(request, timeout) as response:
-            return response.read().decode("utf-8", "replace"), response.geturl()
-    except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", "replace")
-        raise TGStatError(f"HTTP {exc.code} from {_safe_url(url)}: {_safe_error_body(body)}") from exc
-    except urllib.error.URLError as exc:
-        raise TGStatError(f"network error for {_safe_url(url)}: {_safe_error_body(str(exc.reason))}") from exc
+def _render_token() -> str:
+    token = os.environ.get(RENDER_TOKEN_ENV, "").strip()
+    if not token:
+        raise TGStatError("TGStat rendering is not configured: the platform render token is missing")
+    return token
 
 
-def _request(url: str, timeout: int, data: Optional[bytes] = None, headers: Optional[dict] = None) -> str:
-    return _request_with_url(url, timeout, data, headers)[0]
+# Render statuses worth retrying: Cloudflare/anti-bot interstitials surface as
+# 422 antibot_blocked, and the render service can transiently 429/5xx.
+_RETRYABLE_RENDER_STATUS = frozenset({422, 425, 429, 500, 502, 503, 504})
+_RENDER_ATTEMPTS = 3
+
+
+def _request_with_url(url: str, timeout: int) -> Tuple[str, str]:
+    # Public tgstat.com is behind Cloudflare; render it through the platform
+    # WebExtrator service (headless Chromium) rather than fetching directly.
+    # Anti-bot blocks are intermittent, so retry with a longer settle and a
+    # cache bypass before giving up.
+    _validate_request_url(url)
+    render_timeout = max(20, min(timeout, 45))
+    token = _render_token()
+    last_reason = ""
+    for attempt in range(_RENDER_ATTEMPTS):
+        payload = json.dumps(
+            {
+                "url": url,
+                "wait_until": "domcontentloaded",
+                "delay": RENDER_DELAY_SECONDS + 2 * attempt,
+                "timeout": render_timeout,
+                "block_resources": RENDER_BLOCK_RESOURCES,
+                "bypass_cache": attempt > 0,
+            }
+        ).encode()
+        request = urllib.request.Request(
+            RENDER_ENDPOINT,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=render_timeout + 75) as response:
+                envelope = json.loads(response.read().decode("utf-8", "replace"))
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", "replace")
+            if exc.code in _RETRYABLE_RENDER_STATUS or "antibot" in body.lower():
+                last_reason = f"render blocked (HTTP {exc.code}): {_safe_error_body(body)}"
+                _render_backoff(attempt)
+                continue
+            raise TGStatError(f"render service HTTP {exc.code}: {_safe_error_body(body)}") from exc
+        except urllib.error.URLError as exc:
+            last_reason = f"render service unreachable: {_safe_error_body(str(exc.reason))}"
+            _render_backoff(attempt)
+            continue
+        except json.JSONDecodeError as exc:
+            raise TGStatError(f"render service returned invalid JSON: {_safe_error_body(str(exc))}") from exc
+        render = envelope.get("data") if isinstance(envelope, dict) else None
+        if isinstance(render, dict):
+            html = render.get("html") or ""
+            final_url = render.get("finalUrl") or render.get("url") or url
+            if html.strip() and "challenge-platform" not in html and "Just a moment" not in html:
+                final_host = urllib.parse.urlparse(final_url).hostname or ""
+                if not (TGSTAT_HOST_RE.fullmatch(final_host) or TGSTAT_INPUT_HOST_RE.fullmatch(final_host)):
+                    raise TGStatError(f"render redirected to an unexpected host: {final_host}")
+                return html, final_url
+            last_reason = f"empty or interstitial render (upstream status {render.get('status')})"
+        else:
+            last_reason = "render service returned no page data"
+        _render_backoff(attempt)
+    raise TGStatError(f"could not render {_safe_url(url)}: {last_reason}")
+
+
+def _render_backoff(attempt: int) -> None:
+    # Skip the wait after the final attempt; give Cloudflare a moment otherwise.
+    if attempt < _RENDER_ATTEMPTS - 1:
+        time.sleep(min(2 + 2 * attempt, 6))
+
+
+def _request(url: str, timeout: int) -> str:
+    return _request_with_url(url, timeout)[0]
 
 
 def _public_base(value: str) -> str:
@@ -468,7 +532,10 @@ def command_rankings(args: argparse.Namespace) -> None:
 def _public_info(args: argparse.Namespace, target: str, peer_type: str) -> dict:
     identifier, inferred_type, exact_url = _normalize_target(target)
     types = [inferred_type] if inferred_type else ([peer_type] if peer_type != "auto" else ["channel", "chat"])
-    urls = [exact_url] if exact_url else [f"{_public_base(args.host)}/{kind}/{identifier}/stat" for kind in types]
+    if exact_url:
+        urls = [re.sub(r"/stat/?$", "", exact_url)]
+    else:
+        urls = [f"{_public_base(args.host)}/{kind}/{identifier}" for kind in types]
     errors: List[str] = []
     for url in urls:
         if not url:
@@ -476,7 +543,7 @@ def _public_info(args: argparse.Namespace, target: str, peer_type: str) -> dict:
         try:
             html, final_url = _request_with_url(url, args.timeout)
             final_host = urllib.parse.urlparse(final_url).hostname or ""
-            if not TGSTAT_HOST_RE.fullmatch(final_host):
+            if not (TGSTAT_HOST_RE.fullmatch(final_host) or TGSTAT_INPUT_HOST_RE.fullmatch(final_host)):
                 raise TGStatError(f"TGStat redirected to an unexpected host: {final_host}")
             result = parse_detail_html(html, final_url)
         except TGStatError as exc:
@@ -504,7 +571,7 @@ def _public_info(args: argparse.Namespace, target: str, peer_type: str) -> dict:
                         "source": ranking_url,
                     }
             return result
-        errors.append(f"restricted or empty public page: {url}")
+        errors.append(f"{result['status']} public page: {url}")
     raise TGStatError("; ".join(errors) or "could not resolve target on public TGStat pages")
 
 
@@ -521,7 +588,7 @@ def command_stat(args: argparse.Namespace) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default=os.environ.get("TGSTAT_PUBLIC_HOST", DEFAULT_PUBLIC_BASE))
-    parser.add_argument("--timeout", type=int, default=30)
+    parser.add_argument("--timeout", type=int, default=45)
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("profile").set_defaults(func=command_profile)

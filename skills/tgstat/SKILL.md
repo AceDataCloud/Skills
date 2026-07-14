@@ -12,14 +12,16 @@ allowed_tools: [Bash, web_search, web_fetch]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "2.1"
+  version: "2.2"
 ---
 
 # TGStat Research
 
 Use [scripts/tgstat.py](./scripts/tgstat.py) for public TGStat research. It uses
-only the Python standard library. Resolve the script at the start of every Bash
-call because each call runs in a fresh shell:
+only the Python standard library. Under the hood it fetches TGStat pages through
+the platform render service (headless Chromium), which bypasses the public
+site's bot protection, so each lookup can take several seconds. Resolve the
+script at the start of every Bash call because each call runs in a fresh shell:
 
 ```bash
 TGSTAT="$SKILL_DIR/scripts/tgstat.py"; [ -f "$TGSTAT" ] || TGSTAT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/tgstat.py' 2>/dev/null | head -1)
@@ -93,10 +95,15 @@ python3 "$TGSTAT" info @durov
 python3 "$TGSTAT" stat https://t.me/example_public_chat
 ```
 
-In public mode, `info`/`stat` resolves whether the target is a channel or chat,
-returns public metadata, and enriches it with ranking metrics when the entity
-appears in the current public ranking. Empty metrics mean TGStat did not expose
-them publicly; do not call that full statistics.
+In public mode, `info`/`stat` resolves whether the target is a channel or chat
+and returns its public identity (title, description) plus the visible
+subscriber / participant count. Deeper engagement metrics (average post reach,
+citation index, ER) are charted client-side on TGStat, so they are only
+available for entities that appear in the public top ratings — for those the
+command enriches the result from the ranking snapshot. Empty or missing metrics
+mean TGStat did not expose them on the public page; do not call that full
+statistics. Use `rankings` when you need reach / citation index for large
+public sources.
 
 For ad selection, rank by relevant reach/activity rather than subscriber count
 alone. High subscribers with weak reach or chat MAU can indicate an inactive or
