@@ -11,6 +11,7 @@ import os
 import random
 import select
 import time
+from collections import deque
 from typing import Any
 
 from .errors import CDPError, ElementNotFoundError
@@ -105,6 +106,7 @@ class Page:
         self.session_id = session_id
         self._transport = cdp._transport
         self._id_counter = 1000
+        self._events: deque[dict[str, Any]] = deque(maxlen=256)
 
     def _send_session(self, method: str, params: dict | None = None) -> dict:
         """向 session 发送命令。"""
@@ -132,7 +134,24 @@ class Page:
                 if "error" in data:
                     raise CDPError(f"CDP 错误: {data['error']}")
                 return data.get("result", {})
+            if "method" in data and data.get("sessionId") == self.session_id:
+                self._events.append(data)
         raise CDPError(f"等待 session 响应超时 (id={msg_id})")
+
+    def clear_events(self) -> None:
+        self._events.clear()
+
+    def wait_for_event(self, timeout: float) -> dict[str, Any] | None:
+        if self._events:
+            return self._events.popleft()
+        try:
+            raw = self._transport.recv(timeout)
+        except TimeoutError:
+            return None
+        data = json.loads(raw)
+        if "method" in data and data.get("sessionId") == self.session_id:
+            return data
+        return None
 
     def navigate(self, url: str) -> None:
         """导航到指定 URL。"""
@@ -334,6 +353,97 @@ class Page:
         time.sleep(random.uniform(0.03, 0.08))
         self.mouse_click(x, y)
         return True
+
+    def click_pierced_button(self, host_name: str, button_text: str) -> bool:
+        document = self._send_session("DOM.getDocument", {"depth": -1, "pierce": True})
+        targets: list[dict[str, Any]] = []
+
+        def attrs(node: dict[str, Any]) -> dict[str, str]:
+            values = node.get("attributes") or []
+            return dict(zip(values[0::2], values[1::2]))
+
+        def content(node: dict[str, Any]) -> str:
+            chunks = [node.get("nodeValue") or ""]
+            for child in node.get("children") or []:
+                chunks.append(content(child))
+            for shadow_root in node.get("shadowRoots") or []:
+                chunks.append(content(shadow_root))
+            return "".join(chunks).strip()
+
+        def find_button(node: dict[str, Any]) -> None:
+            properties = attrs(node)
+            if (
+                node.get("nodeName") == "BUTTON"
+                and content(node) == button_text
+                and "disabled" not in properties
+                and properties.get("aria-disabled") != "true"
+            ):
+                targets.append(node)
+                return
+            for child in node.get("children") or []:
+                find_button(child)
+            for shadow_root in node.get("shadowRoots") or []:
+                find_button(shadow_root)
+
+        def find_host(node: dict[str, Any]) -> None:
+            properties = attrs(node)
+            if node.get("nodeName") == host_name.upper() and properties.get("is-publish") == "true":
+                for shadow_root in node.get("shadowRoots") or []:
+                    find_button(shadow_root)
+                return
+            for child in node.get("children") or []:
+                find_host(child)
+
+        find_host(document["root"])
+        for target in targets:
+            node_ref = {"backendNodeId": target["backendNodeId"]}
+            try:
+                self._send_session("DOM.scrollIntoViewIfNeeded", node_ref)
+                model = self._send_session("DOM.getBoxModel", node_ref).get("model")
+            except CDPError:
+                continue
+            if not model or not model.get("width") or not model.get("height"):
+                continue
+            quad = model.get("border") or model.get("content")
+            if not quad or len(quad) < 8:
+                continue
+            x = sum(quad[0::2]) / 4
+            y = sum(quad[1::2]) / 4
+            hit = self._send_session(
+                "DOM.getNodeForLocation",
+                {"x": int(x), "y": int(y), "includeUserAgentShadowDOM": True},
+            )
+            hit_id = hit.get("backendNodeId")
+            if hit_id != target.get("backendNodeId"):
+                if not hit_id:
+                    continue
+                try:
+                    hit_object_id = self._send_session(
+                        "DOM.resolveNode", {"backendNodeId": hit_id}
+                    ).get("object", {}).get("objectId")
+                    button_object_id = self._send_session(
+                        "DOM.resolveNode", node_ref
+                    ).get("object", {}).get("objectId")
+                    if not hit_object_id or not button_object_id:
+                        continue
+                    contains = self._send_session(
+                        "Runtime.callFunctionOn",
+                        {
+                            "objectId": hit_object_id,
+                            "functionDeclaration": "function(button) { return button.contains(this); }",
+                            "arguments": [{"objectId": button_object_id}],
+                            "returnByValue": True,
+                        },
+                    ).get("result", {}).get("value")
+                except CDPError:
+                    contains = False
+                if contains is not True:
+                    continue
+            self.mouse_move(x, y)
+            time.sleep(random.uniform(0.03, 0.08))
+            self.mouse_click(x, y)
+            return True
+        return False
 
     def input_text(self, selector: str, text: str) -> None:
         """向指定选择器的元素输入文本。"""

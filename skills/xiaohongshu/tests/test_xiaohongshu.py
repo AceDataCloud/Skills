@@ -538,13 +538,366 @@ class CommandSafetyTests(unittest.TestCase):
         import xhs.publish as publish
 
         page = MagicMock()
-        page.evaluate.side_effect = [None, "fired", *([None] * 60)]
+        page.evaluate.side_effect = [None, "ready", *([None] * 60)]
+        page.wait_for_event.return_value = None
+        page.click_pierced_button.return_value = True
         with (
             patch.object(publish.time, "monotonic", side_effect=[0, 0, *range(1, 17)]),
-            patch.object(publish.time, "sleep"),
             self.assertRaisesRegex(publish.PublishError, "未捕获到发布成功反馈"),
         ):
             publish.click_publish_button(page)
+
+    def test_publish_ignores_creator_telemetry_and_waits_for_finished_body(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [None, "ready", None, None, None, None, True]
+        page.click_pierced_button.return_value = True
+        page.wait_for_event.side_effect = [
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "telemetry",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://creator.xiaohongshu.com/api/telemetry",
+                    },
+                },
+            },
+            {"method": "Network.loadingFinished", "params": {"requestId": "telemetry"}},
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "publish",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://edith.xiaohongshu.com/api/sns/web/v1/note/publish",
+                    },
+                },
+            },
+            {
+                "method": "Network.responseReceived",
+                "params": {"requestId": "publish"},
+            },
+            {"method": "Network.loadingFinished", "params": {"requestId": "publish"}},
+        ]
+
+        def send(method: str, _params: dict | None = None) -> dict:
+            if method == "Network.getResponseBody":
+                return {"body": '{"code":0,"data":{"note_id":"note"}}'}
+            return {}
+
+        page._send_session.side_effect = send
+        with (
+            patch.object(publish.time, "monotonic", return_value=0),
+            patch.object(publish.time, "sleep"),
+        ):
+            publish.click_publish_button(page)
+
+        body_calls = [
+            call
+            for call in page._send_session.call_args_list
+            if call.args and call.args[0] == "Network.getResponseBody"
+        ]
+        self.assertEqual(len(body_calls), 1)
+        self.assertEqual(body_calls[0].args[1], {"requestId": "publish"})
+
+    def test_publish_decodes_base64_body_and_ignores_success_fallback(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import base64
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [
+            None,
+            "ready",
+            {"code": 0, "success": True, "note_id": "autosave"},
+            {"code": 0, "success": True, "note_id": "autosave"},
+            True,
+        ]
+        page.click_pierced_button.return_value = True
+        page.wait_for_event.side_effect = [
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "publish",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://edith.xiaohongshu.com/api/note/publish",
+                    },
+                },
+            },
+            {"method": "Network.responseReceived", "params": {"requestId": "publish"}},
+            {"method": "Network.loadingFinished", "params": {"requestId": "publish"}},
+        ]
+        encoded = base64.b64encode(b'{"data":{"note_id":"published"}}').decode()
+
+        def send(method: str, _params: dict | None = None) -> dict:
+            if method == "Network.getResponseBody":
+                return {"body": encoded, "base64Encoded": True}
+            return {}
+
+        page._send_session.side_effect = send
+        with (
+            patch.object(publish.time, "monotonic", return_value=0),
+            patch.object(publish.time, "sleep"),
+        ):
+            publish.click_publish_button(page)
+
+        self.assertEqual(
+            [call.args[0] for call in page._send_session.call_args_list].count(
+                "Network.getResponseBody"
+            ),
+            1,
+        )
+
+    def test_publish_classifies_nested_risk_control_response(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [None, "ready", None]
+        page.click_pierced_button.return_value = True
+        page.wait_for_event.side_effect = [
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "publish",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://edith.xiaohongshu.com/api/note/publish",
+                    },
+                },
+            },
+            {"method": "Network.loadingFinished", "params": {"requestId": "publish"}},
+        ]
+        page._send_session.side_effect = lambda method, _params=None: (
+            {"body": '{"code":0,"data":{"code":-9136,"msg":"禁止发笔记"}}'}
+            if method == "Network.getResponseBody"
+            else {}
+        )
+        with (
+            patch.object(publish.time, "monotonic", return_value=0),
+            self.assertRaises(publish.AccountRiskControlError),
+        ):
+            publish.click_publish_button(page)
+
+    def test_create_note_id_cannot_outrun_publish_response(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [None, "ready", None, None, None, True]
+        page.click_pierced_button.return_value = True
+        page.wait_for_event.side_effect = [
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "create",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://edith.xiaohongshu.com/api/note/create",
+                    },
+                },
+            },
+            {"method": "Network.loadingFinished", "params": {"requestId": "create"}},
+            {
+                "method": "Network.requestWillBeSent",
+                "params": {
+                    "requestId": "publish",
+                    "request": {
+                        "method": "POST",
+                        "url": "https://edith.xiaohongshu.com/api/note/publish",
+                    },
+                },
+            },
+            {"method": "Network.loadingFinished", "params": {"requestId": "publish"}},
+        ]
+
+        def send(method: str, params: dict | None = None) -> dict:
+            if method != "Network.getResponseBody":
+                return {}
+            note_id = "draft" if params == {"requestId": "create"} else "published"
+            return {"body": json.dumps({"data": {"note_id": note_id}})}
+
+        page._send_session.side_effect = send
+        with (
+            patch.object(publish.time, "monotonic", return_value=0),
+            patch.object(publish.time, "sleep"),
+        ):
+            publish.click_publish_button(page)
+
+        body_ids = [
+            call.args[1]["requestId"]
+            for call in page._send_session.call_args_list
+            if call.args and call.args[0] == "Network.getResponseBody"
+        ]
+        self.assertEqual(body_ids, ["create", "publish"])
+
+    def test_page_retains_unsolicited_events_while_waiting_for_response(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        from xhs.cdp import Page
+
+        transport = MagicMock()
+        expected_event = {
+            "method": "Network.responseReceived",
+            "sessionId": "session",
+            "params": {"requestId": "request"},
+        }
+        transport.recv.side_effect = [
+            json.dumps(expected_event),
+            json.dumps({"id": 1001, "result": {"ok": True}}),
+        ]
+        page = Page(MagicMock(_transport=transport), "target", "session")
+
+        self.assertEqual(page._wait_session(1001), {"ok": True})
+        self.assertEqual(page.wait_for_event(0), expected_event)
+
+    def test_page_event_queue_is_bounded(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        from xhs.cdp import Page
+
+        page = Page(MagicMock(_transport=MagicMock()), "target", "session")
+        for index in range(300):
+            page._events.append({"method": "Network.event", "index": index})
+        self.assertEqual(len(page._events), 256)
+        self.assertEqual(page._events[0]["index"], 44)
+
+    def test_pierced_publish_button_requires_coordinate_hit(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        from xhs.cdp import Page
+
+        page = Page(MagicMock(_transport=MagicMock()), "target", "session")
+        page._send_session = MagicMock(
+            side_effect=[
+                {
+                    "root": {
+                        "nodeName": "#document",
+                        "children": [
+                            {
+                                "nodeName": "XHS-PUBLISH-BTN",
+                                "attributes": ["is-publish", "true"],
+                                "shadowRoots": [
+                                    {
+                                        "nodeName": "#document-fragment",
+                                        "children": [
+                                            {
+                                                "nodeName": "BUTTON",
+                                                "backendNodeId": 42,
+                                                "children": [
+                                                    {"nodeName": "#text", "nodeValue": "发布"}
+                                                ],
+                                            }
+                                        ],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                },
+                {},
+                {
+                    "model": {
+                        "width": 10,
+                        "height": 10,
+                        "border": [0, 0, 10, 0, 10, 10, 0, 10],
+                    }
+                },
+                {"backendNodeId": 43},
+                {"object": {"objectId": "hit"}},
+                {"object": {"objectId": "button"}},
+                {"result": {"value": False}},
+            ]
+        )
+        page.mouse_click = MagicMock()
+
+        self.assertFalse(page.click_pierced_button("xhs-publish-btn", "发布"))
+        page.mouse_click.assert_not_called()
+
+    def test_pierced_publish_button_skips_hidden_first_candidate(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        from xhs.cdp import Page
+
+        def button(backend_node_id: int) -> dict:
+            return {
+                "nodeName": "BUTTON",
+                "backendNodeId": backend_node_id,
+                "children": [{"nodeName": "#text", "nodeValue": "发布"}],
+            }
+
+        page = Page(MagicMock(_transport=MagicMock()), "target", "session")
+        page._send_session = MagicMock(
+            side_effect=[
+                {
+                    "root": {
+                        "nodeName": "#document",
+                        "children": [
+                            {
+                                "nodeName": "XHS-PUBLISH-BTN",
+                                "attributes": ["is-publish", "true"],
+                                "shadowRoots": [
+                                    {
+                                        "nodeName": "#document-fragment",
+                                        "children": [button(41), button(42)],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                },
+                {},
+                {"model": {"width": 0, "height": 0, "border": [0] * 8}},
+                {},
+                {
+                    "model": {
+                        "width": 10,
+                        "height": 10,
+                        "border": [0, 0, 10, 0, 10, 10, 0, 10],
+                    }
+                },
+                {"backendNodeId": 42},
+            ]
+        )
+        page.mouse_move = MagicMock()
+        page.mouse_click = MagicMock()
+
+        with patch("xhs.cdp.time.sleep"):
+            self.assertTrue(page.click_pierced_button("xhs-publish-btn", "发布"))
+        page.mouse_click.assert_called_once()
+
+    def test_visibility_requires_explicit_selected_marker(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [True, False]
+        with (
+            patch.object(publish.time, "sleep"),
+            self.assertRaisesRegex(publish.PublishError, "可见范围未确认生效"),
+        ):
+            publish._set_visibility(page, "仅自己可见")
+        script = page.evaluate.call_args_list[1].args[0]
+        self.assertNotIn("dropdown?.textContent", script)
+
+    def test_visibility_accepts_explicit_selected_marker(self) -> None:
+        if str(MODULE.VENDOR_DIR) not in sys.path:
+            sys.path.insert(0, str(MODULE.VENDOR_DIR))
+        import xhs.publish as publish
+
+        page = MagicMock()
+        page.evaluate.side_effect = [True, True]
+        with patch.object(publish.time, "sleep"):
+            publish._set_visibility(page, "仅自己可见")
 
     def test_verification_challenge_stops_without_navigation_retry(self) -> None:
         if str(MODULE.VENDOR_DIR) not in sys.path:
