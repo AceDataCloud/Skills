@@ -316,24 +316,44 @@ def _render_token() -> str:
 # 422 antibot_blocked, and the render service can transiently 429/5xx.
 _RETRYABLE_RENDER_STATUS = frozenset({422, 425, 429, 500, 502, 503, 504})
 _RENDER_ATTEMPTS = 3
+# Total wall-time budget for one lookup. The agent sandbox kills a Bash command
+# at ~60s, so keep every render (incl. anti-bot retries) safely under that: a
+# stubborn page fails fast instead of being killed mid-retry.
+_RENDER_BUDGET_SECONDS = 46
+# Shared deadline across every render in a single command invocation, so a
+# multi-render command (info tries channel + chat + a ranking fallback) can
+# never exceed the sandbox cap by stacking per-render budgets.
+_OPERATION_DEADLINE: Optional[float] = None
+
+
+def _op_deadline() -> float:
+    global _OPERATION_DEADLINE
+    if _OPERATION_DEADLINE is None:
+        _OPERATION_DEADLINE = time.monotonic() + _RENDER_BUDGET_SECONDS + 2
+    return _OPERATION_DEADLINE
 
 
 def _request_with_url(url: str, timeout: int) -> Tuple[str, str]:
     # Public tgstat.com is behind Cloudflare; render it through the platform
     # WebExtrator service (headless Chromium) rather than fetching directly.
-    # Anti-bot blocks are intermittent, so retry with a longer settle and a
-    # cache bypass before giving up.
+    # Anti-bot blocks are intermittent, so retry with a cache bypass — but stay
+    # inside a wall-time budget so the caller never times out mid-retry.
     _validate_request_url(url)
-    render_timeout = max(20, min(timeout, 45))
+    render_timeout = max(15, min(timeout, 30))
     token = _render_token()
-    last_reason = ""
+    deadline = min(time.monotonic() + _RENDER_BUDGET_SECONDS, _op_deadline())
+    last_reason = "render timed out"
     for attempt in range(_RENDER_ATTEMPTS):
+        remaining = deadline - time.monotonic()
+        if remaining < 8:
+            break
+        nav_timeout = max(6, int(min(render_timeout, remaining - 5)))
         payload = json.dumps(
             {
                 "url": url,
                 "wait_until": "domcontentloaded",
-                "delay": RENDER_DELAY_SECONDS + 2 * attempt,
-                "timeout": render_timeout,
+                "delay": RENDER_DELAY_SECONDS + attempt,
+                "timeout": nav_timeout,
                 "block_resources": RENDER_BLOCK_RESOURCES,
                 "bypass_cache": attempt > 0,
             }
@@ -348,18 +368,20 @@ def _request_with_url(url: str, timeout: int) -> Tuple[str, str]:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=render_timeout + 75) as response:
+            # `remaining` bounds the socket op; the render service returns one
+            # JSON body, so this single read is what the wall budget relies on.
+            with urllib.request.urlopen(request, timeout=remaining) as response:
                 envelope = json.loads(response.read().decode("utf-8", "replace"))
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", "replace")
             if exc.code in _RETRYABLE_RENDER_STATUS or "antibot" in body.lower():
                 last_reason = f"render blocked (HTTP {exc.code}): {_safe_error_body(body)}"
-                _render_backoff(attempt)
+                _render_backoff(attempt, deadline)
                 continue
             raise TGStatError(f"render service HTTP {exc.code}: {_safe_error_body(body)}") from exc
         except urllib.error.URLError as exc:
             last_reason = f"render service unreachable: {_safe_error_body(str(exc.reason))}"
-            _render_backoff(attempt)
+            _render_backoff(attempt, deadline)
             continue
         except json.JSONDecodeError as exc:
             raise TGStatError(f"render service returned invalid JSON: {_safe_error_body(str(exc))}") from exc
@@ -375,14 +397,18 @@ def _request_with_url(url: str, timeout: int) -> Tuple[str, str]:
             last_reason = f"empty or interstitial render (upstream status {render.get('status')})"
         else:
             last_reason = "render service returned no page data"
-        _render_backoff(attempt)
+        _render_backoff(attempt, deadline)
     raise TGStatError(f"could not render {_safe_url(url)}: {last_reason}")
 
 
-def _render_backoff(attempt: int) -> None:
-    # Skip the wait after the final attempt; give Cloudflare a moment otherwise.
-    if attempt < _RENDER_ATTEMPTS - 1:
-        time.sleep(min(2 + 2 * attempt, 6))
+def _render_backoff(attempt: int, deadline: float) -> None:
+    # Short settle between attempts, but never sleep past the wall-time budget.
+    if attempt >= _RENDER_ATTEMPTS - 1:
+        return
+    remaining = deadline - time.monotonic()
+    if remaining <= 8:
+        return
+    time.sleep(min(1.5 + attempt, 3.0, remaining - 8))
 
 
 def _request(url: str, timeout: int) -> str:
@@ -588,7 +614,7 @@ def command_stat(args: argparse.Namespace) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default=os.environ.get("TGSTAT_PUBLIC_HOST", DEFAULT_PUBLIC_BASE))
-    parser.add_argument("--timeout", type=int, default=45)
+    parser.add_argument("--timeout", type=int, default=30)
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("profile").set_defaults(func=command_profile)
@@ -616,6 +642,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    global _OPERATION_DEADLINE
+    _OPERATION_DEADLINE = None  # fresh render budget per command invocation
     args = build_parser().parse_args()
     try:
         args.func(args)

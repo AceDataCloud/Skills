@@ -34,6 +34,11 @@ class _FakeHTTPResponse:
 
 
 class TGStatParserTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # The render budget is a module global set lazily on first render; reset
+        # it so tests don't leak a stale deadline into one another.
+        tgstat._OPERATION_DEADLINE = None
+
     def test_skill_has_one_frontmatter_block(self) -> None:
         skill = SCRIPT.parent.parent / "SKILL.md"
         text = skill.read_text(encoding="utf-8")
@@ -130,6 +135,17 @@ class TGStatParserTests(unittest.TestCase):
     def test_render_requires_configured_token(self) -> None:
         with mock.patch.dict(os.environ, {}, clear=True), self.assertRaises(tgstat.TGStatError):
             tgstat._request_with_url("https://tgstat.com/channel/@durov", 30)
+
+    def test_render_stops_when_budget_exhausted(self) -> None:
+        # monotonic jumps past the deadline before the first attempt runs, so the
+        # loop must fast-fail without ever calling urlopen (no sandbox timeout).
+        times = [0.0, 0.0, 100.0, 100.0, 100.0]
+        with mock.patch.dict(os.environ, {"TGSTAT_RENDER_TOKEN": "t"}, clear=True), mock.patch.object(
+            tgstat.time, "monotonic", side_effect=times
+        ), mock.patch.object(tgstat.urllib.request, "urlopen") as urlopen:
+            with self.assertRaises(tgstat.TGStatError):
+                tgstat._request_with_url("https://tgstat.com/channel/@durov", 30)
+            urlopen.assert_not_called()
 
     def test_numeric_ids_are_normalized_for_public_pages(self) -> None:
         self.assertEqual(tgstat._normalize_target("53248")[0], "id53248")
