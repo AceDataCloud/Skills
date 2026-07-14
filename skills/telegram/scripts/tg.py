@@ -117,6 +117,19 @@ def need(n):
         raise ValueError(f"{cmd} needs {n} argument(s), got {len(args)}")
 
 
+def _pop_opt(argv, name):
+    """Extract `--name VALUE` from argv; return (value_or_None, remaining_argv).
+
+    Only a standalone `--name` token matches, so a message that merely contains
+    the flag text as part of one argument is left untouched.
+    """
+    if name in argv:
+        i = argv.index(name)
+        if i + 1 < len(argv):
+            return argv[i + 1], argv[:i] + argv[i + 2:]
+    return None, argv
+
+
 async def run():
     if cmd in GATED and not CONFIRM:
         out({"dry_run": True, "command": cmd, "args": args,
@@ -185,6 +198,18 @@ async def run():
                 pass
             out(info)
 
+        elif cmd == "list-topics":
+            # Forum-style supergroups organize messages into topics (threads).
+            # A plain send to the group root is rejected (TOPIC_CLOSED); you must
+            # post into an open topic via `send --topic <top_message>`.
+            need(1); ent = await resolve(cl, args[0])
+            limit = int(args[1]) if len(args) > 1 else 100
+            res = await cl(functions.messages.GetForumTopicsRequest(
+                channel=ent, offset_date=0, offset_id=0, offset_topic=0, limit=limit))
+            out([{"id": getattr(t, "id", None), "title": getattr(t, "title", None),
+                  "closed": getattr(t, "closed", None), "hidden": getattr(t, "hidden", None),
+                  "top_message": getattr(t, "top_message", None)} for t in res.topics])
+
         elif cmd == "message-link":
             need(2); ent = await resolve(cl, args[0]); mid = int(args[1])
             try:
@@ -205,9 +230,15 @@ async def run():
 
         # ---- gated writes (need trailing --confirm) ----
         elif cmd == "send":
-            need(2); ent = await resolve(cl, args[0])
-            m = await cl.send_message(ent, args[1])
-            out({"sent": True, "id": m.id})
+            # `--topic <top_message>` posts into a forum topic thread (reply_to);
+            # required for forum-style supergroups where a root send is rejected.
+            topic, sargs = _pop_opt(args, "--topic")
+            if len(sargs) < 2:
+                raise ValueError("send needs <target> <text> (optional --topic <id>)")
+            ent = await resolve(cl, sargs[0])
+            kw = {"reply_to": int(topic)} if topic is not None else {}
+            m = await cl.send_message(ent, sargs[1], **kw)
+            out({"sent": True, "id": m.id, "topic": int(topic) if topic is not None else None})
 
         elif cmd == "reply":
             need(3); ent = await resolve(cl, args[0])

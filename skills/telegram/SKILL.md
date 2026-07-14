@@ -1,20 +1,20 @@
 ---
 name: telegram
-description: Full personal Telegram control over MTProto (Telethon) with the user's own account — list/search chats, read & summarize history, see unread, look up contacts & chat info, download media, and send / reply / forward / edit / delete / react / send files / mark read / join & leave groups. Use when the user mentions Telegram, a Telegram chat/group/contact, "我的 Telegram", reading/replying/forwarding/summarizing Telegram messages, their unread Telegram, joining or leaving a Telegram group/channel, or sending a file/message on Telegram.
+description: Full personal Telegram control over MTProto (Telethon) with the user's own account — list/search chats, read & summarize history, see unread, look up contacts & chat info, list a forum group's topics, download media, and send / reply / forward / edit / delete / react / send files / mark read / join & leave groups, including posting into a forum topic thread. Use when the user mentions Telegram, a Telegram chat/group/contact, "我的 Telegram", reading/replying/forwarding/summarizing Telegram messages, their unread Telegram, joining or leaving a Telegram group/channel, posting into a forum group's topic, or sending a file/message on Telegram.
 when_to_use: |
   Trigger for anything on the user's personal Telegram account: list recent
   conversations or just the unread ones, read / summarize a chat or group,
   search one chat or across all chats, look up a contact or a chat's info,
-  download a photo/file from a message, or take an action — send, reply,
-  forward, edit, delete, react, send a file, mark a chat read, or join / leave
-  a group or channel. This drives the user's OWN account over MTProto (not a
-  bot), so it sees everything they see.
+  download a photo/file from a message, list a forum group's topics, or take an
+  action — send, reply, forward, edit, delete, react, send a file, mark a chat
+  read, post into a forum topic, or join / leave a group or channel. This drives
+  the user's OWN account over MTProto (not a bot), so it sees everything they see.
 connections: [telegram]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.3"
+  version: "1.4"
 ---
 
 We drive **personal** Telegram over MTProto with [Telethon](https://docs.telethon.dev/) —
@@ -68,6 +68,7 @@ https://auth.acedata.cloud/user/connections.
 | Search across ALL chats | `python3 "$TG" search-global "kw" 30` |
 | List contacts | `python3 "$TG" contacts` |
 | Info about a chat/user | `python3 "$TG" chat-info <target>` |
+| List a forum group's topics (threads) | `python3 "$TG" list-topics <target>` |
 | t.me link to a message | `python3 "$TG" message-link <target> <msg_id>` |
 
 `<target>` = numeric id (most reliable — from `list-chats`), `@username`, phone, or exact chat
@@ -101,6 +102,7 @@ argument**. Never bulk-send.
 
 ```sh
 python3 "$TG" send    <target> "text"                          # → dry_run; add --confirm to send
+python3 "$TG" send    <target> "text" --topic <top_message> --confirm  # into a forum topic thread
 python3 "$TG" reply   <target> <msg_id> "text" --confirm
 python3 "$TG" forward <from_target> <msg_id> <to_target> --confirm
 python3 "$TG" edit    <target> <msg_id> "new text" --confirm   # own messages
@@ -117,6 +119,13 @@ else's group is a real membership change on the account — treat it like any ot
 dry-run, confirm, then `--confirm`. Never auto-join then bulk-message; that gets accounts
 spam-limited.
 
+**Posting into a forum group.** Some supergroups are *forums*: messages live in topics
+(threads), and a plain `send` to the group root is rejected with `TOPIC_CLOSED`. Run
+`list-topics <target>` first, pick a topic with `"closed": false` (an open chat/offtopic
+thread — often titled `Беседка`/`Флуд`/`Chat`/`Offtopic`/`General`), then post with
+`send <target> "text" --topic <top_message> --confirm` (its `top_message` id is the thread
+anchor).
+
 The dry run returns `{"dry_run": true, "command": ..., "args": [...]}` — present that to the
 user verbatim as the confirmation prompt.
 
@@ -132,6 +141,11 @@ user verbatim as the confirmation prompt.
   scanning dialogs); names need an exact match, usernames need a leading `@`.
 - **`message-link`** only works for public channels/supergroups; private 1:1 / basic groups
   return an error (no shareable link exists).
+- **`TOPIC_CLOSED` on send** = a forum supergroup; you can't post to the root. `list-topics`,
+  pick an open (`"closed": false`) thread, and `send ... --topic <top_message>`.
+- **`ChatWriteForbiddenError` on send** = usually a channel's linked *discussion* group: you
+  must be subscribed to the parent channel (`join <parent_channel>`) before you can write in
+  its comment group, even though the group itself doesn't ban posting.
 - **`edit`/`delete`** generally only apply to the user's own messages (admins can delete others
   in groups they manage).
 
