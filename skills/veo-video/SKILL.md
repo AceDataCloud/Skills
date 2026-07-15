@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 2 Fast, Veo 3, and Veo 3.1 models including fast and ingredient variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text prompts, guiding generation with reference images, or editing an existing video through the current Gemini video API. Supports 720p/1080p output, aspect-ratio control, async callbacks, and task polling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -10,95 +10,91 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Veo Video Generation
 
-Generate AI videos through AceDataCloud's Google Veo API.
+Generate AI videos through AceDataCloud's current Gemini video API (`/gemini/videos`).
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## Quick Start
 
 ```bash
-curl -X POST https://api.acedata.cloud/veo/videos \
+curl -X POST https://api.acedata.cloud/gemini/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a whale breaching in slow motion at golden hour", "model": "omni-flash", "aspect_ratio": "16:9", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /gemini/tasks` with `{"id": "..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
-curl -X POST https://api.acedata.cloud/veo/tasks \
+curl -X POST https://api.acedata.cloud/gemini/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"id": "<task_id from above>"}'
 ```
 
-## Models
+## Model
 
-| Model | Audio | Best For |
-|-------|-------|----------|
-| `veo2-fast` | No | Fast, cost-effective generation (default) |
-| `veo3` | Yes (native) | Full audiovisual generation |
-| `veo3-fast` | Yes (native) | Faster audiovisual generation |
-| `veo31` | Yes (native) | Veo 3.1, highest quality |
-| `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
-| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
+| Model | Best For |
+|-------|----------|
+| `omni-flash` | Text-to-video, image-guided video, and video editing/reference |
 
 ## Workflows
 
 ### 1. Text-to-Video
 
 ```json
-POST /veo/videos
+POST /gemini/videos
 {
-  "action": "text2video",
   "prompt": "cinematic aerial shot of the Northern Lights over Iceland",
-  "model": "veo3",
+  "model": "omni-flash",
   "resolution": "1080p"
 }
 ```
 
-### 2. Image-to-Video
+### 2. Image-Guided Video
 
-Animate still images into video.
+Guide generation with one or more reference images.
 
 ```json
-POST /veo/videos
+POST /gemini/videos
 {
-  "action": "image2video",
   "prompt": "the scene gently comes to life with wind and subtle motion",
   "image_urls": ["https://example.com/landscape.jpg"],
-  "model": "veo2-fast",
+  "model": "omni-flash",
   "aspect_ratio": "16:9"
 }
 ```
 
-### 3. Ingredients-to-Video (Multi-Image Blend)
+### 3. Video Editing / Reference Video
 
-Blend 1–3 reference images into a video (only `veo31-fast-ingredients`).
+Edit or restyle an existing video by providing one source video plus at least one reference image. The API requires the image input as an additional guidance reference whenever `video_urls` is used.
 
 ```json
-POST /veo/videos
+POST /gemini/videos
 {
-  "action": "ingredients2video",
+  "prompt": "restyle the video into cinematic anime while keeping the motion",
   "image_urls": [
-    "https://example.com/img1.jpg",
-    "https://example.com/img2.jpg"
+    "https://example.com/reference.png"
   ],
-  "model": "veo31-fast-ingredients"
+  "video_urls": [
+    "https://example.com/source.mp4"
+  ],
+  "model": "omni-flash",
+  "resolution": "720p"
 }
 ```
 
-### 4. Upscale to 1080p
+### 4. Async Without Callback
 
-Convert a previously generated video to full 1080p resolution.
+Set `async: true` to get a `task_id` immediately without configuring a callback URL.
 
 ```json
-POST /veo/videos
+POST /gemini/videos
 {
-  "action": "get1080p",
-  "video_id": "your-video-id",
-  "model": "veo3"
+  "prompt": "a dramatic timelapse of clouds over a mountain range",
+  "model": "omni-flash",
+  "async": true
 }
 ```
 
@@ -106,114 +102,52 @@ POST /veo/videos
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
-| `model` | see Models table | Model to use (default: `veo2-fast`) |
-| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
-| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
-| `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
-| `video_id` | string | Video to upscale — only for `get1080p` |
-| `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+| `prompt` | string | Required text prompt describing the desired video |
+| `model` | `"omni-flash"` | Model to use (default: `omni-flash`) |
+| `aspect_ratio` | `"16:9"`, `"9:16"` | Output aspect ratio (default: `16:9`) |
+| `resolution` | `"720p"`, `"1080p"` | Output resolution (default: `720p`) |
+| `image_urls` | array of strings | Optional reference image URLs; required when using `video_urls` |
+| `video_urls` | array of strings | Optional reference video URLs (max 1) for video editing/reference |
+| `callback_url` | string | Optional webhook URL for async completion |
+| `async` | `true` / `false` | Optional async mode; when `true`, the API returns a `task_id` immediately |
 
-## Post-Generation Endpoints
+## Task Polling
 
-After generating a video, use these endpoints to further process it:
+Poll generation status and retrieve results with `POST /gemini/tasks`.
 
-### Upsample (`POST /veo/upsample`)
-
-Upscale a generated video to 1080p, 4K, or convert to GIF.
+### Single Task
 
 ```json
-POST /veo/upsample
+POST /gemini/tasks
 {
-  "video_id": "your-video-id",
-  "action": "4k"
+  "id": "b8976e18-32dc-4718-9ed8-1ea090fcb6ea"
+}
+```
+
+### Batch Task Lookup
+
+```json
+POST /gemini/tasks
+{
+  "ids": ["task_1", "task_2"],
+  "action": "retrieve_batch"
 }
 ```
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos`, `/veo/extend`, `/veo/reshoot`, or `/veo/objects` |
-| `action` | `"1080p"`, `"4k"`, `"gif"` | Upsample target |
-
-### Extend (`POST /veo/extend`)
-
-Continue an existing video — AI auto-generates the next segment.
-
-```json
-POST /veo/extend
-{
-  "video_id": "your-video-id",
-  "model": "veo31-fast",
-  "prompt": "the camera slowly zooms out"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos` or a prior `/veo/extend` |
-| `model` | `"veo31-fast"`, `"veo31"` | Only Veo 3.1 series is supported |
-| `prompt` | string | Optional: guides the extended segment |
-
-### Reshoot (`POST /veo/reshoot`)
-
-Re-render a video keeping the same content but applying new camera motion.
-
-```json
-POST /veo/reshoot
-{
-  "video_id": "your-video-id",
-  "motion_type": "LEFT_TO_RIGHT"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos` (cannot use `/veo/extend` output) |
-| `motion_type` | see table below | Camera motion to apply |
-
-**`motion_type` values:**
-`STATIONARY`, `STATIONARY_UP`, `STATIONARY_DOWN`, `STATIONARY_LEFT`, `STATIONARY_RIGHT`, `STATIONARY_DOLLY_IN_ZOOM_OUT`, `STATIONARY_DOLLY_OUT_ZOOM_IN`, `UP`, `DOWN`, `LEFT_TO_RIGHT`, `RIGHT_TO_LEFT`, `FORWARD`, `BACKWARD`, `DOLLY_IN_ZOOM_OUT`, `DOLLY_OUT_ZOOM_IN`
-
-### Objects (`POST /veo/objects`)
-
-Insert or remove objects in a video using mask-based inpainting.
-
-```json
-POST /veo/objects
-{
-  "video_id": "your-video-id",
-  "action": "insert",
-  "prompt": "add a flying bird"
-}
-```
-
-```json
-POST /veo/objects
-{
-  "video_id": "your-video-id",
-  "action": "remove",
-  "image_mask": "https://example.com/mask.jpg"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID (cannot use `/veo/extend` output) |
-| `action` | `"insert"`, `"remove"` | Operation type |
-| `prompt` | string | Required for `insert`; optional for `remove` |
-| `image_mask` | string | URL or base64 JPEG — white pixels = target region. Required for `remove`; optional for `insert` |
+| `id` | string | Single task ID to retrieve |
+| `ids` | array of strings | Multiple task IDs for batch retrieval |
+| `action` | `"retrieve"`, `"retrieve_batch"` | Polling mode (`retrieve` is the default) |
 
 ## Gotchas
 
-- Veo 3 and 3.1 models generate **native audio** — `veo2-fast` does NOT support audio
-- The `get1080p` action uses `video_id` (from a prior generation), not a URL
-- `aspect_ratio` is **only valid** for the `image2video` action
-- `image_urls` accepts an array — up to 2 images for `image2video`, up to 3 for `ingredients2video`
-- `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
-- Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
-- `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
-- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
-- Task states use `"succeeded"` (not "completed") — check for this value when polling
-- `/veo/extend` output **cannot** be used as input for `/veo/reshoot` or `/veo/objects`
+- `prompt` is required for every generation request
+- The only documented model is `omni-flash`
+- `video_urls` accepts at most **one** video URL
+- If you provide `video_urls`, you must also provide at least one `image_urls` entry because the API requires an image guidance reference for video-editing requests
+- Use `callback_url` or `async: true` to avoid holding open a long-running request
+- Task polling uses `id` or `ids` in the `/gemini/tasks` request body
+- Task states use values like `"pending"`, `"succeeded"`, and `"failed"`
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
