@@ -1,0 +1,18 @@
+commit 1d1183453b6ca19ef099804f8a5f3be8071f6775
+Author: Ace Data Cloud Dev <dev@acedata.cloud>
+Date:   Wed Jul 15 08:22:29 2026 +0000
+
+    docs: sync from PlatformBackend [automated]
+
+diff --git a/openapi/grok.json b/openapi/grok.json
+index b91ddf8c..82557e8f 100644
+--- a/openapi/grok.json
++++ b/openapi/grok.json
+@@ -504,6 +504,7 @@
+                   },
+                   "model": {
+                     "enum": [
++                      "grok-4.5",
+                       "grok-4",
+                       "grok-3"
+                     ],

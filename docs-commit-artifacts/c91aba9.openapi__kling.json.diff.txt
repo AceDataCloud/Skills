@@ -1,0 +1,21 @@
+commit c91aba96df5484241d598c6aaaa7092b818fcab9
+Author: Ace Data Cloud Dev <dev@acedata.cloud>
+Date:   Wed Jul 15 10:38:29 2026 +0000
+
+    docs: sync from PlatformBackend [automated]
+
+diff --git a/openapi/kling.json b/openapi/kling.json
+index 7c23f810..f80ada18 100644
+--- a/openapi/kling.json
++++ b/openapi/kling.json
+@@ -1423,10 +1423,6 @@
+                     "description": "Kling Videos Prompt"
+                   },
+                   "duration": {
+-                    "enum": [
+-                      5,
+-                      10
+-                    ],
+                     "type": "number",
+                     "description": "Kling Videos Duration"
+                   },

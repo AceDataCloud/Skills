@@ -1,0 +1,1747 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Grok",
+    "version": "1.0.0",
+    "description": "API reference for Grok on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/grok/chat/completions": {
+      "post": {
+        "summary": "Grok Chat Completions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "choices",
+                    "created",
+                    "id",
+                    "model",
+                    "object"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Grok Chat Completions Response 200 Id"
+                    },
+                    "model": {
+                      "type": "string",
+                      "description": "Grok Chat Completions Response 200 Model"
+                    },
+                    "object": {
+                      "enum": [
+                        "chat.completion"
+                      ],
+                      "type": "string",
+                      "description": "Grok Chat Completions Response 200 Object"
+                    },
+                    "choices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "finish_reason",
+                          "index",
+                          "message"
+                        ],
+                        "properties": {
+                          "index": {
+                            "type": "number",
+                            "description": "Grok Chat Completions Response 200 Choices Index"
+                          },
+                          "message": {
+                            "type": "object",
+                            "required": [
+                              "role"
+                            ],
+                            "properties": {
+                              "role": {
+                                "enum": [
+                                  "assistant"
+                                ],
+                                "type": "string",
+                                "description": "Grok Chat Completions Response 200 Choices Message Role"
+                              },
+                              "content": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "Grok Chat Completions Response 200 Choices Message"
+                              },
+                              "tool_calls": {
+                                "type": "array",
+                                "nullable": true,
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "id",
+                                    "type",
+                                    "function"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Grok Chat Completions Response 200 Choices Message Tool Calls Id"
+                                    },
+                                    "type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "function"
+                                      ],
+                                      "description": "Grok Chat Completions Response 200 Choices Message Tool Calls Type"
+                                    },
+                                    "function": {
+                                      "type": "object",
+                                      "required": [
+                                        "name",
+                                        "arguments"
+                                      ],
+                                      "properties": {
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Grok Chat Completions Response 200 Choices Message Tool Calls Function Name"
+                                        },
+                                        "arguments": {
+                                          "type": "string",
+                                          "description": "Grok Chat Completions Response 200 Choices Message Tool Calls Function Arguments"
+                                        }
+                                      },
+                                      "description": "Grok Chat Completions Response 200 Choices Message Tool Calls Function"
+                                    }
+                                  }
+                                },
+                                "description": "Grok Chat Completions Response 200 Choices Message Tool Calls"
+                              },
+                              "refusal": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "Grok Chat Completions Response 200 Choices Message Refusal"
+                              },
+                              "audio": {
+                                "type": "object",
+                                "nullable": true,
+                                "required": [
+                                  "id",
+                                  "data",
+                                  "expires_at"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Grok Chat Completions Response 200 Choices Message Audio Id"
+                                  },
+                                  "expires_at": {
+                                    "type": "integer",
+                                    "description": "Grok Chat Completions Response 200 Choices Message Audio Expires At"
+                                  },
+                                  "data": {
+                                    "type": "string",
+                                    "description": "Grok Chat Completions Response 200 Choices Message Audio Data"
+                                  },
+                                  "transcript": {
+                                    "type": "string",
+                                    "description": "Grok Chat Completions Response 200 Choices Message Audio Transcript"
+                                  }
+                                },
+                                "description": "Grok Chat Completions Response 200 Choices Message Audio"
+                              }
+                            },
+                            "description": "Grok Chat Completions Response 200 Choices Message 2"
+                          },
+                          "finish_reason": {
+                            "enum": [
+                              "stop",
+                              "length",
+                              "tool_calls",
+                              "content_filter",
+                              "function_call"
+                            ],
+                            "type": "string",
+                            "description": "Grok Chat Completions Response 200 Choices Finish Reason"
+                          },
+                          "logprobs": {
+                            "type": "object",
+                            "nullable": true,
+                            "description": "Grok Chat Completions Response 200 Choices Logprobs"
+                          }
+                        }
+                      },
+                      "description": "Grok Chat Completions Response 200 Choices"
+                    },
+                    "created": {
+                      "type": "number",
+                      "description": "Grok Chat Completions Response 200 Created"
+                    },
+                    "system_fingerprint": {
+                      "type": "string",
+                      "description": "Grok Chat Completions Response 200 System Fingerprint"
+                    },
+                    "usage": {
+                      "type": "object",
+                      "required": [
+                        "prompt_tokens",
+                        "completion_tokens",
+                        "total_tokens"
+                      ],
+                      "properties": {
+                        "prompt_tokens": {
+                          "type": "integer",
+                          "description": "Grok Chat Completions Response 200 Usage Prompt Tokens"
+                        },
+                        "completion_tokens": {
+                          "type": "integer",
+                          "description": "Grok Chat Completions Response 200 Usage Completion Tokens"
+                        },
+                        "total_tokens": {
+                          "type": "integer",
+                          "description": "Grok Chat Completions Response 200 Usage Total Tokens"
+                        },
+                        "prompt_tokens_details": {
+                          "type": "object",
+                          "properties": {
+                            "cached_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Prompt Tokens Details Cached Tokens"
+                            },
+                            "audio_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Prompt Tokens Details Audio Tokens"
+                            }
+                          },
+                          "description": "Grok Chat Completions Response 200 Usage Prompt Tokens Details"
+                        },
+                        "completion_tokens_details": {
+                          "type": "object",
+                          "properties": {
+                            "reasoning_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Completion Tokens Details Reasoning Tokens"
+                            },
+                            "audio_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Completion Tokens Details Audio Tokens"
+                            },
+                            "accepted_prediction_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Completion Tokens Details Accepted Prediction Tokens"
+                            },
+                            "rejected_prediction_tokens": {
+                              "type": "integer",
+                              "description": "Grok Chat Completions Response 200 Usage Completion Tokens Details Rejected Prediction Tokens"
+                            }
+                          },
+                          "description": "Grok Chat Completions Response 200 Usage Completion Tokens Details"
+                        }
+                      },
+                      "description": "Grok Chat Completions Response 200 Usage"
+                    }
+                  },
+                  "description": "Grok Chat Completions Response 200"
+                }
+              }
+            },
+            "description": "Grok Chat Completions Response 200 2"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Grok Chat Completions Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Grok Chat Completions Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Grok Chat Completions Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Grok Chat Completions Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Chat Completions Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Grok Chat Completions Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Grok Chat Completions Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Chat Completions Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Grok Chat Completions Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Grok Chat Completions Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Chat Completions Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Grok Chat Completions Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Grok Chat Completions Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Chat Completions Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Grok Chat Completions Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model",
+                  "messages"
+                ],
+                "properties": {
+                  "n": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 128,
+                    "minimum": 1,
+                    "nullable": true,
+                    "description": "Grok Chat Completions N"
+                  },
+                  "model": {
+                    "enum": [
+                      "grok-4.5",
+                      "grok-4",
+                      "grok-3"
+                    ],
+                    "type": "string",
+                    "example": "grok-3",
+                    "description": "Grok Chat Completions Model"
+                  },
+                  "stream": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Stream"
+                  },
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "role"
+                      ],
+                      "properties": {
+                        "role": {
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system",
+                            "developer",
+                            "tool"
+                          ],
+                          "type": "string",
+                          "description": "Grok Chat Completions Messages Role"
+                        },
+                        "content": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "description": "Grok Chat Completions Messages"
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "text"
+                                        ],
+                                        "description": "Grok Chat Completions Messages Type"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "description": "Grok Chat Completions Messages Text"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "image_url"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "image_url"
+                                        ],
+                                        "description": "Grok Chat Completions Messages Type 2"
+                                      },
+                                      "image_url": {
+                                        "type": "object",
+                                        "required": [
+                                          "url"
+                                        ],
+                                        "properties": {
+                                          "url": {
+                                            "type": "string",
+                                            "description": "Grok Chat Completions Messages Image Url Url"
+                                          },
+                                          "detail": {
+                                            "type": "string",
+                                            "enum": [
+                                              "auto",
+                                              "low",
+                                              "high"
+                                            ],
+                                            "default": "auto",
+                                            "description": "Grok Chat Completions Messages Image Url Detail"
+                                          }
+                                        },
+                                        "description": "Grok Chat Completions Messages Image Url"
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "minItems": 1,
+                              "description": "Grok Chat Completions Messages 2"
+                            }
+                          ],
+                          "description": "Grok Chat Completions Messages 3"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Messages Name"
+                        },
+                        "tool_calls": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type",
+                              "function"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Grok Chat Completions Messages Tool Calls Id"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "function"
+                                ],
+                                "description": "Grok Chat Completions Messages Tool Calls Type"
+                              },
+                              "function": {
+                                "type": "object",
+                                "required": [
+                                  "name",
+                                  "arguments"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Grok Chat Completions Messages Tool Calls Function Name"
+                                  },
+                                  "arguments": {
+                                    "type": "string",
+                                    "description": "Grok Chat Completions Messages Tool Calls Function Arguments"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "description": "Grok Chat Completions Messages Tool Calls"
+                        },
+                        "refusal": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Grok Chat Completions Messages Refusal"
+                        },
+                        "tool_call_id": {
+                          "type": "string",
+                          "description": "Grok Chat Completions Messages Tool Call Id"
+                        }
+                      }
+                    },
+                    "minItems": 1,
+                    "description": "Grok Chat Completions Messages 4"
+                  },
+                  "max_tokens": {
+                    "type": "number",
+                    "nullable": true,
+                    "description": "Grok Chat Completions Max Tokens"
+                  },
+                  "temperature": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 2,
+                    "minimum": 0,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Temperature"
+                  },
+                  "top_p": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 1,
+                    "minimum": 0,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Top P"
+                  },
+                  "frequency_penalty": {
+                    "type": "number",
+                    "default": 0,
+                    "example": 0,
+                    "maximum": 2,
+                    "minimum": -2,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Frequency Penalty"
+                  },
+                  "presence_penalty": {
+                    "type": "number",
+                    "default": 0,
+                    "example": 0,
+                    "maximum": 2,
+                    "minimum": -2,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Presence Penalty"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Grok Chat Completions Seed"
+                  },
+                  "stop": {
+                    "nullable": true,
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "description": "Grok Chat Completions Stop"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4,
+                        "description": "Grok Chat Completions Stop 2"
+                      }
+                    ],
+                    "description": "Grok Chat Completions Stop 3"
+                  },
+                  "max_completion_tokens": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Grok Chat Completions Max Completion Tokens"
+                  },
+                  "logprobs": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Logprobs"
+                  },
+                  "top_logprobs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Top Logprobs"
+                  },
+                  "stream_options": {
+                    "type": "object",
+                    "nullable": true,
+                    "properties": {
+                      "include_usage": {
+                        "type": "boolean",
+                        "description": "Grok Chat Completions Stream Options Include Usage"
+                      }
+                    },
+                    "description": "Grok Chat Completions Stream Options"
+                  },
+                  "parallel_tool_calls": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Grok Chat Completions Parallel Tool Calls"
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "Grok Chat Completions User"
+                  },
+                  "reasoning_effort": {
+                    "type": "string",
+                    "enum": [
+                      "minimal",
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "default": "medium",
+                    "nullable": true,
+                    "description": "Grok Chat Completions Reasoning Effort"
+                  },
+                  "service_tier": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "default",
+                      "flex",
+                      "scale",
+                      "priority"
+                    ],
+                    "default": "auto",
+                    "nullable": true,
+                    "description": "Grok Chat Completions Service Tier"
+                  },
+                  "store": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Grok Chat Completions Store"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "nullable": true,
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Grok Chat Completions Metadata"
+                  },
+                  "logit_bias": {
+                    "type": "object",
+                    "nullable": true,
+                    "additionalProperties": {
+                      "type": "integer"
+                    },
+                    "description": "Grok Chat Completions Logit Bias"
+                  },
+                  "modalities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "text",
+                        "audio"
+                      ]
+                    },
+                    "nullable": true,
+                    "description": "Grok Chat Completions Modalities"
+                  },
+                  "audio": {
+                    "type": "object",
+                    "nullable": true,
+                    "required": [
+                      "voice",
+                      "format"
+                    ],
+                    "properties": {
+                      "voice": {
+                        "type": "string",
+                        "enum": [
+                          "alloy",
+                          "ash",
+                          "ballad",
+                          "coral",
+                          "echo",
+                          "fable",
+                          "nova",
+                          "onyx",
+                          "sage",
+                          "shimmer"
+                        ],
+                        "description": "Grok Chat Completions Audio Voice"
+                      },
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "wav",
+                          "aac",
+                          "mp3",
+                          "flac",
+                          "opus",
+                          "pcm16"
+                        ],
+                        "description": "Grok Chat Completions Audio Format"
+                      }
+                    },
+                    "description": "Grok Chat Completions Audio"
+                  },
+                  "prediction": {
+                    "type": "object",
+                    "nullable": true,
+                    "required": [
+                      "type",
+                      "content"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "content"
+                        ],
+                        "description": "Grok Chat Completions Prediction Type"
+                      },
+                      "content": {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "Grok Chat Completions Prediction"
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "type",
+                                "text"
+                              ],
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "text"
+                                  ]
+                                },
+                                "text": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "description": "Grok Chat Completions Prediction 2"
+                      }
+                    },
+                    "description": "Grok Chat Completions Prediction 3"
+                  },
+                  "web_search_options": {
+                    "type": "object",
+                    "properties": {
+                      "search_context_size": {
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ],
+                        "default": "medium",
+                        "description": "Grok Chat Completions Web Search Options Search Context Size"
+                      },
+                      "user_location": {
+                        "type": "object",
+                        "nullable": true,
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "approximate"
+                            ]
+                          },
+                          "approximate": {
+                            "type": "object",
+                            "properties": {
+                              "country": {
+                                "type": "string"
+                              },
+                              "region": {
+                                "type": "string"
+                              },
+                              "city": {
+                                "type": "string"
+                              },
+                              "timezone": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Grok Chat Completions Web Search Options User Location"
+                      }
+                    },
+                    "description": "Grok Chat Completions Web Search Options"
+                  },
+                  "tools": {
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "function"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "function"
+                          ],
+                          "description": "Grok Chat Completions Tools Type"
+                        },
+                        "function": {
+                          "type": "object",
+                          "required": [
+                            "name"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Grok Chat Completions Tools Function Name"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Grok Chat Completions Tools Function Description"
+                            },
+                            "parameters": {
+                              "type": "object",
+                              "description": "Grok Chat Completions Tools Function"
+                            }
+                          },
+                          "description": "Grok Chat Completions Tools Function 2"
+                        }
+                      }
+                    },
+                    "description": "Grok Chat Completions Tools"
+                  },
+                  "tool_choice": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "auto",
+                          "required"
+                        ],
+                        "description": "Grok Chat Completions Tool Choice"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "function"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "function"
+                            ],
+                            "description": "Grok Chat Completions Tool Choice Type"
+                          },
+                          "function": {
+                            "type": "object",
+                            "required": [
+                              "name"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Grok Chat Completions Tool Choice Function Name"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Grok Chat Completions Tool Choice 2"
+                      }
+                    ],
+                    "description": "Grok Chat Completions Tool Choice 3"
+                  },
+                  "response_format": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "text"
+                            ],
+                            "type": "string",
+                            "description": "Grok Chat Completions Response Format Type"
+                          }
+                        },
+                        "description": "Grok Chat Completions Response Format"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "json_object"
+                            ],
+                            "type": "string",
+                            "description": "Grok Chat Completions Response Format Type 2"
+                          }
+                        },
+                        "description": "Grok Chat Completions Response Format 2"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "json_schema"
+                            ],
+                            "type": "string",
+                            "description": "Grok Chat Completions Response Format Type 3"
+                          },
+                          "json_schema": {
+                            "type": "object",
+                            "required": [
+                              "name"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Grok Chat Completions Response Format Json Schema Name"
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Grok Chat Completions Response Format Json Schema Description"
+                              },
+                              "schema": {
+                                "type": "object",
+                                "description": "Grok Chat Completions Response Format Json Schema"
+                              },
+                              "strict": {
+                                "type": "boolean",
+                                "default": false,
+                                "nullable": true,
+                                "description": "Grok Chat Completions Response Format Json Schema Strict"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Grok Chat Completions Response Format 3"
+                      }
+                    ],
+                    "description": "Grok Chat Completions Response Format 4"
+                  }
+                }
+              },
+              "example": {
+                "n": 1,
+                "model": "grok-3",
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Hello!"
+                  }
+                ],
+                "temperature": 1,
+                "top_p": 1,
+                "frequency_penalty": 0,
+                "presence_penalty": 0
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/grok/videos": {
+      "post": {
+        "summary": "Grok Videos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "b8976e18-32dc-4718-9ed8-1ea090fcb6ea",
+                    "trace_id": "fb751e1e-4705-49ea-9fd4-5024b7865ea2",
+                    "data": [
+                      {
+                        "id": "grok-imagine-video-1.5-fast:41eb9a5f-3b2d-4d1e-9f5a-6c2f1a0b9e77",
+                        "video_url": "https://cdn.acedata.cloud/c8cbf53aa0.mp4",
+                        "state": "succeeded"
+                      }
+                    ]
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Grok Videos Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Grok Videos Response 200 Task Id"
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "Grok Videos Response 200 Trace Id"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Grok Videos Response 200 Data",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Grok Videos Response 200 Data Id"
+                          },
+                          "video_url": {
+                            "type": "string",
+                            "description": "Grok Videos Response 200 Data Video Url"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "succeeded",
+                              "failed"
+                            ],
+                            "description": "Grok Videos Response 200 Data State"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Grok Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "prompt is required for text-to-video."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Grok Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "prompt is required for text-to-video.",
+                              "description": "Grok Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Videos Response 400 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Grok Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Grok Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Videos Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Grok Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Grok Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Videos Response 403"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "Too many requests, please try again later."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Grok Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Too many requests, please try again later.",
+                              "description": "Grok Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Grok Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Grok Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Videos Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json",
+                "application/x-ndjson"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Grok Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "example": "A cinematic shot of a kitten chasing a butterfly in a sunlit garden",
+                    "description": "Grok Videos Prompt"
+                  },
+                  "model": {
+                    "enum": [
+                      "grok-imagine-video-1.5-fast",
+                      "grok-imagine-video-1.5"
+                    ],
+                    "type": "string",
+                    "default": "grok-imagine-video-1.5-fast",
+                    "example": "grok-imagine-video-1.5-fast",
+                    "description": "Grok Videos Model"
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "example": "https://cdn.acedata.cloud/5hmkdg.jpg",
+                    "description": "Grok Videos Image Url"
+                  },
+                  "reference_image_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Grok Videos Reference Image Urls"
+                  },
+                  "aspect_ratio": {
+                    "enum": [
+                      "1:1",
+                      "16:9",
+                      "9:16",
+                      "4:3",
+                      "3:4",
+                      "3:2",
+                      "2:3"
+                    ],
+                    "type": "string",
+                    "example": "16:9",
+                    "description": "Grok Videos Aspect Ratio"
+                  },
+                  "resolution": {
+                    "enum": [
+                      "480p",
+                      "720p",
+                      "1080p"
+                    ],
+                    "type": "string",
+                    "default": "480p",
+                    "example": "480p",
+                    "description": "Grok Videos Resolution"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "default": 8,
+                    "minimum": 1,
+                    "maximum": 30,
+                    "example": 8,
+                    "description": "Grok Videos Duration"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Grok Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Grok Videos Async"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/grok/tasks": {
+      "post": {
+        "summary": "Grok Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Grok Tasks Response 200 Id"
+                    },
+                    "request": {
+                      "type": "object",
+                      "description": "Grok Tasks Response 200 Request"
+                    },
+                    "response": {
+                      "type": "object",
+                      "description": "Grok Tasks Response 200 Response"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Grok Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Grok Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Grok Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Tasks Response 400 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Grok Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Grok Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Tasks Response 401"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Grok Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Grok Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Grok Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Grok Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Grok Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Grok Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Grok Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Grok Tasks Action"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  }
+}

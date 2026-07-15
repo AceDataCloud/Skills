@@ -1,0 +1,42 @@
+commit 39a6f2251c027d439e009a9d18aa43157b1120ee
+Author: Ace Data Cloud Dev <dev@acedata.cloud>
+Date:   Wed Jul 15 02:20:39 2026 +0000
+
+    docs: sync from PlatformBackend [automated]
+
+diff --git a/openapi/gemini.json b/openapi/gemini.json
+index cbe8e46d..e3b0bbdc 100644
+--- a/openapi/gemini.json
++++ b/openapi/gemini.json
+@@ -2491,6 +2491,16 @@
+                     "example": "16:9",
+                     "description": "Gemini Videos Aspect Ratio"
+                   },
++                  "resolution": {
++                    "enum": [
++                      "720p",
++                      "1080p"
++                    ],
++                    "type": "string",
++                    "default": "720p",
++                    "example": "720p",
++                    "description": "Gemini Videos Resolution"
++                  },
+                   "image_urls": {
+                     "type": "array",
+                     "items": {
+@@ -2498,6 +2508,14 @@
+                     },
+                     "description": "Gemini Videos Image Urls"
+                   },
++                  "video_urls": {
++                    "type": "array",
++                    "items": {
++                      "type": "string"
++                    },
++                    "maxItems": 1,
++                    "description": "Gemini Videos Video Urls"
++                  },
+                   "callback_url": {
+                     "type": "string",
+                     "description": "Gemini Videos Callback Url"

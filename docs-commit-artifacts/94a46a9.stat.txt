@@ -1,0 +1,4 @@
+94a46a99 Restore localized guide sync (#69)
+ scripts/sync_from_platformbackend.py    | 118 +++++++++++++++++++++++++++-----
+ tests/test_sync_from_platformbackend.py |  94 +++++++++++++++++++++++++
+ 2 files changed, 196 insertions(+), 16 deletions(-)

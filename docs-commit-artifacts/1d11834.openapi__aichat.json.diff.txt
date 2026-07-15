@@ -1,0 +1,26 @@
+commit 1d1183453b6ca19ef099804f8a5f3be8071f6775
+Author: Ace Data Cloud Dev <dev@acedata.cloud>
+Date:   Wed Jul 15 08:22:29 2026 +0000
+
+    docs: sync from PlatformBackend [automated]
+
+diff --git a/openapi/aichat.json b/openapi/aichat.json
+index 7de35079..da5ad49f 100644
+--- a/openapi/aichat.json
++++ b/openapi/aichat.json
+@@ -394,6 +394,7 @@
+                       "grok-3",
+                       "grok-3-fast",
+                       "grok-4",
++                      "grok-4.5",
+                       "grok-4-0709",
+                       "deepseek-chat",
+                       "deepseek-r1",
+@@ -974,6 +975,7 @@
+                       "deepseek-v3",
+                       "deepseek-v3-250324",
+                       "deepseek-v4-flash",
++                      "grok-4.5",
+                       "grok-3",
+                       "glm-5.2",
+                       "glm-5",

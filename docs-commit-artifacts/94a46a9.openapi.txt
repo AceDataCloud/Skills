@@ -1,0 +1,1 @@
+No openapi/*.json files changed in 94a46a9

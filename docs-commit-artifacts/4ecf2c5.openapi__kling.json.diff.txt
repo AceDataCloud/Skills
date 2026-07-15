@@ -1,0 +1,36 @@
+commit 4ecf2c5a48ab3db523775fc548395c8ce5e01a50
+Author: Ace Data Cloud Dev <dev@acedata.cloud>
+Date:   Tue Jul 14 17:48:55 2026 +0000
+
+    docs: sync from PlatformBackend [automated]
+
+diff --git a/openapi/kling.json b/openapi/kling.json
+index 6c918cf3..7c23f810 100644
+--- a/openapi/kling.json
++++ b/openapi/kling.json
+@@ -1479,6 +1479,25 @@
+                     },
+                     "description": "Kling Videos Element List"
+                   },
++                  "image_list": {
++                    "type": "array",
++                    "items": {
++                      "type": "object",
++                      "properties": {
++                        "image_url": {
++                          "type": "string"
++                        },
++                        "type": {
++                          "type": "string",
++                          "enum": [
++                            "first_frame",
++                            "end_frame"
++                          ]
++                        }
++                      }
++                    },
++                    "description": "Kling Videos Image List"
++                  },
+                   "video_list": {
+                     "type": "array",
+                     "items": {
