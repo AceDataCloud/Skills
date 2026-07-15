@@ -15,7 +15,16 @@ EXPECTED_CAPABILITIES = {
     "read_page",
     "screenshot",
     "navigate",
-    "trusted_input",
+}
+DEPLOYED_BROWSER_TOOLS = {
+    "browser.read_page",
+    "browser.navigate",
+    "browser.click",
+    "browser.form_input",
+    "browser.key",
+    "browser.scroll",
+    "browser.wait",
+    "browser.screenshot",
 }
 
 
@@ -65,15 +74,20 @@ def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
     assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "tests"}
 
 
-def test_browser_skill_documents_local_write_safety() -> None:
+def test_browser_skill_matches_manual_attach_read_only_runtime() -> None:
     text = SKILL.read_text(encoding="utf-8").casefold()
+    mentioned_tools = set(re.findall(r"`(browser\.[a-z_]+)`", text))
 
-    assert "local account attestation" in text
-    assert "local confirmation" in text
-    assert "every write" in text
+    assert "attach current tab" in text
+    assert mentioned_tools <= DEPLOYED_BROWSER_TOOLS
+    assert "browser.tabs_context" not in text
+    assert "browser.attach_tab" not in text
+    assert "local account attestation" not in text
+    assert "do not claim cryptographic xiaohongshu account attestation" in text
+    assert "does not bind an exact target, value, account context, preview, or page generation" in text
+    assert "do not publish, draft, comment, reply, like, unlike, favorite, unfavorite" in text
+    assert "trusted_input" not in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
     assert "semantic reconciliation" in text
     assert "before retry" in text
-    assert "dedicated test account" in text
-    assert "canary" in text
     assert "stop on warning" in text
     assert "no local file upload capability" in text
