@@ -139,7 +139,7 @@ POST /kling/talking-photo
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
 | `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
-| `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
+| `duration` | number (e.g. `5`, `10`; v3/v3-omni: `3`–`15`) | Duration in seconds |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
@@ -166,7 +166,7 @@ POST /kling/talking-photo
 
 ## Gotchas
 
-- `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
+- `duration` accepts any number (seconds) for `/kling/videos`; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds; `/kling/talking-photo` duration is restricted to `5` or `10`
 - `mode=4k` is only available for `kling-v3` and `kling-v3-omni` and is incompatible with `camera_control`
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
