@@ -36,7 +36,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 | `kling-v2-1-master` | High | Improved v2 |
 | `kling-v1-6` | Improved | Better quality than v1 |
 | `kling-v1` | Standard | Basic generation, lowest cost |
-| `kling-video-o1` | Premium | Highest quality (thinking model) |
+| `kling-o1` | Premium | Highest quality (thinking model) |
 
 ## Quality Modes
 
@@ -144,9 +144,9 @@ POST /kling/talking-photo
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
-| `camera_control` | object | Camera movement parameters |
-| `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
-| `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `camera_control` | object | Camera movement: `type` (`"simple"`, `"down_back"`, `"forward_up"`, `"left_turn_forward"`, `"right_turn_forward"`) and `config` (object with number values −1 to 1) |
+| `image_list` | array (1–7) | Reference images: each item requires `image_url` (URI) and optional `type` (`"first_frame"` or `"end_frame"`). Combined with `video_list`, total reference items ≤ 7 (or ≤ 4 if a reference video is included) |
+| `video_list` | array (exactly 1) | Reference video(s) via `video_url` (URI, MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item requires `video_url` and optionally `refer_type` (`"feature"` or `"base"`), and `keep_original_sound` |
 | `callback_url` | string | Async callback URL |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
