@@ -55,16 +55,28 @@ Operate Xiaohongshu through the generic `browser.*` tools in the user's attached
 
 ## Browse, search, detail, and profile
 
+### Reconstruct note cards from the semantic tree
+
+On `https://www.xiaohongshu.com`, note cards commonly appear as repeated local sequences rather than one complete node. Reconstruct only recommendations, search results, and profile note grids with this deterministic scan:
+
+1. A card starts only at a **named** link whose same-origin path is exactly `/explore/<note-id>`, with one non-empty alphanumeric ID segment. An empty-name link never starts a card, regardless of its element type. When empty and named links share the same href, keep only the named link as the title and canonical URL.
+2. The card candidate range begins after that named title link and ends immediately before the next named valid note link. Within that bounded range, assign an author only when there is exactly one named same-origin `/user/profile/<user-id>` link with one non-empty alphanumeric ID segment. With zero or multiple candidates, report the author as unavailable or ambiguous rather than choosing one.
+3. A `section` node inside that same bounded range may concatenate title, author, and engagement text. Never replace the named title or author with aggregate text. Use an engagement number as a named metric only when its visible label or control identifies that metric; otherwise report it only as an unlabeled visible engagement value, never as likes/comments/favorites.
+4. Legal/footer links, category tabs, blank buttons, reserved paths such as settings, and repeated hrefs are not note results. If valid named note links are present, do not claim the list is missing merely because parent containers are noisy.
+5. Do not apply this heuristic to `creator.xiaohongshu.com` or an unfamiliar page type. If the canonical patterns are absent or change, read once after the expected page transition, then report the structure as unsupported instead of inventing cards or identifiers.
+
+Apply this reconstruction before reporting that a supported `www.xiaohongshu.com` result list has no card data.
+
 ### Recommendations
 
-Read the attached home/recommendation page. Scroll in bounded steps with `browser.scroll`, reading after each step. Return the requested notes with title, author, visible engagement, and canonical note URL when available. Do not scrape indefinitely.
+Read the attached home/recommendation page. Scroll in bounded steps with `browser.scroll`, reading after each step. Return the requested notes with title, author or an explicit unavailable/ambiguous author state, visible engagement, and canonical note URL when available. Do not scrape indefinitely.
 
 ### Search and filters
 
 1. Extract the keyword and optional filters: sort, note type, publish time, search scope, and location.
 2. Open the search UI, fill the visible search control with `browser.form_input`, submit with a fresh button ref or `browser.key`, and read the result page.
 3. Apply only requested filters using fresh refs, one control at a time. Read after each transition.
-4. Return title, author, visible engagement, note URL, and any visible identifiers needed for a subsequent detail or interaction. Never invent IDs or tokens.
+4. Return title, author or an explicit unavailable/ambiguous author state, visible engagement, note URL, and any visible identifiers needed for a subsequent detail or interaction. Never invent IDs or tokens.
 
 ### Note details and comments
 
