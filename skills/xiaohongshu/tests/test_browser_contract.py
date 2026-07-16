@@ -108,6 +108,15 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "visibility" in text
     assert "products" in text
     assert "search and filters" in text
+    assert "/explore/<note-id>" in text
+    assert "/user/profile/<user-id>" in text
+    assert "empty-name link never starts a card" in text
+    assert "exactly one named same-origin" in text
+    assert "author as unavailable or ambiguous" in text
+    assert "explicit unavailable/ambiguous author state" in text
+    assert "unlabeled visible engagement value" in text
+    assert "do not apply this heuristic to `creator.xiaohongshu.com`" in text
+    assert "do not claim the list is missing" in text
     assert "note details and comments" in text
     assert "user profile" in text
     assert "like and favorite" in text
