@@ -95,7 +95,7 @@ POST /grok/videos
 
 ## Gotchas
 
-- `prompt` and/or `image_url` should be provided — a completely empty request may produce unexpected results
+- `prompt` and/or `image_url` should be provided for best results — a request with neither may produce unexpected output
 - `reference_image_urls` accepts an array of image URLs to guide style or subject content
 - Default resolution is `480p`; use `720p` for higher quality output
 - Duration range is 1–15 seconds; default is 8 seconds

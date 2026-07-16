@@ -109,7 +109,7 @@ Response includes `data.video_url` when the task status is `"done"`.
 
 ## Gotchas
 
-- Both `image_url` and `audio_url` are **required** — the request will fail without either
+- Both `image_url` and `audio_url` are **required** — the request will fail if either is missing
 - `image_url` should be a clear portrait/face image for best results
 - `mask_url` is an array; provide one or more mask image URLs to define the animated region
 - Task status field is `data.status` (not `data.state`); check for `"done"` when polling
