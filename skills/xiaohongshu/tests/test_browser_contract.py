@@ -17,7 +17,6 @@ EXPECTED_CAPABILITIES = {
     "navigate",
     "trusted_input",
     "file_upload",
-    "clear_cookies",
 }
 DEPLOYED_BROWSER_TOOLS = {
     "browser.read_page",
@@ -25,7 +24,6 @@ DEPLOYED_BROWSER_TOOLS = {
     "browser.click",
     "browser.form_input",
     "browser.file_upload",
-    "browser.clear_cookies",
     "browser.key",
     "browser.scroll",
     "browser.wait",
@@ -98,10 +96,8 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "local account attestation" not in text
     assert "do not claim cryptographic xiaohongshu account attestation" in text
     assert "browser.file_upload" in mentioned_tools
-    assert "browser.clear_cookies" in mentioned_tools
-    assert "explicitly asks to reset" in text
-    assert "attached exact origin" in text
-    assert "never extract or return cookie values" in text
+    assert "browser.clear_cookies" not in text
+    assert "never extract, clear, or return cookie values" in text
     assert "ask the user to open the creator page" in text
     assert "ace data cloud cdn" in text
     assert "trusted_input" in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
