@@ -29,14 +29,14 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 | Model | Quality | Best For |
 |-------|---------|----------|
 | `kling-v3` | Latest | Best quality, flexible 3–15s duration, optional audio generation |
-| `kling-v3-omni` | Latest | Omni model with audio support, flexible 3–15s duration |
+| `kling-v3-omni` | Latest | V3 Omni model with audio plus image/video references, flexible 3–15s duration |
 | `kling-v2-6` | High | High-quality output with optional audio (pro mode) |
 | `kling-v2-5-turbo` | High + Fast | Best speed/quality trade-off |
 | `kling-v2-master` | High | High-quality output |
 | `kling-v2-1-master` | High | Improved v2 |
 | `kling-v1-6` | Improved | Better quality than v1 |
 | `kling-v1` | Standard | Basic generation, lowest cost |
-| `kling-video-o1` | Premium | Highest quality (thinking model) |
+| `kling-o1` | Premium | Independent O1 model with image/video references, 5s only |
 
 ## Quality Modes
 
@@ -78,7 +78,31 @@ POST /kling/videos
 }
 ```
 
-### 3. Extend Video
+### 3. Omni References
+
+Use `kling-o1` or `kling-v3-omni` with reference images and/or one reference video. Cite each item in the prompt using its one-based token.
+
+```json
+POST /kling/videos
+{
+  "action": "text2video",
+  "prompt": "turn <<<video_1>>> into hand-painted animation while preserving its motion",
+  "model": "kling-o1",
+  "mode": "std",
+  "duration": 5,
+  "video_list": [
+    {
+      "video_url": "https://example.com/source.mp4",
+      "refer_type": "base",
+      "keep_original_sound": "no"
+    }
+  ]
+}
+```
+
+Use `refer_type: "feature"` to reference style, motion, or a neighboring shot. Use `refer_type: "base"` to edit the supplied video. A base video cannot be combined with first/end frames.
+
+### 4. Extend Video
 
 Continue an existing video with additional seconds.
 
@@ -92,7 +116,7 @@ POST /kling/videos
 }
 ```
 
-### 4. Motion Control
+### 5. Motion Control
 
 Apply precise camera/motion control from an image + reference video.
 
@@ -104,7 +128,7 @@ POST /kling/motion
 }
 ```
 
-### 5. Lip Sync
+### 6. Lip Sync
 
 Create a lip-synced video from a source video plus either an audio track or input text.
 
@@ -117,7 +141,7 @@ POST /kling/lip-sync
 }
 ```
 
-### 6. Talking Photo
+### 7. Talking Photo
 
 Animate a still portrait from an image plus an audio track.
 
@@ -138,15 +162,19 @@ POST /kling/talking-photo
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
+| `prompt` | string | Required generation or continuation instructions |
 | `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
-| `duration` | `5`, `10` (v3/v3-omni: `3`–`15`) | Duration in seconds |
+| `duration` | O1: `5`; v3/v3-omni: `3`–`15`; others: `5`, `10` | Duration in seconds |
+| `start_image_url` | URL | Required first frame for `action=image2video` |
+| `end_image_url` | URL | Optional end frame for `image2video`; requires `start_image_url` |
+| `video_id` | string | Existing Kling video ID required by `action=extend` |
 | `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
 | `camera_control` | object | Camera movement parameters |
-| `element_list` | array | Reference subjects from the element library (each item has `element_id`). Combined with `video_list`, total reference images + subjects ≤ 7 (or ≤ 4 if a reference video is included) |
-| `video_list` | array | Reference video(s) via `video_url` (MP4/MOV, 3–10s, ≤200MB, max 1 video). Each item has `video_url`, `refer_type` (`"feature"` or `"base"`), and optional `keep_original_sound` |
+| `image_list` | array | Omni reference images for `kling-o1` / `kling-v3-omni`; each item has `image_url` and optional `type` (`first_frame` / `end_frame`). Up to 7 images without a reference video, or 4 with one, including first/end frames |
+| `video_list` | array | One MP4/MOV Omni reference video for `kling-o1` / `kling-v3-omni` (3–10s, 720–2160px, 24–60fps, ≤200MB); item has `video_url`, `refer_type` (`feature` / `base`), and `keep_original_sound` (`yes` / `no`) |
 | `callback_url` | string | Async callback URL |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
@@ -166,10 +194,14 @@ POST /kling/talking-photo
 
 ## Gotchas
 
-- `duration` supports `5` or `10` seconds for most models; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds
+- `kling-o1` supports `duration=5` only; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds; most other models support `5` or `10`
 - `mode=4k` is only available for `kling-v3` and `kling-v3-omni` and is incompatible with `camera_control`
 - `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
 - `end_image_url` is only for `image2video` action — it defines the last frame
+- Omni references are supported only by `kling-o1` and `kling-v3-omni`; cite them as `<<<image_N>>>` / `<<<video_1>>>`
+- Omni reference requests do not support `negative_prompt`, `cfg_scale`, `camera_control`, or `mode=4k`
+- With `video_list`, `generate_audio` must be `false`; a base video cannot be combined with first/end frames
+- `element_list` is intentionally unavailable because upstream Element IDs are not tenant-scoped; use `image_list` for subject references
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
