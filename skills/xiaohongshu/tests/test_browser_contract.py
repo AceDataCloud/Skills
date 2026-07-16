@@ -15,12 +15,15 @@ EXPECTED_CAPABILITIES = {
     "read_page",
     "screenshot",
     "navigate",
+    "trusted_input",
 }
 DEPLOYED_BROWSER_TOOLS = {
     "browser.read_page",
     "browser.navigate",
     "browser.click",
     "browser.form_input",
+    "browser.file_upload",
+    "browser.clear_cookies",
     "browser.key",
     "browser.scroll",
     "browser.wait",
@@ -74,7 +77,7 @@ def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
     assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "tests"}
 
 
-def test_browser_skill_matches_manual_attach_read_only_runtime() -> None:
+def test_browser_skill_matches_complete_local_runtime() -> None:
     text = SKILL.read_text(encoding="utf-8").casefold()
     mentioned_tools = set(re.findall(r"`(browser\.[a-z_]+)`", text))
 
@@ -84,10 +87,22 @@ def test_browser_skill_matches_manual_attach_read_only_runtime() -> None:
     assert "browser.attach_tab" not in text
     assert "local account attestation" not in text
     assert "do not claim cryptographic xiaohongshu account attestation" in text
-    assert "does not bind an exact target, value, account context, preview, or page generation" in text
-    assert "do not publish, draft, comment, reply, like, unlike, favorite, unfavorite" in text
-    assert "trusted_input" not in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
-    assert "semantic reconciliation" in text
-    assert "before retry" in text
+    assert "browser.file_upload" in mentioned_tools
+    assert "browser.clear_cookies" in mentioned_tools
+    assert "reset the local xiaohongshu login" in text
+    assert "trusted_input" in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
+    assert "publish image, video, or long-article notes" in text
+    assert "long articles" in text
+    assert "schedule" in text
+    assert "original-content declaration" in text
+    assert "visibility" in text
+    assert "products" in text
+    assert "search and filters" in text
+    assert "note details and comments" in text
+    assert "user profile" in text
+    assert "like and favorite" in text
+    assert "comment" in text and "reply" in text
+    assert "content planning" in text
+    assert "reconciliation after uncertainty" in text
     assert "stop on warning" in text
-    assert "no local file upload capability" in text
+    assert "explicit confirmation" in text
