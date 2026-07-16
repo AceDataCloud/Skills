@@ -16,6 +16,8 @@ EXPECTED_CAPABILITIES = {
     "screenshot",
     "navigate",
     "trusted_input",
+    "file_upload",
+    "clear_cookies",
 }
 DEPLOYED_BROWSER_TOOLS = {
     "browser.read_page",
@@ -82,6 +84,7 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     mentioned_tools = set(re.findall(r"`(browser\.[a-z_]+)`", text))
 
     assert "attach current tab" in text
+    assert "pair new" in text
     assert mentioned_tools <= DEPLOYED_BROWSER_TOOLS
     assert "browser.tabs_context" not in text
     assert "browser.attach_tab" not in text
@@ -89,7 +92,11 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "do not claim cryptographic xiaohongshu account attestation" in text
     assert "browser.file_upload" in mentioned_tools
     assert "browser.clear_cookies" in mentioned_tools
-    assert "reset the local xiaohongshu login" in text
+    assert "explicitly asks to reset" in text
+    assert "attached exact origin" in text
+    assert "never extract or return cookie values" in text
+    assert "ask the user to open the creator page" in text
+    assert "ace data cloud cdn" in text
     assert "trusted_input" in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
     assert "publish image, video, or long-article notes" in text
     assert "long articles" in text
