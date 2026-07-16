@@ -1,6 +1,11 @@
 ---
 name: xiaohongshu
-description: Use the user's locally connected browser for complete Xiaohongshu / RED workflows: login, recommendations, filtered search, note/comment/profile inspection, content planning, image/video/long-article publishing, scheduling, product binding, comments/replies, likes, and favorites. Every account write runs only in the attached local tab with one-time local approval and stops on platform warnings.
+description: |
+  Use the user's locally connected browser for complete Xiaohongshu / RED workflows:
+  login, recommendations, filtered search, note/comment/profile inspection, content
+  planning, image/video/long-article publishing, scheduling, product binding,
+  comments/replies, likes, and favorites. Every account write runs only in the
+  attached local tab with one-time local approval and stops on platform warnings.
 when_to_use: |
   Trigger whenever the user asks to use Xiaohongshu / RED: log in or switch account,
   browse recommendations, search notes, inspect a note/comment/profile, analyze content,

@@ -56,6 +56,13 @@ def _nested_list(frontmatter: str, key: str) -> set[str]:
 def test_browser_execution_frontmatter_contract() -> None:
     frontmatter = _frontmatter(SKILL.read_text(encoding="utf-8"))
 
+    assert re.search(r"^name: xiaohongshu$", frontmatter, re.MULTILINE)
+    assert re.search(
+        r"^description: \|\n(?:  .+\n)+when_to_use: \|$",
+        frontmatter,
+        re.MULTILINE,
+    )
+    assert "  Use the user's locally connected browser for complete Xiaohongshu / RED workflows:" in frontmatter
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
