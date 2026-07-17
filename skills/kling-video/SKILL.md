@@ -172,7 +172,7 @@ POST /kling/talking-photo
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
-| `camera_control` | object | Camera movement parameters |
+| `camera_control` | object | Camera movement — `type` (enum: `simple`, `down_back`, `forward_up`, `left_turn_forward`, `right_turn_forward`) and `config` (map of axis names to numbers −1–1) |
 | `image_list` | array | Omni reference images for `kling-o1` / `kling-v3-omni`; each item has `image_url` and optional `type` (`first_frame` / `end_frame`). Up to 7 images without a reference video, or 4 with one, including first/end frames |
 | `video_list` | array | One MP4/MOV Omni reference video for `kling-o1` / `kling-v3-omni` (3–10s, 720–2160px, 24–60fps, ≤200MB); item has `video_url`, `refer_type` (`feature` / `base`), and `keep_original_sound` (`yes` / `no`) |
 | `callback_url` | string | Async callback URL |

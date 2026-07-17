@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 2 Fast, Veo 3, and Veo 3.1 models including fast and ingredient variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 3 and Veo 3.1 models including fast and ingredient variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -37,7 +37,6 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 
 | Model | Audio | Best For |
 |-------|-------|----------|
-| `veo2-fast` | No | Fast, cost-effective generation (default) |
 | `veo3` | Yes (native) | Full audiovisual generation |
 | `veo3-fast` | Yes (native) | Faster audiovisual generation |
 | `veo31` | Yes (native) | Veo 3.1, highest quality |
@@ -68,7 +67,7 @@ POST /veo/videos
   "action": "image2video",
   "prompt": "the scene gently comes to life with wind and subtle motion",
   "image_urls": ["https://example.com/landscape.jpg"],
-  "model": "veo2-fast",
+  "model": "veo3-fast",
   "aspect_ratio": "16:9"
 }
 ```
@@ -107,7 +106,7 @@ POST /veo/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
-| `model` | see Models table | Model to use (default: `veo2-fast`) |
+| `model` | see Models table | Model to use (default: `veo3-fast`) |
 | `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
 | `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
@@ -205,7 +204,7 @@ POST /veo/objects
 
 ## Gotchas
 
-- Veo 3 and 3.1 models generate **native audio** — `veo2-fast` does NOT support audio
+- All current Veo models generate **native audio**
 - The `get1080p` action uses `video_id` (from a prior generation), not a URL
 - `aspect_ratio` is **only valid** for the `image2video` action
 - `image_urls` accepts an array — up to 2 images for `image2video`, up to 3 for `ingredients2video`
