@@ -62,6 +62,7 @@ def test_browser_execution_frontmatter_contract() -> None:
     )
     assert "  Use the user's locally connected browser for complete Xiaohongshu / RED workflows:" in frontmatter
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
+    assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
     assert not re.search(r"^allowed_tools:.*\bBash\b", frontmatter, re.MULTILINE)

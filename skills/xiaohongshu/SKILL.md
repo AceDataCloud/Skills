@@ -15,6 +15,7 @@ when_to_use: |
 connections: [xiaohongshu]
 execution:
   browser:
+    provider: xiaohongshu/xiaohongshu
     origins:
       - https://www.xiaohongshu.com
       - https://creator.xiaohongshu.com
