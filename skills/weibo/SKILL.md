@@ -12,6 +12,8 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
+  connection_method_preferences:
+    weibo/weibo: [cookie]
 ---
 
 # weibo — read & post on 微博 via your own cookies

@@ -13,6 +13,8 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "2.0"
+  connection_method_preferences:
+    reddit/reddit: [oauth, cookie]
 ---
 
 # Reddit — OAuth or login-cookie access
@@ -24,7 +26,7 @@ The connector injects exactly one of these credentials:
   echo, print, log or return it.**
 - `REDDIT_TOKEN`: official OAuth bearer token (`identity read submit`).
 
-The helper automatically prefers Cookie when present and otherwise uses OAuth.
+The helper automatically prefers official OAuth when present and otherwise uses Cookie.
 It sends Reddit's required descriptive User-Agent and never forwards cookies
 outside `reddit.com`.
 

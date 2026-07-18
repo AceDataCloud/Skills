@@ -3,7 +3,7 @@
 
 Cookie mode uses Reddit's first-party web JSON endpoints and the ``modhash``
 returned by ``/api/me.json``. OAuth mode uses ``oauth.reddit.com``. The helper
-automatically selects ``REDDIT_COOKIES`` first, then ``REDDIT_TOKEN``.
+automatically selects ``REDDIT_TOKEN`` first, then ``REDDIT_COOKIES``.
 
 State-changing commands are dry-runs unless ``--confirm`` is the final argv
 token. Credentials, cookie values and modhashes are never emitted.
@@ -241,14 +241,14 @@ class RedditClient:
 
     @classmethod
     def from_environment(cls) -> "RedditClient":
-        raw_cookies = os.environ.get("REDDIT_COOKIES", "").strip()
-        if raw_cookies:
-            return cls("cookie", cookies=parse_cookie_jar(raw_cookies))
         token = os.environ.get("REDDIT_TOKEN", "").strip()
         if token:
             if "\r" in token or "\n" in token:
                 die("REDDIT_TOKEN contains invalid characters")
             return cls("oauth", token=token)
+        raw_cookies = os.environ.get("REDDIT_COOKIES", "").strip()
+        if raw_cookies:
+            return cls("cookie", cookies=parse_cookie_jar(raw_cookies))
         die(
             "No Reddit credential is available — connect Reddit with Cookie or OAuth at "
             "https://auth.acedata.cloud/user/connections."
