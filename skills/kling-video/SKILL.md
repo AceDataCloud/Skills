@@ -123,6 +123,8 @@ Apply precise camera/motion control from an image + reference video.
 ```json
 POST /kling/motion
 {
+  "mode": "std",
+  "character_orientation": "image",
   "image_url": "https://example.com/subject.jpg",
   "video_url": "https://example.com/motion-reference.mp4"
 }
@@ -191,6 +193,16 @@ POST /kling/talking-photo
 | `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model |
 | `duration` (`/kling/talking-photo`) | `5`, `10` | Talking-photo duration |
 | `mode` (`/kling/talking-photo`) | `"std"`, `"pro"` | Talking-photo quality mode |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion endpoint model (default `kling-v2-6`) |
+| `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion endpoint quality mode |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Keep or mute the reference video's original audio (default `yes`) |
+| `watermark_info` (`/kling/motion`) | object | Watermark toggle object: `{ "enabled": true|false }` |
+| `image_url` (`/kling/motion`) | URL | Source image for motion transfer |
+| `video_url` (`/kling/motion`) | URL | Reference motion video |
+| `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Whether orientation is taken from the image or reference video |
+| `prompt` (`/kling/motion`) | string | Optional motion guidance text |
+| `callback_url` (`/kling/motion`) | string | Async callback URL for motion tasks |
+| `async` (`/kling/motion`) | `true`, `false` | Return task immediately and poll via `/kling/tasks` |
 
 ## Gotchas
 
