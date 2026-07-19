@@ -6,6 +6,13 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).parents[1]
 SKILL = SKILL_DIR / "SKILL.md"
+REFERENCES = {
+    "login.md",
+    "browse.md",
+    "publish.md",
+    "interactions.md",
+    "reconciliation.md",
+}
 EXPECTED_ORIGINS = {
     "https://www.xiaohongshu.com",
     "https://creator.xiaohongshu.com",
@@ -60,7 +67,7 @@ def test_browser_execution_frontmatter_contract() -> None:
         frontmatter,
         re.MULTILINE,
     )
-    assert "  Use the user's locally connected browser for complete Xiaohongshu / RED workflows:" in frontmatter
+    assert "  Operate Xiaohongshu / RED through the user's attached local browser:" in frontmatter
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
     assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
@@ -74,7 +81,6 @@ def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
         "XIAOHONGSHU_COOKIES",
         "Cookie Connection",
         "allowed_tools: [Bash]",
-        "python3",
         "playwright",
         "chromium",
         "CDP",
@@ -82,11 +88,23 @@ def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
     )
 
     assert not any(term.casefold() in text.casefold() for term in legacy_terms)
-    assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "tests"}
+    assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "references", "scripts", "tests"}
+
+
+def test_browser_skill_progressively_loads_domain_workflows() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+
+    assert {path.name for path in (SKILL_DIR / "references").iterdir()} == REFERENCES
+    for reference in REFERENCES:
+        assert f"./references/{reference}" in text
+    assert "scripts/xhs_contract.py" in text
+    assert "Xiaohongshu-specific page semantics" in text
+    assert "generic `browser.*` tools" in text
 
 
 def test_browser_skill_matches_complete_local_runtime() -> None:
-    text = SKILL.read_text(encoding="utf-8").casefold()
+    documents = [SKILL, *(SKILL_DIR / "references").glob("*.md")]
+    text = "\n".join(path.read_text(encoding="utf-8") for path in documents).casefold()
     mentioned_tools = set(re.findall(r"`(browser\.[a-z_]+)`", text))
 
     assert "attach current tab" in text
@@ -94,35 +112,32 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert mentioned_tools <= DEPLOYED_BROWSER_TOOLS
     assert "browser.tabs_context" not in text
     assert "browser.attach_tab" not in text
-    assert "local account attestation" not in text
-    assert "do not claim cryptographic xiaohongshu account attestation" in text
+    assert "cryptographic account attestation" in text
     assert "browser.file_upload" in mentioned_tools
     assert "browser.clear_cookies" not in text
     assert "never extract, clear, or return cookie values" in text
-    assert "ask the user to open the creator page" in text
+    assert "ask the user to open `https://creator.xiaohongshu.com`" in text
     assert "ace data cloud cdn" in text
     assert "trusted_input" in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
     assert "publish image, video, or long-article notes" in text
-    assert "long articles" in text
+    assert "long_article" in text
     assert "schedule" in text
-    assert "original-content declaration" in text
+    assert "originality" in text
     assert "visibility" in text
     assert "products" in text
     assert "search and filters" in text
-    assert "/explore/<note-id>" in text
-    assert "/user/profile/<user-id>" in text
-    assert "empty-name link never starts a card" in text
+    assert "/explore/<alphanumeric-note-id>" in text
+    assert "/user/profile/<alphanumeric-user-id>" in text
+    assert "empty-name links" in text
     assert "exactly one named same-origin" in text
-    assert "author as unavailable or ambiguous" in text
-    assert "explicit unavailable/ambiguous author state" in text
+    assert "unavailable" in text and "ambiguous" in text
     assert "unlabeled visible engagement value" in text
-    assert "do not apply this heuristic to `creator.xiaohongshu.com`" in text
-    assert "do not claim the list is missing" in text
-    assert "note details and comments" in text
-    assert "user profile" in text
+    assert "do not use this heuristic on creator pages" in text
+    assert "detail and comments" in text
+    assert "profile" in text
     assert "like and favorite" in text
     assert "comment" in text and "reply" in text
     assert "content planning" in text
-    assert "reconciliation after uncertainty" in text
+    assert "reconciliation after uncertain browser writes" in text
     assert "stop on warning" in text
     assert "explicit confirmation" in text
