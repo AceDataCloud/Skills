@@ -23,12 +23,14 @@ EXPECTED_CAPABILITIES = {
     "screenshot",
     "navigate",
     "trusted_input",
+    "click_at",
     "file_upload",
 }
 DEPLOYED_BROWSER_TOOLS = {
     "browser.read_page",
     "browser.navigate",
     "browser.click",
+    "browser.click_at",
     "browser.form_input",
     "browser.file_upload",
     "browser.key",
@@ -114,6 +116,9 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "browser.attach_tab" not in text
     assert "cryptographic account attestation" in text
     assert "browser.file_upload" in mentioned_tools
+    assert "browser.click_at" in mentioned_tools
+    assert "normalized viewport coordinates" in text
+    assert "never infer coordinates from memory" in text
     assert "browser.clear_cookies" not in text
     assert "never extract, clear, or return cookie values" in text
     assert "ask the user to open `https://creator.xiaohongshu.com`" in text

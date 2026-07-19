@@ -26,7 +26,13 @@ Show the exact normalized preview: post type, title, full body, tags, media name
 5. Fill title/body using fresh refs. For rich-text editors, read immediately after input; if the exact value is not visible, stop rather than repeatedly injecting it.
 6. Add tags/topics, template/layout, products, visibility, originality, and schedule one at a time. Read and verify each state.
 7. Before the final action, read again and compare every visible field with the confirmed preview. Stop on mismatch.
-8. Click Publish/Schedule exactly once after the final local approval.
+8. Prefer a fresh semantic ref for Publish/Schedule. If the visible control has no semantic ref, capture a fresh screenshot and use `browser.click_at` only when all of these are true:
+	- the screenshot visibly shows one unambiguous Publish/Schedule control;
+	- its center can be expressed as normalized viewport coordinates (`x`, `y` from 0 to 1000);
+	- no navigation, scroll, resize, modal, or page update occurred after the screenshot;
+	- the exact confirmed preview still matches the current draft;
+	- explicit chat confirmation for this final publish is still current.
+	Never infer coordinates from memory, DOM classes, a prior screenshot, or a different viewport. Click exactly once.
 9. Follow [reconciliation](./reconciliation.md). Report success only from a visible success state or destination, and include the canonical URL when available.
 
 Never mix image/video media unless the visible current UI explicitly supports it. Bind products only when the account visibly exposes the feature and the exact selected products appear in the final preview.
