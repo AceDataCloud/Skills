@@ -202,7 +202,7 @@ def test_parse_note_fixture() -> None:
     assert result["title"] == "示例笔记"
     assert result["author_state"] == "available"
     assert result["profile_url"] == "https://www.xiaohongshu.com/user/profile/user123"
-    assert result["visible_engagement"] == ["128"]
+    assert result["visible_engagement"] == ["赞：128"]
     assert result["comments"] == ["示例评论"]
 
 
@@ -228,6 +228,32 @@ def test_parse_note_ignores_generic_list_items_before_author() -> None:
     assert result["comments"] == []
 
 
+def test_parse_note_refuses_to_guess_between_pre_comment_profiles() -> None:
+    snapshot = {
+        "origin": "https://www.xiaohongshu.com",
+        "nodes": [
+            {"role": "heading", "name": "示例笔记"},
+            {
+                "role": "link",
+                "name": "赞过的人",
+                "href": "https://www.xiaohongshu.com/user/profile/liker999",
+            },
+            {
+                "role": "link",
+                "name": "示例作者",
+                "href": "https://www.xiaohongshu.com/user/profile/user123",
+            },
+        ],
+    }
+
+    result = xhs_contract.parse_note_snapshot(
+        snapshot, "https://www.xiaohongshu.com/explore/abc123"
+    )
+
+    assert result["author"] is None
+    assert result["author_state"] == "ambiguous"
+
+
 def test_parse_profile_fixture() -> None:
     fixture = Path(__file__).parent / "fixtures" / "profile.json"
     result = xhs_contract.parse_profile_snapshot(
@@ -238,6 +264,7 @@ def test_parse_profile_fixture() -> None:
     assert result["canonical_url"] == "https://www.xiaohongshu.com/user/profile/user123"
     assert result["display_name"] == "示例作者"
     assert result["visible_metrics"] == ["粉丝 128"]
+    assert result["visible_counts"] == ["999", "5678"]
     assert result["notes"] == [
         {"note_id": "abc123", "title": "最近笔记", "url": "https://www.xiaohongshu.com/explore/abc123"}
     ]

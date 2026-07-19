@@ -27,6 +27,7 @@ PROFILE_PATH = re.compile(r"^/user/profile/([A-Za-z0-9]+)$")
 TITLE_UNIT = re.compile(r"[\u3400-\u9fff]|[A-Za-z0-9]+")
 COUNT_VALUE = re.compile(r"^(\d+(?:\.\d+)?)([万千]?)$")
 PROFILE_METRIC = re.compile(r"^(关注|粉丝|获赞与收藏|获赞|收藏)\s*([\d,.]+(?:万|千|w|W|k|K)?)$")
+ENGAGEMENT_METRIC = re.compile(r"^(赞|点赞|收藏|评论|分享)\s*[:：]?\s*([\d,.]+(?:万|千|w|W|k|K)?)$")
 
 
 class ContractError(ValueError):
@@ -239,7 +240,9 @@ def _visible_counts(nodes: List[Dict]) -> List[str]:
     values = []
     for node in nodes:
         name = _named_text(node)
-        if node.get("role") in {"button", "section"} and COUNT_VALUE.fullmatch(name):
+        if node.get("role") in {"button", "section"} and (
+            COUNT_VALUE.fullmatch(name) or ENGAGEMENT_METRIC.fullmatch(name)
+        ):
             values.append(name)
     return values
 
@@ -292,10 +295,13 @@ def parse_profile_snapshot(snapshot: dict, profile_url: str) -> dict:
     notes = []
     seen = set()
     metrics = []
+    counts = []
     for node in nodes:
         name = _named_text(node)
         if node.get("role") == "section" and PROFILE_METRIC.fullmatch(name):
             metrics.append(name)
+        elif node.get("role") in {"button", "section"} and COUNT_VALUE.fullmatch(name):
+            counts.append(name)
         note = _path_match(node.get("href"), NOTE_PATH)
         if note and name and note.group(1) not in seen:
             seen.add(note.group(1))
@@ -305,6 +311,7 @@ def parse_profile_snapshot(snapshot: dict, profile_url: str) -> dict:
         "canonical_url": canonical_url,
         "display_name": _first_named(nodes, {"heading"}),
         "visible_metrics": metrics,
+        "visible_counts": counts,
         "notes": notes,
         "truncated": bool(snapshot.get("truncated", False)),
     }

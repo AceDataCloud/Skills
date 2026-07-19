@@ -4,8 +4,9 @@
     {"role": "heading", "name": "示例笔记"},
     {"role": "link", "name": "示例作者", "href": "https://www.xiaohongshu.com/user/profile/user123"},
     {"role": "article", "name": "这是脱敏后的示例正文"},
-    {"role": "button", "name": "128"},
+    {"role": "button", "name": "赞：128"},
     {"role": "comment", "name": "示例评论"},
+    {"role": "link", "name": "赞过的人", "href": "https://www.xiaohongshu.com/user/profile/liker999"},
     {"role": "link", "name": "评论者", "href": "https://www.xiaohongshu.com/user/profile/commenter456"}
   ],
   "truncated": false
