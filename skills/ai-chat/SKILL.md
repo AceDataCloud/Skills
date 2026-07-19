@@ -62,7 +62,7 @@ models include:
 | Gemini | `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-image-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
 | Grok | `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp`, `deepseek-v4-flash` |
-| Kimi | `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking`, `kimi-k2-instruct-0905`, `kimi-k2-0905-preview`, `kimi-k2-turbo-preview`, `kimi-k2-0711-preview` |
+| Kimi | `kimi-k3`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking`, `kimi-k2-instruct-0905`, `kimi-k2-0905-preview`, `kimi-k2-turbo-preview`, `kimi-k2-0711-preview` |
 | GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 
 `/aichat2/conversations` also accepts `model_group` values
