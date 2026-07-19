@@ -1,0 +1,27 @@
+{
+  "kind": "untrusted_observation",
+  "url": "https://www.xiaohongshu.com/explore",
+  "origin": "https://www.xiaohongshu.com",
+  "title": "小红书",
+  "nodes": [
+    {
+      "ref": "r_note_1",
+      "role": "link",
+      "name": "周末城市漫步",
+      "href": "https://www.xiaohongshu.com/explore/abc123"
+    },
+    {
+      "ref": "r_author_1",
+      "role": "link",
+      "name": "示例作者",
+      "href": "https://www.xiaohongshu.com/user/profile/user123"
+    },
+    {
+      "ref": "r_engagement_1",
+      "role": "button",
+      "name": "128"
+    }
+  ],
+  "truncated": false,
+  "bytes": 512
+}
