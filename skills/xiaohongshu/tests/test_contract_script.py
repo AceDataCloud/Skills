@@ -189,3 +189,55 @@ def test_sanitized_home_fixture_matches_parser_contract() -> None:
         ],
         "truncated": False,
     }
+
+
+def test_parse_note_fixture() -> None:
+    fixture = Path(__file__).parent / "fixtures" / "note.json"
+    result = xhs_contract.parse_note_snapshot(
+        json.loads(fixture.read_text(encoding="utf-8")),
+        "https://www.xiaohongshu.com/explore/abc123?tracking=removed",
+    )
+
+    assert result["canonical_url"] == "https://www.xiaohongshu.com/explore/abc123"
+    assert result["title"] == "示例笔记"
+    assert result["author_state"] == "available"
+    assert result["profile_url"] == "https://www.xiaohongshu.com/user/profile/user123"
+    assert result["visible_engagement"] == ["128"]
+    assert result["comments"] == ["示例评论"]
+
+
+def test_parse_note_ignores_generic_list_items_before_author() -> None:
+    snapshot = {
+        "origin": "https://www.xiaohongshu.com",
+        "nodes": [
+            {"role": "heading", "name": "示例笔记"},
+            {"role": "listitem", "name": "导航项"},
+            {
+                "role": "link",
+                "name": "示例作者",
+                "href": "https://www.xiaohongshu.com/user/profile/user123",
+            },
+        ],
+    }
+
+    result = xhs_contract.parse_note_snapshot(
+        snapshot, "https://www.xiaohongshu.com/explore/abc123"
+    )
+
+    assert result["author_state"] == "available"
+    assert result["comments"] == []
+
+
+def test_parse_profile_fixture() -> None:
+    fixture = Path(__file__).parent / "fixtures" / "profile.json"
+    result = xhs_contract.parse_profile_snapshot(
+        json.loads(fixture.read_text(encoding="utf-8")),
+        "https://www.xiaohongshu.com/user/profile/user123?tracking=removed",
+    )
+
+    assert result["canonical_url"] == "https://www.xiaohongshu.com/user/profile/user123"
+    assert result["display_name"] == "示例作者"
+    assert result["visible_metrics"] == ["粉丝 128"]
+    assert result["notes"] == [
+        {"note_id": "abc123", "title": "最近笔记", "url": "https://www.xiaohongshu.com/explore/abc123"}
+    ]

@@ -70,6 +70,8 @@ The helper is deterministic and has no network or browser access. Pass JSON thro
 - `validate-publish`: validate and normalize a publish preview.
 - `normalize-filters`: validate and normalize search filters.
 - `parse-feed-snapshot`: convert a `www.xiaohongshu.com` semantic snapshot into bounded note cards.
+- `parse-note-snapshot --note-url <url>`: normalize one visible note detail snapshot.
+- `parse-profile-snapshot --profile-url <url>`: normalize one visible profile snapshot.
 
 ## Completion rules
 

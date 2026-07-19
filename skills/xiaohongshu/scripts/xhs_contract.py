@@ -8,7 +8,7 @@ import json
 import re
 import sys
 from datetime import datetime, timedelta, timezone
-from typing import Match, Optional, Pattern
+from typing import Dict, List, Match, Optional, Pattern, Set
 from urllib.parse import urlparse
 
 
@@ -25,6 +25,8 @@ MAX_MEDIA = 20
 NOTE_PATH = re.compile(r"^/explore/([A-Za-z0-9]+)$")
 PROFILE_PATH = re.compile(r"^/user/profile/([A-Za-z0-9]+)$")
 TITLE_UNIT = re.compile(r"[\u3400-\u9fff]|[A-Za-z0-9]+")
+COUNT_VALUE = re.compile(r"^(\d+(?:\.\d+)?)([万千]?)$")
+PROFILE_METRIC = re.compile(r"^(关注|粉丝|获赞与收藏|获赞|收藏)\s*([\d,.]+(?:万|千|w|W|k|K)?)$")
 
 
 class ContractError(ValueError):
@@ -211,9 +213,117 @@ def parse_feed_snapshot(snapshot: dict) -> dict:
     return {"notes": notes, "truncated": bool(snapshot.get("truncated", False))}
 
 
+def _valid_nodes(snapshot: dict, origin: str) -> List[Dict]:
+    if snapshot.get("origin") != origin:
+        raise ContractError(f"snapshot requires the {origin} origin")
+    nodes = snapshot.get("nodes")
+    if not isinstance(nodes, list):
+        raise ContractError("snapshot nodes must be an array")
+    return [node for node in nodes if isinstance(node, dict)]
+
+
+def _named_text(node: Dict) -> str:
+    name = node.get("name")
+    return name.strip() if isinstance(name, str) else ""
+
+
+def _first_named(nodes: List[Dict], roles: Set[str]) -> Optional[str]:
+    for node in nodes:
+        name = _named_text(node)
+        if name and node.get("role") in roles:
+            return name
+    return None
+
+
+def _visible_counts(nodes: List[Dict]) -> List[str]:
+    values = []
+    for node in nodes:
+        name = _named_text(node)
+        if node.get("role") in {"button", "section"} and COUNT_VALUE.fullmatch(name):
+            values.append(name)
+    return values
+
+
+def parse_note_snapshot(snapshot: dict, note_url: str) -> dict:
+    nodes = _valid_nodes(snapshot, "https://www.xiaohongshu.com")
+    match = _path_match(note_url, NOTE_PATH)
+    if not match:
+        raise ContractError("note_url must be a canonical Xiaohongshu explore URL")
+    canonical_url = f"https://www.xiaohongshu.com/explore/{match.group(1)}"
+    profiles = []
+    comments = []
+    content_parts = []
+    comments_started = False
+    for node in nodes:
+        name = _named_text(node)
+        if not name:
+            continue
+        if node.get("role") == "comment":
+            comments_started = True
+            comments.append(name)
+            continue
+        profile = _path_match(node.get("href"), PROFILE_PATH)
+        if profile and not comments_started:
+            profiles.append({"user_id": profile.group(1), "name": name, "url": f"https://www.xiaohongshu.com/user/profile/{profile.group(1)}"})
+        if node.get("role") in {"article", "paragraph", "p"}:
+            content_parts.append(name)
+    unique_profiles = {item["url"]: item for item in profiles}
+    author = next(iter(unique_profiles.values())) if len(unique_profiles) == 1 else None
+    return {
+        "note_id": match.group(1),
+        "canonical_url": canonical_url,
+        "title": _first_named(nodes, {"heading"}),
+        "author": author,
+        "author_state": "available" if author else ("unavailable" if not unique_profiles else "ambiguous"),
+        "profile_url": author["url"] if author else None,
+        "content": content_parts,
+        "visible_engagement": _visible_counts(nodes),
+        "comments": comments,
+        "truncated": bool(snapshot.get("truncated", False)),
+    }
+
+
+def parse_profile_snapshot(snapshot: dict, profile_url: str) -> dict:
+    nodes = _valid_nodes(snapshot, "https://www.xiaohongshu.com")
+    match = _path_match(profile_url, PROFILE_PATH)
+    if not match:
+        raise ContractError("profile_url must be a canonical Xiaohongshu profile URL")
+    canonical_url = f"https://www.xiaohongshu.com/user/profile/{match.group(1)}"
+    notes = []
+    seen = set()
+    metrics = []
+    for node in nodes:
+        name = _named_text(node)
+        if node.get("role") == "section" and PROFILE_METRIC.fullmatch(name):
+            metrics.append(name)
+        note = _path_match(node.get("href"), NOTE_PATH)
+        if note and name and note.group(1) not in seen:
+            seen.add(note.group(1))
+            notes.append({"note_id": note.group(1), "title": name, "url": f"https://www.xiaohongshu.com/explore/{note.group(1)}"})
+    return {
+        "user_id": match.group(1),
+        "canonical_url": canonical_url,
+        "display_name": _first_named(nodes, {"heading"}),
+        "visible_metrics": metrics,
+        "notes": notes,
+        "truncated": bool(snapshot.get("truncated", False)),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("validate-publish", "normalize-filters", "parse-feed-snapshot"))
+    parser.add_argument(
+        "command",
+        choices=(
+            "validate-publish",
+            "normalize-filters",
+            "parse-feed-snapshot",
+            "parse-note-snapshot",
+            "parse-profile-snapshot",
+        ),
+    )
+    parser.add_argument("--note-url")
+    parser.add_argument("--profile-url")
     args = parser.parse_args()
     try:
         payload = _read_json()
@@ -221,8 +331,16 @@ def main() -> None:
             result = validate_publish(payload)
         elif args.command == "normalize-filters":
             result = normalize_filters(payload)
-        else:
+        elif args.command == "parse-feed-snapshot":
             result = parse_feed_snapshot(payload)
+        elif args.command == "parse-note-snapshot":
+            if not args.note_url:
+                raise ContractError("--note-url is required")
+            result = parse_note_snapshot(payload, args.note_url)
+        else:
+            if not args.profile_url:
+                raise ContractError("--profile-url is required")
+            result = parse_profile_snapshot(payload, args.profile_url)
     except ContractError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
         raise SystemExit(2) from exc
