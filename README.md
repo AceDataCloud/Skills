@@ -41,6 +41,9 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [grok-video](skills/grok-video/) | Generate videos with Grok (xAI) |
+| [dreamina-video](skills/dreamina-video/) | Animate portrait images with audio using Dreamina |
+| [wan-video](skills/wan-video/) | Generate videos with Alibaba Wan |
 | [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
 
 ### AI Chat & Tools
@@ -217,6 +220,8 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
+| grok-video | [mcp-grok-video](https://pypi.org/project/mcp-grok-video/) | `pip install mcp-grok-video` | `https://grok-video.mcp.acedata.cloud/mcp` |
+| dreamina-video | [mcp-dreamina](https://pypi.org/project/mcp-dreamina/) | `pip install mcp-dreamina` | `https://dreamina.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
 
 **Using hosted MCP endpoints** (no local install needed):
