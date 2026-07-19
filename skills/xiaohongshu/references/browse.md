@@ -34,7 +34,7 @@ Pass the final semantic snapshot to `parse-note-snapshot --note-url <canonical-u
 
 Open the fresh author link from a result/detail page. Return visible profile text, followers/following/engagement totals, and bounded recent notes. Do not expose unrelated private account data.
 
-Pass the final semantic snapshot to `parse-profile-snapshot --profile-url <canonical-url>` before reporting structured profile data. Report only explicitly labeled profile metrics; never reinterpret unrelated page numbers as followers, following, likes, or favorites.
+Pass the final semantic snapshot to `parse-profile-snapshot --profile-url <canonical-url>` before reporting structured profile data. `visible_metrics` contains explicitly labeled profile metrics. Preserve `visible_counts` separately as unlabeled page counters; never reinterpret them as followers, following, likes, or favorites.
 
 ## Content planning
 

@@ -202,7 +202,7 @@ def test_parse_note_fixture() -> None:
     assert result["title"] == "示例笔记"
     assert result["author_state"] == "available"
     assert result["profile_url"] == "https://www.xiaohongshu.com/user/profile/user123"
-    assert result["visible_engagement"] == ["128"]
+    assert result["visible_engagement"] == ["赞：128"]
     assert result["comments"] == ["示例评论"]
 
 
@@ -238,6 +238,7 @@ def test_parse_profile_fixture() -> None:
     assert result["canonical_url"] == "https://www.xiaohongshu.com/user/profile/user123"
     assert result["display_name"] == "示例作者"
     assert result["visible_metrics"] == ["粉丝 128"]
+    assert result["visible_counts"] == ["999", "5678"]
     assert result["notes"] == [
         {"note_id": "abc123", "title": "最近笔记", "url": "https://www.xiaohongshu.com/explore/abc123"}
     ]
