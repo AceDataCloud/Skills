@@ -17,7 +17,7 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | seedance-video | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | happyhorse-video | `pip install mcp-happyhorse` | `https://happyhorse.mcp.acedata.cloud/mcp` |
 | maestro-video | `pip install mcp-maestro` | `https://maestro.mcp.acedata.cloud/mcp` |
-| nano-banana-image | `pip install mcp-nano-banana` | `https://nano-banana.mcp.acedata.cloud/mcp` |
+| nano-banana-image | `pip install mcp-nano-banana` | `https://nanobanana.mcp.acedata.cloud/mcp` |
 | short-url | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
