@@ -105,7 +105,7 @@ POST /dreamina/tasks
 | `audio_url` | Yes | string | URL of the audio file to drive the animation |
 | `model` | No | `"omnihuman-1.5"` | Model to use (default: `omnihuman-1.5`) |
 | `prompt` | No | string | Text description to guide expression and motion |
-| `mask_url` | No | array of strings | Mask image URLs to restrict animated region |
+| `mask_url` | No | array of strings | Array of mask image URLs; white pixels indicate the animated region (named singular per API convention but accepts an array) |
 | `callback_url` | No | string | Webhook URL for async delivery |
 | `async` | No | boolean | Return a `task_id` immediately and process asynchronously |
 

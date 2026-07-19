@@ -105,7 +105,7 @@ POST /grok/tasks
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `prompt` | No | string | Text description of the video to generate |
+| `prompt` | Conditionally | string | Text description of the video to generate (required for text-to-video when `image_url` is not provided) |
 | `model` | No | `"grok-imagine-video"`, `"grok-imagine-video-1.5-preview"` | Model (default: `grok-imagine-video`) |
 | `image_url` | No | string | Source image URL for image-to-video |
 | `reference_image_urls` | No | array of strings | Additional reference image URLs for style/content guidance |
