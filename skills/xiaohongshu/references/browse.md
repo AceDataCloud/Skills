@@ -28,9 +28,13 @@ Read the attached home/recommendation page. Scroll in bounded steps and read aft
 
 Open a note from its fresh result ref or same-origin canonical URL. Read visible text, media labels, author, engagement, and the first visible comment batch. For more comments/replies, expand and scroll in bounded batches, reading after every transition and stopping at the requested limit. This is not a guaranteed full-comment export.
 
+Pass the final semantic snapshot to `parse-note-snapshot --note-url <canonical-url>`. Preserve missing, ambiguous, and truncated states instead of filling absent fields. Only nodes with an explicit `comment` role are returned as structured comments; generic list items are never assumed to be comments.
+
 ## Profile
 
 Open the fresh author link from a result/detail page. Return visible profile text, followers/following/engagement totals, and bounded recent notes. Do not expose unrelated private account data.
+
+Pass the final semantic snapshot to `parse-profile-snapshot --profile-url <canonical-url>` before reporting structured profile data. Report only explicitly labeled profile metrics; never reinterpret unrelated page numbers as followers, following, likes, or favorites.
 
 ## Content planning
 

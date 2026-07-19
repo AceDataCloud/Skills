@@ -1,0 +1,11 @@
+{
+  "origin": "https://www.xiaohongshu.com",
+  "nodes": [
+    {"role": "heading", "name": "示例作者"},
+    {"role": "section", "name": "粉丝 128"},
+    {"role": "section", "name": "999"},
+    {"role": "link", "name": "最近笔记", "href": "https://www.xiaohongshu.com/explore/abc123?source=profile"},
+    {"role": "button", "name": "5678"}
+  ],
+  "truncated": false
+}
