@@ -44,13 +44,14 @@ python3 -c "import twikit" || { echo "sandbox missing twikit; deploy the sandbox
 # script (re-run this setup at the top of every fresh-shell Bash block below).
 X="$SKILL_DIR/scripts/x.py"; [ -f "$X" ] || X=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/x.py' 2>/dev/null | head -1)
 [ -f "$X" ] || { echo "x script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
-python3 "$X" whoami          # who is logged in
+python3 "$X" whoami          # confirm the shipped CLI can read the authenticated account
 ```
 
 ## Read commands (run directly)
 
 ```sh
-python3 $X whoami                                            # the logged-in account
+python3 $X whoami --expect GermeyAce                         # verify this exact account
+python3 $X whoami                                            # discover the authenticated account
 python3 $X search --query "ai agents" --product Latest --limit 20   # Top | Latest | Media
 python3 $X search-users --query "openai" --limit 10
 python3 $X timeline --limit 20                               # my home timeline
@@ -64,12 +65,20 @@ python3 $X trends --category trending --limit 20             # trending|for-you|
 ## Verify the connection first
 
 ```sh
-python3 $X whoami
-# → {"id": "...", "screen_name": "...", "followers_count": ...}
+python3 $X whoami --expect GermeyAce
+# → {"id": "...", "screen_name": "GermeyAce", "identity_verified": true, ...}
 ```
 
-On an auth error the cookie is expired — have the user reconnect at
-<https://auth.acedata.cloud/user/connections>. Do **not** loop-retry.
+`whoami` reads the authenticated account's screen name from X account settings,
+then resolves its public profile. `--expect` compares that server-authenticated
+screen name with the required account before any write. This avoids X's
+Cloudflare-blocked `UserByRestId` endpoint without trusting a local identity
+cookie. Always use `--expect` when the user names the required account.
+
+On an actual auth error the cookie is expired — have the user reconnect at
+<https://auth.acedata.cloud/user/connections>. A Cloudflare block is different:
+reconnecting cookies does not fix it. Use `--expect` for identity checks; other
+blocked endpoints need `X_PROXY` or the official X API. Do **not** loop-retry.
 
 ## Write commands — GATED (dry-run unless trailing `--confirm`)
 
@@ -102,13 +111,17 @@ python3 $X delete --id 123456 --confirm                        # delete one of M
 
 - **This is the user's real X account.** Confirm before any write — posts are
   immediate and public.
-- **Not E2E-verified** (see the warning above) — expect to validate the first run.
+- **Live writes are not E2E-verified.** Read commands were verified on 2026-07-06;
+  validate the first confirmed write carefully.
 - **twikit is a scraper of X's non-public API.** It can break when X changes its
   internal endpoints. The bundled script carries an AceDataCloud compatibility
   patch for the current `ondemand.s` webpack chunk map used to generate
   transaction IDs. If `Couldn't get KEY_BYTE indices` appears again, report it
   as X/twikit upstream drift — do NOT ask the user to reconnect cookies for that
   specific error.
+- X currently returns a dependency error for its dedicated `UserMedia` query.
+  The CLI falls back to the normal Tweets timeline and filters media posts
+  locally; the response includes a `fallback` field when this happens.
 - **ToS / rate-limit / ban risk.** This acts through the web API, not the
   official API — high-frequency automation can get the account rate-limited or
   suspended. Keep volume human-like.
