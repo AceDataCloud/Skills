@@ -20,13 +20,15 @@ Show the exact normalized preview: post type, title, full body, tags, media name
 ## Execute
 
 1. Ask the user to open `https://creator.xiaohongshu.com`, attach that tab, and locally verify the signed-in account.
-2. Read the page and stop on warnings or unexpected account context.
-3. Select image, video, or long-article mode using fresh refs.
-4. Upload approved resource IDs through `browser.file_upload`, or wait for the user to select local media. Read until exact filenames/thumbnails and processing completion are visible.
-5. Fill title/body using fresh refs. For rich-text editors, read immediately after input; if the exact value is not visible, stop rather than repeatedly injecting it.
-6. Add tags/topics, template/layout, products, visibility, originality, and schedule one at a time. Read and verify each state.
-7. Before the final action, read again and compare every visible field with the confirmed preview. Stop on mismatch.
-8. Click Publish/Schedule exactly once after the final confirmed chat preview.
-9. Follow [reconciliation](./reconciliation.md). Report success only from a visible success state or destination, and include the canonical URL when available.
+2. Navigate to `https://creator.xiaohongshu.com/publish/publish?source=official`. Wait for load, then allow two seconds for creator widgets and one bounded DOM-settle interval. Read or screenshot the page and stop on warnings, login redirects, or unexpected account context.
+3. Select mode by exact visible tab text: `上传图文`, `上传视频`, or `写长文`. Prefer a fresh semantic ref; if the tab is visually blocked by a popover, stop for user inspection instead of deleting page nodes. Verify the selected mode after clicking.
+4. For image posts, upload one approved resource at a time and wait until the visible preview count reaches the submitted count before the next resource (up to 60 seconds per image). For video, wait until processing completes and Publish becomes enabled, up to 10 minutes. If resource resolution is unavailable, wait for the user to select local media and verify the same preview/processing state.
+5. Fill the image/video title using the visible title textbox (recognition hints: placeholder containing `填写标题`, then the single visible title input fallback). Fill body in the visible TipTap/ProseMirror contenteditable editor. Use `browser.form_input` for replacement or focus with `browser.click`/`click_at` then `browser.type_text` for rich text. Read immediately after each field; stop if the exact normalized value is not visible.
+6. Limit tags to the first 10 confirmed tags. Insert them one at a time, close any topic suggestion popover by focusing the title, and verify visible chips/text before continuing.
+7. Configure options one at a time and verify each exact state: schedule (1 hour–14 days), visibility (`公开可见`, `仅自己可见`, `仅互关好友可见`), originality, and products. If originality was requested but cannot be confirmed, abort rather than publishing non-original. Bind a product only when the exact intended product is visibly selected; never accept a first fuzzy match silently.
+8. For long article: choose `写长文` → `新的创作`; fill `输入标题` textarea and ProseMirror body; click `一键排版`; enumerate visible template names; select the confirmed template and verify its selected state; click `下一步`; then fill the separate publish-page description editor.
+9. Before the final action, read or screenshot again and compare media count, title, full body, tags, options, products, and schedule with the confirmed preview. Stop on mismatch.
+10. Locate Publish through two page generations: visible enabled `xhs-publish-btn` widget first, then visible legacy red Publish button. Reject `submit-disabled=true`, `disabled`, `aria-disabled=true`, or disabled styling. Click exactly once after the final confirmed chat preview.
+11. Follow [reconciliation](./reconciliation.md). Immediate success requires leaving `/publish/publish` or a visible success destination within 15 seconds. Remaining on the form is not success. Return the canonical note URL when visible.
 
 Never mix image/video media unless the visible current UI explicitly supports it. Bind products only when the account visibly exposes the feature and the exact selected products appear in the final preview.

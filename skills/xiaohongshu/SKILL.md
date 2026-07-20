@@ -21,12 +21,19 @@ execution:
       - tabs
       - snapshot
       - screenshot
+      - element_info
       - navigate
       - click
       - click_at
+      - hover
       - form_input
+      - type_text
+      - select_option
+      - set_checked
       - key
       - scroll
+      - scroll_to
+      - wait_for
       - file_upload
 license: Apache-2.0
 metadata:
@@ -61,6 +68,7 @@ Read only the reference needed for the current request:
 | Image, video, long article, schedule, original, visibility, products | [publish](./references/publish.md) |
 | Like, favorite, comment, reply | [interactions](./references/interactions.md) |
 | Any uncertain write result or interrupted workflow | [reconciliation](./references/reconciliation.md) |
+| Feature parity, route contracts, and selector diagnostics | [MCP parity](./references/mcp-parity.md) |
 
 For publish/search validation and feed-card parsing, use the shipped stdlib-only contract helper:
 
