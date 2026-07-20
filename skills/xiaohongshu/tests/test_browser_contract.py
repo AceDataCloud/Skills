@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 
 SKILL_DIR = Path(__file__).parents[1]
 SKILL = SKILL_DIR / "SKILL.md"
+MANIFEST = SKILL_DIR / "contracts" / "browser-manifest.v2.compact.json"
+MANIFEST_DATA = json.loads(MANIFEST.read_text(encoding="utf-8"))
+MANIFEST_DIGEST = MANIFEST_DATA["manifest_digest"]
 REFERENCES = {
     "login.md",
     "browse.md",
@@ -18,24 +22,35 @@ EXPECTED_ORIGINS = {
     "https://www.xiaohongshu.com",
     "https://creator.xiaohongshu.com",
 }
+EXPECTED_FACADES = {
+    "browser.tabs",
+    "browser.snapshot",
+    "browser.screenshot",
+    "browser.element_info",
+    "browser.navigate",
+    "browser.click",
+    "browser.click_at",
+    "browser.hover",
+    "browser.form_input",
+    "browser.type_text",
+    "browser.select_option",
+    "browser.set_checked",
+    "browser.key",
+    "browser.scroll",
+    "browser.scroll_to",
+    "browser.wait_for",
+    "browser.file_upload",
+}
 EXPECTED_CAPABILITIES = {
-    "tabs",
-    "snapshot",
-    "screenshot",
-    "element_info",
-    "navigate",
-    "click",
-    "click_at",
-    "hover",
-    "form_input",
-    "type_text",
-    "select_option",
-    "set_checked",
-    "key",
-    "scroll",
-    "scroll_to",
-    "wait_for",
-    "file_upload",
+    "tabs.read",
+    "tabs.manage",
+    "page.observe",
+    "page.screenshot",
+    "page.navigate",
+    "input.pointer",
+    "input.keyboard",
+    "input.form",
+    "file.upload",
 }
 DEPLOYED_BROWSER_TOOLS = {
     "browser.snapshot",
@@ -65,8 +80,6 @@ DEPLOYED_BROWSER_TOOLS = {
     "browser.network_requests",
     "browser.save_pdf",
 }
-
-
 def _frontmatter(text: str) -> str:
     assert text.startswith("---\n")
     parts = text.split("---\n")
@@ -99,9 +112,68 @@ def test_browser_execution_frontmatter_contract() -> None:
     assert "  Operate Xiaohongshu / RED through the user's attached local browser:" in frontmatter
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
     assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
+    assert re.search(r"^    protocol: ace\.browser\.command$", frontmatter, re.MULTILINE)
+    assert re.search(r"^    protocol_version: 2$", frontmatter, re.MULTILINE)
+    assert re.search(r"^    manifest_version: 2\.0\.0$", frontmatter, re.MULTILINE)
+    assert re.search(rf"^    manifest_digest: {MANIFEST_DIGEST}$", frontmatter, re.MULTILINE)
+    assert re.search(r"^    wire_operation: browser\.command$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
+    assert "  browser_contract: contracts/browser-manifest.v2.compact.json" in frontmatter
     assert not re.search(r"^allowed_tools:.*\bBash\b", frontmatter, re.MULTILINE)
+
+
+def test_compact_manifest_matches_browser_v2_contract() -> None:
+    manifest = MANIFEST_DATA
+    facade_policies = manifest["facades"]
+    all_policies = set(manifest["policy_capabilities"])
+    mapped_policies = {
+        facade["policy_capability"] for facade in facade_policies.values()
+    }
+
+    assert manifest["protocol"] == "ace.browser.command"
+    assert manifest["protocol_version"] == 2
+    assert manifest["manifest_version"] == "2.0.0"
+    assert manifest["manifest_digest"] == MANIFEST_DIGEST
+    assert MANIFEST_DIGEST == "sha256:ffb2b794330b34860c0b0a0c278b866ca69e839e0a826d726f7845cab1aa68fc"
+    assert manifest["wire_operation"] == "browser.command"
+    assert set(facade_policies) == DEPLOYED_BROWSER_TOOLS
+    assert len(facade_policies) == 26
+    assert len(all_policies) == 11
+    assert mapped_policies <= all_policies
+    expected_capabilities = {
+        facade_policies[facade]["policy_capability"] for facade in EXPECTED_FACADES
+    }
+    expected_capabilities.update(
+        case["policy_capability"]
+        for facade in EXPECTED_FACADES
+        for case in facade_policies[facade].get("cases", [])
+        if "policy_capability" in case
+    )
+    assert EXPECTED_CAPABILITIES == expected_capabilities
+    assert facade_policies["browser.tabs"]["cases"] == [
+        {"when": {"action": "list"}, "policy_capability": "tabs.read", "action_class": "read"}
+    ]
+
+
+def test_generic_manifest_contains_no_site_specific_logic() -> None:
+    text = MANIFEST.read_text(encoding="utf-8").casefold()
+
+    assert "xiaohongshu" not in text
+    assert "creator.xiaohongshu.com" not in text
+    assert "selector" not in text
+    assert "xhs-" not in text
+
+
+def test_execution_metadata_has_no_tool_shaped_auth_capabilities() -> None:
+    frontmatter = _frontmatter(SKILL.read_text(encoding="utf-8"))
+    execution = frontmatter.split("license:", maxsplit=1)[0]
+    capabilities = _nested_list(frontmatter, "capabilities")
+
+    assert capabilities == EXPECTED_CAPABILITIES
+    assert capabilities <= set(json.loads(MANIFEST.read_text(encoding="utf-8"))["policy_capabilities"])
+    assert not capabilities & {facade.removeprefix("browser.") for facade in DEPLOYED_BROWSER_TOOLS}
+    assert not re.search(r"^      - (?:browser\.)?(?:snapshot|click|form_input|file_upload|tabs)$", execution, re.MULTILINE)
 
 
 def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
@@ -117,7 +189,7 @@ def test_browser_skill_has_no_legacy_cloud_runtime() -> None:
     )
 
     assert not any(term.casefold() in text.casefold() for term in legacy_terms)
-    assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "references", "scripts", "tests"}
+    assert {path.name for path in SKILL_DIR.iterdir()} == {"SKILL.md", "contracts", "references", "scripts", "tests"}
 
 
 def test_browser_skill_progressively_loads_domain_workflows() -> None:
@@ -136,6 +208,7 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     text = "\n".join(path.read_text(encoding="utf-8") for path in documents).casefold()
     mentioned_tools = set(re.findall(r"`(browser\.[a-z_]+)`", text))
 
+    assert EXPECTED_FACADES <= mentioned_tools
     assert "attach current tab" in text
     assert "pair new" in text
     assert mentioned_tools <= DEPLOYED_BROWSER_TOOLS

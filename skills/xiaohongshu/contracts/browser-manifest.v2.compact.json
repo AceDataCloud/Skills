@@ -1,0 +1,204 @@
+{
+  "protocol": "ace.browser.command",
+  "protocol_version": 2,
+  "manifest_version": "2.0.0",
+  "manifest_digest": "sha256:ffb2b794330b34860c0b0a0c278b866ca69e839e0a826d726f7845cab1aa68fc",
+  "wire_operation": "browser.command",
+  "policy_capabilities": [
+    "tabs.read",
+    "tabs.manage",
+    "page.observe",
+    "page.screenshot",
+    "page.navigate",
+    "input.pointer",
+    "input.keyboard",
+    "input.form",
+    "file.upload",
+    "debug.metadata",
+    "document.export"
+  ],
+  "action_classes": [
+    "read",
+    "write",
+    "protected.unclassified",
+    "protected.publish",
+    "protected.send",
+    "protected.delete",
+    "protected.submit",
+    "protected.upload",
+    "protected.download",
+    "protected.export",
+    "protected.permission",
+    "protected.account",
+    "protected.sensitive_transmission",
+    "prohibited.financial"
+  ],
+  "facades": {
+    "browser.snapshot": {
+      "family": "observe",
+      "kind": "accessibility",
+      "policy_capability": "page.observe",
+      "action_class": "read"
+    },
+    "browser.get_text": {
+      "family": "observe",
+      "kind": "visible_text",
+      "policy_capability": "page.observe",
+      "action_class": "read"
+    },
+    "browser.find": {
+      "family": "observe",
+      "kind": "query",
+      "policy_capability": "page.observe",
+      "action_class": "read"
+    },
+    "browser.screenshot": {
+      "family": "observe",
+      "kind": "screenshot",
+      "policy_capability": "page.screenshot",
+      "action_class": "read"
+    },
+    "browser.element_info": {
+      "family": "observe",
+      "kind": "element",
+      "policy_capability": "page.observe",
+      "action_class": "read"
+    },
+    "browser.click": {
+      "family": "act",
+      "kind": "click",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.click_at": {
+      "family": "act",
+      "kind": "click_at",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.hover": {
+      "family": "act",
+      "kind": "hover",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.drag": {
+      "family": "act",
+      "kind": "drag",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.form_input": {
+      "family": "act",
+      "kind": "fill",
+      "policy_capability": "input.form",
+      "action_class": "write"
+    },
+    "browser.type_text": {
+      "family": "act",
+      "kind": "type",
+      "policy_capability": "input.keyboard",
+      "action_class": "write"
+    },
+    "browser.select_option": {
+      "family": "act",
+      "kind": "select",
+      "policy_capability": "input.form",
+      "action_class": "write"
+    },
+    "browser.set_checked": {
+      "family": "act",
+      "kind": "check",
+      "policy_capability": "input.form",
+      "action_class": "write"
+    },
+    "browser.key": {
+      "family": "act",
+      "kind": "press",
+      "policy_capability": "input.keyboard",
+      "action_class": "write"
+    },
+    "browser.scroll": {
+      "family": "act",
+      "kind": "scroll",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.scroll_to": {
+      "family": "act",
+      "kind": "scroll_to",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.file_upload": {
+      "family": "transfer",
+      "kind": "upload",
+      "policy_capability": "file.upload",
+      "action_class": "protected.upload"
+    },
+    "browser.navigate": {
+      "family": "navigate",
+      "kind": "navigate",
+      "policy_capability": "page.navigate",
+      "action_class": "write"
+    },
+    "browser.tabs": {
+      "family": "tabs",
+      "kind": "tabs",
+      "policy_capability": "tabs.manage",
+      "action_class": "write",
+      "cases": [
+        {
+          "when": {
+            "action": "list"
+          },
+          "policy_capability": "tabs.read",
+          "action_class": "read"
+        }
+      ]
+    },
+    "browser.wait_for": {
+      "family": "synchronize",
+      "kind": "wait",
+      "policy_capability": "page.observe",
+      "action_class": "read"
+    },
+    "browser.handle_dialog": {
+      "family": "act",
+      "kind": "dialog",
+      "policy_capability": "input.pointer",
+      "action_class": "write"
+    },
+    "browser.download": {
+      "family": "transfer",
+      "kind": "download",
+      "policy_capability": "document.export",
+      "action_class": "read",
+      "cases": []
+    },
+    "browser.console_messages": {
+      "family": "observe",
+      "kind": "console_metadata",
+      "policy_capability": "debug.metadata",
+      "action_class": "read"
+    },
+    "browser.page_errors": {
+      "family": "observe",
+      "kind": "page_errors",
+      "policy_capability": "debug.metadata",
+      "action_class": "read"
+    },
+    "browser.network_requests": {
+      "family": "observe",
+      "kind": "network_metadata",
+      "policy_capability": "debug.metadata",
+      "action_class": "read"
+    },
+    "browser.save_pdf": {
+      "family": "transfer",
+      "kind": "pdf",
+      "policy_capability": "document.export",
+      "action_class": "protected.export"
+    }
+  }
+}

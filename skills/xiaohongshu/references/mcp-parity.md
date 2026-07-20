@@ -2,7 +2,8 @@
 
 This Skill benchmarks its business workflows against `xpzouying/xiaohongshu-mcp` commit
 `a7d1f2f7f45e0b1c27de67c8f8a19131ba321725`. Reimplement the behavior through generic
-`browser.*` capabilities; never copy its CDP runtime into the extension.
+`browser.*` facades; never copy its CDP runtime into the extension. The facade and stable policy-class
+mapping is pinned to the Browser V2 compact manifest contract linked from the Skill frontmatter.
 
 | Reference feature | Skill workflow |
 |---|---|

@@ -14,36 +14,36 @@ connections: [xiaohongshu]
 execution:
   browser:
     provider: xiaohongshu/xiaohongshu
+    protocol: ace.browser.command
+    protocol_version: 2
+    manifest_version: 2.0.0
+    manifest_digest: sha256:ffb2b794330b34860c0b0a0c278b866ca69e839e0a826d726f7845cab1aa68fc
+    wire_operation: browser.command
     origins:
       - https://www.xiaohongshu.com
       - https://creator.xiaohongshu.com
     capabilities:
-      - tabs
-      - snapshot
-      - screenshot
-      - element_info
-      - navigate
-      - click
-      - click_at
-      - hover
-      - form_input
-      - type_text
-      - select_option
-      - set_checked
-      - key
-      - scroll
-      - scroll_to
-      - wait_for
-      - file_upload
+      - tabs.read
+      - tabs.manage
+      - page.observe
+      - page.screenshot
+      - page.navigate
+      - input.pointer
+      - input.keyboard
+      - input.form
+      - file.upload
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "4.0"
+  browser_contract: contracts/browser-manifest.v2.compact.json
 ---
 
 # Xiaohongshu local browser
 
 Operate only through the generic `browser.*` tools in the user's attached local tab. Xiaohongshu-specific page semantics, workflows, validation, and reconciliation live in this Skill package; never request a provider-specific core tool or remote browser. Cookies and account identifiers stay on the user's device.
+
+The Browser V2 facade-to-policy mapping is pinned by [the compact manifest contract](./contracts/browser-manifest.v2.compact.json). Continue to use the ergonomic `browser.tabs`, `browser.snapshot`, `browser.screenshot`, `browser.element_info`, `browser.navigate`, `browser.click`, `browser.click_at`, `browser.hover`, `browser.form_input`, `browser.type_text`, `browser.select_option`, `browser.set_checked`, `browser.key`, `browser.scroll`, `browser.scroll_to`, `browser.wait_for`, and `browser.file_upload` facades; execution authorization is expressed only through stable policy classes.
 
 ## Mandatory boundaries
 
