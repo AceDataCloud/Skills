@@ -1,6 +1,6 @@
 ---
 name: seedream-image
-description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, and SeedEdit 3.0 models.
+description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, 5.0 Pro, and SeedEdit 3.0 models.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -28,7 +28,8 @@ curl -X POST https://api.acedata.cloud/seedream/images \
 
 | Model | Version | Best For |
 |-------|---------|----------|
-| `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, highest quality (default) |
+| `doubao-seedream-5-0-pro-260628` | Seedream 5.0 Pro | Highest quality, premium generation |
+| `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, high quality (default) |
 | `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
 | `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
 | `doubao-seedream-3-0-t2i-250415` | Seedream 3.0 T2I | Text-to-image, precise prompt following |
@@ -92,6 +93,8 @@ POST /seedream/tasks
 | `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I / SeedEdit 3.0 only) |
 | `guidance_scale` | number [1, 10] | Prompt adherence strength (3.0 models only; T2I default 2.5, edit default 5.5) |
 | `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
+| `sequential_image_generation_options` | object | Options for sequential generation: `max_images` (integer 1–15) |
+| `optimize_prompt_options` | object | Prompt optimization options: `mode` (`"standard"` or `"fast"`) |
 | `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
 | `watermark` | boolean | Add AI-generated watermark (default: true) |
 | `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
@@ -109,12 +112,15 @@ POST /seedream/tasks
 ## Gotchas
 
 - Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
+- `doubao-seedream-5-0-pro-260628` is the premium Pro model — highest quality at higher cost
 - Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
 - `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
-- `3K` size is only supported by Seedream 5.0; `adaptive` selects the best aspect ratio automatically
+- `3K` size is only supported by Seedream 5.0 / 5.0 Pro; `adaptive` selects the best aspect ratio automatically
 - `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
 - `guidance_scale` is only available for the 3.0-series models
-- `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
+- `stream` and `sequential_image_generation` are only available for Seedream 5.0, 5.0 Pro, 4.5, and 4.0
+- `sequential_image_generation_options.max_images` controls how many sequential images to generate (1–15)
+- `optimize_prompt_options.mode` controls the prompt optimization speed: `"standard"` (default) or `"fast"`
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
 
 > **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
