@@ -54,15 +54,11 @@ def _iso_datetime(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def _validate_media_url(value: object) -> str:
-    if not isinstance(value, str) or not value:
-        raise ContractError("media URLs must be non-empty strings")
-    parsed = urlparse(value)
-    host = (parsed.hostname or "").lower()
-    if parsed.scheme != "https" or parsed.username or parsed.password:
-        raise ContractError("media URLs must use credential-free HTTPS")
-    if host != "cdn.acedata.cloud" and not host.endswith(".cdn.acedata.cloud"):
-        raise ContractError("automatic media upload requires an Ace Data Cloud CDN URL")
+def _validate_resource_id(value: object) -> str:
+    if not isinstance(value, str) or not value or len(value) > 128:
+        raise ContractError("media resource IDs must be non-empty strings of at most 128 characters")
+    if not re.fullmatch(r"[A-Za-z0-9._:-]+", value):
+        raise ContractError("media resource IDs contain unsupported characters")
     return value
 
 
@@ -85,7 +81,7 @@ def validate_publish(payload: dict) -> dict:
         raise ContractError("media must be an array")
     if len(media) > MAX_MEDIA:
         raise ContractError(f"media cannot contain more than {MAX_MEDIA} files")
-    normalized_media = [_validate_media_url(item) for item in media]
+    normalized_media = [_validate_resource_id(item) for item in media]
     if post_type == "image" and not normalized_media:
         raise ContractError("image posts require at least one image")
     if post_type == "video" and len(normalized_media) != 1:
