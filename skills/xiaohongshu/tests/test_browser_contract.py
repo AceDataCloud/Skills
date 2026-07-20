@@ -12,6 +12,7 @@ REFERENCES = {
     "publish.md",
     "interactions.md",
     "reconciliation.md",
+    "mcp-parity.md",
 }
 EXPECTED_ORIGINS = {
     "https://www.xiaohongshu.com",
@@ -21,12 +22,19 @@ EXPECTED_CAPABILITIES = {
     "tabs",
     "snapshot",
     "screenshot",
+    "element_info",
     "navigate",
     "click",
     "click_at",
+    "hover",
     "form_input",
+    "type_text",
+    "select_option",
+    "set_checked",
     "key",
     "scroll",
+    "scroll_to",
+    "wait_for",
     "file_upload",
 }
 DEPLOYED_BROWSER_TOOLS = {
@@ -140,8 +148,8 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "ask the user to open `https://creator.xiaohongshu.com`" in text
     assert "opaque resource ids" in text
     assert "trusted_input" not in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
-    assert "browser.read_page" not in text
-    assert "browser.wait" not in text
+    assert not re.search(r"\bbrowser\.read_page\b", text)
+    assert not re.search(r"\bbrowser\.wait\b", text)
     assert "local approval" not in text
     assert "publish image, video, or long-article notes" in text
     assert "long_article" in text
@@ -165,3 +173,47 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "reconciliation after uncertain browser writes" in text
     assert "stop on warning" in text
     assert "explicit confirmation" in text
+
+
+def test_upstream_mcp_feature_parity_and_skill_ownership() -> None:
+    text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in [SKILL, *(SKILL_DIR / "references").glob("*.md")]
+    ).casefold()
+
+    for feature in (
+        "check_login_status",
+        "get_login_qrcode",
+        "publish_content",
+        "publish_with_video",
+        "list_feeds",
+        "search_feeds",
+        "get_feed_detail",
+        "user_profile",
+        "get_me",
+        "post_comment_to_feed",
+        "reply_comment_in_feed",
+        "like_feed",
+        "favorite_feed",
+    ):
+        assert feature in text
+
+    for invariant in (
+        "上传图文",
+        "上传视频",
+        "写长文",
+        "新的创作",
+        "一键排版",
+        "xhs-publish-btn",
+        "submit-disabled=true",
+        "img-preview-area",
+        "10 minutes",
+        "15 seconds",
+        "4 seconds",
+        "never exceed two total clicks",
+    ):
+        assert invariant.casefold() in text
+
+    assert "a7d1f2f7f45e0b1c27de67c8f8a19131ba321725" in text
+    assert "no arbitrary cdp/evaluate" in text
+    assert "no cookie deletion/export" in text

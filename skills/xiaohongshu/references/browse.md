@@ -15,24 +15,27 @@ Use `parse-feed-snapshot` when a machine-checked card list is useful. Preserve `
 
 ## Recommendations
 
-Read the attached home/recommendation page. Scroll in bounded steps and read after each step. Return only the requested number of notes with title, author state, visible engagement, and canonical URL. Stop when enough results are collected, the page repeats, a warning appears, or the user limit is reached.
+Navigate to `https://www.xiaohongshu.com/` (or the attached recommendation page), then wait in 300 ms bounded intervals for feed cards to hydrate, for at most 8 seconds. Read the attached page. Scroll in bounded steps and read after each step. Return only the requested number of notes with title, author state, visible engagement, and canonical URL. Stop when enough results are collected, the page repeats, a warning appears, the 8-second hydration window expires without cards, or the user limit is reached.
 
 ## Search and filters
 
 1. Normalize `{keyword, filters}` with `normalize-filters` before interacting. Supported filters are sort, note type, publish time, search scope, and location.
-2. Read the current page, open the search control, fill the exact keyword, and submit with a fresh visible control or supported key.
-3. Read the result page. Apply requested filters one at a time using fresh refs and verify each visible selected state.
-4. Return bounded cards. Never invent query tokens, counts, or hidden IDs.
+2. Navigate to `https://www.xiaohongshu.com/search_result?keyword=<encoded>&source=web_explore_feed`, or use the visible search control when already attached there. Never invent a query token.
+3. Wait for visible results. To filter, hover the visible `筛选` control, wait for the panel, then choose exact labels one group at a time in this order: sort, note type, publish time, search scope, location. Use the normalized labels from `normalize-filters` rather than positional guesses.
+4. After every selection, wait for the panel/result state to settle and verify the exact selected label before continuing. If the hover panel closes, reacquire it; never click a stale option ref.
+5. Return bounded cards. Never invent query tokens, counts, or hidden IDs.
 
 ## Detail and comments
 
-Open a note from its fresh result ref or same-origin canonical URL. Read visible text, media labels, author, engagement, and the first visible comment batch. For more comments/replies, expand and scroll in bounded batches, reading after every transition and stopping at the requested limit. This is not a guaranteed full-comment export.
+Open a note from its fresh result ref or same-origin canonical URL. Prefer clicking the fresh feed link so any required page token remains browser-local. Retry navigation at most three times with a short bounded delay, then stop. Read visible text, media labels, author, engagement, and the first visible comment batch.
+
+For more comments/replies, first scroll to the comment area. In each bounded round: expand at most three visible `展开 N 条回复` controls, read the count, scroll the last visible comment into view, then scroll about 70% of one viewport. Stop at the requested count, visible end marker, no-comment state, 20 stagnant rounds, warning, or caller limit. Never copy the upstream 500-attempt default into chat automation.
 
 Pass the final semantic snapshot to `parse-note-snapshot --note-url <canonical-url>`. Preserve missing, ambiguous, and truncated states instead of filling absent fields. Only nodes with an explicit `comment` role are returned as structured comments; generic list items are never assumed to be comments.
 
 ## Profile
 
-Open the fresh author link from a result/detail page. Return visible profile text, followers/following/engagement totals, and bounded recent notes. Do not expose unrelated private account data.
+Open the fresh author link from a result/detail page. For the current account, use the sidebar `我` profile channel rather than fabricating an ID. Return visible profile text, followers/following/engagement totals, and bounded recent notes. Profile notes can be grouped/lazy-loaded; flatten only visibly observed note batches. Do not expose unrelated private account data.
 
 Pass the final semantic snapshot to `parse-profile-snapshot --profile-url <canonical-url>` before reporting structured profile data. `visible_metrics` contains explicitly labeled profile metrics. Preserve `visible_counts` separately as unlabeled page counters; never reinterpret them as followers, following, likes, or favorites.
 
