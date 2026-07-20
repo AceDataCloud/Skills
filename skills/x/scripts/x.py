@@ -19,6 +19,7 @@ breakage.
 
 Examples:
   python3 x.py whoami
+    python3 x.py whoami --expect GermeyAce
   python3 x.py search --query "python" --product Latest --limit 20
   python3 x.py timeline --limit 20
   python3 x.py user-tweets --user elonmusk --type Tweets --limit 20
@@ -38,7 +39,6 @@ import json
 import os
 import re
 import sys
-from urllib.parse import unquote
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -90,11 +90,26 @@ def load_cookie_dict() -> dict:
     return cookies
 
 
-def current_user_id_from_cookies() -> str | None:
-    twid = load_cookie_dict().get("twid", "")
-    decoded = unquote(twid)
-    match = re.search(r"(?:^|[&?])u=(\d+)", decoded) or re.search(r"u=(\d+)", decoded)
-    return match.group(1) if match else None
+def normalize_screen_name(value: str) -> str:
+    screen_name = value.strip().lstrip("@")
+    if not re.fullmatch(r"[A-Za-z0-9_]{1,15}", screen_name):
+        die("--expect must be a valid X screen name (1-15 letters, digits, or underscores)")
+    return screen_name
+
+
+def cloudflare_block_message(error: Exception) -> str | None:
+    text = str(error)
+    if "Cloudflare" not in text or not any(
+        marker in text for marker in ("Sorry, you have been blocked", "Attention Required!")
+    ):
+        return None
+    ray_match = re.search(r"Cloudflare Ray ID:.*?([a-f0-9]{16})", text, re.IGNORECASE | re.DOTALL)
+    ray = f" Ray ID: {ray_match.group(1)}." if ray_match else ""
+    return (
+        "X blocked this automated web-API request at Cloudflare; the login cookies may still be valid."
+        f"{ray} For identity checks, use `whoami --expect <screen_name>`; for other blocked endpoints, "
+        "configure X_PROXY or use the official X API."
+    )
 
 
 def make_client():
@@ -230,10 +245,34 @@ async def resolve_user(client, target: str):
 
 # ── read commands ───────────────────────────────────────────────────
 
-async def cmd_whoami(client, _args):
-    user_id = current_user_id_from_cookies()
-    u = await client.get_user_by_id(user_id) if user_id else await client.user()
-    out(fmt_user(u))
+async def cmd_whoami(client, args):
+    settings, _ = await client.v11.settings()
+    authenticated_screen_name = settings.get("screen_name") if isinstance(settings, dict) else None
+    if not isinstance(authenticated_screen_name, str) or not re.fullmatch(
+        r"[A-Za-z0-9_]{1,15}", authenticated_screen_name
+    ):
+        die("X account settings did not return a valid screen name; stopped without performing any write")
+    expected = getattr(args, "expect", None)
+    if expected:
+        expected_screen_name = normalize_screen_name(expected)
+        if authenticated_screen_name.casefold() != expected_screen_name.casefold():
+            die(
+                f"connected X account is @{authenticated_screen_name}, not @{expected_screen_name}; "
+                "stopped without performing any write"
+            )
+    u = await client.get_user_by_screen_name(authenticated_screen_name)
+    result = fmt_user(u)
+    result.update(
+        {
+            "identity_verified": True,
+            "verification": (
+                "authenticated_settings_matches_expected_screen_name"
+                if expected
+                else "authenticated_settings_screen_name"
+            ),
+        }
+    )
+    out(result)
 
 
 async def cmd_search(client, args):
@@ -258,20 +297,42 @@ async def cmd_timeline(client, args):
 
 async def cmd_user_tweets(client, args):
     u = await resolve_user(client, args.user)
-    tweets = await client.get_user_tweets(u.id, args.type, count=args.limit)
-    items = list(tweets)[: args.limit]
-    out({"user": fmt_user(u), "type": args.type,
-         "count": len(items), "tweets": [fmt_tweet(t) for t in items]})
+    fallback = None
+    try:
+        tweets = await client.get_user_tweets(u.id, args.type, count=args.limit)
+        items = list(tweets)[: args.limit]
+    except Exception as error:
+        media_dependency_error = (
+            args.type == "Media"
+            and (
+                (isinstance(error, KeyError) and error.args == ("code",))
+                or "Dependency: Unspecified" in str(error)
+            )
+        )
+        if not media_dependency_error:
+            raise
+        fallback_count = min(max(args.limit * 3, 40), 100)
+        tweets = await client.get_user_tweets(u.id, "Tweets", count=fallback_count)
+        items = [tweet for tweet in tweets if bool(getattr(tweet, "media", None))][: args.limit]
+        fallback = "Tweets (locally filtered for media)"
+    result = {
+        "user": fmt_user(u),
+        "type": args.type,
+        "count": len(items),
+        "tweets": [fmt_tweet(t) for t in items],
+    }
+    if fallback:
+        result["fallback"] = fallback
+    out(result)
 
 
 async def cmd_tweet(client, args):
-    try:
-        tweets = await client.get_tweets_by_ids([args.id])
-        t = tweets[0] if tweets else None
-    except Exception:
-        t = None
+    tweets = await client.get_tweets_by_ids([args.id])
+    t = tweets[0] if tweets else None
     if t is None:
-        t = await client.get_tweet_by_id(args.id)
+        die("tweet not found / unavailable")
+    if str(getattr(t, "id", "")) != args.id:
+        die("tweet id mismatch in X response")
     out(fmt_tweet(t))
 
 
@@ -409,7 +470,8 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="x.py", description="X (Twitter) cookie CLI")
     sub = p.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("whoami", help="show the logged-in account")
+    sp = sub.add_parser("whoami", help="show or verify the logged-in account")
+    sp.add_argument("--expect", help="verify the cookie account matches this @screen_name")
 
     sp = sub.add_parser("search", help="search tweets by keyword")
     sp.add_argument("--query", required=True)
@@ -489,12 +551,21 @@ def main() -> None:
     except (AccountLocked, AccountSuspended) as e:
         die(f"account locked/suspended by X: {e}")
     except TooManyRequests as e:
+        cloudflare_message = cloudflare_block_message(e)
+        if cloudflare_message:
+            die(cloudflare_message)
         die(f"rate limited by X — wait and retry, or slow down. ({e})")
     except (NotFound, TweetNotAvailable, UserNotFound, UserUnavailable) as e:
         die(f"not found / unavailable: {e}")
     except Forbidden as e:
+        cloudflare_message = cloudflare_block_message(e)
+        if cloudflare_message:
+            die(cloudflare_message)
         die(f"forbidden by X (content rule, protected account, or ToS): {e}")
     except TwitterException as e:
+        cloudflare_message = cloudflare_block_message(e)
+        if cloudflare_message:
+            die(cloudflare_message)
         die(f"X API error: {e}")
     except Exception as e:
         # twikit scrapes X's non-public API; a bare error here usually means an
