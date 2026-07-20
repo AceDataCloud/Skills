@@ -19,22 +19,43 @@ EXPECTED_ORIGINS = {
 }
 EXPECTED_CAPABILITIES = {
     "tabs",
-    "read_page",
+    "snapshot",
     "screenshot",
     "navigate",
-    "trusted_input",
+    "click",
+    "click_at",
+    "form_input",
+    "key",
+    "scroll",
     "file_upload",
 }
 DEPLOYED_BROWSER_TOOLS = {
-    "browser.read_page",
+    "browser.snapshot",
+    "browser.get_text",
+    "browser.find",
+    "browser.screenshot",
+    "browser.element_info",
     "browser.navigate",
     "browser.click",
+    "browser.click_at",
+    "browser.hover",
+    "browser.drag",
     "browser.form_input",
+    "browser.type_text",
+    "browser.select_option",
+    "browser.set_checked",
     "browser.file_upload",
     "browser.key",
     "browser.scroll",
-    "browser.wait",
-    "browser.screenshot",
+    "browser.scroll_to",
+    "browser.tabs",
+    "browser.wait_for",
+    "browser.handle_dialog",
+    "browser.download",
+    "browser.console_messages",
+    "browser.page_errors",
+    "browser.network_requests",
+    "browser.save_pdf",
 }
 
 
@@ -117,8 +138,11 @@ def test_browser_skill_matches_complete_local_runtime() -> None:
     assert "browser.clear_cookies" not in text
     assert "never extract, clear, or return cookie values" in text
     assert "ask the user to open `https://creator.xiaohongshu.com`" in text
-    assert "ace data cloud cdn" in text
-    assert "trusted_input" in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
+    assert "opaque resource ids" in text
+    assert "trusted_input" not in _nested_list(_frontmatter(SKILL.read_text(encoding="utf-8")), "capabilities")
+    assert "browser.read_page" not in text
+    assert "browser.wait" not in text
+    assert "local approval" not in text
     assert "publish image, video, or long-article notes" in text
     assert "long_article" in text
     assert "schedule" in text

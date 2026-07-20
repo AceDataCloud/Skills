@@ -20,7 +20,7 @@ def test_validate_image_publish_contract() -> None:
             "type": "image",
             "title": "周末城市漫步",
             "content": "一条仅自己可见的验收笔记",
-            "media": ["https://cdn.acedata.cloud/xhs/test.png"],
+            "media": ["resource_xhs_test_image"],
             "tags": ["城市漫步"],
             "visibility": "仅自己可见",
             "is_original": True,
@@ -38,7 +38,7 @@ def test_validate_image_publish_contract() -> None:
     ("changes", "message"),
     [
         ({"media": []}, "at least one image"),
-        ({"media": ["https://example.com/a.png"]}, "Ace Data Cloud CDN"),
+        ({"media": ["https://example.com/a.png"]}, "unsupported characters"),
         ({"schedule_at": "2026-07-19T11:30:00+08:00"}, "between 1 hour and 14 days"),
         ({"visibility": "好友可见"}, "visibility is unsupported"),
     ],
@@ -48,7 +48,7 @@ def test_validate_publish_rejects_unsafe_inputs(changes: dict, message: str) -> 
         "type": "image",
         "title": "验收笔记",
         "content": "body",
-        "media": ["https://cdn.acedata.cloud/xhs/test.png"],
+        "media": ["resource_xhs_test_image"],
         "now": "2026-07-19T11:00:00+08:00",
     }
     payload.update(changes)
