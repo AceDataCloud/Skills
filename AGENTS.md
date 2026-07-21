@@ -25,6 +25,8 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **happyhorse-video** — Generate and edit videos with Happy Horse
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance
 - **wan-video** — Generate videos with Alibaba Wan
+- **grok-video** — Generate videos with Grok (xAI)
+- **dreamina-video** — Generate portrait avatar videos with Dreamina (ByteDance)
 - **maestro-video** — Produce complete videos from a brief with scripting, media, voiceover, editing, captions, and multilingual variants
 
 ### AI Chat & Tools

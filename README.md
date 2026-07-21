@@ -41,6 +41,8 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
+| [grok-video](skills/grok-video/) | Generate videos with Grok (xAI) |
+| [dreamina-video](skills/dreamina-video/) | Generate portrait avatar videos with Dreamina (ByteDance) |
 | [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
 
 ### AI Chat & Tools
