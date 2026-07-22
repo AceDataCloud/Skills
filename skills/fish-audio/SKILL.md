@@ -87,7 +87,7 @@ Headers:
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"s1"`, `"s2-pro"` | Fish TTS engine selection |
+| `model` | `"s1"`, `"s2-pro"`, `"s2.1-pro"` | Fish TTS engine selection |
 
 ### JSON body
 
@@ -112,7 +112,7 @@ Headers:
 ## Gotchas
 
 - The documented TTS endpoint is `POST /fish/tts` — not `/fish/audios`.
-- Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
+- Choose the Fish engine with the **`model` request header** (`s1`, `s2-pro`, or `s2.1-pro`), not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
 - The current OpenAPI spec documents voice browsing via `GET /fish/model`; it does **not** document a voice-cloning write endpoint.
