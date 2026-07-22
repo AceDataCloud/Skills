@@ -24,4 +24,4 @@ Always open and read the exact target note first. Derive it from the user's URL 
 3. Open that comment's reply control, fill the reply, and read the visible target/text back.
 4. Submit once, then require the exact reply text to appear within 4 seconds before reporting success.
 
-Comments and replies are public account actions. The attached exact-origin session does not replace explicit chat preview confirmation.
+Comments and replies are public account actions. The allowed-origin BrowserSession does not replace explicit chat preview confirmation.
