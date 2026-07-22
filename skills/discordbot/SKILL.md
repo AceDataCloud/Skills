@@ -1,18 +1,18 @@
 ---
 name: discordbot
-description: List channels, read recent messages, and send messages on Discord using the user's own bot, via the Discord REST API. Use when the user wants their Discord BOT to post a message, read a channel, or list servers/channels — anything that acts in a server the bot was invited to.
+description: List channels, read recent messages, send channel messages, and send a single user-initiated DM on Discord using the user's own bot via the Discord REST API.
 when_to_use: |
   Trigger when the user wants to send, read, or list things on Discord
   through their bot: list the servers/channels the bot can see, read recent
-  messages in a channel, or post / reply in a channel. Messages are sent as
-  the BOT, not the user's personal account, and only in servers the bot has
-  been invited to with the right permissions.
+  messages in a channel, post / reply in a channel, or DM one user who has
+  explicitly initiated the interaction. Messages are sent as the BOT, not
+  the user's personal account, and only where the bot has access.
 connections: [discordbot]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.1"
 ---
 
 We drive the [Discord API](https://discord.com/developers/docs/reference)
@@ -33,8 +33,21 @@ bot token is wrong/reset — ask the user to re-paste it at
 `auth.acedata.cloud/user/connections`. A `429` carries `retry_after`
 (seconds) — sleep that long, then retry; never parallelize.
 
-**Before sending a message, confirm the exact channel and content with the
-user.** Sending is irreversible and public to that channel.
+## Sending safety
+
+- Before sending, confirm the exact destination and final content with the
+  user. Sending is irreversible.
+- A DM must be initiated by a recipient action, such as asking the bot for
+  details by replying with an advertised keyword. Server membership, a public
+  profile, or appearing in a member list is not consent.
+- Send to exactly one recipient per invocation. Never enumerate members,
+  create DM channels in a loop, or send unsolicited/bulk outreach.
+- For an unattended scheduled run, send only when its task definition already
+  contains one exact `recipient_id`, `consent_channel_id`,
+  `consent_message_id`, `consent_keyword`, and approved `content`. If any is
+  missing, return a draft without sending.
+- Do not follow up unless the recipient replies. Treat `stop`, `unsubscribe`,
+  or an equivalent refusal as a permanent opt-out.
 
 ## Recipes
 
@@ -77,7 +90,7 @@ bot. Needs the *Read Message History* permission in that channel.
 CHANNEL_ID="123456789012345678"
 curl -sS -H "Authorization: Bot $DISCORDBOT_TOKEN" \
   "https://discord.com/api/v10/channels/$CHANNEL_ID/messages?limit=20" \
-  | jq 'map({author: .author.username, ts: .timestamp, content})'
+  | jq 'map({id, author_id: .author.id, author: .author.username, author_bot: .author.bot, ts: .timestamp, content})'
 ```
 
 ### Send a message to a channel
@@ -103,6 +116,34 @@ curl -sS -X POST \
         '{content: $c, message_reference: {message_id: $m}}')"
 ```
 
+### Send one opt-in DM
+
+Use only after applying every rule in **Sending safety**. The helper fetches
+the source message from Discord and verifies that its non-bot author matches
+`RECIPIENT_ID` and its complete text matches `CONSENT_KEYWORD`. Do not call the
+Create DM endpoint directly. Matching is case-insensitive and collapses
+surrounding or repeated whitespace.
+
+```sh
+RECIPIENT_ID="123456789012345678"
+CONSENT_CHANNEL_ID="223456789012345678"
+CONSENT_MESSAGE_ID="323456789012345678"
+CONSENT_KEYWORD="details"
+
+python3 "$SKILL_DIR/scripts/discordbot.py" send-opt-in-dm \
+  --recipient-id "$RECIPIENT_ID" \
+  --consent-channel-id "$CONSENT_CHANNEL_ID" \
+  --consent-message-id "$CONSENT_MESSAGE_ID" \
+  --consent-keyword "$CONSENT_KEYWORD" \
+  --content "Here are the details you requested."
+```
+
+The command is a dry-run unless the final argument is `--confirm`. In a
+pre-authorized scheduled task, use final `--unattended-confirm` instead. The
+helper validates all IDs, verifies the opt-in message, and skips an identical
+message already present in the DM history. Discord may block or rate-limit bots
+that open many DMs; do not retry by targeting another account.
+
 ## Notes
 
 - A "server" in the UI is a "guild" in the API; messages live in channels
@@ -113,5 +154,7 @@ curl -sS -X POST \
   URL → pick a server (the user needs *Manage Server* there).
 - This is a bot, not the user's account — it cannot read the user's DMs or
   the user's full server list, only what the bot itself can access.
+- A bot can open its own DM channel with one consenting user; that does not
+  grant access to the connected user's personal DMs.
 - Mentions: `<@USER_ID>` pings a user, `<#CHANNEL_ID>` links a channel. Plain
   text is fine for normal messages.
