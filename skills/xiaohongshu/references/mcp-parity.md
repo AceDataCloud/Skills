@@ -3,7 +3,7 @@
 This Skill benchmarks its business workflows against `xpzouying/xiaohongshu-mcp` commit
 `a7d1f2f7f45e0b1c27de67c8f8a19131ba321725`. Reimplement the behavior through generic
 `browser.*` facades; never copy its CDP runtime into the extension. The facade and stable policy-class
-mapping is pinned to the Browser V2 compact manifest contract linked from the Skill frontmatter.
+mapping is pinned to the compact manifest contract linked from the Skill frontmatter.
 
 | Reference feature | Skill workflow |
 |---|---|
@@ -45,6 +45,6 @@ Do not import upstream behaviors that violate the local-browser security boundar
 
 - no Cookie deletion/export or account state reset;
 - no arbitrary CDP/evaluate, remote debugging port, or headless profile;
-- no local filesystem paths or direct URL downloads in `browser.file_upload`;
+- no local filesystem paths or direct URL downloads in `browser.upload`;
 - no hidden `window.__INITIAL_STATE__` extraction; report only visible browser observations;
 - no 500-round unattended comment crawling; all loops are bounded and user-request limited.

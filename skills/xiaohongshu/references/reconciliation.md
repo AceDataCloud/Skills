@@ -7,7 +7,7 @@ Use this after timeout, disconnect, stale ref, navigation, an ambiguous result, 
 3. Classify the outcome:
    - `succeeded`: the exact intended state is visible (reaction state, exact comment/reply, uploaded media, filled preview, publish success, scheduled item, or canonical destination).
    - `not_applied`: the previous state is clearly visible and no warning/error/processing state remains.
-   - `unknown`: neither state is conclusive, the snapshot is truncated at the relevant area, the tab detached, or a warning/challenge is present.
+   - `unknown`: neither state is conclusive, the snapshot is truncated at the relevant area, the BrowserSession disconnects, or a warning/challenge is present.
 4. If `succeeded`, report success without another action.
 5. If `not_applied`, reversible actions may be attempted once from the verified state. Irreversible actions require a fresh preview and renewed chat confirmation.
 6. If `unknown`, stop and ask the user to inspect the local tab. Never retry publish, schedule, comment, or reply while unknown.

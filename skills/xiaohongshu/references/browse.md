@@ -15,12 +15,12 @@ Use `parse-feed-snapshot` when a machine-checked card list is useful. Preserve `
 
 ## Recommendations
 
-Navigate to `https://www.xiaohongshu.com/` (or the attached recommendation page), then wait in 300 ms bounded intervals for feed cards to hydrate, for at most 8 seconds. Read the attached page. Scroll in bounded steps and read after each step. Return only the requested number of notes with title, author state, visible engagement, and canonical URL. Stop when enough results are collected, the page repeats, a warning appears, the 8-second hydration window expires without cards, or the user limit is reached.
+Navigate to `https://www.xiaohongshu.com/` in the BrowserSession, then wait in 300 ms bounded intervals for feed cards to hydrate, for at most 8 seconds. Read the managed page. Scroll in bounded steps and read after each step. Return only the requested number of notes with title, author state, visible engagement, and canonical URL. Stop when enough results are collected, the page repeats, a warning appears, the 8-second hydration window expires without cards, or the user limit is reached.
 
 ## Search and filters
 
 1. Normalize `{keyword, filters}` with `normalize-filters` before interacting. Supported filters are sort, note type, publish time, search scope, and location.
-2. Navigate to `https://www.xiaohongshu.com/search_result?keyword=<encoded>&source=web_explore_feed`, or use the visible search control when already attached there. Never invent a query token.
+2. Navigate to `https://www.xiaohongshu.com/search_result?keyword=<encoded>&source=web_explore_feed`, or use the visible search control when the BrowserSession already has that page. Never invent a query token.
 3. Wait for visible results. To filter, hover the visible `筛选` control, wait for the panel, then choose exact labels one group at a time in this order: sort, note type, publish time, search scope, location. Use the normalized labels from `normalize-filters` rather than positional guesses.
 4. After every selection, wait for the panel/result state to settle and verify the exact selected label before continuing. If the hover panel closes, reacquire it; never click a stale option ref.
 5. Return bounded cards. Never invent query tokens, counts, or hidden IDs.
