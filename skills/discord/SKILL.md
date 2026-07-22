@@ -1,6 +1,6 @@
 ---
 name: discord
-description: Work with the user's Discord account. Two modes, auto-selected by how they connected — OAuth (read-only identity + server list) or User Token / BYOC (full personal-account actions: list channels, read messages, send & reply). Use when the user mentions Discord, asks which servers they are in, or wants to read/post in a channel as themselves.
+description: Work with the user's Discord account. Two modes, auto-selected by how they connected — OAuth (read-only identity and server list) or User Token / BYOC (full personal-account actions — list channels, read messages, send and reply). Use when the user mentions Discord, asks which servers they are in, or wants to read/post in a channel as themselves.
 when_to_use: |
   Trigger for anything on the user's connected Discord account. What you can do
   depends on how they connected:
