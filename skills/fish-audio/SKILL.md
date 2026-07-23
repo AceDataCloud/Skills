@@ -87,7 +87,7 @@ Headers:
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"s1"`, `"s2-pro"` | Fish TTS engine selection |
+| `model` | `"s1"`, `"s2-pro"`, `"s2.1-pro"` | Fish TTS engine selection |
 
 ### JSON body
 
