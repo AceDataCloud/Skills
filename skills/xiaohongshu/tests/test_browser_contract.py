@@ -100,9 +100,24 @@ def _operation_block(frontmatter: str, operation: str) -> str:
     return match.group(1)
 
 
+def _operation_names(frontmatter: str) -> set[str]:
+    match = re.search(r"^    operations:\n(.*?)(?=^license:)", frontmatter, re.MULTILINE | re.DOTALL)
+    assert match, "missing execution.browser.operations"
+    return set(re.findall(r"^      ([a-z][a-z_]+):$", match.group(1), re.MULTILINE))
+
+
 def _operation_tools(block: str) -> set[str]:
     match = re.search(r"^        allowed_tools:\n((?:          - .+\n)+)", block, re.MULTILINE)
     assert match, "missing operation allowed_tools"
+    return {
+        line.removeprefix("          - ").strip()
+        for line in match.group(1).splitlines()
+    }
+
+
+def _operation_commands(block: str) -> set[str]:
+    match = re.search(r"^        allowed_commands:\n((?:          - .+\n)+)", block, re.MULTILINE)
+    assert match, "missing operation allowed_commands"
     return {
         line.removeprefix("          - ").strip()
         for line in match.group(1).splitlines()
@@ -119,8 +134,9 @@ def test_browser_execution_frontmatter_contract() -> None:
         re.MULTILINE,
     )
     assert "  Operate Xiaohongshu / RED through the user's paired browser device:" in frontmatter
-    assert re.search(r"^skill_revision: 4\.1\.0$", frontmatter, re.MULTILINE)
+    assert re.search(r"^skill_revision: 4\.2\.0$", frontmatter, re.MULTILINE)
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
+    assert re.search(r"^    skill_revision: 4\.2\.0$", frontmatter, re.MULTILINE)
     assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
@@ -152,12 +168,16 @@ def test_compact_manifest_matches_final_generated_profile() -> None:
 
 
 def test_operation_descriptors_define_exact_tool_union() -> None:
-    frontmatter = _frontmatter(SKILL.read_text(encoding="utf-8"))
+    skill_text = SKILL.read_text(encoding="utf-8")
+    frontmatter = _frontmatter(skill_text)
+    operation_names = _operation_names(frontmatter)
+    assert operation_names == {"read_content", "publish_note", "comment_or_reply", "toggle_reaction"}
     operations = {
         name: _operation_block(frontmatter, name)
-        for name in ("read_content", "publish_note", "comment_or_reply", "toggle_reaction")
+        for name in operation_names
     }
     operation_tools = {name: _operation_tools(block) for name, block in operations.items()}
+    operation_commands = {name: _operation_commands(block) for name, block in operations.items()}
 
     assert set().union(*operation_tools.values()) == _top_level_list(frontmatter, "allowed_tools")
     assert set().union(*operation_tools.values()) == EXPECTED_FACADES
@@ -165,14 +185,31 @@ def test_operation_descriptors_define_exact_tool_union() -> None:
     for tools in operation_tools.values():
         assert tools <= DEPLOYED_BROWSER_TOOLS
 
+    for name, tools in operation_tools.items():
+        expected_commands = {
+            f"{MANIFEST_DATA['facades'][tool]['family']}/{MANIFEST_DATA['facades'][tool]['kind']}"
+            for tool in tools
+        }
+        assert operation_commands[name] == expected_commands
+
     publish = operations["publish_note"]
-    assert re.search(r"^        action_class: protected\.publish$", publish, re.MULTILINE)
+    assert re.search(r"^        minimum_action_class: protected\.publish$", publish, re.MULTILINE)
     for field in ("title", "content_hash", "media_hashes", "visibility"):
         assert re.search(rf"^            - {field}$", publish, re.MULTILINE)
-    assert re.search(r'^          template: "xiaohongshu:publish:\{account\}:\{content_hash\}"$', publish, re.MULTILINE)
-    assert re.search(r"^        action_class: protected\.interaction$", operations["comment_or_reply"], re.MULTILINE)
-    assert re.search(r"^        action_class: reversible\.write$", operations["toggle_reaction"], re.MULTILINE)
-    assert re.search(r"^        action_class: read$", operations["read_content"], re.MULTILINE)
+    assert re.search(
+        r'^        semantic_key_template: "\{provider\}:\{operation_id\}:\{preview_hash\}:\{normalized_input_hash\}"$',
+        publish,
+        re.MULTILINE,
+    )
+    assert re.search(r"^        minimum_action_class: protected\.interaction$", operations["comment_or_reply"], re.MULTILINE)
+    assert re.search(r"^        minimum_action_class: reversible\.write$", operations["toggle_reaction"], re.MULTILINE)
+    assert re.search(r"^        minimum_action_class: read$", operations["read_content"], re.MULTILINE)
+    for block in operations.values():
+        template = re.search(r'^        semantic_key_template: "([^"]+)"$', block, re.MULTILINE)
+        assert template
+        fields = set(re.findall(r"\{([^}]+)\}", template.group(1)))
+        assert {"provider", "operation_id"} <= fields
+        assert fields <= {"provider", "operation_id", "preview_hash", "normalized_input_hash"}
 
 
 def test_generic_manifest_contains_no_site_specific_logic() -> None:
