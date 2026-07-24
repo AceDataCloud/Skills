@@ -11,7 +11,7 @@ when_to_use: |
   comment, reply, like, or favorite on Xiaohongshu, including implicit requests
   such as "发一篇种草笔记" when Xiaohongshu is clear from context.
 connections: [xiaohongshu]
-skill_revision: 4.1.0
+skill_revision: 4.2.0
 allowed_tools:
   - browser.snapshot
   - browser.get_text
@@ -35,6 +35,7 @@ allowed_tools:
   - browser.batch
 execution:
   browser:
+    skill_revision: 4.2.0
     provider: xiaohongshu/xiaohongshu
     origins:
       - https://www.xiaohongshu.com
@@ -51,7 +52,19 @@ execution:
       - file.upload
     operations:
       read_content:
-        action_class: read
+        minimum_action_class: read
+        allowed_commands:
+          - act/hover
+          - act/scroll
+          - act/scroll_to
+          - navigate/url
+          - observe/accessibility
+          - observe/element
+          - observe/find
+          - observe/screenshot
+          - observe/visible_text
+          - tabs/manage
+          - wait/condition
         allowed_tools:
           - browser.snapshot
           - browser.get_text
@@ -67,10 +80,30 @@ execution:
         preview_schema:
           type: object
           required: []
-        semantic_key:
-          template: "xiaohongshu:read:{origin}:{resource}"
+        semantic_key_template: "{provider}:{operation_id}:{normalized_input_hash}"
       publish_note:
-        action_class: protected.publish
+        minimum_action_class: protected.publish
+        allowed_commands:
+          - act/batch
+          - act/check
+          - act/click
+          - act/fill
+          - act/hover
+          - act/press
+          - act/scroll
+          - act/scroll_to
+          - act/select
+          - act/type
+          - dialog/handle
+          - navigate/url
+          - observe/accessibility
+          - observe/element
+          - observe/find
+          - observe/screenshot
+          - observe/visible_text
+          - tabs/manage
+          - transfer/upload
+          - wait/condition
         allowed_tools:
           - browser.snapshot
           - browser.get_text
@@ -99,10 +132,27 @@ execution:
             - content_hash
             - media_hashes
             - visibility
-        semantic_key:
-          template: "xiaohongshu:publish:{account}:{content_hash}"
+        semantic_key_template: "{provider}:{operation_id}:{preview_hash}:{normalized_input_hash}"
       comment_or_reply:
-        action_class: protected.interaction
+        minimum_action_class: protected.interaction
+        allowed_commands:
+          - act/batch
+          - act/click
+          - act/fill
+          - act/hover
+          - act/press
+          - act/scroll
+          - act/scroll_to
+          - act/type
+          - dialog/handle
+          - navigate/url
+          - observe/accessibility
+          - observe/element
+          - observe/find
+          - observe/screenshot
+          - observe/visible_text
+          - tabs/manage
+          - wait/condition
         allowed_tools:
           - browser.snapshot
           - browser.get_text
@@ -126,10 +176,21 @@ execution:
           required:
             - target
             - content_hash
-        semantic_key:
-          template: "xiaohongshu:interaction:{target}:{content_hash}"
+        semantic_key_template: "{provider}:{operation_id}:{preview_hash}:{normalized_input_hash}"
       toggle_reaction:
-        action_class: reversible.write
+        minimum_action_class: reversible.write
+        allowed_commands:
+          - act/click
+          - act/scroll
+          - act/scroll_to
+          - navigate/url
+          - observe/accessibility
+          - observe/element
+          - observe/find
+          - observe/screenshot
+          - observe/visible_text
+          - tabs/manage
+          - wait/condition
         allowed_tools:
           - browser.snapshot
           - browser.get_text
@@ -148,8 +209,7 @@ execution:
             - target
             - reaction
             - enabled
-        semantic_key:
-          template: "xiaohongshu:reaction:{target}:{reaction}:{enabled}"
+        semantic_key_template: "{provider}:{operation_id}:{preview_hash}:{normalized_input_hash}"
 license: Apache-2.0
 metadata:
   author: acedatacloud
