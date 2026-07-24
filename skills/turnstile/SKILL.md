@@ -50,7 +50,7 @@ POST /captcha/token/turnstile
 {
   "token": "0.zScW-EiocHwwpwqtk1QXlJnGnU......",
   "started_at": "2026-07-24T09:34:13+00:00",
-  "finished_at": "2026-07-24T09:34:50+00:00",
+  "finished_at": "2026-07-24T09:34:25+00:00",
   "elapsed": 12.4
 }
 ```
