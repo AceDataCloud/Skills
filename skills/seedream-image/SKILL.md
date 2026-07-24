@@ -1,6 +1,6 @@
 ---
 name: seedream-image
-description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, and SeedEdit 3.0 models.
+description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, 5.0 Pro, and SeedEdit 3.0 models.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -28,6 +28,7 @@ curl -X POST https://api.acedata.cloud/seedream/images \
 
 | Model | Version | Best For |
 |-------|---------|----------|
+| `doubao-seedream-5-0-pro-260628` | Seedream 5.0 Pro | Premium quality, highest fidelity |
 | `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, highest quality (default) |
 | `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
 | `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
