@@ -34,7 +34,7 @@ The model name suffix selects the upstream endpoint: `:reverse` routes to the fa
 | `grok-imagine-video-1.5-fast:reverse` | Text-to-Video, Image-to-Video | 6–30 s | Default. Tiered billing, cheapest. |
 | `grok-imagine-video:reverse` | Text-to-Video, Image-to-Video | 1–15 s | Per-output-second billing. |
 | `grok-imagine-video:official` | Text-to-Video, Image-to-Video | 1–15 s | Official endpoint, higher quality. |
-| `grok-imagine-video-1.5:official` | Image-to-Video only | 1–15 s | **Requires** `image_url`. Supports up to 1080p. |
+| `grok-imagine-video-1.5:official` | Image-to-Video only | 1–15 s | **Requires** `image_url`; `prompt` is optional. Supports up to 1080p. |
 | `grok-imagine-video` | Text-to-Video, Image-to-Video | 1–30 s | Legacy model. |
 
 ## Workflows
@@ -116,7 +116,7 @@ POST /grok/tasks
 | `reference_image_urls` | No | array of strings | Optional reference images to guide style/content |
 | `aspect_ratio` | No | `"1:1"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"`, `"3:2"`, `"2:3"` | Output aspect ratio |
 | `resolution` | No | `"480p"`, `"720p"`, `"1080p"` | Output resolution (default: `480p`) |
-| `duration` | No | integer 1–30 | Video length in seconds (default: 6). For `:reverse` models: 1–15 s; for `grok-imagine-video-1.5-fast:reverse`: 6–30 s. |
+| `duration` | No | integer 1–30 | Video length in seconds (default: 6). `grok-imagine-video-1.5-fast:reverse`: 6–30 s; other `:reverse` models: 1–15 s; `grok-imagine-video`: 1–30 s. |
 | `callback_url` | No | string | Webhook URL to receive result when complete |
 | `async` | No | boolean | Return `task_id` immediately and poll for result |
 

@@ -92,8 +92,8 @@ POST /captcha/recognition/hcaptcha
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `queries` | No | array of strings | Base64-encoded captcha image(s). Keep image size under 100 KB. |
-| `question` | No | string | Challenge question text (English or Chinese). |
+| `queries` | Yes | array of strings | Base64-encoded captcha image(s). Keep image size under 100 KB. |
+| `question` | Yes | string | Challenge question text (English or Chinese). |
 | `async` | No | boolean | Return `task_id` immediately and poll for result |
 
 ## Gotchas
