@@ -21,6 +21,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **sora-video** — Generate videos with OpenAI Sora
 - **veo-video** — Generate videos with Google Veo (native audio)
 - **kling-video** — Generate videos with Kuaishou Kling (motion control)
+- **grok-video** — Generate videos with Grok (text-to-video and image-to-video)
 - **hailuo-video** — Generate videos with Hailuo / MiniMax
 - **happyhorse-video** — Generate and edit videos with Happy Horse
 - **seedance-video** — Generate dance/motion videos with ByteDance Seedance

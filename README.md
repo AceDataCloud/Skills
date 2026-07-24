@@ -38,6 +38,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
+| [grok-video](skills/grok-video/) | Generate videos with Grok (text-to-video and image-to-video) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
