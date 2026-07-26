@@ -20,7 +20,7 @@ Generate narration / voiceover through AceDataCloud's Fish Audio API.
 curl -X POST https://api.acedata.cloud/fish/tts \
   -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -H "model: s2-pro" \
+  -H "model: s2.1-pro" \
   -d '{"text":"你好，欢迎使用 AceData Cloud。","reference_id":"d7900c21663f485ab63ebdb7e5905036","format":"mp3"}'
 ```
 
@@ -56,7 +56,7 @@ The response includes `items[]` with public voice metadata such as `_id`, `title
 ```json
 POST /fish/tts
 Headers:
-  model: s2-pro
+  model: s2.1-pro
 
 {
   "text": "Your narration text.",
@@ -87,7 +87,7 @@ Headers:
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"s1"`, `"s2-pro"` | Fish TTS engine selection |
+| `model` | `"s1"`, `"s2-pro"`, `"s2.1-pro"` | Fish TTS engine selection. `s2-pro` is the documented default; `s2.1-pro` is the latest generation. |
 
 ### JSON body
 
@@ -95,7 +95,7 @@ Headers:
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
 | `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
-| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format |
+| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format. Provide it explicitly in requests. |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
 | `opus_bitrate` | integer | Opus bitrate |
@@ -113,6 +113,7 @@ Headers:
 
 - The documented TTS endpoint is `POST /fish/tts` — not `/fish/audios`.
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
+- Current documented `model` header values are `s1`, `s2-pro`, and `s2.1-pro`.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
 - The current OpenAPI spec documents voice browsing via `GET /fish/model`; it does **not** document a voice-cloning write endpoint.

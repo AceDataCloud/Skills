@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 2 Fast, Veo 3, and Veo 3.1 models including fast and ingredient variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, blending 1-3 reference images, or converting an existing generated Veo video to 1080p. Supports current Veo 3 and Veo 3.1 model variants, including ingredient mode.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's Google Veo API.
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo31-fast", "async": true, "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
@@ -35,14 +35,13 @@ curl -X POST https://api.acedata.cloud/veo/tasks \
 
 ## Models
 
-| Model | Audio | Best For |
-|-------|-------|----------|
-| `veo2-fast` | No | Fast, cost-effective generation (default) |
-| `veo3` | Yes (native) | Full audiovisual generation |
-| `veo3-fast` | Yes (native) | Faster audiovisual generation |
-| `veo31` | Yes (native) | Veo 3.1, highest quality |
-| `veo31-fast` | Yes (native) | Veo 3.1 fast variant |
-| `veo31-fast-ingredients` | Yes (native) | Veo 3.1 fast, ingredient mode |
+| Model | Best For | Input Rules |
+|-------|----------|-------------|
+| `veo3` | Higher-quality text-to-video or image-to-video | No images = text-to-video; 1-2 images = first-frame / first-and-last-frame mode |
+| `veo3-fast` | Faster text-to-video or image-to-video | No images = text-to-video; 1-2 images = first-frame / first-and-last-frame mode |
+| `veo31` | Veo 3.1 quality mode | No images = text-to-video; 1-2 images = first-frame / first-and-last-frame mode |
+| `veo31-fast` | Veo 3.1 fast mode | No images = text-to-video; 1-2 images = first-frame / first-and-last-frame mode |
+| `veo31-fast-ingredients` | Multi-image ingredient blending | Requires `image_urls`; supports 1-3 images; not for text-only generation |
 
 ## Workflows
 
@@ -53,7 +52,7 @@ POST /veo/videos
 {
   "action": "text2video",
   "prompt": "cinematic aerial shot of the Northern Lights over Iceland",
-  "model": "veo3",
+  "model": "veo31-fast",
   "resolution": "1080p"
 }
 ```
@@ -68,14 +67,15 @@ POST /veo/videos
   "action": "image2video",
   "prompt": "the scene gently comes to life with wind and subtle motion",
   "image_urls": ["https://example.com/landscape.jpg"],
-  "model": "veo2-fast",
+  "model": "veo3-fast",
   "aspect_ratio": "16:9"
 }
 ```
 
 ### 3. Ingredients-to-Video (Multi-Image Blend)
 
-Blend 1–3 reference images into a video (only `veo31-fast-ingredients`).
+Blend 1–3 reference images into a video. This mode is specifically for
+`veo31-fast-ingredients`.
 
 ```json
 POST /veo/videos
@@ -89,16 +89,17 @@ POST /veo/videos
 }
 ```
 
-### 4. Upscale to 1080p
+### 4. Get a 1080p Output from an Existing Generated Video
 
-Convert a previously generated video to full 1080p resolution.
+Convert a previously generated Veo result to a 1080p output. Use the generated
+video's `data[].id` as `video_id`.
 
 ```json
 POST /veo/videos
 {
   "action": "get1080p",
   "video_id": "your-video-id",
-  "model": "veo3"
+  "model": "veo31-fast"
 }
 ```
 
@@ -107,113 +108,49 @@ POST /veo/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
-| `model` | see Models table | Model to use (default: `veo2-fast`) |
-| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
-| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
-| `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
-| `video_id` | string | Video to upscale — only for `get1080p` |
-| `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+| `model` | see Models table | Current documented models are `veo3`, `veo3-fast`, `veo31-fast`, `veo31`, and `veo31-fast-ingredients` |
+| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution. Docs note that omitted values fall back to the service default. |
+| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio hint |
+| `image_urls` | array of strings | Reference image URLs — up to 2 for normal image-to-video, or 1-3 for `veo31-fast-ingredients` |
+| `video_id` | string | Generated Veo video ID — used for `get1080p` |
+| `translation` | `true` / `false` | Auto-translate the prompt to English before generation |
+| `callback_url` | string | Optional webhook for completion |
+| `async` | boolean | If `true`, return a task ID immediately and poll `/veo/tasks` |
 
-## Post-Generation Endpoints
+## Task Retrieval
 
-After generating a video, use these endpoints to further process it:
-
-### Upsample (`POST /veo/upsample`)
-
-Upscale a generated video to 1080p, 4K, or convert to GIF.
+Poll a single task:
 
 ```json
-POST /veo/upsample
+POST /veo/tasks
 {
-  "video_id": "your-video-id",
-  "action": "4k"
+  "id": "your-task-id",
+  "action": "retrieve"
 }
 ```
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos`, `/veo/extend`, `/veo/reshoot`, or `/veo/objects` |
-| `action` | `"1080p"`, `"4k"`, `"gif"` | Upsample target |
-
-### Extend (`POST /veo/extend`)
-
-Continue an existing video — AI auto-generates the next segment.
+Poll multiple tasks:
 
 ```json
-POST /veo/extend
+POST /veo/tasks
 {
-  "video_id": "your-video-id",
-  "model": "veo31-fast",
-  "prompt": "the camera slowly zooms out"
+  "ids": ["task-1", "task-2"],
+  "action": "retrieve_batch"
 }
 ```
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos` or a prior `/veo/extend` |
-| `model` | `"veo31-fast"`, `"veo31"` | Only Veo 3.1 series is supported |
-| `prompt` | string | Optional: guides the extended segment |
-
-### Reshoot (`POST /veo/reshoot`)
-
-Re-render a video keeping the same content but applying new camera motion.
-
-```json
-POST /veo/reshoot
-{
-  "video_id": "your-video-id",
-  "motion_type": "LEFT_TO_RIGHT"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID from `/veo/videos` (cannot use `/veo/extend` output) |
-| `motion_type` | see table below | Camera motion to apply |
-
-**`motion_type` values:**
-`STATIONARY`, `STATIONARY_UP`, `STATIONARY_DOWN`, `STATIONARY_LEFT`, `STATIONARY_RIGHT`, `STATIONARY_DOLLY_IN_ZOOM_OUT`, `STATIONARY_DOLLY_OUT_ZOOM_IN`, `UP`, `DOWN`, `LEFT_TO_RIGHT`, `RIGHT_TO_LEFT`, `FORWARD`, `BACKWARD`, `DOLLY_IN_ZOOM_OUT`, `DOLLY_OUT_ZOOM_IN`
-
-### Objects (`POST /veo/objects`)
-
-Insert or remove objects in a video using mask-based inpainting.
-
-```json
-POST /veo/objects
-{
-  "video_id": "your-video-id",
-  "action": "insert",
-  "prompt": "add a flying bird"
-}
-```
-
-```json
-POST /veo/objects
-{
-  "video_id": "your-video-id",
-  "action": "remove",
-  "image_mask": "https://example.com/mask.jpg"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | Task ID (cannot use `/veo/extend` output) |
-| `action` | `"insert"`, `"remove"` | Operation type |
-| `prompt` | string | Required for `insert`; optional for `remove` |
-| `image_mask` | string | URL or base64 JPEG — white pixels = target region. Required for `remove`; optional for `insert` |
+Single-task responses include the original `request` and a final `response`.
+Successful results return `response.data[]` items with fields such as `id`,
+`video_url`, `created_at`, `complete_at`, and `state`.
 
 ## Gotchas
 
-- Veo 3 and 3.1 models generate **native audio** — `veo2-fast` does NOT support audio
-- The `get1080p` action uses `video_id` (from a prior generation), not a URL
-- `aspect_ratio` is **only valid** for the `image2video` action
-- `image_urls` accepts an array — up to 2 images for `image2video`, up to 3 for `ingredients2video`
-- `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
-- Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
-- `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
-- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
-- Task states use `"succeeded"` (not "completed") — check for this value when polling
-- `/veo/extend` output **cannot** be used as input for `/veo/reshoot` or `/veo/objects`
+- The current documented API surface is `POST /veo/videos` plus `POST /veo/tasks`; older routes such as `/veo/extend`, `/veo/reshoot`, `/veo/objects`, and `/veo/upsample` are not in the current OpenAPI spec.
+- `veo31-fast-ingredients` requires image input and is the only documented 1-3 image blend mode.
+- For other models, omit `image_urls` for text-to-video, use 1 image for first-frame mode, and 2 images for first-and-last-frame mode.
+- The `get1080p` action uses a previously generated video's `data[].id` as `video_id`, not the task ID and not a URL.
+- `translation: true` auto-translates non-English prompts before sending them to Veo.
+- Task polling uses `id` or `ids` in the `/veo/tasks` request body; `retrieve_batch` is supported.
+- Successful results use `response.data[]` with per-video `state` values such as `succeeded`.
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
