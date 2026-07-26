@@ -19,7 +19,7 @@ user media, reference clips, or pre-built templates.
 
 | Goal | Endpoint | Required inputs |
 |---|---|---|
-| Generate a product intro or main video | `POST /kickart/videos` | `duration` |
+| Generate a product intro or main video | `POST /kickart/videos` | `duration`; at least one of `product_url`, `product_id`, `user_images`, or `user_videos` |
 | Produce a viral-style video from a reference clip | `POST /kickart/viral-videos` | `ref_video`, `language` |
 | Render a video using a specific template | `POST /kickart/template-videos` | `template_id`, `resource_list` |
 
@@ -132,7 +132,7 @@ POST /kickart/template-videos
 |---|---|---|---|
 | `ref_video` | string | **Yes** | URL of the reference video to replicate style from |
 | `language` | string | **Yes** | `zh`, `en`, `en-us`, `pt-br`, `ja`, `es-mx`, `id`, `ms`, `tl` |
-| `mode` | string | No | `pro` (default), `advanced` |
+| `mode` | string | No | `pro` (default) — standard viral generation; `advanced` — higher quality with more AI analysis |
 | `template_id` | string | No | Override mode with a specific template ID |
 | `product_url` | string | No | TikTok/Douyin product URL |
 | `product_id` | string | No | TikTok/Douyin product ID |
