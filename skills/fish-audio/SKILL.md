@@ -87,7 +87,7 @@ Headers:
 
 | Parameter | Values | Description |
 |-----------|--------|-------------|
-| `model` | `"s1"`, `"s2-pro"`, `"s2.1-pro"` | Fish TTS engine selection. `s2-pro` is the documented default; `s2.1-pro` is the latest generation. |
+| `model` | `"s1"`, `"s2-pro"`, `"s2.1-pro"` | Fish TTS engine selection. `s2.1-pro` is the latest documented generation. |
 
 ### JSON body
 
@@ -95,7 +95,7 @@ Headers:
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
 | `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
-| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format. Provide it explicitly in requests. |
+| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format. Docs examples pass this field explicitly. |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
 | `opus_bitrate` | integer | Opus bitrate |

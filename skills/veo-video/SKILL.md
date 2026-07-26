@@ -109,7 +109,7 @@ POST /veo/videos
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
 | `model` | see Models table | Current documented models are `veo3`, `veo3-fast`, `veo31-fast`, `veo31`, and `veo31-fast-ingredients` |
-| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution. Docs note that omitted values fall back to the service default. |
+| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution. The Docs guide notes that omitted values default to 720p. |
 | `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio hint |
 | `image_urls` | array of strings | Reference image URLs — up to 2 for normal image-to-video, or 1-3 for `veo31-fast-ingredients` |
 | `video_id` | string | Generated Veo video ID — used for `get1080p` |
@@ -145,7 +145,7 @@ Successful results return `response.data[]` items with fields such as `id`,
 
 ## Gotchas
 
-- The current documented API surface is `POST /veo/videos` plus `POST /veo/tasks`; older routes such as `/veo/extend`, `/veo/reshoot`, `/veo/objects`, and `/veo/upsample` are not in the current OpenAPI spec.
+- This skill documents the current OpenAPI surface: `POST /veo/videos` plus `POST /veo/tasks`. Older routes such as `/veo/extend`, `/veo/reshoot`, `/veo/objects`, and `/veo/upsample` are not documented in the current OpenAPI spec, so do not rely on them here.
 - `veo31-fast-ingredients` requires image input and is the only documented 1-3 image blend mode.
 - For other models, omit `image_urls` for text-to-video, use 1 image for first-frame mode, and 2 images for first-and-last-frame mode.
 - The `get1080p` action uses a previously generated video's `data[].id` as `video_id`, not the task ID and not a URL.
