@@ -373,6 +373,189 @@ class RedditSkillTests(unittest.TestCase):
             self.assertIn("do not replay", post_stream.getvalue())
             self.assertNotIn("csrf-secret", post_stream.getvalue())
 
+    def test_normalize_thing_id_accepts_fullnames_and_permalinks(self):
+        self.assertEqual("t3_abc123", reddit.normalize_thing_id("t3_abc123"))
+        self.assertEqual("t1_def456", reddit.normalize_thing_id("t1_def456"))
+        self.assertEqual(
+            "t3_1r9yrtn",
+            reddit.normalize_thing_id("https://www.reddit.com/r/SunoAI/comments/1r9yrtn/reliable_alternative/"),
+        )
+        self.assertEqual(
+            "t1_def456",
+            reddit.normalize_thing_id("https://www.reddit.com/r/test/comments/abc123/some_slug/def456/"),
+        )
+
+    def test_normalize_thing_id_rejects_non_reddit_and_malformed(self):
+        for value in [
+            "https://evil.example.com/r/test/comments/abc123/x/",
+            "t9_abc123",
+            "not-a-thing",
+            "https://www.reddit.com/r/test/",
+            # Only comments (t1_) and posts (t3_) can be replied to.
+            "t2_abc123",
+            "t4_abc123",
+            "t5_abc123",
+            "t6_abc123",
+        ]:
+            stream = io.StringIO()
+            with self.subTest(value=value), self.assertRaises(SystemExit), redirect_stdout(stream):
+                reddit.normalize_thing_id(value)
+
+    def test_comment_dry_run_never_calls_network(self):
+        stream = io.StringIO()
+        with patch.dict(os.environ, {}, clear=True), patch.object(reddit, "open_request") as urlopen, redirect_stdout(
+            stream
+        ):
+            reddit.main(["comment", "--parent", "t3_abc123", "--body", "Body"])
+
+        value = json.loads(stream.getvalue())
+        self.assertTrue(value["dry_run"])
+        self.assertEqual("t3_abc123", value["parent"])
+        self.assertEqual(4, value["body_length"])
+        urlopen.assert_not_called()
+
+    def test_comment_body_containing_confirm_cannot_trigger_a_write(self):
+        stream = io.StringIO()
+        with patch.dict(os.environ, {"REDDIT_COOKIES": COOKIE_JAR}, clear=True), patch.object(
+            reddit, "open_request"
+        ) as urlopen, redirect_stdout(stream):
+            reddit.main(["comment", "--parent", "t3_abc123", "--body", "please --confirm this"])
+
+        self.assertTrue(json.loads(stream.getvalue())["dry_run"])
+        urlopen.assert_not_called()
+
+    def test_cookie_mode_comment_sends_modhash_and_returns_permalink(self):
+        responses = [
+            FakeResponse({"data": {"id": "abc", "name": "tester", "modhash": "csrf-secret"}}),
+            FakeResponse(
+                {
+                    "json": {
+                        "errors": [],
+                        "data": {
+                            "things": [
+                                {
+                                    "data": {
+                                        "id": "c1",
+                                        "name": "t1_c1",
+                                        "permalink": "/r/test/comments/post1/title/c1/",
+                                    }
+                                }
+                            ]
+                        },
+                    }
+                }
+            ),
+        ]
+        with patch.dict(os.environ, {"REDDIT_COOKIES": COOKIE_JAR}, clear=True), patch.object(
+            reddit, "open_request", side_effect=responses
+        ) as urlopen:
+            client = reddit.RedditClient.from_environment()
+            result = client.comment(parent="t3_post1", body="Reply body")
+
+        self.assertTrue(result["commented"])
+        self.assertEqual("https://www.reddit.com/r/test/comments/post1/title/c1/", result["url"])
+        comment_request = urlopen.call_args_list[1].args[0]
+        self.assertEqual("https://www.reddit.com/api/comment", comment_request.full_url)
+        form = urllib.parse.parse_qs(comment_request.data.decode())
+        self.assertEqual(["csrf-secret"], form["uh"])
+        self.assertEqual(["t3_post1"], form["thing_id"])
+        self.assertEqual(["Reply body"], form["text"])
+
+    def test_comment_rejection_and_malformed_shapes_hide_authenticated_details(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        payloads = [
+            {"json": {"errors": [["RATELIMIT", "you are doing that too much csrf-secret", None]]}},
+            {"json": {"errors": []}},
+            {"json": {"errors": [], "data": {"things": []}}},
+            {"json": {"errors": [], "data": {"things": [{"data": {"id": "c1"}}]}}},
+        ]
+        for payload in payloads:
+            stream = io.StringIO()
+            with self.subTest(payload=payload), patch.object(
+                client, "request", return_value=payload
+            ), self.assertRaises(SystemExit), redirect_stdout(stream):
+                client.comment(parent="t3_post1", body="Body")
+            self.assertNotIn("csrf-secret", stream.getvalue())
+
+    def test_comment_body_limits_are_enforced(self):
+        for body in ["", "   ", "x" * 10_001]:
+            stream = io.StringIO()
+            with self.subTest(body=len(body)), self.assertRaises(SystemExit), redirect_stdout(stream):
+                reddit.validate_comment_body(body)
+
+    def test_search_returns_fullnames_for_reply_targets(self):
+        payload = {
+            "data": {
+                "children": [
+                    {
+                        "data": {
+                            "id": "p1",
+                            "name": "t3_p1",
+                            "title": "Looking for a Suno API",
+                            "subreddit": "SunoAI",
+                            "permalink": "/r/SunoAI/comments/p1/looking/",
+                            "selftext": "x" * 900,
+                        }
+                    },
+                    {"data": {"id": "bad"}},
+                ]
+            }
+        }
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        with patch.object(client, "request", return_value=payload):
+            hits = client.search(query="suno api", limit=5)
+
+        self.assertEqual(1, len(hits))
+        formatted = reddit.format_search_hit(hits[0])
+        self.assertEqual("t3_p1", formatted["fullname"])
+        self.assertEqual("https://www.reddit.com/r/SunoAI/comments/p1/looking/", formatted["url"])
+        self.assertEqual(500, len(formatted["selftext_excerpt"]))
+
+    def test_search_is_a_read_and_rejects_malformed_shape(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        stream = io.StringIO()
+        with patch.object(client, "request", return_value={"data": {}}), self.assertRaises(
+            SystemExit
+        ), redirect_stdout(stream):
+            client.search(query="suno api")
+        self.assertIn("malformed search response", stream.getvalue())
+
+
+    def test_comment_write_failures_never_advise_checking_submissions(self):
+        """A comment never appears in `submissions`; that advice would cause a duplicate reply."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+
+        # Malformed shape.
+        stream = io.StringIO()
+        with patch.object(client, "request", return_value={"json": {"errors": []}}), self.assertRaises(
+            SystemExit
+        ), redirect_stdout(stream):
+            client.comment(parent="t3_post1", body="Body")
+        self.assertIn("comment outcome is unknown", stream.getvalue())
+        self.assertIn("parent thread", stream.getvalue())
+        self.assertNotIn("recent submissions", stream.getvalue())
+
+        # Transport failure inside request().
+        stream = io.StringIO()
+        with patch.object(
+            reddit, "open_request", side_effect=urllib.error.URLError("boom")
+        ), self.assertRaises(SystemExit), redirect_stdout(stream):
+            client.request("POST", "/api/comment", form={"text": "x"}, write_kind="comment")
+        self.assertIn("comment outcome is unknown", stream.getvalue())
+        self.assertNotIn("recent submissions", stream.getvalue())
+
+    def test_post_write_failures_still_advise_checking_submissions(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        stream = io.StringIO()
+        with patch.object(
+            reddit, "open_request", side_effect=urllib.error.URLError("boom")
+        ), self.assertRaises(SystemExit), redirect_stdout(stream):
+            client.request("POST", "/api/submit", form={"title": "x"})
+        self.assertIn("post outcome is unknown", stream.getvalue())
+        self.assertIn("recent submissions", stream.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
