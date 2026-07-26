@@ -55,8 +55,9 @@ python3 "$R" submissions --limit 10
 python3 "$R" comments --limit 10
 ```
 
-If a `comment` write ever reports an unknown outcome, run `comments` to check
-whether it actually landed **before** considering any retry.
+`comment` verifies itself: when Reddit answers in a shape it cannot parse, it
+looks the comment up via `comments` before reporting anything. If it still says
+the write likely failed, re-check with `comments` yourself before resending.
 
 ## Find threads and check the rules
 

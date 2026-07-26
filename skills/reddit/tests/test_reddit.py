@@ -609,6 +609,145 @@ class RedditSkillTests(unittest.TestCase):
         self.assertEqual(2, len(items))
         self.assertIsNone(reddit.format_comment(items[1])["url"])
 
+    def test_unparsable_write_is_resolved_by_verifying_recent_comments(self):
+        """Two live writes hit shapes this parser did not model; verify, never guess."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        client.username = "tester"
+        unparsable = {"json": {"errors": [], "data": {}}}
+        listing = {"data": {"children": [
+            {"data": {"id": "ozw0cnk", "body": "Honest answer: it depends.",
+                      "link_id": "t3_1uqn02z", "created_utc": time.time(),
+                      "permalink": "/r/aivideomaking/comments/1uqn02z/help/ozw0cnk/"}},
+        ]}}
+        with patch.object(client, "request", side_effect=[unparsable, listing]):
+            result = client.comment(parent="t3_1uqn02z", body="Honest answer: it depends.")
+
+        self.assertTrue(result["commented"])
+        self.assertEqual("ozw0cnk", result["id"])
+        self.assertEqual(
+            "https://www.reddit.com/r/aivideomaking/comments/1uqn02z/help/ozw0cnk/", result["url"]
+        )
+        self.assertIn("confirmed via", result["note"])
+
+    def test_unparsable_write_with_no_matching_comment_reports_likely_failure(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        client.username = "tester"
+        unparsable = {"json": {"errors": [], "data": {}}}
+        listing = {"data": {"children": [
+            {"data": {"id": "other", "body": "an unrelated older comment", "link_id": "t3_zzz",
+                      "created_utc": time.time(), "permalink": "/r/x/comments/a/b/other/"}},
+        ]}}
+        stream = io.StringIO()
+        with patch.object(client, "request", side_effect=[unparsable, listing, listing]), patch.object(
+            reddit.time, "sleep"
+        ), self.assertRaises(SystemExit), redirect_stdout(stream):
+            client.comment(parent="t3_1uqn02z", body="Body that was never posted")
+        message = stream.getvalue()
+        self.assertIn("could not be confirmed", message)
+        self.assertIn("do not replay", message)
+        self.assertNotIn("csrf-secret", message)
+
+    def test_jquery_rejection_is_never_laundered_into_success_by_a_stale_duplicate(self):
+        """A jQuery-shaped rejection has no errors array; a same-text older comment must not vouch for it."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        client.username = "tester"
+        jquery_rejection = {"jquery": [[0, 1, "call", ["you are doing that too much. try again in 6 minutes."]]]}
+        stale = {"data": {"children": [
+            {"data": {"id": "OLD111", "body": "Honest answer: it depends.", "link_id": "t3_OTHER",
+                      "created_utc": time.time() - 86400,
+                      "permalink": "/r/other/comments/OTHER/old_thread/OLD111/"}},
+        ]}}
+        stream = io.StringIO()
+        with patch.object(client, "request", side_effect=[jquery_rejection, stale, stale]), patch.object(
+            reddit.time, "sleep"
+        ), self.assertRaises(SystemExit), redirect_stdout(stream):
+            client.comment(parent="t3_NEWTHRD", body="Honest answer: it depends.")
+        self.assertIn("could not be confirmed", stream.getvalue())
+        self.assertNotIn("OLD111", stream.getvalue())
+
+    def test_jquery_shape_recovers_when_the_comment_really_landed(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        client.username = "tester"
+        jquery = {"jquery": [[0, 1, "call", ["ok"]]]}
+        listing = {"data": {"children": [
+            {"data": {"id": "ozw0cnk", "body": "Looks good", "link_id": "t3_1v711cj",
+                      "created_utc": time.time(), "permalink": "/r/test/comments/1v711cj/test/ozw0cnk/"}},
+        ]}}
+        with patch.object(client, "request", side_effect=[jquery, listing]):
+            result = client.comment(parent="t3_1v711cj", body="Looks good")
+        self.assertTrue(result["commented"])
+        self.assertEqual("https://www.reddit.com/r/test/comments/1v711cj/test/ozw0cnk/", result["url"])
+
+    def test_verify_retries_once_for_listing_replication_lag(self):
+        """A just-written comment can lag the replica; one empty read must not mean failure."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        client.username = "tester"
+        unparsable = {"json": {"errors": [], "data": {}}}
+        empty = {"data": {"children": []}}
+        landed = {"data": {"children": [
+            {"data": {"id": "lag1", "body": "Looks good", "link_id": "t3_1v711cj",
+                      "created_utc": time.time(), "permalink": "/r/test/comments/1v711cj/t/lag1/"}},
+        ]}}
+        with patch.object(client, "request", side_effect=[unparsable, empty, landed]), patch.object(
+            reddit.time, "sleep"
+        ) as slept:
+            result = client.comment(parent="t3_1v711cj", body="Looks good")
+        self.assertTrue(result["commented"])
+        self.assertEqual("lag1", result["id"])
+        slept.assert_called()
+
+    def test_verify_ignores_a_comment_created_before_the_write(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        recent = [{"id": "old", "body": "same text", "link_id": "t3_thread1",
+                   "created_utc": time.time() - 7200, "permalink": "/r/x/comments/thread1/s/old/"}]
+        self.assertIsNone(
+            reddit.RedditClient.match_written_comment(recent, "t3_thread1", "same text", time.time())
+        )
+
+    def test_match_requires_the_same_reply_target_not_just_recency(self):
+        """These fixtures are all RECENT, so only the thread/parent check can reject them."""
+        now = time.time()
+        cases = [
+            # same body, recent, but a different thread
+            ({"id": "x1", "body": "same text", "link_id": "t3_OTHER", "created_utc": now,
+              "permalink": "/r/o/comments/OTHER/s/x1/"}, "t3_THREADX"),
+            # link_id absent -> permalink must still place it in our thread
+            ({"id": "x2", "body": "same text", "created_utc": now,
+              "permalink": "/r/o/comments/OTHER/s/x2/"}, "t3_THREADX"),
+            # right thread, but it is a reply to a different comment
+            ({"id": "x3", "body": "same text", "link_id": "t3_THREADX", "parent_id": "t1_someother",
+              "created_utc": now, "permalink": "/r/o/comments/THREADX/s/x3/"}, "t3_THREADX"),
+            # t1_ parent, mismatched parent_id
+            ({"id": "x4", "body": "same text", "parent_id": "t1_wrong", "created_utc": now,
+              "permalink": "/r/o/comments/THREADX/s/x4/"}, "t1_target"),
+            # t1_ parent with no parent_id at all -> unattributable, not proof
+            ({"id": "x5", "body": "same text", "created_utc": now,
+              "permalink": "/r/o/comments/THREADX/s/x5/"}, "t1_target"),
+        ]
+        for item, parent in cases:
+            with self.subTest(item=item["id"]):
+                self.assertIsNone(
+                    reddit.RedditClient.match_written_comment([item], parent, "same text", now)
+                )
+
+    def test_match_accepts_the_comment_this_write_created(self):
+        now = time.time()
+        top_level = {"id": "ok1", "body": "same text", "link_id": "t3_THREADX", "parent_id": "t3_THREADX",
+                     "created_utc": now, "permalink": "/r/o/comments/THREADX/s/ok1/"}
+        self.assertEqual(
+            "ok1", reddit.RedditClient.match_written_comment([top_level], "t3_THREADX", "same text", now)["id"]
+        )
+        nested = {"id": "ok2", "body": "same text", "link_id": "t3_THREADX", "parent_id": "t1_target",
+                  "created_utc": now, "permalink": "/r/o/comments/THREADX/s/ok2/"}
+        self.assertEqual(
+            "ok2", reddit.RedditClient.match_written_comment([nested], "t1_target", "same text", now)["id"]
+        )
+
     def test_comment_body_limits_are_enforced(self):
         for body in ["", "   ", "x" * 10_001]:
             stream = io.StringIO()
@@ -674,12 +813,12 @@ class RedditSkillTests(unittest.TestCase):
 
         # Malformed shape.
         stream = io.StringIO()
-        with patch.object(client, "request", return_value={"json": {"errors": []}}), self.assertRaises(
-            SystemExit
-        ), redirect_stdout(stream):
+        with patch.object(client, "request", return_value={"json": {"errors": []}}), patch.object(
+            reddit.time, "sleep"
+        ), self.assertRaises(SystemExit), redirect_stdout(stream):
             client.comment(parent="t3_post1", body="Body")
-        self.assertIn("comment outcome is unknown", stream.getvalue())
-        self.assertIn("parent thread", stream.getvalue())
+        self.assertIn("could not be confirmed", stream.getvalue())
+        self.assertIn("do not replay", stream.getvalue())
         self.assertNotIn("recent submissions", stream.getvalue())
 
         # Transport failure inside request().

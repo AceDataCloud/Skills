@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import gzip
+import io
 import json
 import os
 import re
@@ -31,6 +32,9 @@ SUBREDDIT_RE = re.compile(r"^[A-Za-z0-9_]{2,21}$")
 COOKIE_NAME_RE = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
 # Only a comment (t1_) or a post (t3_) can be replied to.
 THING_ID_RE = re.compile(r"^t[13]_[A-Za-z0-9]{2,16}$")
+VERIFY_ATTEMPTS = 2
+VERIFY_RETRY_SECONDS = 3
+VERIFY_CLOCK_SKEW_SECONDS = 15
 
 
 def output(value) -> None:
@@ -474,6 +478,78 @@ class RedditClient:
         return {"ok": True, "posted": True, "id": post.get("id"), "name": post.get("name"), "url": post_url}
 
 
+    def verify_recent_comment(
+        self, parent: str, body: str, written_at: float, seen_ids: set | None = None
+    ) -> dict:
+        """Resolve an unparsable write by finding the comment we just posted.
+
+        Matching on body alone would let a stale duplicate vouch for a rejected
+        write, so the hit must also belong to this thread and be newly created.
+        """
+        wanted = body.strip()
+        recent = []
+        for attempt in range(VERIFY_ATTEMPTS):
+            if attempt:
+                # The user-comments listing is a read replica and lags a write.
+                time.sleep(VERIFY_RETRY_SECONDS)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    recent = self.comments(25)
+            except SystemExit:
+                recent = []
+            match = self.match_written_comment(recent, parent, wanted, written_at, seen_ids)
+            if match:
+                formatted = format_comment(match)
+                return {
+                    "ok": True,
+                    "commented": True,
+                    "id": formatted["id"],
+                    "name": None,
+                    "url": formatted["url"],
+                    "note": "Reddit returned an unrecognized response; the comment was confirmed via `comments`.",
+                }
+        die(
+            "Reddit returned an unrecognized comment response and the comment could not be "
+            "confirmed in this account's recent comments. It may have been rejected, or the "
+            "listing may still be catching up. Re-check with `comments` before resending; "
+            "do not replay automatically."
+        )
+
+    @staticmethod
+    def match_written_comment(
+        recent: list, parent: str, wanted: str, written_at: float, seen_ids: set | None = None
+    ) -> dict | None:
+        """Find the comment this write created — never merely a lookalike.
+
+        Body alone is not proof: the same text can already exist on the same
+        thread, so an id present before the write can never vouch for it.
+        """
+        thread = parent[3:] if parent.startswith("t3_") else ""
+        for item in recent:
+            if str(item.get("body") or "").strip() != wanted:
+                continue
+            if seen_ids is not None and str(item.get("id") or "") in seen_ids:
+                continue
+            created = item.get("created_utc")
+            if not isinstance(created, (int, float)) or created < written_at - VERIFY_CLOCK_SKEW_SECONDS:
+                continue
+            # Reply target must match: same parent, not merely the same thread.
+            parent_id = str(item.get("parent_id") or "")
+            if parent_id and parent_id != parent:
+                continue
+            if thread:
+                link_id = item.get("link_id")
+                if isinstance(link_id, str) and link_id.startswith("t3_"):
+                    if link_id[3:] != thread:
+                        continue
+                elif f"/comments/{thread}/" not in str(item.get("permalink") or ""):
+                    continue
+            elif not parent_id:
+                # A t1_ reply we cannot attribute to its parent is not proof.
+                continue
+            return item
+        return None
+
     def comments(self, limit: int) -> list[dict]:
         """List my own recent comments — used to verify an ambiguous write."""
         username = self.username or str(self.me().get("name") or "")
@@ -541,13 +617,15 @@ class RedditClient:
                 die("Reddit did not return a modhash; the Cookie session cannot perform writes.")
             form["uh"] = self.modhash
 
+        written_at = time.time()
         payload = self.request("POST", "/api/comment", form=form, write_kind="comment")
+        # Cookie mode can answer in jQuery form with no `json` object at all.
         if not isinstance(payload, dict) or not isinstance(payload.get("json"), dict):
-            die_unknown_comment_response()
+            return self.verify_recent_comment(parent, body, written_at)
         json_payload = payload["json"]
         errors = json_payload.get("errors")
         if not isinstance(errors, list):
-            die_unknown_comment_response()
+            return self.verify_recent_comment(parent, body, written_at)
         if errors:
             die(
                 "Reddit rejected the comment. Check subreddit rules, account age/karma "
@@ -555,11 +633,11 @@ class RedditClient:
                 "authenticated error details were omitted."
             )
         things = (json_payload.get("data") or {}).get("things")
-        if not isinstance(things, list) or not things or not isinstance(things[0], dict):
-            die_unknown_comment_response()
-        created = things[0].get("data")
+        created = things[0].get("data") if isinstance(things, list) and things and isinstance(things[0], dict) else None
         if not isinstance(created, dict):
-            die_unknown_comment_response()
+            # Cookie mode returns shapes this parser does not model. Never guess:
+            # look for the comment we just wrote before reporting any outcome.
+            return self.verify_recent_comment(parent, body, written_at)
         comment_name = created.get("name")
         comment_id = created.get("id")
         if not isinstance(comment_id, str) or not comment_id:
@@ -572,7 +650,7 @@ class RedditClient:
             return {"ok": True, "commented": True, "id": comment_id or None, "name": comment_name, "url": WEB_BASE + permalink}
 
         if not comment_id:
-            die_unknown_comment_response()
+            return self.verify_recent_comment(parent, body, written_at)
 
         # link_id is the thread even when replying to a comment (t1_ parent).
         link_id = created.get("link_id")
