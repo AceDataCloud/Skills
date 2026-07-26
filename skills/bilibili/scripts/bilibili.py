@@ -277,8 +277,30 @@ def cmd_article(jar, args):
     })
 
 
-# tid = cover layout; a wrong one returns code -17 / "分类". Try common ones.
-_TID_CANDIDATES = ["4", "3", "6", "7", "2", "17", "28", "41"]
+# The article's 分类 (from /x/article/categories). This is the `category` form
+# field — `tid` alone does NOT set it (a hardcoded category=0 always lands in
+# 生活 regardless of tid). Sub-category ids only; a parent id is rejected.
+_CATEGORIES = {
+    "数码": "26", "科技": "26", "tech": "26",
+    "学习": "34", "人文历史": "25", "自然": "33", "汽车": "27",
+    "日常": "15", "生活": "15", "美食": "13", "时尚": "14", "运动": "22", "萌宠": "21",
+    "绘画": "23", "手工": "24", "摄影": "38", "音乐舞蹈": "39", "模型手办": "11",
+    "动漫杂谈": "4", "动漫资讯": "5", "动画技术": "31",
+    "单机游戏": "6", "电子竞技": "7", "手机游戏": "8", "网络游戏": "9", "桌游棋牌": "10",
+    "电影": "12", "电视剧": "35", "纪录片": "36", "综艺": "37",
+    "原创连载": "18", "同人连载": "19", "短篇小说": "32", "小说杂谈": "20",
+}
+# Fallback order when --category is not given: 数码 first (most of our content
+# is technical), then broad ones. A category the account can't post to → -17.
+_TID_CANDIDATES = ["26", "34", "15", "4", "6", "12", "23"]
+
+# A creative article's `state` (what 投稿管理 shows). Only 0/1 are actually live.
+_STATES = {0: "已发布", 1: "已发布", -1: "未通过", -2: "待审核", -3: "锁定", -4: "已删除"}
+
+# id → canonical display name (first alias wins; 数码/科技/tech all map to 26).
+_CATEGORY_NAMES = {}
+for _name, _cid in _CATEGORIES.items():
+    _CATEGORY_NAMES.setdefault(_cid, _name)
 
 
 # ── image upload (Bilibili hotlink-blocks external imgs; re-host via
@@ -545,6 +567,19 @@ def md_to_html(src):
     return "\n".join(out)
 
 
+def _resolve_categories(raw):
+    """--category → the single 分类 id to use, or the fallback list if unset."""
+    if not raw:
+        return _TID_CANDIDATES, None
+    name = raw.strip()
+    cid = _CATEGORIES.get(name)
+    if not cid:
+        if not name.isdigit():
+            die(f"unknown --category {raw!r}; known: " + ", ".join(sorted(_CATEGORIES)))
+        cid = name
+    return [cid], cid  # explicit choice: don't silently fall back to another 分类
+
+
 def cmd_publish(jar, args):
     if not args.title:
         die("--title is required")
@@ -562,14 +597,22 @@ def cmd_publish(jar, args):
     if not csrf:
         die("no bili_jct cookie (CSRF token) — reconnect Bilibili.")
 
+    # Resolve before the dry-run so a typo'd 分类 is caught in the preview,
+    # and before rehost_images so a bad one can't burn uploads then abort.
+    cids, explicit = _resolve_categories(args.category)
+
     if not CONFIRM:
         out({
             "dry_run": True, "command": "publish", "platform": "bilibili",
             "title": args.title, "draft_only": args.draft_only,
+            "category": (_CATEGORY_NAMES.get(explicit, explicit) if explicit
+                         else "(auto: 数码)"),
             "content_bytes": len(content),
             "note": "Bilibili 专栏 content is HTML. Re-run with --confirm as the "
-                    "LAST argument to write. The submit step is often 412-limited; "
-                    "the saved draft is the reliable result.",
+                    "LAST argument to write. Published articles enter Bilibili's "
+                    "review queue (state -2) before going public; the submit step "
+                    "is also often 412-limited, in which case the saved draft is "
+                    "the reliable result.",
         })
         return
 
@@ -585,13 +628,15 @@ def cmd_publish(jar, args):
     ref = "https://member.bilibili.com/"
     base = {
         "title": args.title, "content": content, "csrf": csrf,
-        "category": "0", "list_id": "0", "reprint": "0", "original": "1",
+        "list_id": "0", "reprint": "0", "original": "1",
         "media_id": "0", "spoiler": "0", "save": "0", "pgc_id": "0",
     }
-    # 1. save draft, retrying tid until the category is accepted
-    aid, last = None, None
-    for tid in _TID_CANDIDATES:
-        body = dict(base, tid=tid)
+    # 1. save draft, retrying the 分类 until one is accepted
+    aid, chosen, last = None, None, None
+    for cid in cids:
+        # `category` is what actually sets 分类; `tid` must match or the article
+        # silently lands in 生活.
+        body = dict(base, tid=cid, category=cid)
         status, text = request("POST", f"{API}/x/article/creative/draft/addupdate",
                                jar, referer=ref, form=body)
         try:
@@ -601,21 +646,22 @@ def cmd_publish(jar, args):
             continue
         if r.get("code") == 0:
             aid = (r.get("data") or {}).get("aid")
-            chosen_tid = tid
+            chosen = cid
             break
         last = f"code={r.get('code')} {r.get('message')}"
         if "分类" not in str(r.get("message", "")) and r.get("code") != -17:
-            break  # a non-category error won't be fixed by another tid
+            break  # a non-category error won't be fixed by another one
     if not aid:
         die(f"save-draft failed: {last}")
 
     if args.draft_only:
         out({"ok": True, "draft_only": True, "aid": str(aid),
+             "category_id": chosen, "category": _CATEGORY_NAMES.get(chosen, chosen),
              "edit_url": f"https://member.bilibili.com/article-text/home?aid={aid}"})
         return
 
     # 2. submit (publish) — may be 412 risk-controlled; report draft if so
-    body = dict(base, tid=chosen_tid, aid=aid)
+    body = dict(base, tid=chosen, category=chosen, aid=aid)
     status, text = request("POST", f"{API}/x/article/creative/article/submit",
                            jar, referer=ref, form=body)
     try:
@@ -623,8 +669,64 @@ def cmd_publish(jar, args):
     except json.JSONDecodeError:
         r = None
     if r and r.get("code") == 0:
-        out({"ok": True, "published": True, "aid": str(aid),
-             "url": f"https://www.bilibili.com/read/cv{aid}"})
+        # The published article gets a NEW id — the draft aid is not a cv id, so
+        # cv<draft_aid> 404s. Only trust an id the submit response actually gave.
+        data = r.get("data") or {}
+        try:
+            cvid = int(data.get("aid"))
+        except (TypeError, ValueError):
+            cvid = None
+        if cvid is not None and cvid <= 0:
+            cvid = None  # article ids are positive; 0 means "not returned"
+        res = {"ok": True, "published": True,
+               "id": str(cvid) if cvid is not None else None,
+               "url": (f"https://www.bilibili.com/read/cv{cvid}"
+                       if cvid is not None else None),
+               "draft_aid": str(aid),
+               "category_id": chosen,
+               "category": _CATEGORY_NAMES.get(chosen, chosen)}
+        notes = []
+        if cvid is None:
+            # Never hand back a draft-aid URL dressed up as the published one.
+            res["id_unverified"] = True
+            notes.append("submit succeeded but returned no article id — there is "
+                         f"no shareable URL yet (draft aid {aid} is NOT a cv id). "
+                         "Find the article with `status`.")
+        raw_state = data.get("state")
+        if isinstance(raw_state, bool):
+            state = None
+        else:
+            try:
+                state = int(raw_state)
+            except (TypeError, ValueError):
+                state = None
+        if state is None and raw_state is not None:
+            res["state_unknown"] = True
+            notes.append(f"submit returned an unreadable state ({raw_state!r}); "
+                         "confirm with `status` before reporting this as live.")
+        if state is not None and state not in (0, 1):
+            res["state"] = state
+            res["state_desc"] = _STATES.get(state, str(state))
+            if state == -2:
+                # 待审核: the url 404s for everyone until Bilibili approves it.
+                res["pending_review"] = True
+                notes.append("submitted, now in Bilibili's review queue — the URL "
+                             "goes live once approved (usually minutes to hours). "
+                             "Re-check with `status`; do not re-submit.")
+            elif state < 0:
+                # -1 未通过 / -3 锁定 / -4 已删除 — NOT pending, will never go live.
+                res["ok"] = False
+                res["published"] = False
+                notes.append(f"submit returned state {state} "
+                             f"({_STATES.get(state, 'unknown')}) — the article is "
+                             "not live and is not queued. Check `status` for the "
+                             "reason; do not report this as published.")
+        elif state in (0, 1):
+            res["state"] = state
+            res["state_desc"] = _STATES[state]
+        if notes:
+            res["note"] = " ".join(notes)
+        out(res)
     else:
         out({"ok": False, "published": False, "draft_saved": True, "aid": str(aid),
              "edit_url": f"https://member.bilibili.com/article-text/home?aid={aid}",
@@ -635,6 +737,41 @@ def cmd_publish(jar, args):
 def _drafts_of(d: dict) -> list:
     al = (d.get("data") or {}).get("artlist") or d.get("artlist") or {}
     return al.get("drafts") or []
+
+
+def cmd_categories(jar, args):
+    by_id = {}
+    for name, cid in _CATEGORIES.items():
+        by_id.setdefault(cid, []).append(name)
+    cats = [{"id": cid, "names": names} for cid, names in by_id.items()]
+    out({"count": len(cats), "categories": cats,
+         "note": "pass any of the names (or the raw id) to `publish --category`; "
+                 "the default is 数码."})
+
+
+def cmd_status(jar, args):
+    # The creative list is the ONLY view that shows pending/rejected articles —
+    # the public space list omits anything not yet approved.
+    d = get_json(f"{API}/x/article/creative/article/list?pn=1&ps={args.limit}",
+                 jar, referer="https://member.bilibili.com/")
+    if d.get("code"):
+        die(f"status error (code={d.get('code')}): {d.get('message')} — cookie expired?")
+    al = (d.get("data") or {}).get("artlist") or d.get("artlist") or {}
+    rows = []
+    for a in (al.get("articles") or [])[: args.limit]:
+        st = a.get("state")
+        cvid = a.get("id")
+        rows.append({
+            "id": str(cvid) if cvid else None,
+            "title": a.get("title"),
+            "state": st,
+            "state_desc": _STATES.get(st, str(st)) if isinstance(st, int) else None,
+            "live": isinstance(st, int) and st >= 0,
+            "reason": a.get("reason") or None,
+            "category": (a.get("category") or {}).get("name"),
+            "url": f"https://www.bilibili.com/read/cv{cvid}" if cvid else None,
+        })
+    out({"count": len(rows), "articles": rows})
 
 
 def cmd_drafts(jar, args):
@@ -686,6 +823,8 @@ COMMANDS = {
     "publish": cmd_publish,
     "drafts": cmd_drafts,
     "delete-draft": cmd_delete_draft,
+    "categories": cmd_categories,
+    "status": cmd_status,
 }
 
 
@@ -702,8 +841,13 @@ def main() -> None:
     sp.add_argument("--content", help="HTML content inline")
     sp.add_argument("--content-file", help="path to an HTML file")
     sp.add_argument("--draft-only", action="store_true", help="save a draft; do NOT submit")
+    sp.add_argument("--category", help="分类 name (e.g. 数码, 学习, 日常) or a raw tid; "
+                                       "default tries 数码 first")
     sp.add_argument("--no-rehost-images", action="store_true",
                     help="keep external image URLs as-is (skip Bilibili CDN re-host)")
+    sp = sub.add_parser("categories", help="list the 分类 names accepted by --category")
+    sp = sub.add_parser("status", help="review state of the user's recent submissions")
+    sp.add_argument("--limit", type=int, default=10)
     sp = sub.add_parser("drafts", help="list 专栏 drafts (id+title); use to prune the 999-draft cap")
     sp.add_argument("--limit", type=int, default=50)
     sp.add_argument("--page", type=int, default=1)
