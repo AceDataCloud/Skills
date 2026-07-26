@@ -512,6 +512,20 @@ class RedditSkillTests(unittest.TestCase):
         self.assertEqual("https://www.reddit.com/r/SunoAI/comments/p1/looking/", formatted["url"])
         self.assertEqual(500, len(formatted["selftext_excerpt"]))
 
+    def test_search_defaults_to_relevance_because_new_ignores_keywords(self):
+        """Reddit's `new` sort returns recent posts that need not match the query."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        with patch.object(client, "request", return_value={"data": {"children": []}}) as request:
+            client.search(query="suno api")
+        self.assertEqual("relevance", request.call_args.kwargs["query"]["sort"])
+
+        stream = io.StringIO()
+        with patch.dict(os.environ, {"REDDIT_COOKIES": COOKIE_JAR}, clear=True), patch.object(
+            reddit.RedditClient, "search", return_value=[]
+        ) as search, redirect_stdout(stream):
+            reddit.main(["search", "--query", "suno api"])
+        self.assertEqual("relevance", search.call_args.kwargs["sort"])
+
     def test_search_is_a_read_and_rejects_malformed_shape(self):
         client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
         stream = io.StringIO()

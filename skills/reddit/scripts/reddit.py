@@ -474,7 +474,7 @@ class RedditClient:
         return {"ok": True, "posted": True, "id": post.get("id"), "name": post.get("name"), "url": post_url}
 
 
-    def search(self, *, query: str, subreddit: str = "", sort: str = "new", limit: int = 10, time_filter: str = "week") -> list[dict]:
+    def search(self, *, query: str, subreddit: str = "", sort: str = "relevance", limit: int = 10, time_filter: str = "month") -> list[dict]:
         suffix = ".json" if self.mode == "cookie" else ""
         path = f"/r/{subreddit}/search{suffix}" if subreddit else f"/search{suffix}"
         params = {"q": query, "sort": sort, "limit": limit, "t": time_filter, "raw_json": 1, "type": "link"}
@@ -677,8 +677,8 @@ def build_parser() -> argparse.ArgumentParser:
     search = commands.add_parser("search", help="search public posts to find threads worth replying to")
     search.add_argument("--query", "-q", required=True)
     search.add_argument("--subreddit", "-r", default="")
-    search.add_argument("--sort", choices=["new", "relevance", "top", "comments"], default="new")
-    search.add_argument("--time", dest="time_filter", choices=["hour", "day", "week", "month", "year", "all"], default="week")
+    search.add_argument("--sort", choices=["relevance", "new", "top", "comments"], default="relevance")
+    search.add_argument("--time", dest="time_filter", choices=["hour", "day", "week", "month", "year", "all"], default="month")
     search.add_argument("--limit", type=positive_limit, default=10)
 
     about = commands.add_parser("subreddit-info", help="read a subreddit's rules and posting requirements")

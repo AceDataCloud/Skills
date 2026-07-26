@@ -65,9 +65,14 @@ R="${SKILL_DIR:-}/scripts/reddit.py"; [ -f "$R" ] || R=$(find /tmp -maxdepth 8 -
 [ -f "$R" ] || { echo "reddit script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 
 python3 "$R" search --query "suno api" --time week --limit 10
-python3 "$R" search --query "image generation api" --subreddit SideProject --sort new
+python3 "$R" search --query "image generation api" --subreddit SideProject
 python3 "$R" subreddit-info --subreddit SideProject
 ```
+
+`--sort` defaults to `relevance`. **Reddit's `new` sort ignores keyword relevance**
+— it returns recent posts that often do not contain the query terms at all. Use
+`--sort new` only to scan a specific subreddit's recent activity, never to find
+threads by keyword.
 
 ## Reply to a thread — GATED
 
