@@ -125,8 +125,6 @@ def _headers(jar: list, referer: str) -> dict:
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "same-origin",
-        # Writes are rejected without the csrftoken cookie echoed as a header.
-        "X-CSRFToken": str(cookie_value(jar, "csrftoken") or ""),
     }
 
 
@@ -137,9 +135,12 @@ def request(method: str, url: str, jar: list, *, referer, headers=None, body=Non
         hdrs.update(headers)
     data = body.encode("utf-8") if isinstance(body, str) else body
     req = urllib.request.Request(url, data=data, headers=hdrs, method=method)
-    # Unredirected → urllib will NOT re-send the cookie if the API 30x-redirects
-    # to a different host (e.g. a login page), so the jar never leaks off-site.
+    # Unredirected → urllib will NOT re-send these if the API 30x-redirects to a
+    # different host (e.g. a login page), so neither the jar nor the CSRF token
+    # (which is itself a cookie value) leaks off-site.
     req.add_unredirected_header("Cookie", cookie_header(jar, url))
+    # Writes are rejected without the csrftoken cookie echoed as a header.
+    req.add_unredirected_header("X-CSRFToken", str(cookie_value(jar, "csrftoken") or ""))
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             raw = resp.read()
@@ -170,20 +171,34 @@ def api_envelope(method: str, path: str, jar: list, *, referer=None, body=None, 
     status, text = request(method, url, jar, referer=ref, body=body, headers=headers,
                            nonfatal=nonfatal)
     if status in (401, 403) or "/auth/page/login" in text:
-        die(f"auth failed ({status}) on {path} — cookie likely expired. "
-            f"Reconnect 今日头条 at https://auth.acedata.cloud/user/connections.")
+        msg = (f"auth failed ({status}) on {path} — cookie likely expired. "
+               f"Reconnect 今日头条 at https://auth.acedata.cloud/user/connections.")
+        if nonfatal:
+            raise RuntimeError(msg)
+        die(msg)
     try:
         env = json.loads(text)
     except json.JSONDecodeError:
+        if nonfatal:
+            raise RuntimeError(f"non-JSON response ({status}) from {path}: {text[:200]}")
         die(f"non-JSON response ({status}) from {path}: {text[:300]}")
     if not isinstance(env, dict):
+        if nonfatal:
+            raise RuntimeError(f"unexpected response from {path}: {text[:200]}")
         die(f"unexpected response from {path}: {text[:300]}")
-    code = env.get("code", env.get("err_no"))
+    # `.get("code", …)` would return a stored None instead of falling back to
+    # err_no, so test explicitly.
+    code = env.get("code")
+    if code is None:
+        code = env.get("err_no")
     if code not in (0, None):
         msg = env.get("message") or env.get("reason") or ""
         if code in (401, 403) or "登录" in str(msg):
-            die(f"auth failed (code={code}: {msg}) — cookie likely expired. "
-                f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            auth_msg = (f"auth failed (code={code}: {msg}) — cookie likely expired. "
+                        f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            if nonfatal:
+                raise RuntimeError(auth_msg)
+            die(auth_msg)
         if nonfatal:
             raise RuntimeError(f"头条 API error on {path} (code={code}): {msg}")
         die(f"头条 API error on {path} (code={code}): {msg}")
@@ -225,12 +240,12 @@ _STATUS = {"all": "all", "draft": "draft", "published": "published",
            "reviewing": "verifying", "failed": "unpass"}
 
 
-def _list_page(jar, status, page, size):
+def _list_page(jar, status, page, size, nonfatal=False):
     q = urllib.parse.urlencode({
         "status": _STATUS.get(status, "all"), "from_time": 0, "start_time": 0,
         "end_time": 0, "search_word": "", "page": page, "size": size,
     })
-    d = api("GET", f"/mp/agw/article/list/?{q}", jar) or {}
+    d = api("GET", f"/mp/agw/article/list/?{q}", jar, nonfatal=nonfatal) or {}
     return d.get("content") or [], d.get("total")
 
 
@@ -294,10 +309,12 @@ def cmd_article(jar, args):
 # ── image re-host (头条 rejects the whole article if an <img> is external) ──
 
 MAX_IMG_BYTES = 12 * 1024 * 1024
-# Bounded repeats so a malformed body can't backtrack quadratically.
-_HTML_IMG = re.compile(r"<img\b[^>]{0,4000}?>", re.I)
-_SRC_ATTR = re.compile(r"""\bsrc\s*=\s*["']([^"']{0,2000})["']""", re.I)
-_ALT_ATTR = re.compile(r"""\balt\s*=\s*["']([^"']{0,500})["']""", re.I)
+# Attribute-aware: a bare [^>]* would stop at a `>` inside alt="3 > 2", tearing
+# the tag apart. Unbounded so a long data: URI can't slip past unrewritten.
+_HTML_IMG = re.compile(r"""<img\b(?:[^>"']|"[^"]*"|'[^']*')*>""", re.I)
+# (?<![-\w]) so `data-src=` / `x_src=` don't masquerade as the real src.
+_SRC_ATTR = re.compile(r"""(?<![-\w])src\s*=\s*["']([^"']{0,2000})["']""", re.I)
+_ALT_ATTR = re.compile(r"""(?<![-\w])alt\s*=\s*["']([^"']{0,500})["']""", re.I)
 _IMG_SKIP = ("toutiao.com", "byteimg.com", "pstatp.com", "toutiaoimg.com")
 
 
@@ -369,9 +386,12 @@ def upload_image(jar, src) -> dict:
     body, boundary = _multipart("upfile", f"image.{ext}", img, mime)
     # This endpoint answers with a FLAT envelope (no `data` wrapper), unlike the
     # rest of the creator API, so read the fields off the top level.
+    # nonfatal → a per-image failure raises instead of die()ing, so the caller's
+    # failure collector (and --drop-failed-images) actually gets to run.
     env = api_envelope("POST", "/mp/agw/article_material/photo/upload_picture/?type=json", jar,
                        referer=f"{MP}/profile_v4/graphic/publish", body=body,
-                       headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+                       headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+                       nonfatal=True)
     if not env.get("web_url") or not env.get("web_uri"):
         raise RuntimeError(f"upload returned no image URL: {str(env)[:200]}")
     return env
@@ -411,7 +431,10 @@ def rehost_images(jar, html, drop_failed=False):
             return ""
         src = _html.unescape(src_m.group(1))
         alt_m = _ALT_ATTR.search(tag)
-        alt = _html.unescape(alt_m.group(1)) if alt_m else ""
+        # Keep alt in its escaped attribute form — unescaping would put raw
+        # </>/& back into the body we re-emit (breaking the tag, and undoing
+        # md_to_html's escaping).
+        alt = alt_m.group(1) if alt_m else ""
         host = (urllib.parse.urlsplit(src).hostname or "").lower()
         if any(_same_or_sub(host, s) for s in _IMG_SKIP) and 'web_uri="' in tag:
             return tag
@@ -551,15 +574,17 @@ PUBLISH_PATH = "/mp/agw/article/publish/?source=mp&type=article"
 
 def _resolve_url(jar, pgc_id, draft):
     """Look the freshly-written article up in the list to return its real URL
-    (preview URL for a draft, public /item/ URL once published)."""
+    (preview URL for a draft, public /item/ URL once published).
+
+    Runs AFTER the write succeeded, so it must never fail the command — losing
+    the pgc_id would read as a failed publish and invite a duplicate post.
+    """
     try:
-        items, _ = _list_page(jar, "draft" if draft else "all", 1, 20)
+        items, _ = _list_page(jar, "draft" if draft else "all", 1, 20, nonfatal=True)
         for it in items:
             if str(it.get("pgc_id")) == str(pgc_id):
                 return it.get("article_url")
-    except SystemExit:
-        raise
-    except Exception:  # noqa: BLE001 — URL is a nicety, never fail the publish on it
+    except (Exception, SystemExit):  # noqa: BLE001 — URL is a nicety
         pass
     if draft:
         return f"{MP}/preview_article/?pgc_id={pgc_id}"
@@ -594,6 +619,12 @@ def cmd_publish(jar, args):
                     "user's real 头条号 and goes through 审核.",
         })
         return
+
+    # Writes need the csrftoken cookie echoed as a header; without it 头条 fails
+    # deep in its API with an opaque code instead of "reconnect".
+    if not cookie_value(jar, "csrftoken"):
+        die("the 今日头条 cookie jar has no `csrftoken` — it is incomplete or "
+            "expired. Reconnect at https://auth.acedata.cloud/user/connections.")
 
     # Render to HTML FIRST, then rewrite <img> tags — 头条 rejects the whole
     # article (7115) if any image isn't hosted on its own CDN with web_uri.
