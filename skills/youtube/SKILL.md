@@ -110,8 +110,39 @@ curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
 file you're about to upload. Uploads are a two-step *resumable* flow:
 init with metadata → PUT the bytes.
 
+### If the source is a URL, fetch it first
+
+Videos produced by a generation API (Maestro, Seedance, Veo, …) come back as a
+CDN URL, not a local file. Download it and verify you actually got a video
+before starting the upload:
+
 ```bash
-FILE="/path/to/video.mp4"
+SRC="https://example.cdn.acedata.cloud/path/video.mp4"
+FILE=$(mktemp)   # plain mktemp — `mktemp /tmp/x-XXXXXX.mp4` is not portable
+
+# -f: fail on 4xx/5xx instead of saving the error page. -L: follow CDN redirects.
+curl -fsSL -o "$FILE" -w 'http=%{http_code} size=%{size_download}\n' "$SRC"
+
+# Two distinct failures, two distinct messages — a 404/DNS error is a bad URL,
+# not a bad video, and saying so saves the next step from misdiagnosing it.
+[ -s "$FILE" ] \
+  || { echo "download failed (see http= above) — nothing to upload"; rm -f "$FILE"; exit 1; }
+
+# A 200 can still be an HTML interstitial or an expired-link page. Reject that
+# rather than allow-listing one container, so WebM/MOV/AVI still pass. `grep -a`
+# is required — without it grep treats a binary header as "no match".
+head -c 512 "$FILE" | grep -qai '<html\|<!doctype' \
+  && { echo "got an HTML page, not a video"; rm -f "$FILE"; exit 1; }
+```
+
+`--upload-file` ignores the filename; YouTube keys off the
+`Content-Type: video/*` header, so the extensionless temp file is fine.
+
+### The upload itself
+
+```bash
+# Falls back to the placeholder only if the fetch step above didn't set FILE.
+FILE="${FILE:-/path/to/video.mp4}"
 TITLE="My title"
 DESC="My description"
 # privacyStatus: public | unlisted | private
@@ -129,11 +160,18 @@ UPLOAD_URL=$(curl -sS -D - -o /dev/null \
   -d "$META" | tr -d '\r' | awk '/^[Ll]ocation:/{print $2}')
 
 # 2. Upload the bytes -> returns the created video resource (has .id).
-curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
+RESULT=$(curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
   -H "Content-Type: video/*" \
-  -X PUT --upload-file "$FILE" "$UPLOAD_URL" \
-  | jq '{id: .id, url: ("https://www.youtube.com/watch?v=" + .id), privacy: .status.privacyStatus}'
+  -X PUT --upload-file "$FILE" "$UPLOAD_URL")
+echo "$RESULT" | jq -e .id >/dev/null 2>&1 \
+  || { echo "upload failed: $(echo "$RESULT" | jq -r '.error.message' 2>/dev/null || echo "$RESULT")"; exit 1; }
+echo "$RESULT" | jq '{id: .id, url: ("https://www.youtube.com/watch?v=" + .id), privacy: .status.privacyStatus}'
 ```
+
+Delete a downloaded temp file only **after** you've confirmed an id came back
+(`echo "$RESULT" | jq -e .id >/dev/null && rm -f "$FILE"`). On a 401/403 or a
+dropped connection the download is still good and re-uploading beats re-fetching
+a few hundred MB.
 
 `categoryId` `22` = "People & Blogs" (a safe default). To set a custom
 thumbnail (needs the file to be processed first), call
