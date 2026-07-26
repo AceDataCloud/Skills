@@ -309,9 +309,14 @@ def cmd_article(jar, args):
 # ── image re-host (头条 rejects the whole article if an <img> is external) ──
 
 MAX_IMG_BYTES = 12 * 1024 * 1024
-# Attribute-aware: a bare [^>]* would stop at a `>` inside alt="3 > 2", tearing
-# the tag apart. Unbounded so a long data: URI can't slip past unrewritten.
-_HTML_IMG = re.compile(r"""<img\b(?:[^>"']|"[^"]*"|'[^']*')*>""", re.I)
+# Two branches. The first is attribute-aware so a `>` inside alt="3 > 2" can't
+# tear the tag apart; quoted runs exclude `<` so an unbalanced quote can only
+# damage one tag instead of swallowing the rest of the article. The second
+# catches malformed tags (odd quote count) that branch 1 rejects — they must
+# still be seen, so _SRC_ATTR fails and the publish aborts rather than shipping
+# an external image. Excluding `<` also keeps the scan linear.
+_HTML_IMG = re.compile(
+    r"""<img\b(?:[^<>"']|"[^"<]*"|'[^'<]*')*>|<img\b[^<>]*>""", re.I)
 # (?<![-\w]) so `data-src=` / `x_src=` don't masquerade as the real src.
 _SRC_ATTR = re.compile(r"""(?<![-\w])src\s*=\s*["']([^"']{0,2000})["']""", re.I)
 _ALT_ATTR = re.compile(r"""(?<![-\w])alt\s*=\s*["']([^"']{0,500})["']""", re.I)
