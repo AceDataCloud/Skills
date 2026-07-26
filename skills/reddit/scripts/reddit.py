@@ -26,9 +26,11 @@ import urllib.request
 WEB_BASE = "https://www.reddit.com"
 OAUTH_BASE = "https://oauth.reddit.com"
 USER_AGENT = "web:cloud.acedata.reddit:v2.0 (by /u/acedatacloud)"
-GATED_COMMANDS = {"submit-text", "submit-link"}
+GATED_COMMANDS = {"submit-text", "submit-link", "comment"}
 SUBREDDIT_RE = re.compile(r"^[A-Za-z0-9_]{2,21}$")
 COOKIE_NAME_RE = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
+# Only a comment (t1_) or a post (t3_) can be replied to.
+THING_ID_RE = re.compile(r"^t[13]_[A-Za-z0-9]{2,16}$")
 
 
 def output(value) -> None:
@@ -206,6 +208,44 @@ def validate_link(value: str) -> str:
     return value.strip()
 
 
+def normalize_thing_id(value: str) -> str:
+    """Accept a fullname (t3_abc123) or a reddit permalink and return a fullname."""
+    candidate = value.strip()
+    if THING_ID_RE.fullmatch(candidate):
+        return candidate
+    parsed = urllib.parse.urlsplit(candidate)
+    if parsed.scheme in {"http", "https"}:
+        if not parsed.hostname or not reddit_cookie_domain(parsed.hostname):
+            die("parent URL must point at reddit.com")
+        # /r/<sub>/comments/<post_id>/<slug>/<comment_id>
+        segments = [segment for segment in (parsed.path or "").split("/") if segment]
+        if "comments" in segments:
+            index = segments.index("comments")
+            if len(segments) > index + 3 and re.fullmatch(r"[A-Za-z0-9]{2,16}", segments[index + 3]):
+                return "t1_" + segments[index + 3]
+            if len(segments) > index + 1 and re.fullmatch(r"[A-Za-z0-9]{2,16}", segments[index + 1]):
+                return "t3_" + segments[index + 1]
+    die("parent must be a post (t3_xxxxxx), a comment (t1_xxxxxx) or a reddit.com permalink")
+
+
+def validate_comment_body(text: str) -> str:
+    body = text.strip()
+    if not body:
+        die("comment body cannot be empty")
+    if len(body) > 10_000:
+        die("comment exceeds Reddit's 10,000-character limit")
+    return body
+
+
+def validate_query(value: str) -> str:
+    query = value.strip()
+    if not query:
+        die("query cannot be empty")
+    if len(query) > 512:
+        die("query exceeds Reddit's 512-character search limit")
+    return query
+
+
 def read_text(args: argparse.Namespace) -> str:
     if args.text_file:
         try:
@@ -218,6 +258,19 @@ def read_text(args: argparse.Namespace) -> str:
     if len(text) > 40_000:
         die("text exceeds Reddit's 40,000-character limit")
     return text
+
+
+def read_body(args: argparse.Namespace) -> str:
+    """Read a comment body from --body or --body-file."""
+    if getattr(args, "body_file", None):
+        try:
+            with open(args.body_file, encoding="utf-8") as file_handle:
+                text = file_handle.read()
+        except OSError as error:
+            die(f"cannot read body file {args.body_file}: {error}")
+    else:
+        text = args.body or ""
+    return validate_comment_body(text)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -258,7 +311,7 @@ class RedditClient:
     def base_url(self) -> str:
         return WEB_BASE if self.mode == "cookie" else OAUTH_BASE
 
-    def request(self, method: str, path: str, *, query: dict | None = None, form: dict | None = None):
+    def request(self, method: str, path: str, *, query: dict | None = None, form: dict | None = None, write_kind: str = "post"):
         is_write = method.upper() == "POST"
         url = self.base_url + path
         if query:
@@ -296,24 +349,24 @@ class RedditClient:
                     raw = gzip.decompress(raw)
             except Exception:
                 if is_write:
-                    die_unknown_write_outcome("The Reddit HTTP error response for the write request could not be read")
+                    die_unknown_write_outcome("The Reddit HTTP error response for the write request could not be read", kind=write_kind)
                 die("The Reddit HTTP error response could not be read; authenticated response content was omitted.")
             finally:
                 with contextlib.suppress(Exception):
                     error.close()
         except urllib.error.URLError as error:
             if is_write:
-                die_unknown_write_outcome("A network error interrupted the Reddit write request")
+                die_unknown_write_outcome("A network error interrupted the Reddit write request", kind=write_kind)
             die(f"network error reaching Reddit: {error.reason}")
         except Exception:
             if is_write:
-                die_unknown_write_outcome("The Reddit write response could not be read or decompressed")
+                die_unknown_write_outcome("The Reddit write response could not be read or decompressed", kind=write_kind)
             die("The Reddit response could not be read or decompressed; authenticated response content was omitted.")
 
         text = raw.decode("utf-8", "replace")
         if 300 <= status < 400:
             if is_write:
-                die_unknown_write_outcome("Reddit redirected the write request; credentials were not forwarded")
+                die_unknown_write_outcome("Reddit redirected the write request; credentials were not forwarded", kind=write_kind)
             die("Reddit returned an unexpected redirect; credentials were not forwarded. Reconnect before retrying the read.")
         if status in {401, 403}:
             die(
@@ -324,17 +377,17 @@ class RedditClient:
             die("Reddit rate limit reached (429). Wait before retrying; do not loop-retry.")
         if status >= 400:
             if is_write and status >= 500:
-                die_unknown_write_outcome(f"Reddit returned HTTP {status} for the write request")
+                die_unknown_write_outcome(f"Reddit returned HTTP {status} for the write request", kind=write_kind)
             die(f"Reddit returned HTTP {status}; authenticated response content was omitted.")
         if text.lstrip().startswith("<"):
             if is_write:
-                die_unknown_write_outcome("Reddit returned HTML for the write request")
+                die_unknown_write_outcome("Reddit returned HTML for the write request", kind=write_kind)
             die("Reddit returned HTML instead of JSON — the session expired or the web endpoint changed.")
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             if is_write:
-                die_unknown_write_outcome("Reddit returned invalid JSON for the write request")
+                die_unknown_write_outcome("Reddit returned invalid JSON for the write request", kind=write_kind)
             die(f"Reddit returned non-JSON data ({status}); authenticated response content was omitted.")
 
     def me(self) -> dict:
@@ -421,6 +474,79 @@ class RedditClient:
         return {"ok": True, "posted": True, "id": post.get("id"), "name": post.get("name"), "url": post_url}
 
 
+    def search(self, *, query: str, subreddit: str = "", sort: str = "new", limit: int = 10, time_filter: str = "week") -> list[dict]:
+        suffix = ".json" if self.mode == "cookie" else ""
+        path = f"/r/{subreddit}/search{suffix}" if subreddit else f"/search{suffix}"
+        params = {"q": query, "sort": sort, "limit": limit, "t": time_filter, "raw_json": 1, "type": "link"}
+        if subreddit:
+            params["restrict_sr"] = "true"
+        payload = self.request("GET", path, query=params)
+        if not isinstance(payload, dict) or not isinstance(payload.get("data"), dict):
+            die("Reddit returned a malformed search response; authenticated response content was omitted.")
+        children = payload["data"].get("children")
+        if not isinstance(children, list):
+            die("Reddit returned a malformed search response; authenticated response content was omitted.")
+        return [child["data"] for child in children if isinstance(child, dict) and valid_submission_data(child.get("data"))]
+
+    def subreddit_about(self, subreddit: str) -> dict:
+        suffix = ".json" if self.mode == "cookie" else ""
+        payload = self.request("GET", f"/r/{subreddit}/about{suffix}", query={"raw_json": 1})
+        if not isinstance(payload, dict) or not isinstance(payload.get("data"), dict):
+            die("Reddit returned a malformed subreddit response; authenticated response content was omitted.")
+        about = payload["data"]
+        rules = self.request("GET", f"/r/{subreddit}/about/rules{suffix}", query={"raw_json": 1})
+        rule_items = rules.get("rules") if isinstance(rules, dict) else None
+        return {
+            "subreddit": about.get("display_name"),
+            "subscribers": about.get("subscribers"),
+            "over18": about.get("over18"),
+            "submission_type": about.get("submission_type"),
+            "description": (about.get("public_description") or "")[:600],
+            "rules": [
+                {
+                    "short_name": rule.get("short_name"),
+                    "description": (rule.get("description") or "")[:400],
+                }
+                for rule in (rule_items or [])
+                if isinstance(rule, dict)
+            ],
+        }
+
+    def comment(self, *, parent: str, body: str) -> dict:
+        if self.mode == "cookie" and not self.modhash:
+            self.me()
+        form = {"api_type": "json", "thing_id": parent, "text": body, "raw_json": "1"}
+        if self.mode == "cookie":
+            if not self.modhash:
+                die("Reddit did not return a modhash; the Cookie session cannot perform writes.")
+            form["uh"] = self.modhash
+
+        payload = self.request("POST", "/api/comment", form=form, write_kind="comment")
+        if not isinstance(payload, dict) or not isinstance(payload.get("json"), dict):
+            die_unknown_comment_response()
+        json_payload = payload["json"]
+        errors = json_payload.get("errors")
+        if not isinstance(errors, list):
+            die_unknown_comment_response()
+        if errors:
+            die(
+                "Reddit rejected the comment. Check subreddit rules, account age/karma "
+                "requirements, whether the thread is locked or archived, and rate limits; "
+                "authenticated error details were omitted."
+            )
+        things = (json_payload.get("data") or {}).get("things")
+        if not isinstance(things, list) or not things or not isinstance(things[0], dict):
+            die_unknown_comment_response()
+        created = things[0].get("data")
+        if not isinstance(created, dict):
+            die_unknown_comment_response()
+        permalink = created.get("permalink")
+        comment_url = WEB_BASE + permalink if isinstance(permalink, str) and permalink.startswith("/") else ""
+        if not comment_url:
+            die_unknown_comment_response()
+        return {"ok": True, "commented": True, "id": created.get("id"), "name": created.get("name"), "url": comment_url}
+
+
 def format_profile(data: dict, mode: str) -> dict:
     return {
         "auth_mode": mode,
@@ -442,15 +568,41 @@ def valid_submission_data(item: object) -> bool:
     ).startswith("/")
 
 
-def die_unknown_write_outcome(reason: str) -> None:
+def die_unknown_write_outcome(reason: str, *, kind: str = "post") -> None:
+    where = (
+        "Open the parent thread and look for your reply"
+        if kind == "comment"
+        else "Check recent submissions"
+    )
     die(
-        f"{reason}; authenticated response content was omitted and the post outcome is unknown. "
-        "Check recent submissions before taking any further action and do not replay automatically."
+        f"{reason}; authenticated response content was omitted and the {kind} outcome is unknown. "
+        f"{where} before taking any further action and do not replay automatically."
     )
 
 
 def die_unknown_post_response() -> None:
     die_unknown_write_outcome("Reddit returned a malformed write response")
+
+
+def die_unknown_comment_response() -> None:
+    die_unknown_write_outcome("Reddit returned a malformed comment response", kind="comment")
+
+
+def format_search_hit(item: dict) -> dict:
+    permalink = item.get("permalink")
+    return {
+        "fullname": item.get("name"),
+        "title": item.get("title"),
+        "subreddit": item.get("subreddit"),
+        "author": item.get("author"),
+        "url": WEB_BASE + permalink if isinstance(permalink, str) and permalink.startswith("/") else item.get("url"),
+        "score": item.get("score"),
+        "num_comments": item.get("num_comments"),
+        "created_utc": item.get("created_utc"),
+        "over_18": item.get("over_18"),
+        "link_flair_text": item.get("link_flair_text"),
+        "selftext_excerpt": (item.get("selftext") or "")[:500],
+    }
 
 
 def format_submission(item: dict) -> dict:
@@ -467,12 +619,26 @@ def format_submission(item: dict) -> dict:
 
 
 def dry_run(args: argparse.Namespace) -> None:
+    note = "No request was sent. Re-run with --confirm as the final argument after explicit user approval."
+    if args.command == "comment":
+        body = read_body(args)
+        output(
+            {
+                "dry_run": True,
+                "command": args.command,
+                "parent": normalize_thing_id(args.parent),
+                "body_length": len(body),
+                "body_preview": body[:280],
+                "note": note,
+            }
+        )
+        return
     value = {
         "dry_run": True,
         "command": args.command,
         "subreddit": normalize_subreddit(args.subreddit),
         "title": validate_title(args.title),
-        "note": "No request was sent. Re-run with --confirm as the final argument after explicit user approval.",
+        "note": note,
     }
     if args.command == "submit-text":
         value["text_length"] = len(read_text(args))
@@ -507,6 +673,22 @@ def build_parser() -> argparse.ArgumentParser:
     link_post.add_argument("--subreddit", "-r", required=True)
     link_post.add_argument("--title", required=True)
     link_post.add_argument("--url", required=True)
+
+    search = commands.add_parser("search", help="search public posts to find threads worth replying to")
+    search.add_argument("--query", "-q", required=True)
+    search.add_argument("--subreddit", "-r", default="")
+    search.add_argument("--sort", choices=["new", "relevance", "top", "comments"], default="new")
+    search.add_argument("--time", dest="time_filter", choices=["hour", "day", "week", "month", "year", "all"], default="week")
+    search.add_argument("--limit", type=positive_limit, default=10)
+
+    about = commands.add_parser("subreddit-info", help="read a subreddit's rules and posting requirements")
+    about.add_argument("--subreddit", "-r", required=True)
+
+    reply = commands.add_parser("comment", help="reply to a post or comment (gated)")
+    reply.add_argument("--parent", required=True, help="fullname (t3_xxx / t1_xxx) or a reddit.com permalink")
+    body_source = reply.add_mutually_exclusive_group(required=True)
+    body_source.add_argument("--body")
+    body_source.add_argument("--body-file", dest="body_file")
     return parser
 
 
@@ -526,6 +708,22 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "submissions":
         items = client.submissions(args.limit)
         output({"auth_mode": client.mode, "count": len(items), "submissions": [format_submission(item) for item in items]})
+        return
+    if args.command == "search":
+        hits = client.search(
+            query=validate_query(args.query),
+            subreddit=normalize_subreddit(args.subreddit) if args.subreddit else "",
+            sort=args.sort,
+            limit=args.limit,
+            time_filter=args.time_filter,
+        )
+        output({"auth_mode": client.mode, "count": len(hits), "results": [format_search_hit(item) for item in hits]})
+        return
+    if args.command == "subreddit-info":
+        output(client.subreddit_about(normalize_subreddit(args.subreddit)))
+        return
+    if args.command == "comment":
+        output(client.comment(parent=normalize_thing_id(args.parent), body=read_body(args)))
         return
 
     subreddit = normalize_subreddit(args.subreddit)
