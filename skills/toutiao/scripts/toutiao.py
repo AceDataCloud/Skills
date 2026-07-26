@@ -452,6 +452,19 @@ def rehost_images(jar, html, drop_failed=False):
             return ""
 
     result = _HTML_IMG.sub(repl, html)
+    # Backstop: any `<img` the regex could not match at all (e.g. a bare `<`
+    # inside the tag) would otherwise ship as an external image and get the
+    # whole article rejected with 7115. Re-scan for `<img` that our own
+    # rewriter did not consume. Fatal even under drop_failed — a tag we cannot
+    # parse is also a tag we cannot reliably remove.
+    residue = [seg for seg in re.split(r"(?i)(?=<img\b)", result)[1:]
+               if not _HTML_IMG.match(seg)]
+    if residue:
+        die("the article contains an <img> tag this skill cannot parse, so it "
+            "can neither be uploaded to 头条 nor safely removed — and 头条 rejects "
+            "any article with an external image. Nothing was published:\n  - "
+            + "\n  - ".join(seg[:120] for seg in residue)
+            + "\nFix the markup (usually an unclosed quote or a stray `<`).")
     if failures and not drop_failed:
         die("could not upload these images to 头条, and 头条 rejects any article "
             "with an external image, so nothing was published:\n  - "
