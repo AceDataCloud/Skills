@@ -309,14 +309,15 @@ def cmd_article(jar, args):
 # ── image re-host (头条 rejects the whole article if an <img> is external) ──
 
 MAX_IMG_BYTES = 12 * 1024 * 1024
-# Two branches. The first is attribute-aware so a `>` inside alt="3 > 2" can't
-# tear the tag apart; quoted runs exclude `<` so an unbalanced quote can only
-# damage one tag instead of swallowing the rest of the article. The second
-# catches malformed tags (odd quote count) that branch 1 rejects — they must
-# still be seen, so _SRC_ATTR fails and the publish aborts rather than shipping
-# an external image. Excluding `<` also keeps the scan linear.
+# Two branches. Branch 1 is attribute-aware so a `>` inside alt="3 > 2" can't
+# tear the tag apart. A quoted run may only start after `=`, so a lone quote
+# (title=don't, width=5") is consumed as an ordinary character instead of
+# opening a run that swallows body text past the tag's own `>`. Quoted runs
+# also exclude `<`, keeping the scan linear. Branch 2 catches malformed tags
+# branch 1 rejects — they must still be seen so _SRC_ATTR fails and the
+# publish aborts rather than shipping an external image.
 _HTML_IMG = re.compile(
-    r"""<img\b(?:[^<>"']|"[^"<]*"|'[^'<]*')*>|<img\b[^<>]*>""", re.I)
+    r"""<img\b(?:[^<>"'=]|=\s*"[^"<]*"|=\s*'[^'<]*'|=)*>|<img\b[^<>]*>""", re.I)
 # (?<![-\w]) so `data-src=` / `x_src=` don't masquerade as the real src.
 _SRC_ATTR = re.compile(r"""(?<![-\w])src\s*=\s*["']([^"']{0,2000})["']""", re.I)
 _ALT_ATTR = re.compile(r"""(?<![-\w])alt\s*=\s*["']([^"']{0,500})["']""", re.I)
@@ -464,7 +465,10 @@ def rehost_images(jar, html, drop_failed=False):
             "can neither be uploaded to 头条 nor safely removed — and 头条 rejects "
             "any article with an external image. Nothing was published:\n  - "
             + "\n  - ".join(seg[:120] for seg in residue)
-            + "\nFix the markup (usually an unclosed quote or a stray `<`).")
+            + "\nUsually a raw `<` inside an attribute (write it as `&lt;`) or "
+              "an unclosed quote. --drop-failed-images does NOT bypass this — "
+              "an unparseable tag cannot be removed safely either. Fix the "
+              "markup, or drop the <img> tag yourself.")
     if failures and not drop_failed:
         die("could not upload these images to 头条, and 头条 rejects any article "
             "with an external image, so nothing was published:\n  - "
