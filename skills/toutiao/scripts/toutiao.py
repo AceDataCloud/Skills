@@ -38,6 +38,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from html.parser import HTMLParser as _HTMLParser
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -309,19 +310,52 @@ def cmd_article(jar, args):
 # ── image re-host (头条 rejects the whole article if an <img> is external) ──
 
 MAX_IMG_BYTES = 12 * 1024 * 1024
-# Two branches. Branch 1 is attribute-aware so a `>` inside alt="3 > 2" can't
-# tear the tag apart. A quoted run may only start after `=`, so a lone quote
-# (title=don't, width=5") is consumed as an ordinary character instead of
-# opening a run that swallows body text past the tag's own `>`. Quoted runs
-# also exclude `<`, keeping the scan linear. Branch 2 catches malformed tags
-# branch 1 rejects — they must still be seen so _SRC_ATTR fails and the
-# publish aborts rather than shipping an external image.
-_HTML_IMG = re.compile(
-    r"""<img\b(?:[^<>"'=]|=\s*"[^"<]*"|=\s*'[^'<]*'|=)*>|<img\b[^<>]*>""", re.I)
-# (?<![-\w]) so `data-src=` / `x_src=` don't masquerade as the real src.
-_SRC_ATTR = re.compile(r"""(?<![-\w])src\s*=\s*["']([^"']{0,2000})["']""", re.I)
-_ALT_ATTR = re.compile(r"""(?<![-\w])alt\s*=\s*["']([^"']{0,500})["']""", re.I)
 _IMG_SKIP = ("toutiao.com", "byteimg.com", "pstatp.com", "toutiaoimg.com")
+
+
+class _ImgFinder(_HTMLParser):
+    """Locate <img> tags with the stdlib parser instead of a regex.
+
+    Four regex attempts each traded one unparseable shape for another; the
+    ambiguity is inherent (`title="unclosed>` is indistinguishable from an
+    attribute containing `>`). HTMLParser resolves tag boundaries by the same
+    rules the browser and 头条 use, so what we rewrite is what they render.
+    """
+
+    def __init__(self):
+        # convert_charrefs=False → attribute values stay as authored, matching
+        # what we re-emit into the HTML body.
+        super().__init__(convert_charrefs=False)
+        self.spans = []  # (start_offset, end_offset, attrs)
+
+    def _record(self, tag, attrs):
+        if tag.lower() != "img":
+            return
+        text = self.get_starttag_text() or ""
+        line, col = self.getpos()
+        start = self._line_starts[line - 1] + col
+        self.spans.append((start, start + len(text), attrs))
+
+    handle_starttag = _record
+    handle_startendtag = _record
+
+    def find(self, html):
+        # getpos() is (line, col); precompute line offsets to map to an index.
+        self._line_starts, pos = [0], 0
+        for ln in html.splitlines(keepends=True):
+            pos += len(ln)
+            self._line_starts.append(pos)
+        self.feed(html)
+        self.close()
+        return self.spans
+
+
+def _first_attr(attrs, name):
+    """First occurrence wins, as browsers do with a duplicated attribute."""
+    for k, v in attrs:
+        if k.lower() == name:
+            return v or ""
+    return None
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -426,49 +460,36 @@ def rehost_images(jar, html, drop_failed=False):
     its images; ``drop_failed`` opts into dropping them instead.
     """
     failures = []
+    try:
+        spans = _ImgFinder().find(html)
+    except Exception as e:  # noqa: BLE001 — malformed beyond parsing
+        die(f"could not parse the article HTML to find its images: {e}")
 
-    def repl(m):
-        tag = m.group(0)
-        src_m = _SRC_ATTR.search(tag)
-        if not src_m:
-            # No parseable src (unquoted, or malformed) — count it as a failure
-            # rather than dropping it silently.
-            failures.append(f"{tag[:80]} (no parseable src attribute)")
-            return ""
-        src = _html.unescape(src_m.group(1))
-        alt_m = _ALT_ATTR.search(tag)
-        # Keep alt in its escaped attribute form — unescaping would put raw
-        # </>/& back into the body we re-emit (breaking the tag, and undoing
-        # md_to_html's escaping).
-        alt = alt_m.group(1) if alt_m else ""
+    out, cursor = [], 0
+    for start, end, attrs in spans:
+        out.append(html[cursor:start])
+        cursor = end
+        tag = html[start:end]
+        src = _first_attr(attrs, "src")
+        if not src:
+            # `data-src`-only or valueless src — we cannot fetch it, and 头条
+            # would reject the article, so surface it instead of dropping it.
+            failures.append(f"{tag[:80]} (no usable src attribute)")
+            continue
+        # Attribute values arrive unescaped; re-escape alt on the way back out.
+        alt = _first_attr(attrs, "alt") or ""
         host = (urllib.parse.urlsplit(src).hostname or "").lower()
-        if any(_same_or_sub(host, s) for s in _IMG_SKIP) and 'web_uri="' in tag:
-            return tag
+        if any(_same_or_sub(host, s) for s in _IMG_SKIP) and _first_attr(attrs, "web_uri"):
+            out.append(tag)
+            continue
         try:
             info = upload_image(jar, src)
             sys.stderr.write(f"[img] rehosted {src[:60]} -> {info['web_uri']}\n")
-            return _img_tag(info, alt)
+            out.append(_img_tag(info, _html.escape(alt, quote=False)))
         except Exception as e:  # noqa: BLE001 — collected, then reported below
             failures.append(f"{src[:80]} ({e})")
-            return ""
-
-    result = _HTML_IMG.sub(repl, html)
-    # Backstop: any `<img` the regex could not match at all (e.g. a bare `<`
-    # inside the tag) would otherwise ship as an external image and get the
-    # whole article rejected with 7115. Re-scan for `<img` that our own
-    # rewriter did not consume. Fatal even under drop_failed — a tag we cannot
-    # parse is also a tag we cannot reliably remove.
-    residue = [seg for seg in re.split(r"(?i)(?=<img\b)", result)[1:]
-               if not _HTML_IMG.match(seg)]
-    if residue:
-        die("the article contains an <img> tag this skill cannot parse, so it "
-            "can neither be uploaded to 头条 nor safely removed — and 头条 rejects "
-            "any article with an external image. Nothing was published:\n  - "
-            + "\n  - ".join(seg[:120] for seg in residue)
-            + "\nUsually a raw `<` inside an attribute (write it as `&lt;`) or "
-              "an unclosed quote. --drop-failed-images does NOT bypass this — "
-              "an unparseable tag cannot be removed safely either. Fix the "
-              "markup, or drop the <img> tag yourself.")
+    out.append(html[cursor:])
+    result = "".join(out)
     if failures and not drop_failed:
         die("could not upload these images to 头条, and 头条 rejects any article "
             "with an external image, so nothing was published:\n  - "
