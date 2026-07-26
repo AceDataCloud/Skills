@@ -52,7 +52,11 @@ R="${SKILL_DIR:-}/scripts/reddit.py"; [ -f "$R" ] || R=$(find /tmp -maxdepth 8 -
 [ -f "$R" ] || { echo "reddit script not found (SKILL_DIR=$SKILL_DIR)" >&2; exit 1; }
 python3 "$R" whoami
 python3 "$R" submissions --limit 10
+python3 "$R" comments --limit 10
 ```
+
+If a `comment` write ever reports an unknown outcome, run `comments` to check
+whether it actually landed **before** considering any retry.
 
 ## Find threads and check the rules
 
