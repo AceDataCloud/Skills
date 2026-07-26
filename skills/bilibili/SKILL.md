@@ -42,6 +42,8 @@ python3 "$BILI" whoami                     # who is logged in (mid, name)
 python3 "$BILI" articles --limit 20        # my 专栏 articles + stats
 python3 "$BILI" article <cvid>             # one article's stats (cv id)
 python3 "$BILI" drafts --limit 50          # list saved drafts (aid + title)
+python3 "$BILI" status --limit 10          # review state of recent submissions
+python3 "$BILI" categories                 # 分类 names accepted by --category
 ```
 
 Stats come straight from Bilibili: `view` (阅读), `like` (点赞), `reply` (评论),
@@ -69,12 +71,41 @@ BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxde
 python3 "$BILI" publish --title "标题" --content-file a.html                       # dry-run
 python3 "$BILI" publish --title "标题" --content-file a.html --draft-only --confirm   # save a draft
 python3 "$BILI" publish --title "标题" --content-file a.html --confirm                # save draft + submit (publish)
+python3 "$BILI" publish --title "标题" --content-file a.html --category 数码 --confirm  # pick the 分类
 ```
 
 - `--draft-only` saves a draft (no submit) — safe; finish/publish in the editor.
+  Prefer it when the user has not clearly asked to go public: a submitted
+  article enters a review queue this CLI cannot withdraw it from.
 - The **submit** (go public) step is frequently rate-limited by Bilibili
   risk-control (HTTP 412). When that happens the CLI reports the saved draft +
-  edit URL so the user can publish from the web editor. Default to `--draft-only`.
+  edit URL so the user can publish from the web editor.
+- `--category` picks the 分类 (default **数码**, which suits technical posts).
+  Run `categories` for the accepted names. The result echoes the 分类 actually
+  used as `category` / `category_id` — report it when it wasn't the user's pick.
+
+### Publishing is not instant — it enters a review queue
+
+A successful `submit` returns `state: -2` (**待审核**) and `pending_review: true`.
+The returned `url` **404s for everyone until Bilibili approves it** (usually
+minutes to hours). Tell the user it is pending; do not claim it is live, and do
+not re-submit. Check later with `status`, which is the only view that shows
+pending/rejected articles (the public list omits them):
+
+```sh
+python3 "$BILI" status --limit 5    # state_desc: 待审核 / 已发布 / 未通过 (+ reason)
+```
+
+Other states are **not** pending and will never go live on their own — the CLI
+returns them with `ok: false` and `published: false` (`-1` 未通过 rejected, `-3`
+锁定, `-4` 已删除). Read `state_desc`, tell the user plainly, and check `status`
+for the `reason` rather than re-submitting.
+
+The `id` in the publish result is the **article id** (use `cv<id>`), which is a
+different number from `draft_aid`. Only ever share the `url` field. If Bilibili
+returned no article id, `url` and `id` are `null` and `id_unverified: true` is
+set — there is nothing shareable yet, so find the article with `status` instead
+of constructing a link from `draft_aid`.
 
 ## Managing drafts (the 999-draft cap)
 
@@ -108,8 +139,8 @@ skips this.
 - **This is the user's real Bilibili account.** Confirm before any publish.
 - **submit may 412** (anti-bot) even when the draft saved fine — the draft is the
   reliable result; don't loop-retry submit.
-- A wrong cover layout (`tid`) / category returns `-17`; the CLI auto-retries
-  common `tid` values.
+- A 分类 the account can't post to returns `-17`; without `--category` the CLI
+  auto-retries the fallback list.
 - **Never print `BILIBILI_COOKIES`** — it is full account access.
 - **ToS**: acts only on the user's own account with their own captured cookie.
 
@@ -123,6 +154,14 @@ After you successfully publish and obtain the live result URL, call the built-in
 publish_artifact(kind="article", channel="bilibili", title="<title>", url="<the REAL returned URL>", status="delivered")
 ```
 
-Use the real returned URL — never fabricate one. Call it once per published item,
-only after delivery is confirmed; skip it (or use `status="failed"`) if publishing failed.
+Use the real returned URL — never fabricate one. That is the `url` field of the
+publish result (built from the article `id`, **not** `draft_aid`). Call it once
+per published item, only after delivery is confirmed.
+
+- `state: 0` or `1` (已发布, live) → `status="delivered"`.
+- `pending_review: true` (待审核) → `status="draft"`; the URL is not live yet.
+  Re-record as delivered later if the user asks you to re-check with `status`.
+- rejected/locked states, a 412-blocked submit, `id_unverified: true`, or
+  `state_unknown: true` → `status="failed"` (or skip it).
+
 See `_shared/artifacts.md`.
