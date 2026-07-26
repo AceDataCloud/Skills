@@ -334,17 +334,23 @@ class _ImgFinder(_HTMLParser):
         text = self.get_starttag_text() or ""
         line, col = self.getpos()
         start = self._line_starts[line - 1] + col
+        # If the computed offset doesn't land on the tag we were handed, the
+        # line mapping is wrong and splicing would corrupt the article. Refuse
+        # rather than write a mangled body.
+        if self._html[start:start + len(text)] != text:
+            raise ValueError(f"offset mismatch at line {line} col {col}")
         self.spans.append((start, start + len(text), attrs))
 
     handle_starttag = _record
     handle_startendtag = _record
 
     def find(self, html):
-        # getpos() is (line, col); precompute line offsets to map to an index.
-        self._line_starts, pos = [0], 0
-        for ln in html.splitlines(keepends=True):
-            pos += len(ln)
-            self._line_starts.append(pos)
+        # getpos() is (line, col); map that to an index. HTMLParser counts
+        # lines with rawdata.count("\n"), so index on "\n" ONLY — str.splitlines
+        # also breaks on \r, \v, \f, \x1c-\x1e, \x85,  ,  , and every
+        # such character would shift every subsequent offset.
+        self._html = html
+        self._line_starts = [0] + [mt.end() for mt in re.finditer("\n", html)]
         self.feed(html)
         self.close()
         return self.spans
@@ -490,6 +496,22 @@ def rehost_images(jar, html, drop_failed=False):
             failures.append(f"{src[:80]} ({e})")
     out.append(html[cursor:])
     result = "".join(out)
+    # Backstop: the tokenizer silently sees nothing inside an unterminated tag
+    # or an unterminated <script>/<style>/<textarea>/<title>, so an external
+    # <img> there would ship verbatim and 头条 rejects the whole article (7115).
+    # Our own rewrites all carry web_uri=, so any other <img left in the output
+    # is one we never processed. Fatal even under drop_failed — a tag the
+    # parser cannot see is also one we cannot remove.
+    unseen = [seg[:120] for seg in re.split(r"(?i)(?=<img\b)", result)[1:]
+              if 'web_uri="' not in seg.split(">", 1)[0][:2000]]
+    if unseen:
+        die("the article contains an <img> tag this skill could not parse, so "
+            "it can neither be uploaded to 头条 nor safely removed — and 头条 "
+            "rejects any article with an external image. Nothing was "
+            "published:\n  - " + "\n  - ".join(unseen)
+            + "\nUsually an unterminated tag, or an unclosed <script>/<style> "
+              "earlier in the body hiding it from the parser. "
+              "--drop-failed-images does NOT bypass this.")
     if failures and not drop_failed:
         die("could not upload these images to 头条, and 头条 rejects any article "
             "with an external image, so nothing was published:\n  - "
