@@ -468,7 +468,8 @@ class RedditSkillTests(unittest.TestCase):
             {"json": {"errors": [["RATELIMIT", "you are doing that too much csrf-secret", None]]}},
             {"json": {"errors": []}},
             {"json": {"errors": [], "data": {"things": []}}},
-            {"json": {"errors": [], "data": {"things": [{"data": {"id": "c1"}}]}}},
+            # No id at all -> genuinely unknown outcome.
+            {"json": {"errors": [], "data": {"things": [{"data": {"body": "x"}}]}}},
         ]
         for payload in payloads:
             stream = io.StringIO()
@@ -477,6 +478,136 @@ class RedditSkillTests(unittest.TestCase):
             ), self.assertRaises(SystemExit), redirect_stdout(stream):
                 client.comment(parent="t3_post1", body="Body")
             self.assertNotIn("csrf-secret", stream.getvalue())
+
+    def test_comment_without_permalink_is_a_success_not_an_unknown_outcome(self):
+        """Cookie mode often omits permalink; an id means Reddit created the comment."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        payload = {
+            "json": {"errors": [], "data": {"things": [{"data": {"id": "nabc123", "name": "t1_nabc123"}}]}}
+        }
+        with patch.object(client, "request", return_value=payload):
+            result = client.comment(parent="t3_1v711cj", body="Looks good")
+
+        self.assertTrue(result["commented"])
+        self.assertEqual("nabc123", result["id"])
+        self.assertEqual("https://www.reddit.com/comments/1v711cj/_/nabc123/", result["url"])
+
+    def test_comments_fails_closed_on_drifted_shape(self):
+        """A silently-empty list would read as 'the write did not land' -> duplicate reply."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.username = "tester"
+        drifted = {"data": {"children": [{"kind": "t1", "comment": {"id": "c1", "body": "x"}}]}}
+        stream = io.StringIO()
+        with patch.object(client, "request", return_value=drifted), self.assertRaises(
+            SystemExit
+        ), redirect_stdout(stream):
+            client.comments(10)
+        self.assertIn("malformed comments response", stream.getvalue())
+
+    def test_comments_accepts_documented_shape_and_survives_odd_body(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.username = "tester"
+        payload = {
+            "data": {
+                "children": [
+                    {
+                        "kind": "t1",
+                        "data": {
+                            "id": "c1",
+                            "body": "Looks good",
+                            "permalink": "/r/test/comments/p1/t/c1/",
+                            "link_title": "Test",
+                            "subreddit": "test",
+                        },
+                    }
+                ]
+            }
+        }
+        with patch.object(client, "request", return_value=payload):
+            items = client.comments(10)
+        self.assertEqual(1, len(items))
+        formatted = reddit.format_comment(items[0])
+        self.assertEqual("Looks good", formatted["body"])
+        self.assertEqual("https://www.reddit.com/r/test/comments/p1/t/c1/", formatted["url"])
+
+    def test_reply_to_a_comment_derives_a_real_permalink_from_link_id(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        payload = {
+            "json": {
+                "errors": [],
+                "data": {"things": [{"data": {"id": "nc2", "name": "t1_nc2", "link_id": "t3_1v711cj"}}]},
+            }
+        }
+        with patch.object(client, "request", return_value=payload):
+            result = client.comment(parent="t1_parent1", body="Reply")
+        self.assertEqual("https://www.reddit.com/comments/1v711cj/_/nc2/", result["url"])
+
+    def test_derive_comment_url_rejects_ids_that_could_escape_reddit(self):
+        for thread, comment_id in [
+            ("abc123", "x/../../../@evil.example.com"),
+            ("../../evil", "c1"),
+            ("abc123", ""),
+        ]:
+            stream = io.StringIO()
+            with self.subTest(thread=thread, comment_id=comment_id), self.assertRaises(
+                SystemExit
+            ), redirect_stdout(stream):
+                reddit.derive_comment_url(thread, comment_id)
+
+    def test_comment_accepts_permalink_only_and_name_only_responses(self):
+        """Proof of creation in any form must never be reported as unknown."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+
+        # permalink but no id
+        payload = {"json": {"errors": [], "data": {"things": [
+            {"data": {"name": "t1_nabc12", "permalink": "/r/test/comments/1v711cj/slug/nabc12/"}}]}}}
+        with patch.object(client, "request", return_value=payload):
+            result = client.comment(parent="t3_1v711cj", body="B")
+        self.assertTrue(result["commented"])
+        self.assertEqual("https://www.reddit.com/r/test/comments/1v711cj/slug/nabc12/", result["url"])
+
+        # name but no id and no permalink
+        payload = {"json": {"errors": [], "data": {"things": [
+            {"data": {"name": "t1_nabc12", "link_id": "t3_1v711cj"}}]}}}
+        with patch.object(client, "request", return_value=payload):
+            result = client.comment(parent="t1_x1", body="B")
+        self.assertTrue(result["commented"])
+        self.assertEqual("https://www.reddit.com/comments/1v711cj/_/nabc12/", result["url"])
+
+    def test_comment_with_unknown_thread_still_reports_success(self):
+        """We hold the id, so it was created; a 'failure' here would invite a duplicate."""
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.modhash = "csrf-secret"
+        payload = {"json": {"errors": [], "data": {"things": [{"data": {"id": "nc9", "name": "t1_nc9"}}]}}}
+        with patch.object(client, "request", return_value=payload):
+            result = client.comment(parent="t1_parent1", body="Reply")
+        self.assertTrue(result["commented"])
+        self.assertEqual("nc9", result["id"])
+        self.assertIsNone(result["url"])
+        self.assertIn("do not resend", result["note"])
+
+    def test_valid_comment_data_rejects_bad_types_but_allows_null_permalink(self):
+        self.assertTrue(reddit.valid_comment_data({"id": "c1", "body": "x", "permalink": None}))
+        self.assertTrue(reddit.valid_comment_data({"id": "c1", "body": "[deleted]"}))
+        self.assertFalse(reddit.valid_comment_data({"id": "c1", "body": {"nested": 1}}))
+        self.assertFalse(reddit.valid_comment_data({"id": "c1", "body": 123}))
+        self.assertFalse(reddit.valid_comment_data({"id": "", "body": "x"}))
+        self.assertFalse(reddit.valid_comment_data({"body": "x"}))
+
+    def test_comments_listing_survives_a_null_permalink_sibling(self):
+        client = reddit.RedditClient("cookie", cookies=reddit.parse_cookie_jar(COOKIE_JAR))
+        client.username = "tester"
+        payload = {"data": {"children": [
+            {"data": {"id": "c1", "body": "Looks good", "permalink": "/r/test/comments/p1/t/c1/"}},
+            {"data": {"id": "c2", "body": "older", "permalink": None}},
+        ]}}
+        with patch.object(client, "request", return_value=payload):
+            items = client.comments(10)
+        self.assertEqual(2, len(items))
+        self.assertIsNone(reddit.format_comment(items[1])["url"])
 
     def test_comment_body_limits_are_enforced(self):
         for body in ["", "   ", "x" * 10_001]:

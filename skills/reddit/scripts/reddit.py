@@ -474,6 +474,26 @@ class RedditClient:
         return {"ok": True, "posted": True, "id": post.get("id"), "name": post.get("name"), "url": post_url}
 
 
+    def comments(self, limit: int) -> list[dict]:
+        """List my own recent comments — used to verify an ambiguous write."""
+        username = self.username or str(self.me().get("name") or "")
+        suffix = ".json" if self.mode == "cookie" else ""
+        payload = self.request(
+            "GET",
+            f"/user/{urllib.parse.quote(username, safe='')}/comments{suffix}",
+            query={"limit": limit, "raw_json": 1},
+        )
+        if not isinstance(payload, dict) or not isinstance(payload.get("data"), dict):
+            die("Reddit returned a malformed comments response; authenticated response content was omitted.")
+        children = payload["data"].get("children")
+        # Fail closed: a silently-empty list reads as "the write did not land"
+        # and invites the duplicate reply this command exists to prevent.
+        if not isinstance(children, list) or any(
+            not isinstance(child, dict) or not valid_comment_data(child.get("data")) for child in children
+        ):
+            die("Reddit returned a malformed comments response; authenticated response content was omitted.")
+        return [child["data"] for child in children]
+
     def search(self, *, query: str, subreddit: str = "", sort: str = "relevance", limit: int = 10, time_filter: str = "month") -> list[dict]:
         suffix = ".json" if self.mode == "cookie" else ""
         path = f"/r/{subreddit}/search{suffix}" if subreddit else f"/search{suffix}"
@@ -540,11 +560,37 @@ class RedditClient:
         created = things[0].get("data")
         if not isinstance(created, dict):
             die_unknown_comment_response()
+        comment_name = created.get("name")
+        comment_id = created.get("id")
+        if not isinstance(comment_id, str) or not comment_id:
+            # `name` is the fullname (t1_<id>), so it carries the id too.
+            comment_id = comment_name[3:] if isinstance(comment_name, str) and comment_name.startswith("t1_") else ""
+
+        # A permalink alone proves creation — accept it even without an id.
         permalink = created.get("permalink")
-        comment_url = WEB_BASE + permalink if isinstance(permalink, str) and permalink.startswith("/") else ""
-        if not comment_url:
+        if isinstance(permalink, str) and permalink.startswith("/"):
+            return {"ok": True, "commented": True, "id": comment_id or None, "name": comment_name, "url": WEB_BASE + permalink}
+
+        if not comment_id:
             die_unknown_comment_response()
-        return {"ok": True, "commented": True, "id": created.get("id"), "name": created.get("name"), "url": comment_url}
+
+        # link_id is the thread even when replying to a comment (t1_ parent).
+        link_id = created.get("link_id")
+        thread = link_id[3:] if isinstance(link_id, str) and link_id.startswith("t3_") else ""
+        if not thread and parent.startswith("t3_"):
+            thread = parent[3:]
+        if not thread:
+            # Created for sure (we hold its id) but the thread is unknown; never
+            # report this as a failed write — that is what invites a duplicate.
+            return {
+                "ok": True,
+                "commented": True,
+                "id": comment_id,
+                "name": comment_name,
+                "url": None,
+                "note": "Reddit did not return a permalink. Run `comments` to locate it; do not resend.",
+            }
+        return {"ok": True, "commented": True, "id": comment_id, "name": comment_name, "url": derive_comment_url(thread, comment_id)}
 
 
 def format_profile(data: dict, mode: str) -> dict:
@@ -584,8 +630,39 @@ def die_unknown_post_response() -> None:
     die_unknown_write_outcome("Reddit returned a malformed write response")
 
 
+COMMENT_ID_RE = re.compile(r"^[A-Za-z0-9]{2,16}$")
+
+
+def derive_comment_url(thread_id: str, comment_id: str) -> str:
+    """Build Reddit's slug-less permalink when the write response omits one."""
+    if not COMMENT_ID_RE.fullmatch(thread_id) or not COMMENT_ID_RE.fullmatch(comment_id):
+        die_unknown_comment_response()
+    return f"{WEB_BASE}/comments/{thread_id}/_/{comment_id}/"
+
+
+def valid_comment_data(item: object) -> bool:
+    if not isinstance(item, dict):
+        return False
+    if not isinstance(item.get("id"), str) or not item["id"]:
+        return False
+    return isinstance(item.get("body"), str) and isinstance(item.get("permalink"), (str, type(None)))
+
+
 def die_unknown_comment_response() -> None:
     die_unknown_write_outcome("Reddit returned a malformed comment response", kind="comment")
+
+
+def format_comment(item: dict) -> dict:
+    permalink = item.get("permalink")
+    return {
+        "id": item.get("id"),
+        "body": str(item.get("body") or "")[:300],
+        "link_title": item.get("link_title"),
+        "subreddit": item.get("subreddit"),
+        "url": WEB_BASE + permalink if isinstance(permalink, str) and permalink.startswith("/") else None,
+        "score": item.get("score"),
+        "created_utc": item.get("created_utc"),
+    }
 
 
 def format_search_hit(item: dict) -> dict:
@@ -674,6 +751,9 @@ def build_parser() -> argparse.ArgumentParser:
     link_post.add_argument("--title", required=True)
     link_post.add_argument("--url", required=True)
 
+    my_comments = commands.add_parser("comments", help="list my recent comments (verify an ambiguous write)")
+    my_comments.add_argument("--limit", type=positive_limit, default=10)
+
     search = commands.add_parser("search", help="search public posts to find threads worth replying to")
     search.add_argument("--query", "-q", required=True)
     search.add_argument("--subreddit", "-r", default="")
@@ -708,6 +788,10 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "submissions":
         items = client.submissions(args.limit)
         output({"auth_mode": client.mode, "count": len(items), "submissions": [format_submission(item) for item in items]})
+        return
+    if args.command == "comments":
+        items = client.comments(args.limit)
+        output({"auth_mode": client.mode, "count": len(items), "comments": [format_comment(item) for item in items]})
         return
     if args.command == "search":
         hits = client.search(
