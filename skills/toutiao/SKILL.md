@@ -54,7 +54,7 @@ Stats come straight from 头条: `impression_count` (展现), `read_count` (阅�
 ```sh
 TT="$SKILL_DIR/scripts/toutiao.py"; [ -f "$TT" ] || TT=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/toutiao.py' 2>/dev/null | head -1)
 python3 "$TT" whoami
-# → {"user_id": ..., "name": "...", "articles_total": 273}
+# → {"user_id": ..., "name": "...", "articles_total": 0}
 ```
 
 On an auth error the cookie is expired — tell the user to reconnect at

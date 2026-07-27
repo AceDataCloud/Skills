@@ -383,7 +383,7 @@ BODY='Hi Alice,
 Just a quick test note from the AceDataCloud Gmail connector.
 
 Best,
-Qingcai'
+YOUR_NAME'
 
 # Multi-line subject lines need MIME encoded-word for non-ASCII; ASCII is fine raw.
 RAW=$(printf 'To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\nMIME-Version: 1.0\r\n\r\n%s' \

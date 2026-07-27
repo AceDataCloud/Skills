@@ -138,7 +138,7 @@ python3 "$BLOG" question <question-id>     # a question's info + whether I answe
 ```sh
 ZDIR="$SKILL_DIR"; [ -f "$ZDIR/scripts/blog.py" ] || ZDIR=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/blog.py' 2>/dev/null | head -1 | sed 's#/scripts/blog.py##')
 python3 "$ZDIR/scripts/blog.py" whoami
-# → {"id": "...", "name": "崔庆才丨静觅", "url_token": "Germey", ...}
+# → {"id": "...", "name": "<the connected display name>", "url_token": "<the connected handle>", ...}
 ```
 
 On a `401`/`403` the cookie is expired — tell the user to reconnect at

@@ -63,15 +63,15 @@ python3 scripts/discord_user.py whoami
 # list the servers (guilds) the account is in
 python3 scripts/discord_user.py guilds
 # list text channels in a server
-python3 scripts/discord_user.py channels --guild 1133012399448928276
+python3 scripts/discord_user.py channels --guild GUILD_ID
 # read recent messages in a channel
-python3 scripts/discord_user.py messages --channel 1133012400174534792 --limit 20
+python3 scripts/discord_user.py messages --channel CHANNEL_ID --limit 20
 # send — dry-run first, then re-run with a trailing --confirm
-python3 scripts/discord_user.py send --channel 1133012400174534792 --text "hello"
-python3 scripts/discord_user.py send --channel 1133012400174534792 --text "hello" --confirm
+python3 scripts/discord_user.py send --channel CHANNEL_ID --text "hello"
+python3 scripts/discord_user.py send --channel CHANNEL_ID --text "hello" --confirm
 # reply to a specific message
 python3 scripts/discord_user.py reply \
-  --channel 1133012400174534792 --message 987654321098765432 --text "on it" --confirm
+  --channel CHANNEL_ID --message MESSAGE_ID --text "on it" --confirm
 ```
 
 `--confirm` is honored ONLY as the final argument (one strip), so a message body

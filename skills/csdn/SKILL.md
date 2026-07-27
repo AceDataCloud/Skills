@@ -53,7 +53,7 @@ Stats come straight from CSDN: `view_count` (阅读), `digg_count` (点赞),
 ```sh
 CSDN="$SKILL_DIR/scripts/csdn.py"; [ -f "$CSDN" ] || CSDN=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/csdn.py' 2>/dev/null | head -1)
 python3 "$CSDN" whoami
-# → {"username": "...", "nickname": "...", "articles_total": 1597}
+# → {"username": "...", "nickname": "...", "articles_total": 0}
 ```
 
 On a WAF 403 / auth error the cookie is expired — tell the user to reconnect at

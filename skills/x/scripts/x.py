@@ -19,7 +19,7 @@ breakage.
 
 Examples:
   python3 x.py whoami
-    python3 x.py whoami --expect GermeyAce
+  python3 x.py whoami --expect SCREEN_NAME
   python3 x.py search --query "python" --product Latest --limit 20
   python3 x.py timeline --limit 20
   python3 x.py user-tweets --user elonmusk --type Tweets --limit 20
@@ -107,7 +107,7 @@ def cloudflare_block_message(error: Exception) -> str | None:
     ray = f" Ray ID: {ray_match.group(1)}." if ray_match else ""
     return (
         "X blocked this automated web-API request at Cloudflare; the login cookies may still be valid."
-        f"{ray} For identity checks, use `whoami --expect <screen_name>`; for other blocked endpoints, "
+        f"{ray} For identity checks, use `whoami`; for other blocked endpoints, "
         "configure X_PROXY or use the official X API."
     )
 
