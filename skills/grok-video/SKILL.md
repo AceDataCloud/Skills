@@ -119,4 +119,4 @@ POST /grok/tasks
 - All generation is **async** — use `callback_url` or `async: true` and poll `/grok/tasks`
 - `image_url` enables image-to-video; omit it for text-to-video
 - `:reverse` model variants route through a reverse proxy; `:official` variants use the official xAI API directly
-- `resolution: "1080p"` is only available for models via the grok.json endpoint (`grok-imagine-video:official`, `grok-imagine-video-1.5:official`, and `grok-imagine-video`)
+- `resolution: "1080p"` is only available for `:official` and plain `grok-imagine-video` models; the `grok-imagine-video-1.5-preview` model supports up to `720p`

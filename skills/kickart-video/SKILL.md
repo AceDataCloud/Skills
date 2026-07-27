@@ -149,7 +149,7 @@ POST /kickart/tasks
 
 ## Gotchas
 
-- `POST /kickart/videos` requires `duration` plus at least one product source (`product_url`, `product_id`, `user_images`, or `user_videos`)
+- `POST /kickart/videos` requires at least one product source (`product_url`, `product_id`, `user_images`, or `user_videos`) in addition to `duration`
 - `POST /kickart/viral-videos` requires both `ref_video` and `language`
 - `POST /kickart/template-videos` requires both `template_id` and `resource_list`
 - All generation is **async** — always set `callback_url` or `async: true` and poll `/kickart/tasks`
