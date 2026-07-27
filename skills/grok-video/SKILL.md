@@ -29,10 +29,10 @@ curl -X POST https://api.acedata.cloud/grok/videos \
 
 | Model | Resolution | Default | Notes |
 |-------|-----------|---------|-------|
-| `grok-imagine-video-1.5-fast:reverse` | up to 1080p | ✓ | Fast 1.5 generation (default) |
-| `grok-imagine-video:reverse` | up to 1080p | | Standard reverse-engineering access |
-| `grok-imagine-video:official` | up to 1080p | | Official API access, standard quality |
-| `grok-imagine-video-1.5:official` | up to 1080p | | Official API access, 1.5 quality |
+| `grok-imagine-video-1.5-fast:reverse` | up to 1080p | ✓ | Best value. 6–30s, billed by duration tier |
+| `grok-imagine-video:reverse` | up to 1080p | | Better value. 1–15s, billed per output second |
+| `grok-imagine-video:official` | up to 1080p | | Higher quality. 1–15s, billed per output second |
+| `grok-imagine-video-1.5:official` | up to 1080p | | Higher quality, **image-to-video only** (`image_url` required) |
 | `grok-imagine-video` | up to 720p | | Base model, text-to-video only |
 | `grok-imagine-video-1.5-preview` | up to 720p | | 1.5 preview (grok-video.json surface) |
 
