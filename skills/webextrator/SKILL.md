@@ -52,20 +52,35 @@ Real response (trimmed):
   "success": true,
   "task_id": "604b1cfb-6c5a-42c9-b900-a281e1b9c3c5",
   "trace_id": "f2a7c0b0-c17c-4bc9-b6e7-9c59746dd366",
-  "elapsed": 0.003,
+  "elapsed": 2.412,
   "data": {
     "kind": "extract",
-    "url": "https://example.com",
-    "finalUrl": "https://example.com/",
-    "contentType": "general",
-    "title": "Example Domain",
-    "description": "This domain is for use in documentation examples without needing permission. Avoid use in operations.",
+    "url": "https://en.wikipedia.org/wiki/Diffbot",
+    "finalUrl": "https://en.wikipedia.org/wiki/Diffbot",
+    "contentType": "article",
+    "title": "Diffbot",
+    "description": "American machine learning and knowledge management company",
+    "byline": "Contributors to Wikimedia projects",
     "language": "en",
-    "images": [],
-    "links": [],
-    "markdown": "...",
-    "text": "...",
-    "structured": { "schemaOrg": {}, "openGraph": {}, "jsonLd": [] }
+    "siteName": "Wikipedia",
+    "publishedAt": "2007-08-08T05:47:27Z",
+    "images": ["https://en.wikipedia.org/static/images/icons/enwiki-25.svg"],
+    "links": ["https://en.wikipedia.org/wiki/Machine_learning"],
+    "markdown": "# Diffbot\n\nDiffbot is a developer of machine learning ...",
+    "text": "Diffbot is a developer of machine learning algorithms ...",
+    "structured": {
+      "schemaOrg": { "primary": { "...": "..." }, "breadcrumbs": [], "all": [] },
+      "openGraph": { "title": "...", "description": "...", "image": "...", "type": "..." },
+      "jsonLd": []
+    },
+    "rawSignals": {
+      "hasJsonLd": true,
+      "title": "Diffbot - Wikipedia",
+      "metaDescription": null,
+      "pageStatus": 200,
+      "textLength": 11473
+    },
+    "elapsedMs": 2412
   }
 }
 ```
@@ -81,7 +96,7 @@ POST /webextrator/render
 }
 ```
 
-Returns `data.html`, `data.text`, `data.title`, `data.status`, `data.finalUrl`.
+Returns `data.html`, `data.text`, `data.title`, `data.status`, `data.finalUrl`, `data.userAgent`, `data.elapsedMs`.
 
 ### 3. Look up a task
 
@@ -136,5 +151,7 @@ POST /webextrator/tasks
 - `enable_llm` has no effect when the page ships schema.org JSON-LD — the deterministic mapper wins for free
 - Tasks API is free and retains records for 7 days only
 - `cache_ttl_seconds: 0` means "do not cache" — use `bypass_cache` to skip read
+- `data.structured.schemaOrg` has the shape `{ primary, breadcrumbs, all }` — `primary` is the highest-priority typed entity or `null`; use `structured.schemaOrg.llm` when LLM extraction runs
+- `data.rawSignals` contains debug diagnostics (`hasJsonLd`, `pageStatus`, `textLength`, etc.) — not for production parsing
 
 > **MCP:** `pip install mcp-webextrator` | Hosted: `https://webextrator.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
