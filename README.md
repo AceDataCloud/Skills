@@ -42,6 +42,9 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 | [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
+| [grok-video](skills/grok-video/) | Generate AI videos with xAI Grok |
+| [kickart-video](skills/kickart-video/) | Generate product and viral marketing videos with Kickart |
+| [dreamina-video](skills/dreamina-video/) | Animate portraits with audio using Dreamina OmniHuman |
 
 ### AI Chat & Tools
 
