@@ -170,7 +170,6 @@ POST /seedance/videos
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
-| `service_tier` | `"default"`, `"flex"` | Processing tier (default: default) |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
 
 ## Inline Parameter Syntax
@@ -193,7 +192,6 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
 - `audio_url` and `video_url` reference items are used by the **Seedance 2.0 series only**
 - Resolution options are `480p`, `720p`, `1080p`, and `4k` (`4k` is `doubao-seedance-2-0-260128` only; `2-0-fast` / `2-0-mini` max out at `720p`) — there is no 360p or 540p
-- `service_tier` values are `"default"` and `"flex"` (not "standard"/"premium")
 - Duration range is **2–15 seconds** (Seedance 2.0 supports 4–15) — values outside this range will fail
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
