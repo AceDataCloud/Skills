@@ -76,7 +76,7 @@ Polling and history queries are free; the video task is settled after production
 | `quality` | string | `standard` | `draft`, `standard`, or `premium` |
 | `scenario` | string | `auto` | `auto`, `narrated`, `drama`, `avatar`, `motion`, or `slideshow` |
 | `style` | string | `auto` | Preset or freeform visual direction |
-| `voice` | string | `auto` | Cross-lingual voice preset or a 32-hex-character Fish reference ID |
+| `voice` | string | `auto` | Voice preset: `auto`, `warm-female`, `bright-female`, `anchor-female`, `clean-female`, `calm-male`, `deep-male`, `documentary-male`, `energetic-male`, `storyteller-male` |
 | `callback_url` | string | - | Optional webhook called on success or failure |
 
 ### Quality

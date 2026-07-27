@@ -106,9 +106,9 @@ POST /webextrator/tasks
 | `wait_for_selector` | No | CSS selector to wait for before ready |
 | `block_resources` | No | Drop `image`/`font`/`media`/`stylesheet`/`xhr`/`fetch` |
 | `headers` | No | Extra request headers for the target site |
-| `cookies` | No | Cookies to install before navigation |
-| `mode` | No | `sync` (default) or `async` (returns job id) |
-| `callback_url` | No | Posted the final envelope when `mode=async` |
+| `user_agent` | No | Override the browser's User-Agent string |
+| `async` | No | `true` to return immediately with a `task_id` (also triggered automatically when `callback_url` is provided) |
+| `callback_url` | No | Webhook POSTed with the full result envelope when the async task completes |
 | `bypass_cache` | No | Skip the Redis result cache for this request |
 | `cache_ttl_seconds` | No | Override cache TTL; `0` disables caching |
 
@@ -135,5 +135,6 @@ POST /webextrator/tasks
 - `enable_llm` has no effect when the page ships schema.org JSON-LD — the deterministic mapper wins for free
 - Tasks API is free and retains records for 7 days only
 - `cache_ttl_seconds: 0` means "do not cache" — use `bypass_cache` to skip read
+- Setting `async: true` (or providing `callback_url`) returns `task_id` / `trace_id` immediately instead of waiting for the render
 
 > **MCP:** `pip install mcp-webextrator` | Hosted: `https://webextrator.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
