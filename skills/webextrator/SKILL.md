@@ -106,9 +106,10 @@ POST /webextrator/tasks
 | `wait_for_selector` | No | CSS selector to wait for before ready |
 | `block_resources` | No | Drop `image`/`font`/`media`/`stylesheet`/`xhr`/`fetch` |
 | `headers` | No | Extra request headers for the target site |
+| `user_agent` | No | Override the browser User-Agent |
 | `cookies` | No | Cookies to install before navigation |
-| `mode` | No | `sync` (default) or `async` (returns job id) |
-| `callback_url` | No | Posted the final envelope when `mode=async` |
+| `async` | No | `true` submits without blocking; poll `/webextrator/tasks` for the result |
+| `callback_url` | No | Posted the final envelope when running asynchronously |
 | `bypass_cache` | No | Skip the Redis result cache for this request |
 | `cache_ttl_seconds` | No | Override cache TTL; `0` disables caching |
 
