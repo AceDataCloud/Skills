@@ -50,9 +50,11 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 |---|---|
 | 16:9 | `1792x1024` (HD), `2048x1152`, `3840x2160` (4K) |
 | 9:16 | `1024x1792`, `1152x2048`, `2160x3840` |
-| 1:1 | `1024x1024`, `2048x2048`, `4096x4096` |
+| 1:1 | `1024x1024`, `2048x2048`, `2880x2880` (4K) |
 
-(Omit `size` or use `"auto"` to let the model pick. Invalid sizes 400.)
+(Omit `size` or use `"auto"` to let the model pick. Custom sizes must have both sides a
+multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
+ratio ≤ 3:1 — otherwise 400.)
 
 ## Tips
 
@@ -61,4 +63,7 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 - For **character/scene consistency** across video beats, generate one hero image, then
   `edits` it per beat instead of regenerating from scratch.
 - Text in images renders legibly — good for titles/labels you don't want to overlay in HTML.
-- Both endpoints are synchronous; no `/tasks` polling.
+- `n` accepts **1–10** and you are billed **per image returned**, not per request — `n: 4`
+  costs 4×. (`response_format: "b64_json"` still requires `n: 1`.)
+- Both endpoints are synchronous by default. For long 4K jobs pass `callback_url` (optionally
+  with `async: true`) and poll `POST /openai/tasks` with `{"id": "<task_id>"}`.

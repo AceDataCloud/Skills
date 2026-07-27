@@ -1,6 +1,6 @@
 ---
 name: sora-video
-description: Generate AI videos with OpenAI Sora via AceDataCloud API. Use when creating videos from text prompts, generating videos from reference images, or using character references from existing videos. Supports text-to-video, image-to-video, and character-driven generation with multiple models and resolutions.
+description: UNAVAILABLE — the Sora endpoints now return 404 and the service is unpublished; use veo-video, kling-video or seedance-video instead. Historical reference for AceDataCloud's OpenAI Sora API. Was used when creating videos from text prompts, generating videos from reference images, or using character references from existing videos. Supports text-to-video, image-to-video, and character-driven generation with multiple models and resolutions.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -9,6 +9,13 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 ---
 
 # Sora Video Generation
+
+> [!WARNING]
+> **This service is currently unavailable.** `/sora/videos` and `/sora/tasks` return
+> `404 no Route matched with those values`, and the Sora service is no longer published
+> in the API catalog. The reference below is kept for historical accuracy only — do not
+> build against it. For video generation use [veo-video](../veo-video/SKILL.md),
+> [kling-video](../kling-video/SKILL.md) or [seedance-video](../seedance-video/SKILL.md).
 
 Generate AI videos through AceDataCloud's OpenAI Sora API.
 
@@ -81,10 +88,10 @@ POST /sora/videos
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `model` | `"sora-2"`, `"sora-2-pro"` | Model to use (required) |
-| `size` | `"small"`, `"large"` | Video resolution |
-| `duration` | `10`, `15`, `25` | Duration in seconds (25 only with sora-2-pro) |
-| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16), `"square"` (1:1) | Video orientation |
-| `version` | `"1.0"` | API version — version `1.0` enables duration up to 25s, orientation, character references, and image inputs |
+| `size` | `"small"`, `"large"`, `"720x1280"`, `"1280x720"`, `"1024x1792"`, `"1792x1024"` | Video resolution |
+| `duration` | `4`, `8`, `10`, `12`, `15`, `25` | Duration in seconds (25 only with sora-2-pro; version 2.0 supports 4/8/12) |
+| `orientation` | `"landscape"` (16:9), `"portrait"` (9:16) | Video orientation — version 1.0 only |
+| `version` | `"1.0"` (default), `"2.0"` | API version. `1.0` enables duration up to 25s, `orientation`, character references and image inputs; `2.0` uses pixel `size` values and drops `orientation` |
 
 ## Gotchas
 
@@ -94,4 +101,4 @@ POST /sora/videos
 - `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
-> **MCP:** `pip install mcp-sora` | Hosted: `https://sora.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** the hosted endpoint `https://sora.mcp.acedata.cloud/mcp` currently returns 503, in line with the service being unavailable. See [all MCP servers](../_shared/mcp-servers.md)

@@ -61,19 +61,25 @@ POST /face/beautify
 
 ### 3. Age Transformation
 
+`age_infos` is required — one entry per face, each carrying the target `age`.
+
 ```json
 POST /face/change-age
 {
-  "image_url": "https://example.com/portrait.jpg"
+  "image_url": "https://example.com/portrait.jpg",
+  "age_infos": [{ "age": 60 }]
 }
 ```
 
 ### 4. Gender Swap
 
+`gender_infos` is required. `gender` is `0` to turn a male face female, `1` for the reverse.
+
 ```json
 POST /face/change-gender
 {
-  "image_url": "https://example.com/portrait.jpg"
+  "image_url": "https://example.com/portrait.jpg",
+  "gender_infos": [{ "gender": 1 }]
 }
 ```
 
@@ -113,7 +119,19 @@ POST /face/detect-live
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `image_url` | Yes (most endpoints) | Source face image URL |
+| `image_url` | Yes (all except `/face/swap`) | Source face image URL |
+
+### `/face/change-age`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `age_infos` | Yes | Array of `{ "age": <number> }`, one per face. Omitting it returns `400 age_infos is required` |
+
+### `/face/change-gender`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `gender_infos` | Yes | Array of `{ "gender": 0\|1 }` — `0` male→female, `1` female→male. Each entry also accepts an optional `face_rect` |
 
 ### `/face/swap`
 

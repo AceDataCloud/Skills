@@ -36,6 +36,8 @@ Synchronous responses return a direct audio URL:
 |----------|---------|
 | `POST /fish/tts` | Text-to-speech generation |
 | `GET /fish/model` | Browse/search public Fish reference voices |
+| `GET /fish/model/{id}` | Fetch one reference voice by ID |
+| `POST /fish/model` | Clone a voice — create a reference model from an audio URL |
 | `POST /fish/tasks` | Poll async TTS jobs when `async: true` |
 
 ## Workflows
@@ -115,4 +117,4 @@ Headers:
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
-- The current OpenAPI spec documents voice browsing via `GET /fish/model`; it does **not** document a voice-cloning write endpoint.
+- Voice cloning is `POST /fish/model`. `voices` must be a **single** HTTP(S) audio URL string — not an array, and not a file upload. It returns the `_id` you then pass to `/fish/tts` as `reference_id`.
