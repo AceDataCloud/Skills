@@ -1,6 +1,6 @@
 ---
 name: veo-video
-description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, upscaling/extending videos, re-shooting with new camera motion, or inserting/removing objects. Supports Veo 3 and Veo 3.1 models including fast and ingredient variants.
+description: Generate AI videos with Google Veo via AceDataCloud API. Use when creating videos from text descriptions, animating still images into video, blending reference images into video, or upscaling existing videos to 1080p. Supports Veo 3 and Veo 3.1 models including fast and ingredient variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -112,29 +112,6 @@ POST /veo/videos
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
-
-## Post-Generation Endpoints
-
-After generating a video, use these endpoints to further process it:
-
-### Extend (`POST /veo/extend`)
-
-Continue an existing video — AI auto-generates the next segment.
-
-```json
-POST /veo/extend
-{
-  "video_id": "your-video-id",
-  "model": "veo31-fast",
-  "prompt": "the camera slowly zooms out"
-}
-```
-
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `video_id` | string | **Required.** Task ID from `/veo/videos` or a prior `/veo/extend` |
-| `model` | `"veo31-fast"`, `"veo31"` | **Required.** Only Veo 3.1 series is supported |
-| `prompt` | string | Optional: guides the extended segment |
 
 ## Gotchas
 
