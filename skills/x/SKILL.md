@@ -81,7 +81,13 @@ the default.
 On an actual auth error the cookie is expired — have the user reconnect at
 <https://auth.acedata.cloud/user/connections>. A Cloudflare block is different:
 reconnecting cookies does not fix it. Use `whoami` for identity checks; other
-blocked endpoints need `X_PROXY` or the official X API. Do **not** loop-retry.
+blocked endpoints need `X_PROXY` or the official X API. Do **not** loop-retry a
+Cloudflare block or an auth error.
+
+A **404 is not an auth error.** X's identity endpoints 404 on roughly a quarter
+of calls even with healthy cookies, on every account. `whoami` already retries
+those internally, so if it still reports a 404, wait a moment and run it again —
+do not tell the user to reconnect.
 
 ## Write commands — GATED (dry-run unless trailing `--confirm`)
 
