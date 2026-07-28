@@ -37,7 +37,10 @@ fresh refs after every transition.
 - Like/favorite: `.like-lottie`, `.collect-icon`; always verify resulting state.
 
 Selectors are recognition hints, not permission to run arbitrary JavaScript or CSS queries. If generic
-browser observations cannot identify a unique visible target, use a screenshot-bound action or stop.
+browser observations cannot identify a unique visible target, stop and report the tooling failure — attach a
+`browser.screenshot` as evidence if it helps the user. A screenshot never yields a `ref`, so it is never a way
+to keep acting: refs only come from `browser.snapshot` / `browser.find`, and guessing one fails as
+`stale_target`.
 
 ## Deliberate non-parity
 
