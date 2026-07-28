@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -41,7 +42,6 @@ EXPECTED_FACADES = {
     "browser.wait",
     "browser.dialog",
     "browser.upload",
-    "browser.batch",
 }
 EXPECTED_CAPABILITIES = {
     "tabs.read",
@@ -156,13 +156,21 @@ def test_compact_manifest_matches_final_generated_profile() -> None:
     }
 
     generated = manifest["_generated"]
-    assert generated["generator"] == "aichat2/worker/scripts/generate-browser-manifest.ts"
     assert re.fullmatch(r"[0-9a-f]{40}", generated["source_commit"])
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", generated["wire_contract_digest"])
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", generated["facade_catalog_digest"])
     assert generated["facade_catalog_digest"] == manifest["facade_catalog_digest"]
+    # Recomputed, not just cross-checked: the two copies agreeing proves nothing
+    # once the generator is gone (PS#1664), so editing a facade without touching
+    # the digest would otherwise leave it describing a catalog that no longer exists.
+    recomputed = "sha256:" + hashlib.sha256(
+        json.dumps(facade_policies, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    ).hexdigest()
+    assert manifest["facade_catalog_digest"] == recomputed
     assert set(facade_policies) == DEPLOYED_BROWSER_TOOLS
-    assert len(facade_policies) == 30
+    # 29 since browser.batch was retired: its cloud schema required `steps` while
+    # the extension only ever read `actions`, so every call failed.
+    assert len(facade_policies) == 29
     assert all_policies
     assert mapped_policies <= all_policies
 
