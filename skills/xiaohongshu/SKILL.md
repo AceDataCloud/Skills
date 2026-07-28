@@ -268,6 +268,9 @@ The helper is deterministic and has no network or browser access. Pass JSON thro
 
 - A read succeeds only when a fresh page observation contains the requested visible data; say when data is truncated, unavailable, or ambiguous.
 - A navigation succeeds only when a fresh read shows the expected same-origin page.
+- Xiaohongshu renders client-side: `browser.navigate` returns before the feed exists.
+  Always `browser.wait` for the content you need, then read. A read taken straight
+  after navigating comes back empty and must not be reported as "no data".
 - A reversible interaction succeeds only when a fresh read confirms the target state.
 - A comment/reply succeeds only when the exact text and target are visibly confirmed after submission.
 - A publish/schedule succeeds only when a visible success state or destination confirms it. Return the canonical note URL when visible.
