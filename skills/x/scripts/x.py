@@ -245,8 +245,52 @@ async def resolve_user(client, target: str):
 
 # ── read commands ───────────────────────────────────────────────────
 
+IDENTITY_ATTEMPTS = 4
+
+
+class _UnraisableSentinel(Exception):
+    """Stands in for twikit's NotFound when twikit is absent, so the unit tests
+    (which mock the client entirely) can exercise these paths."""
+
+
+def not_found_error():
+    try:
+        from twikit.errors import NotFound
+    except Exception:
+        return _UnraisableSentinel
+    return NotFound
+
+
+async def retry_flaky_not_found(client, call, what: str):
+    """Run `call(client)`, retrying X's intermittent 404s on a fresh session.
+
+    X's identity endpoints 404 on roughly a quarter of calls even with healthy
+    cookies (measured over 20-trial batches on three separate accounts), so a
+    404 here is NOT an expired cookie. Returns (result, client) — the client is
+    replaced on each retry because reusing the failing session keeps 404ing.
+    """
+    not_found = not_found_error()
+    last_error = None
+    for attempt in range(IDENTITY_ATTEMPTS):
+        if attempt:
+            await asyncio.sleep(0.6 * attempt)
+            client = make_client()
+        try:
+            return await call(client), client
+        except not_found as e:
+            last_error = e
+    die(
+        f"X returned 404 for {what} on {IDENTITY_ATTEMPTS} consecutive attempts. "
+        "That endpoint is intermittently flaky — a 404 is not an expired cookie, "
+        "so reconnecting will not help. Retry the same command in a moment. "
+        f"({last_error})"
+    )
+
+
 async def cmd_whoami(client, args):
-    settings, _ = await client.v11.settings()
+    (settings, _), client = await retry_flaky_not_found(
+        client, lambda c: c.v11.settings(), "the authenticated account's settings"
+    )
     authenticated_screen_name = settings.get("screen_name") if isinstance(settings, dict) else None
     if not isinstance(authenticated_screen_name, str) or not re.fullmatch(
         r"[A-Za-z0-9_]{1,15}", authenticated_screen_name
@@ -260,7 +304,11 @@ async def cmd_whoami(client, args):
                 f"connected X account is @{authenticated_screen_name}, not @{expected_screen_name}; "
                 "stopped without performing any write"
             )
-    u = await client.get_user_by_screen_name(authenticated_screen_name)
+    u, client = await retry_flaky_not_found(
+        client,
+        lambda c: c.get_user_by_screen_name(authenticated_screen_name),
+        f"@{authenticated_screen_name}'s profile",
+    )
     result = fmt_user(u)
     result.update(
         {
