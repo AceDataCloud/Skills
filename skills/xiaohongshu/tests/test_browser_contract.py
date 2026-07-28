@@ -134,9 +134,9 @@ def test_browser_execution_frontmatter_contract() -> None:
         re.MULTILINE,
     )
     assert "  Operate Xiaohongshu / RED through the user's paired browser device:" in frontmatter
-    assert re.search(r"^skill_revision: 4\.2\.0$", frontmatter, re.MULTILINE)
+    assert re.search(r"^skill_revision: 4\.3\.0$", frontmatter, re.MULTILINE)
     assert re.search(r"^execution:\n  browser:\n", frontmatter, re.MULTILINE)
-    assert re.search(r"^    skill_revision: 4\.2\.0$", frontmatter, re.MULTILINE)
+    assert re.search(r"^    skill_revision: 4\.3\.0$", frontmatter, re.MULTILINE)
     assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
@@ -258,6 +258,46 @@ def test_browser_skill_progressively_loads_domain_workflows() -> None:
     assert "scripts/xhs_contract.py" in text
     assert "Xiaohongshu-specific page semantics" in text
     assert "generic `browser.*` facades" in text
+
+
+def test_publish_states_the_ref_contract_and_the_media_requirement() -> None:
+    """A ref is an observation output, and a text-only note is a product rule.
+
+    Both were left implicit before, and the model reacted by inventing refs from
+    visible text and by blaming the page for refusing a text-only note.
+    """
+    skill = SKILL.read_text(encoding="utf-8")
+    publish = (SKILL_DIR / "references" / "publish.md").read_text(encoding="utf-8")
+
+    for document in (skill, publish):
+        assert "e_<uuid>" in document
+        assert "tab_<uuid>" in document
+
+    # Step 1 must navigate straight to the creator host; the old workflow spent
+    # step 1 on the session and only reached the URL in step 2.
+    first_step = publish.split("## Execute", 1)[1].split("\n2. ", 1)[0]
+    assert "Navigate straight to" in first_step
+    assert "https://creator.xiaohongshu.com/publish/publish?source=official" in first_step
+
+    # The media rule is stated up front, and it carves out long articles, which
+    # legitimately publish with an empty media array (scripts/xhs_contract.py).
+    preamble = publish.split("## Collect and validate", 1)[0]
+    assert "Media is mandatory" in preamble
+    assert "long article" in preamble.casefold()
+    assert "before" in preamble.casefold().split("media is mandatory")[1]
+
+
+def test_no_reference_offers_a_screenshot_as_a_way_to_keep_acting() -> None:
+    """A screenshot never yields a ref, so it cannot substitute for an observation.
+
+    mcp-parity.md used to offer "a screenshot-bound action or stop", which
+    contradicts SKILL.md's stop-and-report rule for unreachable controls.
+    """
+    for reference in (SKILL_DIR / "references").glob("*.md"):
+        assert "screenshot-bound action" not in reference.read_text(encoding="utf-8")
+
+    parity = (SKILL_DIR / "references" / "mcp-parity.md").read_text(encoding="utf-8")
+    assert "A screenshot never yields a `ref`" in parity
 
 
 def test_browser_skill_matches_complete_local_runtime() -> None:
