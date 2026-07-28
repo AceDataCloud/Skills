@@ -64,7 +64,7 @@ curl -sS -X POST "$MASTODON_BASE_URL/api/v1/statuses" \
 Use the `id` from `verify_credentials`:
 
 ```bash
-ACCT_ID="14715"   # from verify_credentials
+ACCT_ID="ACCOUNT_ID"   # from verify_credentials
 curl -sS "$MASTODON_BASE_URL/api/v1/accounts/$ACCT_ID/statuses?limit=20&exclude_replies=true&exclude_reblogs=true" \
   -H "Authorization: Bearer $MASTODON_ACCESS_TOKEN" \
   | jq '.[] | {id, url, boosts: .reblogs_count, favs: .favourites_count, replies: .replies_count, created_at}'

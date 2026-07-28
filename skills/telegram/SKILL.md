@@ -51,7 +51,7 @@ last argument** so a message/caption that merely contains "--confirm" can never 
 
 ```sh
 python3 "$TG" whoami
-# → {"id": 8367450178, "username": "GermeyAce", "name": "Germey", "phone": "..."}
+# → {"id": 100000000, "username": "<the connected handle>", "name": "<display name>", "phone": "..."}
 ```
 
 On an auth/session error the stored session is dead — tell the user to reconnect at

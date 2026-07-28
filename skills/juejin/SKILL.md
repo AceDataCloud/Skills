@@ -47,7 +47,7 @@ Stats come straight from 掘金: `view_count` (阅读), `digg_count` (点赞),
 ```sh
 JJ="$SKILL_DIR/scripts/juejin.py"; [ -f "$JJ" ] || JJ=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/juejin.py' 2>/dev/null | head -1)
 python3 "$JJ" whoami
-# → {"user_id": "...", "name": "...", "post_article_count": 336}
+# → {"user_id": "...", "name": "...", "post_article_count": 0}
 ```
 
 On an auth error (`err_no` 401 / "请登录") the cookie is expired — have the user

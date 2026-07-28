@@ -98,7 +98,7 @@ python3 $WX conversations --history --limit 20
 First list conversations, then use the `id` as `conversation_id`:
 
 ```bash
-python3 $WX messages "34642176898@chatroom" --limit 50 --order asc
+python3 $WX messages "CONVERSATION_ID" --limit 50 --order asc
 ```
 
 ### Historical Messages
@@ -107,7 +107,7 @@ Read from Wisdom's decrypted WeChat local databases:
 
 ```bash
 python3 $WX history --limit 50
-python3 $WX history --talker "34642176898@chatroom" --limit 50
+python3 $WX history --talker "CONVERSATION_ID" --limit 50
 python3 $WX history --limit 20 --offset 20
 ```
 

@@ -17,10 +17,10 @@ account access — NEVER echo or print it.
 Examples:
   python3 discord_user.py whoami
   python3 discord_user.py guilds
-  python3 discord_user.py channels --guild 1133012399448928276
-  python3 discord_user.py messages --channel 1133012400174534792 --limit 20
-  python3 discord_user.py send --channel 1133012400174534792 --text "hello" --confirm
-  python3 discord_user.py reply --channel 1133012400174534792 --message 987654321 --text "on it" --confirm
+  python3 discord_user.py channels --guild GUILD_ID
+  python3 discord_user.py messages --channel CHANNEL_ID --limit 20
+  python3 discord_user.py send --channel CHANNEL_ID --text "hello" --confirm
+  python3 discord_user.py reply --channel CHANNEL_ID --message MESSAGE_ID --text "on it" --confirm
 """
 
 from __future__ import annotations

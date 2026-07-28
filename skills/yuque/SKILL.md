@@ -43,8 +43,8 @@ python3 "$SKILL_DIR/scripts/yuque.py" whoami
 
 # List knowledge bases, then the documents in one.
 python3 "$SKILL_DIR/scripts/yuque.py" repos
-python3 "$SKILL_DIR/scripts/yuque.py" docs germey/blog --limit 20
-python3 "$SKILL_DIR/scripts/yuque.py" doc germey/blog DOC_ID
+python3 "$SKILL_DIR/scripts/yuque.py" docs REPO_NAMESPACE --limit 20
+python3 "$SKILL_DIR/scripts/yuque.py" doc REPO_NAMESPACE DOC_ID
 ```
 
 ## Create and update
@@ -55,18 +55,18 @@ by default and only publishes publicly with an explicit `--public`.
 
 ```bash
 # First call is always a dry run and does not load credentials or call the API.
-python3 "$SKILL_DIR/scripts/yuque.py" create germey/blog \
+python3 "$SKILL_DIR/scripts/yuque.py" create REPO_NAMESPACE \
   --title "标题" --content-file /tmp/article.md
 
 # Create it privately after the user confirms.
-python3 "$SKILL_DIR/scripts/yuque.py" create germey/blog \
+python3 "$SKILL_DIR/scripts/yuque.py" create REPO_NAMESPACE \
   --title "标题" --content-file /tmp/article.md --confirm
 
 # Public publishing additionally requires --public.
-python3 "$SKILL_DIR/scripts/yuque.py" create germey/blog \
+python3 "$SKILL_DIR/scripts/yuque.py" create REPO_NAMESPACE \
   --title "标题" --content-file /tmp/article.md --public --confirm
 
-python3 "$SKILL_DIR/scripts/yuque.py" update germey/blog DOC_ID \
+python3 "$SKILL_DIR/scripts/yuque.py" update REPO_NAMESPACE DOC_ID \
   --title "新标题" --content-file /tmp/article.md --public --confirm
 ```
 
@@ -81,7 +81,7 @@ first if the user only wants part of it changed.
 ## Delete
 
 ```bash
-python3 "$SKILL_DIR/scripts/yuque.py" delete germey/blog DOC_ID --confirm
+python3 "$SKILL_DIR/scripts/yuque.py" delete REPO_NAMESPACE DOC_ID --confirm
 ```
 
 Use the real returned `doc_id` and URL. Do not retry a timed-out write

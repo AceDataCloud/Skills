@@ -54,7 +54,7 @@ Stats come straight from Bilibili: `view` (阅读), `like` (点赞), `reply` (�
 ```sh
 BILI="$SKILL_DIR/scripts/bilibili.py"; [ -f "$BILI" ] || BILI=$(find /tmp -maxdepth 8 -path '*/skills/*/scripts/bilibili.py' 2>/dev/null | head -1)
 python3 "$BILI" whoami
-# → {"mid": 91207595, "name": "...", "level": 4}
+# → {"mid": 10000000, "name": "...", "level": 4}
 ```
 
 On a not-logged-in / auth error the cookie is expired — have the user reconnect

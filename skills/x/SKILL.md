@@ -50,8 +50,8 @@ python3 "$X" whoami          # confirm the shipped CLI can read the authenticate
 ## Read commands (run directly)
 
 ```sh
-python3 $X whoami --expect GermeyAce                         # verify this exact account
 python3 $X whoami                                            # discover the authenticated account
+python3 $X whoami --expect SCREEN_NAME                       # optional: assert a specific account
 python3 $X search --query "ai agents" --product Latest --limit 20   # Top | Latest | Media
 python3 $X search-users --query "openai" --limit 10
 python3 $X timeline --limit 20                               # my home timeline
@@ -65,19 +65,22 @@ python3 $X trends --category trending --limit 20             # trending|for-you|
 ## Verify the connection first
 
 ```sh
-python3 $X whoami --expect GermeyAce
-# → {"id": "...", "screen_name": "GermeyAce", "identity_verified": true, ...}
+python3 $X whoami
+# → {"id": "...", "screen_name": "<the connected handle>", "identity_verified": true, ...}
 ```
 
 `whoami` reads the authenticated account's screen name from X account settings,
-then resolves its public profile. `--expect` compares that server-authenticated
-screen name with the required account before any write. This avoids X's
-Cloudflare-blocked `UserByRestId` endpoint without trusting a local identity
-cookie. Always use `--expect` when the user names the required account.
+then resolves its public profile. This avoids X's Cloudflare-blocked
+`UserByRestId` endpoint without trusting a local identity cookie.
+
+`--expect <screen_name>` is optional: pass it only when the user explicitly names
+the account they want to act as, and it will abort if the connected cookie
+belongs to someone else. Do not invent an expected handle — plain `whoami` is
+the default.
 
 On an actual auth error the cookie is expired — have the user reconnect at
 <https://auth.acedata.cloud/user/connections>. A Cloudflare block is different:
-reconnecting cookies does not fix it. Use `--expect` for identity checks; other
+reconnecting cookies does not fix it. Use `whoami` for identity checks; other
 blocked endpoints need `X_PROXY` or the official X API. Do **not** loop-retry.
 
 ## Write commands — GATED (dry-run unless trailing `--confirm`)

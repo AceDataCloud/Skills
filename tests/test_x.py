@@ -17,8 +17,8 @@ x = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(x)
 
 
-def user(user_id: str = "4807296432", screen_name: str = "GermeyAce") -> SimpleNamespace:
-    return SimpleNamespace(id=user_id, screen_name=screen_name, name="Germey Ace")
+def user(user_id: str = "1000000000", screen_name: str = "example_user") -> SimpleNamespace:
+    return SimpleNamespace(id=user_id, screen_name=screen_name, name="Example User")
 
 
 def tweet(tweet_id: str, *, media: bool) -> SimpleNamespace:
@@ -43,21 +43,21 @@ class XSkillTests(unittest.TestCase):
     def test_whoami_expect_uses_authenticated_settings_without_user_by_id(self) -> None:
         class V11:
             async def settings(self):
-                return {"screen_name": "GermeyAce"}, None
+                return {"screen_name": "example_user"}, None
 
         class Client:
             v11 = V11()
 
             async def get_user_by_screen_name(self, screen_name):
-                self_test.assertEqual(screen_name, "GermeyAce")
+                self_test.assertEqual(screen_name, "example_user")
                 return user()
 
             async def get_user_by_id(self, _user_id):
                 raise AssertionError("expected-account verification must not call UserByRestId")
 
         self_test = self
-        result = run_payload(x.cmd_whoami(Client(), SimpleNamespace(expect="@GermeyAce")))
-        self.assertEqual(result["screen_name"], "GermeyAce")
+        result = run_payload(x.cmd_whoami(Client(), SimpleNamespace(expect="@example_user")))
+        self.assertEqual(result["screen_name"], "example_user")
         self.assertTrue(result["identity_verified"])
         self.assertEqual(result["verification"], "authenticated_settings_matches_expected_screen_name")
 
@@ -72,14 +72,14 @@ class XSkillTests(unittest.TestCase):
             async def get_user_by_screen_name(self, _screen_name):
                 raise AssertionError("mismatch must stop before public profile lookup")
 
-        error = run_error(x.cmd_whoami(Client(), SimpleNamespace(expect="GermeyAce")))["error"]
+        error = run_error(x.cmd_whoami(Client(), SimpleNamespace(expect="example_user")))["error"]
         self.assertIn("@OtherAccount", error)
-        self.assertIn("not @GermeyAce", error)
+        self.assertIn("not @example_user", error)
 
     def test_whoami_without_expect_uses_authenticated_settings(self) -> None:
         class V11:
             async def settings(self):
-                return {"screen_name": "GermeyAce"}, None
+                return {"screen_name": "example_user"}, None
 
         class Client:
             v11 = V11()
@@ -88,7 +88,7 @@ class XSkillTests(unittest.TestCase):
                 return user(screen_name=screen_name)
 
         result = run_payload(x.cmd_whoami(Client(), SimpleNamespace(expect=None)))
-        self.assertEqual(result["screen_name"], "GermeyAce")
+        self.assertEqual(result["screen_name"], "example_user")
         self.assertEqual(result["verification"], "authenticated_settings_screen_name")
 
     def test_user_media_falls_back_to_tweets_and_filters_media(self) -> None:
@@ -105,7 +105,7 @@ class XSkillTests(unittest.TestCase):
                 return [tweet("1", media=False), tweet("2", media=True), tweet("3", media=True)]
 
         result = run_payload(
-            x.cmd_user_tweets(Client(), SimpleNamespace(user="GermeyAce", type="Media", limit=1))
+            x.cmd_user_tweets(Client(), SimpleNamespace(user="example_user", type="Media", limit=1))
         )
         self.assertEqual(calls, [("Media", 1), ("Tweets", 40)])
         self.assertEqual(result["type"], "Media")
@@ -123,7 +123,7 @@ class XSkillTests(unittest.TestCase):
 
         with self.assertRaisesRegex(KeyError, "unexpected"):
             asyncio.run(
-                x.cmd_user_tweets(Client(), SimpleNamespace(user="GermeyAce", type="Media", limit=1))
+                x.cmd_user_tweets(Client(), SimpleNamespace(user="example_user", type="Media", limit=1))
             )
 
     def test_user_media_falls_back_on_explicit_dependency_error(self) -> None:
@@ -137,7 +137,7 @@ class XSkillTests(unittest.TestCase):
                 return [tweet("1", media=True)]
 
         result = run_payload(
-            x.cmd_user_tweets(Client(), SimpleNamespace(user="GermeyAce", type="Media", limit=1))
+            x.cmd_user_tweets(Client(), SimpleNamespace(user="example_user", type="Media", limit=1))
         )
         self.assertEqual(result["fallback"], "Tweets (locally filtered for media)")
 
@@ -182,8 +182,8 @@ class XSkillTests(unittest.TestCase):
         self.assertNotIn("huge html", message)
 
     def test_whoami_parser_accepts_expected_screen_name(self) -> None:
-        args = x.build_parser().parse_args(["whoami", "--expect", "GermeyAce"])
-        self.assertEqual(args.expect, "GermeyAce")
+        args = x.build_parser().parse_args(["whoami", "--expect", "example_user"])
+        self.assertEqual(args.expect, "example_user")
 
 
 if __name__ == "__main__":
