@@ -5,28 +5,46 @@ when_to_use: |
   Trigger when the user wants to read or write something on GitHub —
   list / view / create / comment on issues or PRs, star / watch / fork a
   repo, manage releases / gists / labels / milestones, search code, view
-  CI runs, etc.
+  CI runs, etc. Works with either connection method (OAuth authorization
+  or a self-supplied Personal Access Token); the commands are the same.
 connections: [github]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
-Use the `gh` CLI for everything. The user's OAuth access token is exported
-as `$GH_TOKEN`; `gh` reads it automatically — `gh auth status` will say
-"not logged in" because gh keeps no config file in the sandbox, but every
-authenticated subcommand works regardless.
+Use the `gh` CLI for everything. The user's token is exported as an env var
+and `gh` reads it automatically — `gh auth status` will say "not logged in"
+because gh keeps no config file in the sandbox, but every authenticated
+subcommand works regardless. **The commands are identical in both modes**;
+only the permission envelope differs, so check which one you're in before
+diagnosing a `403`:
+
+```sh
+if [ -n "$GITHUB_TOKEN" ]; then echo "mode: pat (user-created token)"; \
+elif [ -n "$GH_TOKEN" ]; then echo "mode: oauth"; \
+else echo "no GitHub connection — connect at https://auth.acedata.cloud/user/connections"; fi
+```
+
+Both are **secret — full account access within their scope. Never echo or
+print them.**
 
 `gh --help` and `gh <subcommand> --help` are always current. When unsure,
 read the help first instead of guessing flags.
 
 ## Granted scopes — what you can and cannot do
 
-The connection requests exactly five scopes: `read:user`, `user:email`,
-`repo`, `read:org`, `gist`. Everything in the Recipes below fits inside
-them. These do NOT fit, and will fail no matter how you phrase the call:
+**In PAT mode (`$GITHUB_TOKEN`)** the scopes are whatever the user picked
+when they created the token, and a fine-grained token may be limited to a
+few repositories. You cannot introspect them reliably — treat every `403` /
+`404` as a possible permission limit and say so rather than retrying.
+
+**In OAuth mode (`$GH_TOKEN`)** the connection requests exactly five scopes:
+`read:user`, `user:email`, `repo`, `read:org`, `gist`. Everything in the
+Recipes below fits inside them. These do NOT fit, and will fail no matter
+how you phrase the call:
 
 | Want to… | Needs scope | Verdict |
 |---|---|---|
@@ -41,7 +59,7 @@ Users pick scopes at install time and every box is optional, so even the
 five above may be partially granted. A `404` on something you know exists,
 or a `403`, usually means a missing scope — not a wrong URL. Say so plainly
 and point the user at `auth.acedata.cloud/user/connections` to reconnect
-with the box ticked.
+with the box ticked (OAuth) or to paste a token with wider permissions (PAT).
 
 ## Two ways to call gh — prefer subcommands
 
