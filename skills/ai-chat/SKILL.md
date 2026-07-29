@@ -133,7 +133,7 @@ Useful parameters:
 | `preset` | string | Preset/system prompt |
 | `max_turns` | integer | Trim retained turn history |
 | `allowed_skills` / `allowed_mcp_servers` | array | Restrict tool-use scope |
-| `unattended_policy` | object | Tool-use permission policy |
+| `unattended_policy` | object | Tool-use permission policy via `allowed_skills`, `allowed_mcp_servers`, and optional `expires_at` |
 | `tool_results` | array | Return results for previously requested tool calls |
 | `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek`) |
 | `offset` / `limit` | integer | Pagination for retrieval actions |
@@ -145,4 +145,5 @@ Useful parameters:
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
+- `unattended_policy` does not have a separate `mode` field — authorization comes from the `allowed_skills` / `allowed_mcp_servers` lists, and empty lists deny all unattended tool use.
 - Free-tier model variants such as `gpt-5.5:free` are documented on `/openai/chat/completions`.
