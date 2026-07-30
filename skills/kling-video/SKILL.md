@@ -161,7 +161,7 @@ POST /kling/talking-photo
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
-| `model` | See models table | Model to use |
+| `model` | See models table | Model to use (default: `kling-v1`) |
 | `prompt` | string | Required generation or continuation instructions |
 | `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
 | `duration` | O1: `5`; v3/v3-omni: `3`–`15`; others: `5`, `10` | Duration in seconds |
@@ -188,7 +188,7 @@ POST /kling/talking-photo
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
 | `image_url` (`/kling/talking-photo`) | URL | Source portrait image |
 | `audio_url` (`/kling/talking-photo`) | URL | Driving audio track |
-| `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model |
+| `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model (default: `kling-v2-1-master`) |
 | `duration` (`/kling/talking-photo`) | `5`, `10` | Talking-photo duration |
 | `mode` (`/kling/talking-photo`) | `"std"`, `"pro"` | Talking-photo quality mode |
 
