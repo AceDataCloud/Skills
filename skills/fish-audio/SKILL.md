@@ -27,7 +27,7 @@ curl -X POST https://api.acedata.cloud/fish/tts \
 Synchronous responses return a direct audio URL:
 
 ```json
-{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
+{"audio_url":"https://platform2.cdn.acedata.cloud/fish/8a72ff9840234006a9f74cb2fa04f978.mp3"}
 ```
 
 ## Endpoints
