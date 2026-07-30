@@ -195,6 +195,10 @@ A task response exposes top-level progress for user feedback:
 {
   "id": "task-id",
   "status": "producing",
+  "created_at": 1753862400,
+  "started_at": 1753862402,
+  "finished_at": null,
+  "elapsed": null,
   "progress": {
     "percent": 52,
     "stage": "visuals",
