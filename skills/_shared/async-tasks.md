@@ -33,6 +33,20 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
   -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
 ```
 
+## Task Response Fields
+
+All task polling endpoints return a standard envelope that includes:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` / `trace_id` | string | Task identifier |
+| `status` | string | Current status (terminal states vary by service) |
+| `response` | object | The generation result when completed |
+| `created_at` | number | Unix timestamp (seconds) when the task was created |
+| `started_at` | string / number | Timestamp when the task began processing (`null` if not yet started) |
+| `finished_at` | number | Unix timestamp when the task completed (`null` if not yet finished) |
+| `elapsed` | number | Total task execution time in seconds (`null` if not yet finished) |
+
 ## Important Notes
 
 - Always use `callback_url` to avoid long-running HTTP connections that time out

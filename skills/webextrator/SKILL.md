@@ -128,6 +128,29 @@ POST /webextrator/tasks
 | `id` / `trace_id` | one of | For `retrieve` |
 | `ids` / `trace_ids` | one of | For `retrieve_batch` |
 
+### Task Response
+
+Single task (`retrieve`) response:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Task ID |
+| `trace_id` | Trace ID |
+| `task_id` | Internal task ID |
+| `type` | Task type (`render` or `extract`) |
+| `started_at` | ISO-8601 timestamp when processing began (`null` if pending) |
+| `finished_at` | ISO-8601 timestamp when processing completed (`null` if pending) |
+| `elapsed` | Elapsed time in seconds (`null` if pending) |
+| `request` | Original request payload |
+| `response` | Task result data when finished |
+
+Batch task (`retrieve_batch`) response:
+
+| Field | Description |
+|-------|-------------|
+| `items` | Array of task envelopes (same structure as single) |
+| `count` | Total number of items returned |
+
 ## Gotchas
 
 - Parameters use **snake_case** (`wait_until`, `block_resources`), not camelCase

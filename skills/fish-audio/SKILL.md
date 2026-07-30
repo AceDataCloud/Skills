@@ -97,10 +97,9 @@ Headers:
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
 | `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
-| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format |
+| `format` | `"mp3"`, `"wav"`, `"pcm"` | Output format |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
-| `opus_bitrate` | integer | Opus bitrate |
 | `latency` | `"normal"`, `"balanced"` | TTS latency mode |
 | `chunk_length` / `min_chunk_length` | integer | Chunking controls |
 | `temperature`, `top_p`, `repetition_penalty` | number | Sampling controls |
