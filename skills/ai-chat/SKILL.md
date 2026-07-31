@@ -18,6 +18,8 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/audio/speech` | OpenAI-compatible text-to-speech (TTS) |
+| `POST /v1/audio/transcriptions` | OpenAI-compatible speech-to-text transcription (Whisper) |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -139,10 +141,51 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## Audio Transcription
+
+`POST /v1/audio/transcriptions` (alias: `POST /openai/audio/transcriptions`) transcribes audio to text using the Whisper model. Requests use `multipart/form-data`.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -F file=@audio.mp3 \
+  -F model=whisper-1
+```
+
+Response:
+
+```json
+{"text": "The quick brown fox jumps over the lazy dog."}
+```
+
+### Parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `file` | Yes | Audio file (max 25 MB). Formats: `flac`, `mp3`, `mp4`, `mpeg`, `mpga`, `m4a`, `ogg`, `wav`, `webm` |
+| `model` | No | Transcription model — only `whisper-1` supported (default: `whisper-1`) |
+| `language` | No | ISO-639-1 language code (e.g. `en`, `zh`) — speeds up transcription and improves accuracy |
+| `prompt` | No | Hint text to guide style or supply proper nouns |
+| `response_format` | No | `json` (default), `text`, `srt`, `verbose_json`, `vtt` |
+| `temperature` | No | Sampling temperature 0–1 (default: `0`) |
+| `timestamp_granularities[]` | No | `word` or `segment` — requires `response_format=verbose_json` |
+
+### SDK usage
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.acedata.cloud/v1", api_key="your-token-here")
+with open("audio.mp3", "rb") as f:
+    result = client.audio.transcriptions.create(model="whisper-1", file=f)
+print(result.text)
+```
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- Most OpenAI-compatible chat routes live under `/openai/*`, but audio routes use `/v1/audio/*` (e.g. `/v1/audio/speech`, `/v1/audio/transcriptions`).
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
 - Free-tier model variants such as `gpt-5.5:free` are documented on `/openai/chat/completions`.
+- `/v1/audio/transcriptions` does not support streaming; client timeouts should be set to at least 300 seconds for large files.
