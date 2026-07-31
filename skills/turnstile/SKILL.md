@@ -31,8 +31,8 @@ A successful synchronous response:
 ```json
 {
   "token": "0.mNQ2f9uP6mQ0y3H5Q8bqO7iM...",
-  "started_at": "2026-07-24T09:34:13+00:00",
-  "finished_at": "2026-07-24T09:34:25+00:00",
+  "started_at": 1784885653.0,
+  "finished_at": 1784885665.0,
   "elapsed": 12.4
 }
 ```
