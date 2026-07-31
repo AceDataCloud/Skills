@@ -18,6 +18,8 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/audio/speech` | Text-to-speech (TTS) |
+| `POST /v1/audio/transcriptions` | Speech-to-text (Whisper) |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -139,9 +141,54 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## OpenAI Audio APIs
+
+### Text-to-Speech
+
+```json
+POST /v1/audio/speech
+{
+  "model": "tts-1-hd",
+  "input": "Hello from AceData Cloud.",
+  "voice": "nova",
+  "response_format": "mp3"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `input` | string | **Required.** Text to synthesize |
+| `model` | string | `tts-1` or `tts-1-hd` (default `tts-1-hd`) |
+| `voice` | string | `alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer` (default `alloy`) |
+| `response_format` | string | `mp3`, `opus`, `aac`, `flac`, `wav`, `pcm` (default `mp3`) |
+| `speed` | number | Playback speed (default `1.0`) |
+
+Returns the audio binary directly (e.g. `audio/mpeg` for mp3).
+
+### Speech-to-Text (Whisper)
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -F "file=@audio.mp3" \
+  -F "model=whisper-1"
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file` | binary | **Required.** Audio file (multipart/form-data) |
+| `model` | string | `whisper-1` (default and only current option) |
+| `language` | string | BCP-47 language code hint (e.g. `en`) |
+| `prompt` | string | Optional context to guide transcription |
+| `response_format` | string | `json`, `text`, `srt`, `verbose_json`, `vtt` (default `json`) |
+| `temperature` | number | Sampling temperature (default `0`) |
+| `timestamp_granularities[]` | array | `word` and/or `segment` — requires `verbose_json` |
+
+Returns `{ "text": "..." }` for `json` format, or plain text for `text`/`srt`/`vtt`.
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- Chat routes are under `/openai/*`; audio routes use the native `/v1/audio/*` paths.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
