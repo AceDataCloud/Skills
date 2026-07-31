@@ -33,6 +33,17 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
   -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
 ```
 
+## Task Response Envelope
+
+Every task polling response includes timing metadata alongside the result:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `created_at` | number | Unix timestamp (seconds) when the task was created |
+| `started_at` | string (datetime) | ISO-8601 datetime when processing began |
+| `finished_at` | number | Unix timestamp (seconds) when the task completed |
+| `elapsed` | number | Total processing time in seconds |
+
 ## Important Notes
 
 - Always use `callback_url` to avoid long-running HTTP connections that time out

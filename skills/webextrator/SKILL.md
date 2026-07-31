@@ -93,6 +93,31 @@ POST /webextrator/tasks
 }
 ```
 
+Single-task response:
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "trace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "task_id": "550e8400-e29b-41d4-a716-446655440000",
+  "type": "render",
+  "started_at": "2025-05-02T10:30:00.123Z",
+  "finished_at": "2025-05-02T10:30:05.456Z",
+  "elapsed": 5.333,
+  "request": { "url": "https://platform.acedata.cloud" },
+  "response": { "kind": "render", "title": "Ace Data Cloud" }
+}
+```
+
+Batch-task response:
+
+```json
+{
+  "items": [ { ... }, { ... } ],
+  "count": 2
+}
+```
+
 ## Parameters
 
 ### Render & Extract (shared)
