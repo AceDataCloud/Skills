@@ -31,8 +31,8 @@ A successful synchronous response:
 ```json
 {
   "token": "0.mNQ2f9uP6mQ0y3H5Q8bqO7iM...",
-  "started_at": "2026-07-24T09:34:13+00:00",
-  "finished_at": "2026-07-24T09:34:25+00:00",
+  "started_at": 1753350853.0,
+  "finished_at": 1753350865.4,
   "elapsed": 12.4
 }
 ```
@@ -60,8 +60,8 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | Field | Description |
 |-------|-------------|
 | `token` | The solved Turnstile token to submit as `cf-turnstile-response` |
-| `started_at` | ISO-8601 timestamp when solving began |
-| `finished_at` | ISO-8601 timestamp when solving completed |
+| `started_at` | Unix timestamp (seconds, float) when solving began |
+| `finished_at` | Unix timestamp (seconds, float) when solving completed |
 | `elapsed` | Total solving time in seconds |
 
 ## Async Mode

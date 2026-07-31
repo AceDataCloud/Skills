@@ -128,6 +128,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Generate with an inspiration/reference audio mood |
 
 ## Auxiliary Endpoints
 

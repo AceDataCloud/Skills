@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/audio/transcriptions` | Audio-to-text transcription (Whisper) |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -139,9 +140,30 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## Audio Transcription (Whisper)
+
+Transcribe audio files to text via the OpenAI-compatible Whisper endpoint.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -F "file=@audio.mp3" \
+  -F "model=whisper-1"
+```
+
+| Parameter | Description |
+|-----------|-------------|
+| `file` | Audio file (binary, multipart/form-data) — required |
+| `model` | `"whisper-1"` (default and only option) |
+| `language` | ISO-639-1 language code (e.g. `"en"`) — omit for auto-detect |
+| `prompt` | Optional context hint to improve accuracy |
+| `response_format` | `"json"` (default), `"text"`, `"srt"`, `"verbose_json"`, `"vtt"` |
+| `temperature` | Sampling temperature (default: `0`) |
+| `timestamp_granularities[]` | `"word"` and/or `"segment"` — for word-level timestamps |
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*` — **except** `/v1/audio/transcriptions` and `/v1/realtime` which use `/v1/`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
