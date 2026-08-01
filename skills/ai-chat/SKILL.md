@@ -1,16 +1,16 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need OpenAI-compatible chat/responses calls or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need OpenAI-compatible chat/responses or audio transcription calls, or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the documented `/openai/*` and `/v1/audio/*` routes.
 ---
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes these documented chat and OpenAI-compatible surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/audio/transcriptions` | OpenAI-compatible speech-to-text via `whisper-1` or `gpt-transcribe` |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -100,6 +101,42 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
+## OpenAI-Compatible Audio Transcription
+
+Multipart upload, compatible with the OpenAI SDK transcription surface:
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -F "file=@meeting.mp3" \
+  -F "model=gpt-transcribe" \
+  -F "language=en" \
+  -F "keywords[]=AceDataCloud" \
+  -F "keywords[]=Copilot"
+```
+
+Common parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file` | file | Required audio file upload |
+| `model` | string | `whisper-1` (default) or `gpt-transcribe` |
+| `language` | string | ISO-639-1 language hint |
+| `prompt` | string | Vocabulary/style guidance |
+| `response_format` | string | `json`, `text`, `srt`, `verbose_json`, or `vtt` |
+| `temperature` | number | Sampling control, default `0` |
+| `timestamp_granularities[]` | array | `word` or `segment` timestamps |
+| `stream` | boolean | OpenAI-compatible flag; default `false` |
+| `languages[]` | array | Candidate languages for `gpt-transcribe` |
+| `keywords[]` | array | Keyword hints for `gpt-transcribe` |
+
+Model choice:
+
+| Need | Recommended model |
+|------|-------------------|
+| SRT/VTT subtitles or word/segment timestamps | `whisper-1` |
+| Better general transcription plus `languages[]` / `keywords[]` hints | `gpt-transcribe` |
+
 ## Stateful / Agentic Conversations
 
 `POST /aichat2/conversations` generalizes the legacy conversation API with
@@ -141,8 +178,10 @@ Useful parameters:
 
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- The documented OpenAI-compatible surface is mixed: chat and image routes live under `/openai/*`, while audio transcription lives under `/v1/audio/transcriptions`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
 - Free-tier model variants such as `gpt-5.5:free` are documented on `/openai/chat/completions`.
+- `gpt-transcribe` adds `languages[]` and `keywords[]`; `whisper-1` remains the default model when you need subtitle formats or timestamp granularity controls.
+- `timestamp_granularities[]` is only useful with `response_format=verbose_json`, and `stream` is accepted for OpenAI compatibility but still returns a complete transcription response.
