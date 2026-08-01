@@ -38,4 +38,6 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 - Always use `callback_url` to avoid long-running HTTP connections that time out
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
+- Most task endpoints use `id` (single) or `ids` (batch), but some services use a service-specific key such as `task_id` for single-task lookups — follow the skill's examples.
+- `action` usually defaults to `retrieve`; set `action: "retrieve_batch"` for `ids` when the service supports batch lookup.
+- Detailed task responses commonly include lifecycle metadata such as `created_at`, `started_at`, `finished_at`, and `elapsed`, plus tracing fields like `trace_id` / `application_id` for debugging and correlation.

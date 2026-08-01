@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the documented `/openai/*` and `/v1/audio/*` routes.
 ---
 
 # AI Chat — Unified LLM Gateway
@@ -67,6 +67,31 @@ models include:
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
+
+## Related OpenAI-Compatible Audio Routes
+
+The same OpenAI-compatible API family also exposes audio endpoints:
+
+| Endpoint | Use For |
+|----------|---------|
+| `POST /v1/audio/transcriptions` | Speech-to-text with `whisper-1` or `gpt-transcribe` |
+| `POST /v1/audio/speech` | Text-to-speech with `tts-1` or `tts-1-hd` |
+
+For transcriptions, the notable current model differences are:
+
+| Model | Best for | Notes |
+|-------|----------|-------|
+| `whisper-1` | Subtitles and timestamped transcripts | Supports `json`, `text`, `srt`, `verbose_json`, `vtt`, plus `timestamp_granularities[]` |
+| `gpt-transcribe` | Lower-cost, higher-accuracy speech recognition | Supports `json` / `text`, plus `languages[]` and `keywords[]` hints |
+
+`POST /v1/audio/transcriptions` takes a multipart `file` upload and also accepts:
+
+- `model`: `whisper-1` or `gpt-transcribe`
+- `language`: single ISO-639-1 language hint
+- `languages[]`: candidate ISO-639-1 language list (**`gpt-transcribe` only**)
+- `keywords[]`: proper nouns / domain terms to bias recognition (**`gpt-transcribe` only**)
+- `timestamp_granularities[]`: `word` or `segment` timestamps (**`whisper-1` with `verbose_json`**)
+- `stream`: accepted but currently returns a non-streaming result
 
 ## OpenAI-Compatible Chat
 
@@ -141,7 +166,7 @@ Useful parameters:
 
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- Most documented OpenAI-compatible routes live under `/openai/*`, but audio uses `/v1/audio/*`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
