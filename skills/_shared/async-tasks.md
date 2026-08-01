@@ -39,3 +39,4 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
 - Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
+- Task responses commonly include timing metadata such as `created_at`, `started_at`, `finished_at`, and `elapsed`, plus trace/ownership metadata (for example `trace_id`).

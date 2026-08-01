@@ -141,7 +141,7 @@ Useful parameters:
 
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- Chat and responses routes use `/openai/*`; some other OpenAI-compatible capabilities (for example audio/realtime) use `/v1/*`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
