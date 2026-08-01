@@ -73,7 +73,7 @@ def load_cookies(platform: str) -> list[dict]:
     if not raw:
         die(
             f"{env} is not set — connect the {platform} account at "
-            f"https://auth.acedata.cloud/user/connections, then retry."
+            f"https://studio.acedata.cloud/console/connectors, then retry."
         )
     try:
         jar = json.loads(raw)
@@ -156,7 +156,7 @@ def get_json(url: str, jar: list[dict], **kw):
     if status == 401 or status == 403:
         die(
             f"auth failed ({status}) on {url} — the cookie is likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections."
+            f"Reconnect at https://studio.acedata.cloud/console/connectors."
         )
     try:
         return status, json.loads(text)

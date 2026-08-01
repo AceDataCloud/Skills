@@ -42,7 +42,7 @@ python3 "$R" whoami
 ```
 
 If authentication fails, ask the user to reconnect at
-<https://auth.acedata.cloud/user/connections>. Do not loop-retry a blocked or
+<https://studio.acedata.cloud/console/connectors>. Do not loop-retry a blocked or
 expired session.
 
 ## Read

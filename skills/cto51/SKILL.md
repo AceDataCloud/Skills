@@ -43,7 +43,7 @@ python3 "$SKILL_DIR/scripts/cto51.py" whoami
 ```
 
 If this fails with a redirect or auth error, the cookie has expired. Ask the
-user to reconnect at `https://auth.acedata.cloud/user/connections` rather than
+user to reconnect at `https://studio.acedata.cloud/console/connectors` rather than
 retrying.
 
 ## Create a draft — GATED

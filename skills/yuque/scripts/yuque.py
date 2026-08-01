@@ -42,7 +42,7 @@ TOKEN_ONLY_COMMANDS = {"update", "delete"}
 MAX_CONTENT_BYTES = 10 * 1024 * 1024
 MAX_ITEMS = 100
 
-RECONNECT = "https://auth.acedata.cloud/user/connections"
+RECONNECT = "https://studio.acedata.cloud/console/connectors"
 
 
 def output(value) -> None:

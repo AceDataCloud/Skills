@@ -72,7 +72,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect CSDN at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -171,10 +171,10 @@ def get_json(url: str, jar: list, *, referer, origin):
     if "WAF" in text and "403" in text:
         die("CSDN WAF blocked the request (403). The cookie may be expired or "
             "the account needs to re-pass CSDN's captcha; reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     if status in (401, 403):
         die(f"auth failed ({status}) on {url} — cookie likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -209,7 +209,7 @@ def csdn_username(jar):
     u = cookie_value(jar, "UserName")
     if not u:
         die("no UserName cookie — reconnect CSDN at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return u
 
 

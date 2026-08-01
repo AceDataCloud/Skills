@@ -39,7 +39,7 @@ user token), **not** the per-service API token used for `api.acedata.cloud`.
    (or `POST /api/v1/platform-tokens/`). It starts with `platform-` and never expires.
 2. Provide it one of two ways:
    - **Connector (recommended in studio / chat):** install the **AceDataCloud**
-     connector at [auth.acedata.cloud/user/connections](https://auth.acedata.cloud/user/connections)
+     connector at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors)
      and paste the token once — the runtime injects `ACEDATACLOUD_PLATFORM_TOKEN`
      into the sandbox automatically (this skill declares `connections: [acedatacloud]`).
    - **Local `.env`:**

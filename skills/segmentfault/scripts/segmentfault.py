@@ -79,7 +79,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect SegmentFault at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -143,7 +143,7 @@ def request(method: str, url: str, jar: list, *, headers=None, body=None, write:
         if e.code in (301, 302, 303, 307, 308):
             die(f"SegmentFault redirected {method} {url} — not followed, so no "
                 f"credential left segmentfault.com. You are most likely logged "
-                f"out; reconnect at https://auth.acedata.cloud/user/connections."
+                f"out; reconnect at https://studio.acedata.cloud/console/connectors."
                 + (" This was a WRITE: its outcome is UNKNOWN — check your "
                    "drafts before retrying." if write else ""))
         raw = e.read()
@@ -164,7 +164,7 @@ def request(method: str, url: str, jar: list, *, headers=None, body=None, write:
 def _auth_died(status: int, text: str) -> None:
     if status in (401, 403) or text.strip('"') == "Unauthorized":
         die("auth failed — cookie expired or invalid. Reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
 
 
 def session_token(jar: list) -> str:
@@ -175,7 +175,7 @@ def session_token(jar: list) -> str:
     if not m:
         die("could not find the SegmentFault session token on /write — you are "
             "probably logged out. Reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return m.group(1)
 
 
@@ -192,7 +192,7 @@ def cmd_whoami(jar, _args):
     )
     if not name and "登录" in html:
         die("not logged in — cookie expired. Reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     out({
         "platform": PLATFORM,
         "name": name.group(1) if name else None,

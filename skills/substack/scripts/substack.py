@@ -62,7 +62,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect Substack at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -137,7 +137,7 @@ def api(method, url, jar, *, body=None, _retried=False):
         return api(method, url, jar, body=body, _retried=True)
     if status in (401, 403):
         die(f"auth failed ({status}) on {url} — cookie likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
     try:
         d = json.loads(text) if text.strip() else {}
     except json.JSONDecodeError:

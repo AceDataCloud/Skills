@@ -52,7 +52,7 @@ python3 "$MED" whoami
 ```
 
 On an auth error the cookie is expired — have the user reconnect at
-<https://auth.acedata.cloud/user/connections>. Do **not** loop-retry.
+<https://studio.acedata.cloud/console/connectors>. Do **not** loop-retry.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 

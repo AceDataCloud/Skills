@@ -79,7 +79,7 @@ belongs to someone else. Do not invent an expected handle — plain `whoami` is
 the default.
 
 On an actual auth error the cookie is expired — have the user reconnect at
-<https://auth.acedata.cloud/user/connections>. A Cloudflare block is different:
+<https://studio.acedata.cloud/console/connectors>. A Cloudflare block is different:
 reconnecting cookies does not fix it. Use `whoami` for identity checks; other
 blocked endpoints need `X_PROXY` or the official X API. Do **not** loop-retry a
 Cloudflare block or an auth error.

@@ -122,7 +122,7 @@ curl -sS -X POST https://slack.com/api/files.completeUploadExternal \
   `conversations.join` first (which also takes the channel id), then
   retry. Private channels and DMs need a manual invite — ask the user.
 - Always check `.ok` on the JSON response. `not_authed` / `invalid_auth`
-  → ask the user to re-authorize at `auth.acedata.cloud/user/connections`.
+  → ask the user to re-authorize at `studio.acedata.cloud/console/connectors`.
 - Channel ids start with `C` (channels), `D` (DMs), `G` (private). Don't
   invent ids — always look them up via `conversations.list` or
   `users.lookupByEmail`.

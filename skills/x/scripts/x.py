@@ -71,7 +71,7 @@ def load_cookie_dict() -> dict:
     raw = os.environ.get("X_COOKIES")
     if not raw:
         die("X_COOKIES is not set — connect X (Twitter) at "
-            "https://auth.acedata.cloud/user/connections, then retry.")
+            "https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -86,7 +86,7 @@ def load_cookie_dict() -> dict:
     if "auth_token" not in cookies or "ct0" not in cookies:
         die("X_COOKIES is missing auth_token / ct0 — re-capture the cookie on "
             "x.com with the ACE extension, then reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return cookies
 
 
@@ -595,7 +595,7 @@ def main() -> None:
         asyncio.run(run(args))
     except (Unauthorized,) as e:
         die(f"auth failed — cookie likely expired. Reconnect X at "
-            f"https://auth.acedata.cloud/user/connections. ({e})")
+            f"https://studio.acedata.cloud/console/connectors. ({e})")
     except (AccountLocked, AccountSuspended) as e:
         die(f"account locked/suspended by X: {e}")
     except TooManyRequests as e:
@@ -635,7 +635,7 @@ def main() -> None:
                 "cookie. Retry after twikit/X compatibility is fixed."
             )
         die(f"X request failed ({type(e).__name__}: {e}). Likely an expired "
-            f"cookie — reconnect at https://auth.acedata.cloud/user/connections "
+            f"cookie — reconnect at https://studio.acedata.cloud/console/connectors "
             f"— or twikit drift vs X's internal API.")
 
 
