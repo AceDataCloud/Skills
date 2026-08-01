@@ -73,7 +73,7 @@ class MCPClient:
                     "error": f"HTTP {exc.code} from DiDi MCP",
                     "detail": detail,
                     "hint": "If 401/403, the DiDi connector key is missing or expired — "
-                    "reconnect at https://auth.acedata.cloud/user/connections",
+                    "reconnect at https://studio.acedata.cloud/console/connectors",
                 }
             )
         except urllib.error.URLError as exc:
@@ -208,7 +208,7 @@ def main() -> None:
             {
                 "error": "DIDI_MCP_KEY not set",
                 "hint": "Connect the DiDi connector at "
-                "https://auth.acedata.cloud/user/connections to inject the key.",
+                "https://studio.acedata.cloud/console/connectors to inject the key.",
             }
         )
 

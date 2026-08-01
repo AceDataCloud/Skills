@@ -57,7 +57,7 @@ python3 "$CSDN" whoami
 ```
 
 On a WAF 403 / auth error the cookie is expired — tell the user to reconnect at
-<https://auth.acedata.cloud/user/connections>. Do **not** retry in a loop.
+<https://studio.acedata.cloud/console/connectors>. Do **not** retry in a loop.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 
@@ -89,7 +89,7 @@ image that fails to upload keeps its original URL (never blocks the post).
 ## Gotchas — surface before the user is surprised
 
 - **This is the user's real CSDN account.** Confirm before any publish.
-- **Cookie expiry / WAF 403**: reconnect at auth.acedata.cloud/user/connections —
+- **Cookie expiry / WAF 403**: reconnect at studio.acedata.cloud/console/connectors —
   never loop-retry a WAF block.
 - The editor save endpoint is signed with an HMAC key baked into CSDN's web
   bundle; if CSDN rotates it, publish fails loudly (reads still work).

@@ -32,7 +32,7 @@ python3 "$H" get --id ARTICLE_ID > draft.json
 ```
 
 An auth error means the Cookie expired. Ask the user to reconnect Habr at
-<https://auth.acedata.cloud/user/connections>; never retry in a loop.
+<https://studio.acedata.cloud/console/connectors>; never retry in a loop.
 
 ## Save or preview a draft
 

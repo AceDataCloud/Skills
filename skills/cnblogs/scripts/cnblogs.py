@@ -49,7 +49,7 @@ class CNBlogsClient:
         if not token:
             die(
                 "CNBLOGS_TOKEN is not set. Reconnect 博客园 at "
-                "https://auth.acedata.cloud/user/connections."
+                "https://studio.acedata.cloud/console/connectors."
             )
         return cls(token)
 

@@ -25,7 +25,7 @@ diagnosing a `403`:
 ```sh
 if [ -n "$GITHUB_TOKEN" ]; then echo "mode: pat (user-created token)"; \
 elif [ -n "$GH_TOKEN" ]; then echo "mode: oauth"; \
-else echo "no GitHub connection — connect at https://auth.acedata.cloud/user/connections"; fi
+else echo "no GitHub connection — connect at https://studio.acedata.cloud/console/connectors"; fi
 ```
 
 Both are **secret — full account access within their scope. Never echo or
@@ -58,7 +58,7 @@ how you phrase the call:
 Users pick scopes at install time and every box is optional, so even the
 five above may be partially granted. A `404` on something you know exists,
 or a `403`, usually means a missing scope — not a wrong URL. Say so plainly
-and point the user at `auth.acedata.cloud/user/connections` to reconnect
+and point the user at `studio.acedata.cloud/console/connectors` to reconnect
 with the box ticked (OAuth) or to paste a token with wider permissions (PAT).
 
 ## Two ways to call gh — prefer subcommands
@@ -359,7 +359,7 @@ so those queries return `INSUFFICIENT_SCOPES`. Don't build recipes on it.
 ## Notes
 
 - For private repos the user MUST have granted `repo` scope when they
-  authorized the connection at `auth.acedata.cloud/user/connections`.
+  authorized the connection at `studio.acedata.cloud/console/connectors`.
   A 404 on a repo you know exists usually means missing scope, not a
   wrong URL.
 - When `--json` rejects a field name, gh prints the full list of valid

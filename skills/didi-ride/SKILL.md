@@ -27,7 +27,7 @@ The `didi` BYOC connector injects one env var into the sandbox:
 - `DIDI_MCP_KEY` — the user's DiDi MCP key. **Secret — never echo, print, or log it.**
 
 If `DIDI_MCP_KEY` is missing, tell the user to connect the DiDi connector at
-[auth.acedata.cloud/user/connections](https://auth.acedata.cloud/user/connections)
+[studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors)
 (they get the key by scanning the QR in the 滴滴出行 App or via
 <https://mcp.didichuxing.com/claw>).
 

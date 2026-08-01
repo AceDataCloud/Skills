@@ -68,7 +68,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect Medium at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -163,7 +163,7 @@ def api(method, url, jar, *, body=None, _retried=False):
         return api(method, url, jar, body=body, _retried=True)
     if status in (401, 403):
         die(f"auth failed ({status}) on {url} — cookie likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
     clean = _PREFIX.sub("", text)
     try:
         d = json.loads(clean)
@@ -206,7 +206,7 @@ def md_me(jar):
     uid = cookie_value(jar, "uid")
     if not uid:
         die("no uid cookie — reconnect Medium at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     d = api("GET", f"{BASE}/_/api/users/{uid}", jar)
     val = (d.get("payload") or {}).get("value") or {}
     if not val.get("userId"):
@@ -606,7 +606,7 @@ def cmd_publish(jar, args):
     prime_xsrf(jar)
     if not cookie_value(jar, "xsrf"):
         die("could not obtain an xsrf token from Medium (cookie may be expired) — "
-            "reconnect at https://auth.acedata.cloud/user/connections.")
+            "reconnect at https://studio.acedata.cloud/console/connectors.")
 
     # 1. create empty draft
     d = api("POST", f"{BASE}/new-story", jar, body={})

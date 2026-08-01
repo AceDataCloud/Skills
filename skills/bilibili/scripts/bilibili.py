@@ -74,7 +74,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect Bilibili at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -202,7 +202,7 @@ def bili_nav(jar):
     data = nav.get("data") or {}
     if not data.get("isLogin"):
         die("not logged in (cookie expired?) — reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return data
 
 
@@ -780,7 +780,7 @@ def cmd_drafts(jar, args):
                  jar, referer="https://member.bilibili.com/")
     if d.get("code"):  # 0 = ok; anything truthy is an auth/API error
         die(f"draft list error (code={d.get('code')}): {d.get('message')} — "
-            f"cookie may be expired; reconnect at https://auth.acedata.cloud/user/connections.")
+            f"cookie may be expired; reconnect at https://studio.acedata.cloud/console/connectors.")
     items = _drafts_of(d)
     out({"page": args.page, "count": len(items), "drafts": [{
         "aid": x.get("id"),

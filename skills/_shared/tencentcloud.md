@@ -36,7 +36,7 @@ set -a; source .env; set +a
 
 > ⚠️ **Important:** Add `.env` to your `.gitignore` — never commit credentials to git.
 
-**Agent usage** (Claude / Studio / etc.): If you've installed the [腾讯云 connector](https://auth.acedata.cloud/user/connections) on AceDataCloud, your encrypted credentials are auto-injected as the env vars above when the agent runs any `tencentcloud-*` skill — no manual `.env` setup needed.
+**Agent usage** (Claude / Studio / etc.): If you've installed the [腾讯云 connector](https://studio.acedata.cloud/console/connectors) on AceDataCloud, your encrypted credentials are auto-injected as the env vars above when the agent runs any `tencentcloud-*` skill — no manual `.env` setup needed.
 
 ## Common regions
 

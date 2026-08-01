@@ -74,7 +74,7 @@ def load_cookies() -> list:
     raw = os.environ.get("HASHNODE_COOKIES")
     if not raw:
         die("HASHNODE_COOKIES is not set — connect Hashnode at "
-            "https://auth.acedata.cloud/user/connections, then retry.")
+            "https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -84,7 +84,7 @@ def load_cookies() -> list:
     if not any(c.get("name") == "hashnode-session" for c in jar):
         die("HASHNODE_COOKIES is missing the 'hashnode-session' cookie — re-capture "
             "on hashnode.com with the ACE extension, then reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return jar
 
 
@@ -163,7 +163,7 @@ def api(method, path, jar, *, body=None, _retried=False):
         return api(method, path, jar, body=body, _retried=True)
     if status in (401, 403):
         die(f"auth failed ({status}) on {path} — cookie likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
     # A hashnode.com/api path that 404s with an HTML body means the route/id is
     # wrong; a JSON {success:false} is a real API error.
     stripped = text.lstrip()

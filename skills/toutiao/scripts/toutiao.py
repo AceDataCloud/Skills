@@ -68,7 +68,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect 今日头条 at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -173,7 +173,7 @@ def api_envelope(method: str, path: str, jar: list, *, referer=None, body=None, 
                            nonfatal=nonfatal)
     if status in (401, 403) or "/auth/page/login" in text:
         msg = (f"auth failed ({status}) on {path} — cookie likely expired. "
-               f"Reconnect 今日头条 at https://auth.acedata.cloud/user/connections.")
+               f"Reconnect 今日头条 at https://studio.acedata.cloud/console/connectors.")
         if nonfatal:
             raise RuntimeError(msg)
         die(msg)
@@ -196,7 +196,7 @@ def api_envelope(method: str, path: str, jar: list, *, referer=None, body=None, 
         msg = env.get("message") or env.get("reason") or ""
         if code in (401, 403) or "登录" in str(msg):
             auth_msg = (f"auth failed (code={code}: {msg}) — cookie likely expired. "
-                        f"Reconnect at https://auth.acedata.cloud/user/connections.")
+                        f"Reconnect at https://studio.acedata.cloud/console/connectors.")
             if nonfatal:
                 raise RuntimeError(auth_msg)
             die(auth_msg)
@@ -689,7 +689,7 @@ def cmd_publish(jar, args):
     # deep in its API with an opaque code instead of "reconnect".
     if not cookie_value(jar, "csrftoken"):
         die("the 今日头条 cookie jar has no `csrftoken` — it is incomplete or "
-            "expired. Reconnect at https://auth.acedata.cloud/user/connections.")
+            "expired. Reconnect at https://studio.acedata.cloud/console/connectors.")
 
     # Render to HTML FIRST, then rewrite <img> tags — 头条 rejects the whole
     # article (7115) if any image isn't hosted on its own CDN with web_uri.

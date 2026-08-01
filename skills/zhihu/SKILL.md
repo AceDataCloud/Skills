@@ -142,7 +142,7 @@ python3 "$ZDIR/scripts/blog.py" whoami
 ```
 
 On a `401`/`403` the cookie is expired — tell the user to reconnect at
-<https://auth.acedata.cloud/user/connections> (re-capture with the ACE
+<https://studio.acedata.cloud/console/connectors> (re-capture with the ACE
 extension). Do **not** retry in a loop.
 
 ## Reading recipes
@@ -234,7 +234,7 @@ python3 "$BLOG" edit-answer --id <answer-id> --content-file ans.html --confirm  
 - **This is the user's real Zhihu account.** Confirm before any publish / answer /
   edit; reading exposes their own private drafts.
 - **Cookie expiry**: Zhihu cookies are short-lived. A `401`/`403` means
-  reconnect at auth.acedata.cloud/user/connections — never loop-retry.
+  reconnect at studio.acedata.cloud/console/connectors — never loop-retry.
 - **ToS**: cookie automation is against most platforms' terms. This only ever
   acts on the user's own account with their own captured cookie; the user owns
   that risk. Never use it to scrape other people's content at scale.

@@ -55,7 +55,7 @@ python3 "$TG" whoami
 ```
 
 On an auth/session error the stored session is dead — tell the user to reconnect at
-https://auth.acedata.cloud/user/connections.
+https://studio.acedata.cloud/console/connectors.
 
 ## Read recipes
 

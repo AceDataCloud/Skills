@@ -62,7 +62,7 @@ set -a; source .env; set +a
 > ⚠️ **Never commit `.env`** — the Secret is equivalent to full app access. Add it to `.gitignore`.
 
 **Agent usage** (Claude / Studio / etc.): install the
-[企业微信 connector](https://auth.acedata.cloud/user/connections) on AceDataCloud once. Your
+[企业微信 connector](https://studio.acedata.cloud/console/connectors) on AceDataCloud once. Your
 CorpID / Secret / AgentId are AES-256-GCM encrypted at rest and injected as the env vars above
 only inside the sandbox while the skill runs — no manual `.env` setup needed. Revoke anytime from
 the connections page.
