@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/audio/transcriptions` | Speech-to-text transcription (Whisper) |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -139,9 +140,36 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## Speech-to-Text Transcription
+
+`POST /v1/audio/transcriptions` transcribes audio files using Whisper-1.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******" \
+  -F "file=@audio.mp3" \
+  -F "model=whisper-1"
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | binary | ✓ | Audio file to transcribe |
+| `model` | string | | Model to use; only `whisper-1` is supported (default: `whisper-1`) |
+| `language` | string | | Language of the audio (BCP-47 code, e.g. `en`, `zh`) |
+| `prompt` | string | | Optional text to guide the transcription style |
+| `response_format` | string | | Output format: `json` (default), `text`, `srt`, `verbose_json`, `vtt` |
+| `temperature` | number | | Sampling temperature (default: 0) |
+| `timestamp_granularities[]` | array | | Granularity of timestamps: `word`, `segment` |
+
+Response (default `json` format):
+
+```json
+{"text": "The quick brown fox jumps over the lazy dog."}
+```
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*` — except `/v1/audio/transcriptions` which uses the `/v1/` prefix.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.

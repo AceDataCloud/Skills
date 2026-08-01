@@ -60,8 +60,8 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | Field | Description |
 |-------|-------------|
 | `token` | The solved Turnstile token to submit as `cf-turnstile-response` |
-| `started_at` | ISO-8601 timestamp when solving began |
-| `finished_at` | ISO-8601 timestamp when solving completed |
+| `started_at` | Unix timestamp (float seconds) when solving began |
+| `finished_at` | Unix timestamp (float seconds) when solving completed |
 | `elapsed` | Total solving time in seconds |
 
 ## Async Mode
