@@ -139,9 +139,24 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## Audio Transcription
+
+`POST /v1/audio/transcriptions` transcribes audio files using Whisper. Sends `multipart/form-data`.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | string (binary) | Yes | Audio file to transcribe |
+| `model` | string | No | Transcription model (default `whisper-1`) |
+| `language` | string | No | ISO-639-1 language code (e.g. `en`, `zh`) |
+| `prompt` | string | No | Optional context prompt to guide the transcription |
+| `response_format` | string | No | `json` (default), `text`, `srt`, `verbose_json`, `vtt` |
+| `temperature` | number | No | Sampling temperature (default `0`) |
+| `timestamp_granularities[]` | array | No | `word` and/or `segment` for word-level timestamps |
+| `stream` | boolean | No | Stream partial results via SSE (default `false`) |
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`. The exception is audio (`/v1/audio/*`).
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
