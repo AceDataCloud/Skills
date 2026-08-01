@@ -139,9 +139,33 @@ Useful parameters:
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+## Audio Transcription
+
+`POST /v1/audio/transcriptions` transcribes audio files to text.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/audio/transcriptions \
+  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -F "file=@audio.mp3" \
+  -F "model=gpt-transcribe"
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file` | file | Audio file to transcribe (required) |
+| `model` | string | `whisper-1` (default) or `gpt-transcribe` |
+| `language` | string | ISO-639-1 language code (e.g. `en`) |
+| `prompt` | string | Optional text to guide transcription style |
+| `response_format` | string | `json` (default), `text`, `srt`, `verbose_json`, `vtt` |
+| `temperature` | number | Sampling temperature, default `0` |
+| `timestamp_granularities[]` | array | Timestamp levels: `word`, `segment` |
+| `stream` | boolean | Enable streaming response, default `false` |
+| `languages[]` | array | List of candidate language codes for detection |
+| `keywords[]` | array | Hint keywords to improve transcription accuracy |
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`. The audio transcription endpoint is an exception and lives under `/v1/audio/transcriptions`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
