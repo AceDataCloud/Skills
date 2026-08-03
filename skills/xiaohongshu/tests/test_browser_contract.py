@@ -139,6 +139,14 @@ def test_browser_execution_frontmatter_contract() -> None:
     assert re.search(r"^    skill_revision: 4\.3\.0$", frontmatter, re.MULTILINE)
     assert re.search(r"^    provider: xiaohongshu/xiaohongshu$", frontmatter, re.MULTILINE)
     assert _nested_list(frontmatter, "origins") == EXPECTED_ORIGINS
+    # Publishing lives on creator.; without an explicit initial_url the session
+    # silently lands on origins[0], the consumer homepage, and every run has to
+    # navigate off it before it can do anything.
+    assert re.search(
+        r"^    initial_url: https://creator\.xiaohongshu\.com/publish/publish$",
+        frontmatter,
+        re.MULTILINE,
+    )
     assert _nested_list(frontmatter, "capabilities") == EXPECTED_CAPABILITIES
     assert _top_level_list(frontmatter, "allowed_tools") == EXPECTED_FACADES
     assert "  browser_contract: contracts/browser-manifest.compact.json" in frontmatter

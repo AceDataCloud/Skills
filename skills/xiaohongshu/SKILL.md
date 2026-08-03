@@ -39,6 +39,9 @@ execution:
     origins:
       - https://www.xiaohongshu.com
       - https://creator.xiaohongshu.com
+    # Without this the session lands on origins[0] — the consumer homepage,
+    # which carries no creator surface at all.
+    initial_url: https://creator.xiaohongshu.com/publish/publish
     capabilities:
       - tabs.read
       - tabs.manage
