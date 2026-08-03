@@ -33,6 +33,23 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
   -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
 ```
 
+## Task Response Fields
+
+The task endpoint returns the same envelope for every service:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Task id (same as the `task_id` returned on submit) |
+| `request` | The original request payload |
+| `response` | The generation result — service-specific, and only populated once the task succeeds |
+| `created_at` | Unix timestamp (seconds) when the task was created |
+| `started_at` | Unix timestamp (seconds) when processing began |
+| `finished_at` | Unix timestamp (seconds) when processing finished |
+| `elapsed` | Total processing time in seconds |
+| `trace_id` | Trace id for support requests |
+| `type` | Task type identifier |
+| `user_id`, `actor_user_id`, `api_id`, `application_id`, `credential_id`, `authorization_id` | Ownership metadata — which user, API, application, credential and authorization the task belongs to |
+
 ## Important Notes
 
 - Always use `callback_url` to avoid long-running HTTP connections that time out
