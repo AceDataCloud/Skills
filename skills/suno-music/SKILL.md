@@ -153,7 +153,7 @@ For best results follow this multi-step workflow:
 | `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
-| `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `duration` | integer | Desired track length in seconds, integer between 10 and 360. Intended for custom mode (`custom: true`) — it is a preference hint, not a hard constraint |
 
 ## Lyrics Format
 
@@ -181,7 +181,7 @@ Ending lyrics
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
-- `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
+- `duration` is a **preference hint, not a hard constraint** — the model takes it into account but does not guarantee it, and actual results are usually noticeably shorter than requested (two clips from the same request can differ several-fold). Lyric length is a major driver of the final length, so supply fuller lyrics when you want longer tracks. The API does not validate `duration`; it is passed through as-is, so an unsupported value may simply be ignored — verify with one request before batching. Note the request `duration` is the *desired* length while the `duration` in each returned clip is the *actual* length
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing audio_id to extract the vocal reference from
 - Upload external audio via `/suno/upload` before using it with extend/cover
