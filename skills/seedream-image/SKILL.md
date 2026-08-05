@@ -1,6 +1,6 @@
 ---
 name: seedream-image
-description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 3.0 T2I, 4.0, 4.5, 5.0, and SeedEdit 3.0 models.
+description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 4.0, 4.5, and 5.0 models.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -31,8 +31,6 @@ curl -X POST https://api.acedata.cloud/seedream/images \
 | `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, highest quality (default) |
 | `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
 | `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
-| `doubao-seedream-3-0-t2i-250415` | Seedream 3.0 T2I | Text-to-image, precise prompt following |
-| `doubao-seededit-3-0-i2i-250628` | SeedEdit 3.0 | Image-to-image editing |
 
 ## Workflows
 
@@ -49,13 +47,13 @@ POST /seedream/images
 
 ### 2. Image Editing (Image-to-Image)
 
-Edit an existing image by providing the source image URL(s) and a descriptive prompt. Use the `doubao-seededit-3-0-i2i-250628` model for best editing results.
+Edit an existing image by providing the source image URL(s) and a descriptive prompt. Seedream 5.0 Pro, 5.0 Lite, 4.5, and 4.0 all support image input.
 
 ```json
 POST /seedream/images
 {
   "prompt": "change the sky to a golden sunset",
-  "model": "doubao-seededit-3-0-i2i-250628",
+  "model": "doubao-seedream-5-0-260128",
   "image": ["https://example.com/photo.jpg"]
 }
 ```
@@ -88,9 +86,7 @@ POST /seedream/tasks
 |-----------|--------|-------------|
 | `model` | see Models table | Model to use (required) |
 | `prompt` | string | Image description (required) |
-| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution (e.g. `1K`=1024px, `2K`=2048px); `3K` only for Seedream 5.0 |
-| `seed` | integer [-1, 2147483647] | Seed for reproducibility (Seedream 3.0 T2I / SeedEdit 3.0 only) |
-| `guidance_scale` | number [1, 10] | Prompt adherence strength (3.0 models only; T2I default 2.5, edit default 5.5) |
+| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution; available presets depend on the selected model |
 | `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
 | `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
 | `watermark` | boolean | Add AI-generated watermark (default: true) |
@@ -111,9 +107,7 @@ POST /seedream/tasks
 - Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
 - Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
 - `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
-- `3K` size is only supported by Seedream 5.0; `adaptive` selects the best aspect ratio automatically
-- `seed` only works with `doubao-seedream-3-0-t2i-250415` and `doubao-seededit-3-0-i2i-250628`
-- `guidance_scale` is only available for the 3.0-series models
+- 5.0 Pro supports `1K`/`2K`; 5.0 Lite supports `2K`/`3K`/`4K`; 4.5 supports `2K`/`4K`; 4.0 supports `1K`/`2K`/`4K`; `adaptive` selects a size from the reference image
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
 
