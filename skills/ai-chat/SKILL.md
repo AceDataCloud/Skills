@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /gemini/chat/completions` | Gemini-compatible stateless chat completions |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -68,11 +69,10 @@ models include:
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> **Image-generating models are not Gemini chat-completions models.** Names
+> ending in `-image` (for example `gemini-*-image`) are not accepted by
+> `POST /gemini/chat/completions`; generate Gemini images through
+> `POST /v1beta/models/{model}:generateContent` instead.
 
 ## OpenAI-Compatible Chat
 
