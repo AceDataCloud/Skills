@@ -150,7 +150,7 @@ For best results follow this multi-step workflow:
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
-| `style_negative` | string | Style tags to avoid (e.g., `"heavy metal, distortion"`) |
+| `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
