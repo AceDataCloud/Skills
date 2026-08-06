@@ -128,6 +128,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Create new music inspired by 1–4 reference audio URLs |
 
 ## Auxiliary Endpoints
 
@@ -141,7 +142,8 @@ For best results follow this multi-step workflow:
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
-| `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/persona` | POST, GET, DELETE | Create, list, or delete reusable vocal personas |
+| `/suno/voices` | POST | Create a voice from an audio URL |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
