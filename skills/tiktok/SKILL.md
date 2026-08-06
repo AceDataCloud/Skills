@@ -46,7 +46,16 @@ they will fail with `scope_not_authorized`.
 
 This is the working path. The video lands in the creator's TikTok **inbox /
 drafts**; they open the TikTok app to add caption, sound and privacy, then post.
-Confirm with the user before uploading.
+
+Required order:
+
+1. Download the exact video locally, but do not upload it yet.
+2. Call `request_action_confirmation` with `kind: "generic"`, the real video
+   preview, and a summary that says this uploads to drafts rather than publishing.
+3. If cancelled, stop. If confirmed, run exactly one upload:
+   `python3 skills/tiktok/scripts/tiktok.py upload video.mp4`.
+4. Poll with `python3 skills/tiktok/scripts/tiktok.py status PUBLISH_ID` until
+   terminal. Never call `upload` again while polling.
 
 Two source modes. **`FILE_UPLOAD` is the reliable one** — `PULL_FROM_URL` only
 works from a domain verified in the developer portal, and ours is not verified
