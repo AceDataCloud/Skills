@@ -1,6 +1,6 @@
 ---
 name: maestro-video
-description: "Produce complete AI videos with Maestro via AceDataCloud API. Use when: Maestro, article-to-video, prompt-to-video, turn a brief or reference media into a finished captioned video, generate scripts/visuals/voiceover/music/editing in one workflow, create multilingual video variants, or remix/edit/extend a previous Maestro video. Covers task creation, progress polling, history, and final output retrieval."
+description: "Produce complete AI videos with Maestro via AceDataCloud API. Use when: Maestro, article-to-video, prompt-to-video, turn a brief or reference media into a finished captioned video, generate scripts/visuals/voiceover/music/editing in one workflow, create multilingual video variants, or remix/edit/extend a previous Maestro video. Covers task creation, progress polling, and final output retrieval."
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -60,7 +60,7 @@ Do not invent output URLs or report completion while the task is still running.
 5. On success, return every item in `response.data.variants`, including its language and `output_url`.
 6. If requested, iterate by creating a new task with `action`, `ref_task_id`, and a change-focused prompt.
 
-Polling and history queries are free; the video task is settled after production based on delivered output. Avoid submitting duplicate creation requests while an existing task is still running.
+Polling is free; the video task is settled after production based on delivered output. Avoid submitting duplicate creation requests while an existing task is still running.
 
 ## Creation Parameters
 
@@ -230,18 +230,6 @@ On success, inspect the delivered variants:
 
 Treat the fields above as a shape guide. Return fields that are actually present; never fabricate missing captions, covers, durations, or QC scores.
 
-## List Recent Tasks
-
-The live task endpoint also supports account history:
-
-```bash
-curl -X POST https://api.acedata.cloud/maestro/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"action": "retrieve_batch", "limit": 20}'
-```
-
-Optional Unix timestamp filters are `created_at_min` and `created_at_max`. The authenticated identity determines which tasks are returned; do not supply or trust a body-level user ID.
 
 ## Prompting Guidance
 

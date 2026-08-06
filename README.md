@@ -51,7 +51,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
-| [short-url](skills/short-url/) | Create and manage short URLs |
+| [short-url](skills/short-url/) | Create short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
 | [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements |
@@ -210,11 +210,11 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
 | sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
-| seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
+| seedream-image | [mcp-seedream-pro](https://pypi.org/project/mcp-seedream-pro/) | `pip install mcp-seedream-pro` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | happyhorse-video | [mcp-happyhorse](https://pypi.org/project/mcp-happyhorse/) | `pip install mcp-happyhorse` | `https://happyhorse.mcp.acedata.cloud/mcp` |
 | maestro-video | [mcp-maestro](https://pypi.org/project/mcp-maestro/) | `pip install mcp-maestro` | `https://maestro.mcp.acedata.cloud/mcp` |
-| nano-banana-image | [mcp-nano-banana](https://pypi.org/project/mcp-nano-banana/) | `pip install mcp-nano-banana` | `https://nanobanana.mcp.acedata.cloud/mcp` |
+| nano-banana-image | [mcp-nanobanana-pro](https://pypi.org/project/mcp-nanobanana-pro/) | `pip install mcp-nanobanana-pro` | `https://nanobanana.mcp.acedata.cloud/mcp` |
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |

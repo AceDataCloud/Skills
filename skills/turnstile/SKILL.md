@@ -1,6 +1,6 @@
 ---
 name: turnstile
-description: Solve Cloudflare Turnstile CAPTCHAs via AceDataCloud API. Use when you need to bypass or solve a Cloudflare Turnstile challenge by providing the site key and page URL to get back a valid token. Supports synchronous and asynchronous modes.
+description: Solve Cloudflare Turnstile CAPTCHAs via AceDataCloud API. Use when you need to solve a Cloudflare Turnstile challenge by providing the site key and page URL to get back a valid token.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -53,7 +53,7 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | `website_url` | ✓ | The full URL of the page containing the Turnstile widget |
 | `action` | | Custom `action` value — only needed when the target page sets a custom action |
 | `cdata` | | Custom `cData` value — only needed when the target page sets a custom cData |
-| `async` | | When `true`, return immediately with a `task_id`; poll `POST /captcha/tasks` to retrieve the token |
+| `async` | | Accepted by the API, but the published spec provides no task-retrieval endpoint; use synchronous mode |
 
 ## Response Fields
 
@@ -63,28 +63,6 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | `started_at` | ISO-8601 timestamp when solving began |
 | `finished_at` | ISO-8601 timestamp when solving completed |
 | `elapsed` | Total solving time in seconds |
-
-## Async Mode
-
-Pass `async: true` to return a `task_id` immediately instead of blocking:
-
-```json
-POST /captcha/token/turnstile
-{
-  "website_key": "0x4AAAAAAADnPIDROrmt1Wwj",
-  "website_url": "https://react-turnstile.vercel.app",
-  "async": true
-}
-```
-
-Then poll `POST /captcha/tasks` with the returned `task_id`:
-
-```json
-POST /captcha/tasks
-{"id": "<task_id>"}
-```
-
-> **Async:** See [async task polling](../_shared/async-tasks.md) for the full polling contract.
 
 ## Using the Token
 
@@ -106,6 +84,6 @@ response = requests.post(
 - The token is single-use and valid for ~120s — use within 60s for best results
 - `action` and `cdata` are optional and only required when the target site explicitly uses them
 - You are billed only when a token is successfully solved
-- Synchronous mode blocks until the token is ready (typically 10–30s); use `async: true` for non-blocking operation
+- Synchronous mode blocks until the token is ready, typically 10–30 seconds
 
 > **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.

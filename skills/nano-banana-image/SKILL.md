@@ -1,11 +1,11 @@
 ---
 name: nano-banana-image
-description: Generate and edit AI images with NanoBanana (Gemini-based) via AceDataCloud API. Use when creating images from text prompts or editing existing images with text instructions. Supports nano-banana, nano-banana-2, nano-banana-pro and their :official variants.
+description: Generate and edit AI images with NanoBanana (Gemini-based) via AceDataCloud API. Use when creating images from text prompts or editing existing images with text instructions. Supports nano-banana, nano-banana-2-lite, nano-banana-2, nano-banana-pro and their :official variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-nano-banana for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-nanobanana-pro for tool-use.
 ---
 
 # NanoBanana Image Generation
@@ -29,9 +29,11 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
 | Model | Best For |
 |-------|----------|
 | `nano-banana` | Standard image generation (default) |
+| `nano-banana-2-lite` | Lightweight second-generation model |
 | `nano-banana-2` | Improved quality, second generation |
 | `nano-banana-pro` | Highest quality, most detailed output |
 | `nano-banana:official` | Official channel variant of `nano-banana` |
+| `nano-banana-2-lite:official` | Official channel variant of `nano-banana-2-lite` |
 | `nano-banana-2:official` | Official channel variant of `nano-banana-2` |
 | `nano-banana-pro:official` | Official channel variant of `nano-banana-pro` |
 
@@ -69,9 +71,10 @@ POST /nano-banana/images
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"generate"`, `"edit"` | Operation mode |
-| `model` | `"nano-banana"`, `"nano-banana-2"`, `"nano-banana-pro"`, `"nano-banana:official"`, `"nano-banana-2:official"`, `"nano-banana-pro:official"` | Model to use |
+| `model` | see Models table | Model to use |
 | `prompt` | string | Image description or editing instruction |
 | `image_urls` | array of strings | Source image URLs (required for edit action) |
+| `count` | integer, 1–4 | Number of images to return (default: 1) |
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
@@ -86,4 +89,4 @@ POST /nano-banana/images
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
-> **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** `pip install mcp-nanobanana-pro` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

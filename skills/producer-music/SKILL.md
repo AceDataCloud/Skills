@@ -20,7 +20,7 @@ Generate AI music through AceDataCloud's Producer API.
 curl -X POST https://api.acedata.cloud/producer/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads"}'
+  -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads", "lyric": ""}'
 ```
 
 > **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
@@ -59,7 +59,8 @@ curl -X POST https://api.acedata.cloud/producer/audios \
 POST /producer/audios
 {
   "action": "generate",
-  "prompt": "chill lo-fi hip hop with rain sounds and soft piano"
+  "prompt": "chill lo-fi hip hop with rain sounds and soft piano",
+  "lyric": ""
 }
 ```
 
@@ -72,6 +73,7 @@ POST /producer/audios
   "custom": true,
   "title": "Midnight City",
   "lyric": "[Verse]\nNeon lights reflect on wet streets\n[Chorus]\nMidnight city never sleeps",
+  "prompt": "synthwave, electronic, nocturnal",
   "instrumental": false
 }
 ```
@@ -83,6 +85,7 @@ POST /producer/audios
 {
   "action": "generate",
   "prompt": "epic orchestral soundtrack for a movie trailer",
+  "lyric": "",
   "instrumental": true
 }
 ```
@@ -94,6 +97,8 @@ POST /producer/audios
 {
   "action": "extend",
   "audio_id": "existing-audio-id",
+  "prompt": "continue in the same style",
+  "lyric": "",
   "continue_at": 30
 }
 ```
@@ -105,6 +110,8 @@ POST /producer/audios
 {
   "action": "replace_section",
   "audio_id": "existing-audio-id",
+  "prompt": "replace this section with a stronger chorus",
+  "lyric": "[Chorus]\nNew chorus lyrics",
   "replace_section_start": 15,
   "replace_section_end": 30
 }
@@ -116,7 +123,9 @@ POST /producer/audios
 POST /producer/audios
 {
   "action": "stems",
-  "audio_id": "existing-audio-id"
+  "audio_id": "existing-audio-id",
+  "prompt": "",
+  "lyric": ""
 }
 ```
 
@@ -167,6 +176,8 @@ POST /producer/upload
 | `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
 | `weirdness` | 0-1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
+| `callback_url` | string | Async result webhook |
+| `async` | boolean | Return a task ID immediately |
 
 ## Response Structure
 
@@ -189,6 +200,7 @@ POST /producer/upload
 
 ## Gotchas
 
+- The published `/producer/audios` schema requires `action`, `prompt`, and `lyric` for every action; use an empty string when prompt or lyric content is not applicable
 - Use `[Verse]`, `[Chorus]`, `[Bridge]`, `[Outro]` tags in custom lyrics
 - `continue_at` is in **seconds** — the song extends from that point
 - `replace_section_start` / `replace_section_end` define the time range to regenerate

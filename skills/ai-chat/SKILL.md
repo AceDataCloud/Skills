@@ -10,12 +10,11 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes these documented chat surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
 | `POST /aichat2/conversations` | Recommended stateful / multimodal / agentic conversations |
-| `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
 
@@ -148,7 +147,7 @@ Useful parameters:
 ## Gotchas
 
 - The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
-- `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
+- `POST /aichat2/conversations` is the documented stateful conversation endpoint.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
 - Free-tier model variants such as `gpt-5.5:free` are documented on `/openai/chat/completions`.

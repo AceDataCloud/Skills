@@ -124,7 +124,10 @@ Apply precise camera/motion control from an image + reference video.
 POST /kling/motion
 {
   "image_url": "https://example.com/subject.jpg",
-  "video_url": "https://example.com/motion-reference.mp4"
+  "video_url": "https://example.com/motion-reference.mp4",
+  "character_orientation": "image",
+  "mode": "pro",
+  "model_name": "kling-v3"
 }
 ```
 
@@ -176,6 +179,10 @@ POST /kling/talking-photo
 | `image_list` | array | Omni reference images for `kling-o1` / `kling-v3-omni`; each item has `image_url` and optional `type` (`first_frame` / `end_frame`). Up to 7 images without a reference video, or 4 with one, including first/end frames |
 | `video_list` | array | One MP4/MOV Omni reference video for `kling-o1` / `kling-v3-omni` (3–10s, 720–2160px, 24–60fps, ≤200MB); item has `video_url`, `refer_type` (`feature` / `base`), and `keep_original_sound` (`yes` / `no`) |
 | `callback_url` | string | Async callback URL |
+| `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Required source used for character orientation |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion-control model |
+| `mode` (`/kling/motion`) | `"std"`, `"pro"` | Required motion-control quality mode |
+| `watermark_info` (`/kling/motion`) | object | Optional watermark settings with an `enabled` boolean |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
 | `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |

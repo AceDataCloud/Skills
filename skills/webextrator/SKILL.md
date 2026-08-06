@@ -107,11 +107,8 @@ POST /webextrator/tasks
 | `block_resources` | No | Drop `image`/`font`/`media`/`stylesheet`/`xhr`/`fetch` |
 | `headers` | No | Extra request headers for the target site |
 | `user_agent` | No | Override the browser User-Agent |
-| `cookies` | No | Cookies to install before navigation |
 | `async` | No | `true` submits without blocking; poll `/webextrator/tasks` for the result |
 | `callback_url` | No | Posted the final envelope when running asynchronously |
-| `bypass_cache` | No | Skip the Redis result cache for this request |
-| `cache_ttl_seconds` | No | Override cache TTL; `0` disables caching |
 
 ### Extract-only
 
@@ -131,10 +128,8 @@ POST /webextrator/tasks
 ## Gotchas
 
 - Parameters use **snake_case** (`wait_until`, `block_resources`), not camelCase
-- Cache hits are still billed; identical URLs return in ~0.003s
 - `expected_type` only allows `product`/`article`/`general` — typed kinds (recipe/video/job) are detected automatically from schema.org
 - `enable_llm` has no effect when the page ships schema.org JSON-LD — the deterministic mapper wins for free
 - Tasks API is free and retains records for 7 days only
-- `cache_ttl_seconds: 0` means "do not cache" — use `bypass_cache` to skip read
 
 > **MCP:** `pip install mcp-webextrator` | Hosted: `https://webextrator.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

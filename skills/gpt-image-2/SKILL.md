@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI `gpt-image-2` through AceDataCloud. Both endpoints are synchronous by default and return image URL(s) directly. Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -55,6 +55,26 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 (Omit `size` or use `"auto"` to let the model pick. Custom sizes must have both sides a
 multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
 ratio ≤ 3:1 — otherwise 400.)
+
+## Controls
+
+Common generation and editing parameters:
+
+| Parameter | Values | Purpose |
+|---|---|---|
+| `n` | 1–10 | Number of images |
+| `background` | `transparent`, `opaque`, `auto` | Background handling |
+| `quality` | `auto`, `high`, `medium`, `low`, `standard` | Output quality (`hd` is also accepted for generation) |
+| `output_format` | `png`, `jpeg`, `webp` | Encoded image format |
+| `output_compression` | 0–100 | Compression level |
+| `response_format` | `url`, `b64_json` | Response representation |
+| `partial_images` | 0–3 | Number of partial previews |
+| `callback_url` | URL | Async completion webhook |
+| `async` | boolean | Return a task ID immediately |
+
+Generation additionally accepts `moderation` (`low` or `auto`) and `style`
+(`vivid` or `natural`). Editing accepts up to 16 source images, an optional
+binary `mask`, and `input_fidelity` (`high` or `low`).
 
 ## Tips
 

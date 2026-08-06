@@ -128,6 +128,7 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
+| `inspo` | Generate from inspiration/reference audio |
 
 ## Auxiliary Endpoints
 
@@ -142,6 +143,7 @@ For best results follow this multi-step workflow:
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona |
+| `/suno/voices` | POST | Create a reusable voice from an `audio_url`; optional `name` and `description` |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 
@@ -154,6 +156,17 @@ For best results follow this multi-step workflow:
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `weirdness` | number, 0–1 | Creative variation strength |
+| `persona_id` | string | Reusable persona for artist-consistency workflows |
+| `mashup_audio_ids` | string[] | Audio IDs to blend for `mashup` |
+| `audio_urls` | string[] | Reference audio URLs for upload/reference actions |
+| `replace_section_start` / `replace_section_end` | number | Time range for `replace_section` |
+| `underpainting_start` / `underpainting_end` | number | Time range for `underpainting` |
+| `overpainting_start` / `overpainting_end` | number | Time range for `overpainting` |
+| `samples_start` / `samples_end` | number | Time range for `samples` |
+
+`POST /suno/persona` also accepts `vox_audio_id`, `vocal_start`, and `vocal_end`.
+`POST /suno/mashup-lyrics` requires `lyrics_a` and `lyrics_b`.
 
 ## Lyrics Format
 
