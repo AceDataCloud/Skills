@@ -1,6 +1,6 @@
 ---
 name: minimax-video
-description: Generate MiniMax H3 videos from text, up to nine reference images, or up to three audio references through AceDataCloud. Use for text-to-video, multi-image video, audio-guided video, and MiniMax H3 task polling.
+description: Generate MiniMax H3 videos from text, up to nine reference images, or up to three audio references through AceDataCloud. Use for text-to-video, multi-image video, audio-guided video, and MiniMax H3 task polling, including resolution and AIGC watermark controls.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -19,15 +19,17 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | Parameter | Values | Default |
 | --- | --- | --- |
 | `model` | `minimax-h3` | `minimax-h3` |
-| `prompt` | non-empty string | conditional |
+| `prompt` | non-empty string | required |
 | `image_urls` | 1–9 public HTTP(S) URLs | omitted |
 | `audio_urls` | 1–3 public HTTP(S) URLs | omitted |
+| `resolution` | `768P`, `2K` | `2K` |
 | `ratio` | `16:9`, `9:16` | `16:9` |
 | `duration` | integer 4–15 | 4 |
+| `aigc_watermark` | boolean | false |
 | `async` | boolean | false |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
-At least one of `prompt`, `image_urls`, or `audio_urls` is required. Mode inference is deterministic:
+`prompt` is required. Mode inference is deterministic:
 
 1. `audio_urls` present → audio-guided video
 2. otherwise `image_urls` present → image-to-video
@@ -95,6 +97,8 @@ Continue polling about every five seconds until `response.success` is true or an
 
 - Do not send `action` to `/minimax/videos`; the API infers the mode from media inputs.
 - `duration` must be an integer, not a decimal.
+- `resolution` only accepts `768P` or `2K` (default `2K`).
+- `aigc_watermark` defaults to `false`.
 - Audio mode takes precedence when both image and audio arrays are present.
 - Use public URLs that the generation service can download.
 - Returned videos are served from AceDataCloud CDN.
