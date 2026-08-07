@@ -19,21 +19,23 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | Parameter | Values | Default |
 | --- | --- | --- |
 | `model` | `minimax-h3` | `minimax-h3` |
-| `prompt` | non-empty string | conditional |
+| `prompt` | non-empty string, max 7000 chars | required |
 | `image_urls` | 1–9 public HTTP(S) URLs | omitted |
 | `audio_urls` | 1–3 public HTTP(S) URLs | omitted |
+| `resolution` | `768P`, `2K` | `2K` |
 | `ratio` | `16:9`, `9:16` | `16:9` |
+| `aigc_watermark` | boolean | false |
 | `duration` | integer 4–15 | 4 |
 | `async` | boolean | false |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
-At least one of `prompt`, `image_urls`, or `audio_urls` is required. Mode inference is deterministic:
+`prompt` is required in every mode. Audio also requires at least one image. Mode inference is deterministic:
 
 1. `audio_urls` present → audio-guided video
 2. otherwise `image_urls` present → image-to-video
 3. otherwise → text-to-video
 
-Public price is **$0.25 per generated second**. Failed tasks are not charged.
+Public pricing is **$0.057143/s for 768P** and **$0.091429/s for 2K** on the largest package. Failed tasks are not charged.
 
 ## Text to video
 
@@ -44,8 +46,9 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
   -d '{
     "model": "minimax-h3",
     "prompt": "A red fox running through a snowy forest at dawn, low tracking shot",
+    "resolution": "768P",
     "ratio": "16:9",
-    "duration": 6,
+    "duration": 4,
     "async": true
   }'
 ```
@@ -60,6 +63,7 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
     "https://cdn.acedata.cloud/b1c82e4937.png",
     "https://cdn.acedata.cloud/eb75d88a3f.png"
   ],
+  "resolution": "768P",
   "ratio": "9:16",
   "duration": 8,
   "async": true
@@ -74,6 +78,7 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
   "prompt": "A dancer moves naturally to the rhythm",
   "image_urls": ["https://cdn.acedata.cloud/b1c82e4937.png"],
   "audio_urls": ["https://cdn.acedata.cloud/6f7d62b18b.wav"],
+  "resolution": "768P",
   "ratio": "9:16",
   "duration": 8,
   "async": true
@@ -95,6 +100,7 @@ Continue polling about every five seconds until `response.success` is true or an
 
 - Do not send `action` to `/minimax/videos`; the API infers the mode from media inputs.
 - `duration` must be an integer, not a decimal.
-- Audio mode takes precedence when both image and audio arrays are present.
+- Audio mode requires both `prompt` and at least one `image_urls` entry.
+- Single-image mode uses the image as the first frame; multiple images are references.
 - Use public URLs that the generation service can download.
 - Returned videos are served from AceDataCloud CDN.
