@@ -73,6 +73,9 @@ models include:
 > not work on any chat surface listed above. Generate images through the
 > dedicated endpoints instead — Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> The native Gemini route supports text, image, video, thinking configuration,
+> and custom functions. It rejects audio, `codeExecution`, `googleSearch`,
+> `urlContext`, and `cachedContent` with HTTP 400.
 
 ## OpenAI-Compatible Chat
 
