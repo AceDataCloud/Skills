@@ -10,7 +10,7 @@ when_to_use: |
   install time to publish videos — confirm before uploading and
   re-prompt to re-install if the upload scope is missing.
 connections: [google/youtube]
-allowed_tools: [Bash]
+allowed_tools: [Bash, publish_artifact]
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -146,18 +146,28 @@ FILE="${FILE:-/path/to/video.mp4}"
 TITLE="My title"
 DESC="My description"
 # privacyStatus: public | unlisted | private
-read -r -d '' META <<JSON
-{"snippet":{"title":"$TITLE","description":"$DESC","categoryId":"22"},
- "status":{"privacyStatus":"unlisted","selfDeclaredMadeForKids":false}}
-JSON
+META=$(jq -n --arg title "$TITLE" --arg description "$DESC" '{
+  snippet: {title: $title, description: $description, categoryId: "22"},
+  status: {privacyStatus: "unlisted", selfDeclaredMadeForKids: false}
+}')
 
-# 1. Init resumable session -> capture the upload URL from the Location header.
-UPLOAD_URL=$(curl -sS -D - -o /dev/null \
+# 1. Init the resumable session. Keep headers, body and status so a missing
+# Location reports the real API error instead of turning into an empty PUT URL.
+INIT_HEADERS=$(mktemp)
+INIT_BODY=$(mktemp)
+INIT_HTTP=$(curl -sS -D "$INIT_HEADERS" -o "$INIT_BODY" -w '%{http_code}' \
   -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
   -H "Content-Type: application/json; charset=UTF-8" \
   -H "X-Upload-Content-Type: video/*" \
   -X POST "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status" \
-  -d "$META" | tr -d '\r' | awk '/^[Ll]ocation:/{print $2}')
+  -d "$META")
+UPLOAD_URL=$(tr -d '\r' < "$INIT_HEADERS" | awk 'tolower($1) == "location:" {print $2; exit}')
+if [ -z "$UPLOAD_URL" ]; then
+  echo "upload init failed: HTTP $INIT_HTTP: $(jq -r '.error.message // .' "$INIT_BODY" 2>/dev/null || cat "$INIT_BODY")"
+  rm -f "$INIT_HEADERS" "$INIT_BODY"
+  exit 1
+fi
+rm -f "$INIT_HEADERS" "$INIT_BODY"
 
 # 2. Upload the bytes -> returns the created video resource (has .id).
 RESULT=$(curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
@@ -172,6 +182,13 @@ Delete a downloaded temp file only **after** you've confirmed an id came back
 (`echo "$RESULT" | jq -e .id >/dev/null && rm -f "$FILE"`). On a 401/403 or a
 dropped connection the download is still good and re-uploading beats re-fetching
 a few hundred MB.
+
+After a confirmed upload returns a real `.id`, call `publish_artifact` exactly
+once so the result appears in **My Outputs**. Use `kind="video"`,
+`channel="youtube"`, `status="delivered"`, the real title, and the canonical
+`https://www.youtube.com/watch?v=<id>` URL. Include the actual privacy in the
+summary. If the upload fails or no `.id` is returned, do not record a delivered
+artifact and never fabricate a URL.
 
 `categoryId` `22` = "People & Blogs" (a safe default). To set a custom
 thumbnail (needs the file to be processed first), call
