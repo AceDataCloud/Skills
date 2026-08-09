@@ -194,7 +194,7 @@ A task response exposes top-level progress for user feedback:
 ```json
 {
   "id": "task-id",
-  "status": "producing",
+  "status": "generating",
   "progress": {
     "percent": 52,
     "stage": "visuals",

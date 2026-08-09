@@ -25,15 +25,14 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
-Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Media items use a `role`:
+Each `content` item must match one of these shapes:
 
-| Role | Use |
-| --- | --- |
-| `first_frame` | Starting image |
-| `last_frame` | Ending image |
-| `reference_image` | Reference image |
-| `reference_video` | Reference video |
-| `reference_audio` | Reference audio |
+| Type | Required fields | Role rules |
+| --- | --- | --- |
+| `text` | `type`, non-empty `text` | no `role` |
+| `image_url` | `type`, `image_url` | optional `role`: `first_frame`, `last_frame`, or `reference_image` |
+| `video_url` | `type`, `video_url`, `role` | `role` must be `reference_video` |
+| `audio_url` | `type`, `audio_url`, `role` | `role` must be `reference_audio` |
 
 Include a `text` item with the generation prompt in every request.
 
@@ -128,5 +127,6 @@ Continue polling about every five seconds until the task reaches a terminal stat
 - `duration` must be an integer, not a decimal.
 - Put the prompt in a `content` item with `type: "text"`; do not send a top-level `prompt`.
 - Use `first_frame`, `last_frame`, and reference roles explicitly; do not rely on item order to determine an image's role.
+- Remove legacy fields like `prompt`, `image_urls`, `audio_urls`, `messages`, `first_frame_image`, and `async`; migrate everything to V2 `content` items and do not send old and new formats together.
 - Use public URLs that the generation service can download for every media item.
 - Returned videos are served from AceDataCloud CDN.
