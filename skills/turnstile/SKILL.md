@@ -81,7 +81,7 @@ Then poll `POST /captcha/tasks` with the returned `task_id`:
 
 ```json
 POST /captcha/tasks
-{"id": "<task_id>"}
+{"task_id": "<task_id>"}
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md) for the full polling contract.

@@ -1,6 +1,6 @@
 ---
 name: nano-banana-image
-description: Generate and edit AI images with NanoBanana (Gemini-based) via AceDataCloud API. Use when creating images from text prompts or editing existing images with text instructions. Supports nano-banana, nano-banana-2, nano-banana-pro and their :official variants.
+description: Generate and edit AI images with NanoBanana (Gemini-based) via AceDataCloud API. Use when creating images from text prompts or editing existing images with text instructions. Supports nano-banana, nano-banana-2-lite, nano-banana-2, nano-banana-pro and their :official variants.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -29,9 +29,11 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
 | Model | Best For |
 |-------|----------|
 | `nano-banana` | Standard image generation (default) |
+| `nano-banana-2-lite` | Fast, lightweight second-generation model |
 | `nano-banana-2` | Improved quality, second generation |
 | `nano-banana-pro` | Highest quality, most detailed output |
 | `nano-banana:official` | Official channel variant of `nano-banana` |
+| `nano-banana-2-lite:official` | Official channel variant of `nano-banana-2-lite` |
 | `nano-banana-2:official` | Official channel variant of `nano-banana-2` |
 | `nano-banana-pro:official` | Official channel variant of `nano-banana-pro` |
 
@@ -69,7 +71,7 @@ POST /nano-banana/images
 | Parameter | Values | Description |
 |-----------|--------|-------------|
 | `action` | `"generate"`, `"edit"` | Operation mode |
-| `model` | `"nano-banana"`, `"nano-banana-2"`, `"nano-banana-pro"`, `"nano-banana:official"`, `"nano-banana-2:official"`, `"nano-banana-pro:official"` | Model to use |
+| `model` | `"nano-banana"`, `"nano-banana-2-lite"`, `"nano-banana-2"`, `"nano-banana-pro"`, `"nano-banana:official"`, `"nano-banana-2-lite:official"`, `"nano-banana-2:official"`, `"nano-banana-pro:official"` | Model to use |
 | `prompt` | string | Image description or editing instruction |
 | `image_urls` | array of strings | Source image URLs (required for edit action) |
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
