@@ -64,18 +64,19 @@ POST /serp/google
 
 | Value | Period |
 |-------|--------|
-| `qdr:h` | Past hour |
-| `qdr:d` | Past 24 hours |
-| `qdr:w` | Past week |
-| `qdr:m` | Past month |
-| `qdr:y` | Past year |
+| `h` (or `qdr:h`) | Past hour |
+| `d` (or `qdr:d`) | Past 24 hours |
+| `w` (or `qdr:w`) | Past week |
+| `m` (or `qdr:m`) | Past month |
+| `y` (or `qdr:y`) | Past year |
 
 ## Response Structure
 
-Web search returns structured data including:
-- `organic_results`: Main search results with title, link, snippet
-- `knowledge_graph`: Entity information panel (when available)
-- `related_searches`: Related query suggestions
+Search returns typed top-level collections (present based on `type`), including:
+- `organic`: Main web results with title, link, snippet, and position
+- `images`, `news`, `videos`, `places`, `maps`: Type-specific result lists
+- `knowledge_graph`, `answer_box`, `people_also_ask`, `related_searches` when available
+- `cost`: request pricing metadata
 
 ## Gotchas
 

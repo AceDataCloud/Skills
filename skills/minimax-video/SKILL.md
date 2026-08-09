@@ -1,6 +1,6 @@
 ---
 name: minimax-video
-description: Generate MiniMax H3 videos from text, up to nine reference images, or up to three audio references through AceDataCloud. Use for text-to-video, multi-image video, audio-guided video, and MiniMax H3 task polling.
+description: Generate MiniMax H3 videos with structured multimodal content through AceDataCloud. Use for text/image/video/audio-conditioned generation and MiniMax task polling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -18,22 +18,19 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 
 | Parameter | Values | Default |
 | --- | --- | --- |
-| `model` | `minimax-h3` | `minimax-h3` |
-| `prompt` | non-empty string, max 7000 chars | required |
-| `image_urls` | 1–9 public HTTP(S) URLs | omitted |
-| `audio_urls` | 1–3 public HTTP(S) URLs | omitted |
+| `model` | `MiniMax-H3` | required |
+| `content` | array (min 1) of typed blocks | required |
 | `resolution` | `768P`, `2K` | `2K` |
-| `ratio` | `16:9`, `9:16` | `16:9` |
+| `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
 | `aigc_watermark` | boolean | false |
-| `duration` | integer 4–15 | 4 |
-| `async` | boolean | false |
+| `duration` | integer 4–15 | required |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
-`prompt` is required in every mode. Audio also requires at least one image. Mode inference is deterministic:
-
-1. `audio_urls` present → audio-guided video
-2. otherwise `image_urls` present → image-to-video
-3. otherwise → text-to-video
+`content` items use one of:
+- `{"type":"text","text":"..."}` (text max 7000 chars)
+- `{"type":"image_url","image_url":{"url":"..."},"role":"first_frame|last_frame|reference_image"}`
+- `{"type":"video_url","video_url":{"url":"..."},"role":"reference_video"}`
+- `{"type":"audio_url","audio_url":{"url":"..."},"role":"reference_audio"}`
 
 Public pricing is **$0.057143/s for 768P** and **$0.091429/s for 2K** on the largest package. Failed tasks are not charged.
 
@@ -41,32 +38,50 @@ Public pricing is **$0.057143/s for 768P** and **$0.091429/s for 2K** on the lar
 
 ```bash
 curl -X POST https://api.acedata.cloud/minimax/videos \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Authorization: ******" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "minimax-h3",
-    "prompt": "A red fox running through a snowy forest at dawn, low tracking shot",
+    "model": "MiniMax-H3",
+    "content": [
+      {
+        "type": "text",
+        "text": "A red fox running through a snowy forest at dawn, low tracking shot"
+      }
+    ],
     "resolution": "768P",
     "ratio": "16:9",
-    "duration": 4,
-    "async": true
+    "duration": 4
   }'
 ```
 
-## Multi-image video
+## Image-conditioned video
 
 ```json
 {
-  "model": "minimax-h3",
-  "prompt": "Preserve the character and clothing while the camera slowly pushes in",
-  "image_urls": [
-    "https://cdn.acedata.cloud/b1c82e4937.png",
-    "https://cdn.acedata.cloud/eb75d88a3f.png"
+  "model": "MiniMax-H3",
+  "content": [
+    {
+      "type": "text",
+      "text": "Preserve the character and clothing while the camera slowly pushes in"
+    },
+    {
+      "type": "image_url",
+      "image_url": {
+        "url": "https://cdn.acedata.cloud/b1c82e4937.png"
+      },
+      "role": "first_frame"
+    },
+    {
+      "type": "image_url",
+      "image_url": {
+        "url": "https://cdn.acedata.cloud/eb75d88a3f.png"
+      },
+      "role": "reference_image"
+    }
   ],
   "resolution": "768P",
   "ratio": "9:16",
-  "duration": 8,
-  "async": true
+  "duration": 8
 }
 ```
 
@@ -74,14 +89,30 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
 
 ```json
 {
-  "model": "minimax-h3",
-  "prompt": "A dancer moves naturally to the rhythm",
-  "image_urls": ["https://cdn.acedata.cloud/b1c82e4937.png"],
-  "audio_urls": ["https://cdn.acedata.cloud/6f7d62b18b.wav"],
+  "model": "MiniMax-H3",
+  "content": [
+    {
+      "type": "text",
+      "text": "A dancer moves naturally to the rhythm"
+    },
+    {
+      "type": "image_url",
+      "image_url": {
+        "url": "https://cdn.acedata.cloud/b1c82e4937.png"
+      },
+      "role": "first_frame"
+    },
+    {
+      "type": "audio_url",
+      "audio_url": {
+        "url": "https://cdn.acedata.cloud/6f7d62b18b.wav"
+      },
+      "role": "reference_audio"
+    }
+  ],
   "resolution": "768P",
   "ratio": "9:16",
-  "duration": 8,
-  "async": true
+  "duration": 8
 }
 ```
 
@@ -89,18 +120,18 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
 
 ```bash
 curl -X POST https://api.acedata.cloud/minimax/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Authorization: ******" \
   -H "Content-Type: application/json" \
   -d '{"action":"retrieve","id":"TASK_ID"}'
 ```
 
-Continue polling about every five seconds until `response.success` is true or an error appears. Use `retrieve_batch` with `ids` to check several tasks in one request.
+Continue polling about every five seconds until `task.status` reaches a terminal state (`succeeded`, `failed`, or `cancelled`). Use `retrieve_batch` with `ids` to check several tasks in one request.
 
 ## Gotchas
 
-- Do not send `action` to `/minimax/videos`; the API infers the mode from media inputs.
+- `/minimax/videos` requires `model`, `content`, `resolution`, and `duration`.
 - `duration` must be an integer, not a decimal.
-- Audio mode requires both `prompt` and at least one `image_urls` entry.
-- Single-image mode uses the image as the first frame; multiple images are references.
+- `content` media blocks use nested objects (`image_url.url`, `video_url.url`, `audio_url.url`), not plain URL strings.
+- Use valid `role` values for media guidance (`first_frame`, `last_frame`, `reference_image`, `reference_video`, `reference_audio`).
 - Use public URLs that the generation service can download.
 - Returned videos are served from AceDataCloud CDN.
