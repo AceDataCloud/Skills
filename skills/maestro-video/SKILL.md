@@ -40,7 +40,7 @@ curl -X POST https://api.acedata.cloud/maestro/videos \
   }'
 ```
 
-The response contains a `task_id`. Maestro is asynchronous, so query the task until it reaches `succeeded` or `failed`:
+The successful creation response is HTTP `201` and contains a `task_id`. Maestro is asynchronous, so query the task until it reaches `succeeded` or `failed`:
 
 ```bash
 curl -X POST https://api.acedata.cloud/maestro/tasks \
@@ -230,18 +230,17 @@ On success, inspect the delivered variants:
 
 Treat the fields above as a shape guide. Return fields that are actually present; never fabricate missing captions, covers, durations, or QC scores.
 
-## List Recent Tasks
+## Task Retrieval
 
-The live task endpoint also supports account history:
+Retrieve a task by its required `id`; the only documented action is `retrieve`:
 
 ```bash
 curl -X POST https://api.acedata.cloud/maestro/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "retrieve_batch", "limit": 20}'
+  -d '{"id": "TASK_ID", "action": "retrieve"}'
 ```
 
-Optional Unix timestamp filters are `created_at_min` and `created_at_max`. The authenticated identity determines which tasks are returned; do not supply or trust a body-level user ID.
 
 ## Prompting Guidance
 

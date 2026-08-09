@@ -1,6 +1,6 @@
 ---
 name: sora-video
-description: UNAVAILABLE — the Sora endpoints now return 404 and the service is unpublished; use veo-video, kling-video or seedance-video instead. Historical reference for AceDataCloud's OpenAI Sora API. Was used when creating videos from text prompts, generating videos from reference images, or using character references from existing videos. Supports text-to-video, image-to-video, and character-driven generation with multiple models and resolutions.
+description: Generate AI videos with OpenAI Sora via AceDataCloud API. Use when creating videos from text prompts, generating videos from reference images, or using character references from existing videos. Supports text-to-video, image-to-video, and character-driven generation with multiple models and resolutions.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -9,13 +9,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 ---
 
 # Sora Video Generation
-
-> [!WARNING]
-> **This service is currently unavailable.** `/sora/videos` and `/sora/tasks` return
-> `404 no Route matched with those values`, and the Sora service is no longer published
-> in the API catalog. The reference below is kept for historical accuracy only — do not
-> build against it. For video generation use [veo-video](../veo-video/SKILL.md),
-> [kling-video](../kling-video/SKILL.md) or [seedance-video](../seedance-video/SKILL.md).
 
 Generate AI videos through AceDataCloud's OpenAI Sora API.
 
@@ -77,8 +70,8 @@ POST /sora/videos
 {
   "prompt": "the character walks through a futuristic city",
   "character_url": "https://example.com/source-video.mp4",
-  "character_start": 2.0,
-  "character_end": 5.0,
+  "character_start": 2,
+  "character_end": 5,
   "model": "sora-2-pro"
 }
 ```
@@ -101,4 +94,4 @@ POST /sora/videos
 - `orientation` sets the aspect ratio — use `"portrait"` for mobile-first content
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
-> **MCP:** the hosted endpoint `https://sora.mcp.acedata.cloud/mcp` currently returns 503, in line with the service being unavailable. See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** `pip install mcp-sora` | Hosted: `https://sora.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

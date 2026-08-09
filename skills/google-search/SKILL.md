@@ -51,10 +51,10 @@ POST /serp/google
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `query` | string | Search query (required) |
+| `query` | string | Search query (required; must contain non-whitespace text; maximum 2048 characters) |
 | `type` | string | One of: search, images, news, maps, places, videos |
-| `country` | string | Country code (e.g., "us", "uk", "cn", "jp") |
-| `language` | string | Language code (e.g., "en", "zh", "ja") |
+| `country` | string | Non-empty country code (e.g., "us", "uk", "cn", "jp"; maximum 32 characters) |
+| `language` | string | Non-empty language code (e.g., "en", "zh", "ja"; maximum 32 characters) |
 | `range` | string | Time filter (see below) |
 | `number` | int | Number of results per page |
 | `page` | int | Page number for pagination |
@@ -69,6 +69,11 @@ POST /serp/google
 | `qdr:w` | Past week |
 | `qdr:m` | Past month |
 | `qdr:y` | Past year |
+| `h` | Past hour |
+| `d` | Past 24 hours |
+| `w` | Past week |
+| `m` | Past month |
+| `y` | Past year |
 
 ## Response Structure
 

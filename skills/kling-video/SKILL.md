@@ -124,7 +124,9 @@ Apply precise camera/motion control from an image + reference video.
 POST /kling/motion
 {
   "image_url": "https://example.com/subject.jpg",
-  "video_url": "https://example.com/motion-reference.mp4"
+  "video_url": "https://example.com/motion-reference.mp4",
+  "mode": "std",
+  "character_orientation": "image"
 }
 ```
 
@@ -186,6 +188,8 @@ POST /kling/talking-photo
 | `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
+| `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion generation quality mode |
+| `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Character orientation source |
 | `image_url` (`/kling/talking-photo`) | URL | Source portrait image |
 | `audio_url` (`/kling/talking-photo`) | URL | Driving audio track |
 | `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model |

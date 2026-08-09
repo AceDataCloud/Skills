@@ -20,7 +20,7 @@ Generate AI music through AceDataCloud's Producer API.
 curl -X POST https://api.acedata.cloud/producer/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads"}'
+  -d '{"action": "generate", "lyric": "", "prompt": "upbeat electronic dance track with synth leads"}'
 ```
 
 > **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
@@ -59,6 +59,7 @@ curl -X POST https://api.acedata.cloud/producer/audios \
 POST /producer/audios
 {
   "action": "generate",
+  "lyric": "",
   "prompt": "chill lo-fi hip hop with rain sounds and soft piano"
 }
 ```
@@ -72,6 +73,7 @@ POST /producer/audios
   "custom": true,
   "title": "Midnight City",
   "lyric": "[Verse]\nNeon lights reflect on wet streets\n[Chorus]\nMidnight city never sleeps",
+  "prompt": "nocturnal electronic pop",
   "instrumental": false
 }
 ```
@@ -82,6 +84,7 @@ POST /producer/audios
 POST /producer/audios
 {
   "action": "generate",
+  "lyric": "",
   "prompt": "epic orchestral soundtrack for a movie trailer",
   "instrumental": true
 }
@@ -94,6 +97,8 @@ POST /producer/audios
 {
   "action": "extend",
   "audio_id": "existing-audio-id",
+  "lyric": "",
+  "prompt": "",
   "continue_at": 30
 }
 ```
@@ -105,6 +110,8 @@ POST /producer/audios
 {
   "action": "replace_section",
   "audio_id": "existing-audio-id",
+  "lyric": "",
+  "prompt": "",
   "replace_section_start": 15,
   "replace_section_end": 30
 }
@@ -116,7 +123,9 @@ POST /producer/audios
 POST /producer/audios
 {
   "action": "stems",
-  "audio_id": "existing-audio-id"
+  "audio_id": "existing-audio-id",
+  "lyric": "",
+  "prompt": ""
 }
 ```
 
@@ -152,13 +161,13 @@ POST /producer/upload
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `action` | string | See actions table |
-| `prompt` | string | Song description (for non-custom mode) |
+| `action` | string | Required for every `/producer/audios` request; see actions table |
+| `prompt` | string | Required for every `/producer/audios` request; use an empty string when an edit action does not use a prompt |
 | `model` | string | Model (e.g., `"FUZZ-2.0 Pro"`) |
 | `custom` | boolean | Enable custom lyrics mode |
 | `instrumental` | boolean | Pure instrumental (no vocals) |
 | `title` | string | Song title |
-| `lyric` | string | Custom lyrics with `[Verse]`, `[Chorus]` tags |
+| `lyric` | string | Required for every `/producer/audios` request; custom lyrics use `[Verse]`, `[Chorus]` tags, otherwise use an empty string |
 | `audio_id` | string | Existing audio ID (for edit actions) |
 | `continue_at` | number | Seconds — where to extend from |
 | `replace_section_start` | number | Start time of section to replace |

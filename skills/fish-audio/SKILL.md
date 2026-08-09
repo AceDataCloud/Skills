@@ -37,7 +37,6 @@ Synchronous responses return a direct audio URL:
 | `POST /fish/tts` | Text-to-speech generation |
 | `GET /fish/model` | Browse/search public Fish reference voices |
 | `GET /fish/model/{id}` | Fetch one reference voice by ID |
-| `POST /fish/model` | Clone a voice — create a reference model from an audio URL |
 | `POST /fish/tasks` | Poll async TTS jobs when `async: true` |
 
 ## Workflows
@@ -97,10 +96,9 @@ Headers:
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
 | `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
-| `format` | `"mp3"`, `"wav"`, `"pcm"`, `"opus"` | Output format |
+| `format` | `"mp3"`, `"wav"`, `"pcm"` | Output format |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
-| `opus_bitrate` | integer | Opus bitrate |
 | `latency` | `"normal"`, `"balanced"` | TTS latency mode |
 | `chunk_length` / `min_chunk_length` | integer | Chunking controls |
 | `temperature`, `top_p`, `repetition_penalty` | number | Sampling controls |
@@ -117,4 +115,3 @@ Headers:
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
-- Voice cloning is `POST /fish/model`. `voices` must be a **single** HTTP(S) audio URL string — not an array, and not a file upload. It returns the `_id` you then pass to `/fish/tts` as `reference_id`.
