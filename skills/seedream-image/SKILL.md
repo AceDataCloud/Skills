@@ -95,6 +95,7 @@ POST /seedream/tasks
 | `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
 | `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
 | `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
+| `async` | boolean | Return a task ID immediately for polling |
 
 ### Editing
 

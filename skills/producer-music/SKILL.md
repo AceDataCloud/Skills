@@ -204,4 +204,4 @@ POST /producer/upload
 - `weirdness` at 0 = predictable, at 1 = highly experimental
 - Upload a reference audio via `/producer/upload` to get an audio ID for use with `cover` or `extend`
 - WAV and video downloads are separate endpoints — call them after the main generation completes
-- **CRITICAL:** Check the `state` field in task responses — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
+- **CRITICAL:** Check the `state` field in task responses — only `state: "succeeded"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty

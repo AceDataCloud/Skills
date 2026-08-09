@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/flux/images \
   -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). `/flux/images` may return completed `success`/`data`; pass `async: true` or `callback_url` to return a task immediately and poll `POST /flux/tasks` with `{"action":"retrieve","id":"..."}`.
 
 ## Models
 
@@ -80,6 +80,6 @@ POST /flux/images
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
 - `flux-2-max` produces highest quality but is slowest — use dev/klein/flex for iteration and max for final output
-- All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- To avoid long-running requests, set `"async": true` or `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"action":"retrieve","id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

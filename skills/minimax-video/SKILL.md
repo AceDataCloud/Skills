@@ -70,12 +70,12 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
     },
     {
       "type": "image_url",
-      "image_url": "https://cdn.acedata.cloud/first-frame.png",
+      "image_url": {"url": "https://cdn.acedata.cloud/first-frame.png"},
       "role": "first_frame"
     },
     {
       "type": "image_url",
-      "image_url": "https://cdn.acedata.cloud/last-frame.png",
+      "image_url": {"url": "https://cdn.acedata.cloud/last-frame.png"},
       "role": "last_frame"
     }
   ],
@@ -97,12 +97,12 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
     },
     {
       "type": "image_url",
-      "image_url": "https://cdn.acedata.cloud/reference.png",
+      "image_url": {"url": "https://cdn.acedata.cloud/reference.png"},
       "role": "reference_image"
     },
     {
       "type": "audio_url",
-      "audio_url": "https://cdn.acedata.cloud/reference.wav",
+      "audio_url": {"url": "https://cdn.acedata.cloud/reference.wav"},
       "role": "reference_audio"
     }
   ],

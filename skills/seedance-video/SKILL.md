@@ -23,14 +23,13 @@ curl -X POST https://api.acedata.cloud/seedance/videos \
   -d '{"model": "doubao-seedance-2-0-260128", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"id": "..."}`.
-This returns a task ID immediately. Poll for the result:
+> **Async:** See [async task polling](../_shared/async-tasks.md). `/seedance/videos` returns `success`, `task_id`, `trace_id`, and `data`; pass `async: true` or `callback_url` to return a task immediately. Poll via `POST /seedance/tasks` with `id`.
 
 ```bash
 curl -X POST https://api.acedata.cloud/seedance/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from above>"}'
+  -d '{"action": "retrieve", "id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -171,6 +170,8 @@ POST /seedance/videos
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
+| `callback_url` | string | Webhook URL for async delivery |
+| `async` | `true` / `false` | Return a task ID immediately for polling |
 
 ## Inline Parameter Syntax
 

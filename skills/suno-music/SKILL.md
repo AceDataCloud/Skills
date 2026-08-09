@@ -180,7 +180,7 @@ Ending lyrics
 ## Gotchas
 
 - All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
-- **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
+- **CRITICAL:** Check the `state` field — only `state: "succeeded"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
