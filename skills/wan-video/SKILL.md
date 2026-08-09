@@ -138,6 +138,7 @@ POST /wan/videos
 | `size` | No | string | The size of the generated video |
 | `duration` | No | `5`, `10`, `15` | Video duration in seconds |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
+| `async` | No | boolean | Return a task ID immediately for polling |
 | `callback_url` | No | string | Async webhook notification URL |
 
 ## Gotchas

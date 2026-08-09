@@ -20,7 +20,7 @@ Generate and edit images through AceDataCloud's Flux API.
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "async": true}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
@@ -80,6 +80,6 @@ POST /flux/images
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
 - `flux-2-max` produces highest quality but is slowest — use dev/klein/flex for iteration and max for final output
-- All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- Set `"async": true` or `callback_url` for long jobs to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`; otherwise the create call can return completed `data` directly
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

@@ -20,10 +20,10 @@ Generate AI music through AceDataCloud's Producer API.
 curl -X POST https://api.acedata.cloud/producer/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "lyric": "", "prompt": "upbeat electronic dance track with synth leads"}'
+  -d '{"action": "generate", "lyric": "", "prompt": "upbeat electronic dance track with synth leads", "async": true}'
 ```
 
-> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
+> **Async:** Set `async: true` or provide `callback_url` for long jobs. See [async task polling](../_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
 
 ## Models
 
@@ -176,11 +176,16 @@ POST /producer/upload
 | `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
 | `weirdness` | 0-1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
+| `async` | boolean | Return task identifiers immediately for polling instead of waiting for completed data |
+| `callback_url` | string | Webhook URL for async delivery; also enables async mode |
 
 ## Response Structure
 
 ```json
 {
+  "success": true,
+  "task_id": "task-id",
+  "trace_id": "trace-id",
   "data": [
     {
       "id": "audio-id",

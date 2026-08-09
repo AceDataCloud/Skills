@@ -61,14 +61,14 @@ POST /seedream/images
 
 ### 3. Async Generation with Task Polling
 
-Pass a `callback_url` to receive results asynchronously via webhook, or poll `/seedream/tasks` for the result:
+Pass `async: true` or a `callback_url` to receive results asynchronously, or poll `/seedream/tasks` for the result:
 
 ```json
 POST /seedream/images
 {
   "prompt": "an epic fantasy landscape",
   "model": "doubao-seedream-5-0-260128",
-  "callback_url": "https://api.acedata.cloud/health"
+  "async": true
 }
 ```
 
@@ -94,6 +94,7 @@ POST /seedream/tasks
 | `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
 | `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
 | `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
+| `async` | boolean | Return a task ID immediately for polling |
 | `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
 
 ### Editing
@@ -110,6 +111,6 @@ POST /seedream/tasks
 - `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
 - 5.0 Pro supports `1K`/`2K`; 5.0 Lite supports `2K`/`3K`/`4K`; 4.5 supports `2K`/`4K`; 4.0 supports `1K`/`2K`/`4K`; `adaptive` selects a size from the reference image
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
-- Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
+- Pass `async: true` or `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result
 
 > **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

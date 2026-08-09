@@ -20,17 +20,17 @@ Generate AI videos through AceDataCloud's Google Veo API.
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "async": true}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
-This returns a task ID immediately. Poll for the result:
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"action": "retrieve", "id": "..."}`.
+Setting `async: true` or providing `callback_url` returns a task ID immediately. Poll for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/veo/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from above>"}'
+  -d '{"action": "retrieve", "id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -112,6 +112,8 @@ POST /veo/videos
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+| `async` | `true` / `false` | Return `task_id` immediately instead of waiting for a completed response |
+| `callback_url` | string | Webhook for the final result; also enables async mode |
 
 ## Gotchas
 
@@ -122,7 +124,8 @@ POST /veo/videos
 - `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
 - Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
-- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
+- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body; include `action: "retrieve"` for single tasks or `action: "retrieve_batch"` with `ids`
+- `/veo/tasks` also accepts `trace_id`/`trace_ids`, plus `limit`, `offset`, and created-at filters for list retrieval
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
