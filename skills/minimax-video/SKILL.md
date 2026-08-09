@@ -24,7 +24,6 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `audio_urls` | 1–3 public HTTP(S) URLs | omitted |
 | `resolution` | `768P`, `2K` | `2K` |
 | `ratio` | `16:9`, `9:16` | `16:9` |
-| `aigc_watermark` | boolean | false |
 | `duration` | integer 4–15 | 4 |
 | `async` | boolean | false |
 | `callback_url` | public HTTP(S) webhook | omitted |
