@@ -74,6 +74,13 @@ models include:
 > dedicated endpoints instead — Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
 
+> **Native Gemini limits:** `generateContent` supports `TEXT` and `IMAGE`
+> response modalities, plus custom `functionDeclarations`. Audio modalities,
+> `speechConfig`, built-in `codeExecution`, `googleSearch`, `urlContext`, and
+> `cachedContent` are not available. Its `usageMetadata` can include
+> `cachedContentTokenCount`, `toolUsePromptTokenCount`,
+> `cacheTokensDetails`, and `toolUsePromptTokensDetails`.
+
 ## OpenAI-Compatible Chat
 
 ```json

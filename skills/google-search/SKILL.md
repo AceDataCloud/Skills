@@ -51,14 +51,14 @@ POST /serp/google
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `query` | string | Search query (required) |
-| `type` | string | One of: search, images, news, maps, places, videos |
-| `country` | string | Country code (e.g., "us", "uk", "cn", "jp") |
-| `language` | string | Language code (e.g., "en", "zh", "ja") |
+| `query` | string | Required non-whitespace query, 1–2048 characters |
+| `type` | string | One of: search, images, news, maps, places, videos (default `search`) |
+| `country` | string | Country code, 1–32 characters (e.g., "us", "uk", "cn", "jp") |
+| `language` | string | Language code, 1–32 characters (e.g., "en", "zh", "ja") |
 | `range` | string | Time filter (see below) |
-| `number` | int | Number of results per page |
-| `page` | int | Page number for pagination |
-| `image_size` | string | **Images only.** Filter by size for high-res sources: `large` / `medium` / `icon`, or a megapixel minimum `2mp`…`70mp` (e.g. `4mp` = larger than 4 megapixels). Use `large` (or a `*mp` value) whenever the image will be shown large / full-screen / zoomed. |
+| `number` | int | Results per page, 1–100 (default 10) |
+| `page` | int | Page number, 1–100 (default 1) |
+| `image_size` | string | **Requires `type: "images"`**. Filter by size: `large`, `medium`, `icon`, or `2mp`, `4mp`, `6mp`, `8mp`, `10mp`, `12mp`, `15mp`, `20mp`, `40mp`, `70mp`. |
 
 ## Time Range Options
 
@@ -70,10 +70,12 @@ POST /serp/google
 | `qdr:m` | Past month |
 | `qdr:y` | Past year |
 
+The equivalent short values `h`, `d`, `w`, `m`, and `y` are also accepted.
+
 ## Response Structure
 
 Web search returns structured data including:
-- `organic_results`: Main search results with title, link, snippet
+- `organic`: Main search results with title, link, snippet
 - `knowledge_graph`: Entity information panel (when available)
 - `related_searches`: Related query suggestions
 
@@ -83,7 +85,7 @@ Web search returns structured data including:
 - Country and language codes affect result localization significantly
 - `number` controls results per page, not total results — use `page` for pagination
 - Time range (`range`) only applies to web search and news, not images or places
-- **Image resolution (important for video / full-screen use):** results include `image_url` (full-size), `thumbnail_url`, and `image_width`/`image_height`. Pass **`image_size: "large"`** (or a megapixel minimum like `"4mp"`) to get sharp sources, and pick the result with the largest `image_width`×`image_height`. Always download `image_url` — **never** use `thumbnail_url` as a final asset (it is tiny and blurry).
+- **Image resolution (important for video / full-screen use):** image results provide `image_url`. Pass **`image_size: "large"`** (or a megapixel minimum like `"4mp"`) to request sharper sources.
 - Places search works best with location-specific queries (e.g., "restaurants near Times Square")
 
 > **MCP:** `pip install mcp-serp` | Hosted: `https://serp.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
