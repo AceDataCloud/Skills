@@ -55,15 +55,20 @@ POST /serp/google
 | `type` | string | One of: search, images, news, maps, places, videos |
 | `country` | string | Country code (e.g., "us", "uk", "cn", "jp") |
 | `language` | string | Language code (e.g., "en", "zh", "ja") |
-| `range` | string | Time filter (see below) |
-| `number` | int | Number of results per page |
-| `page` | int | Page number for pagination |
+| `range` | string | Time filter (see below). Accepts `h/d/w/m/y` and `qdr:h/qdr:d/qdr:w/qdr:m/qdr:y` |
+| `number` | int | Number of results per page (`1`–`100`, default `10`) |
+| `page` | int | Page number for pagination (`1`–`100`, default `1`) |
 | `image_size` | string | **Images only.** Filter by size for high-res sources: `large` / `medium` / `icon`, or a megapixel minimum `2mp`…`70mp` (e.g. `4mp` = larger than 4 megapixels). Use `large` (or a `*mp` value) whenever the image will be shown large / full-screen / zoomed. |
 
 ## Time Range Options
 
 | Value | Period |
 |-------|--------|
+| `h` | Past hour |
+| `d` | Past 24 hours |
+| `w` | Past week |
+| `m` | Past month |
+| `y` | Past year |
 | `qdr:h` | Past hour |
 | `qdr:d` | Past 24 hours |
 | `qdr:w` | Past week |
