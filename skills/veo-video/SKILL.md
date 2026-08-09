@@ -20,17 +20,17 @@ Generate AI videos through AceDataCloud's Google Veo API.
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "async": true}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
-This returns a task ID immediately. Poll for the result:
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"action": "retrieve", "id": "..."}`.
+With `async: true`, `/veo/videos` returns a task ID immediately. Without async mode it may wait for completion and return `success`, `task_id`, `trace_id`, timing fields, and `data` with generated video entries. Poll async tasks for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/veo/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from above>"}'
+  -d '{"action": "retrieve", "id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -112,6 +112,21 @@ POST /veo/videos
 | `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+| `async` | `true` / `false` | Return `task_id` immediately when true |
+| `callback_url` | string | Optional webhook URL; use with async/task polling workflows |
+
+## Responses and Task Retrieval
+
+`POST /veo/videos` returns one of:
+
+- Async acceptance: `{"task_id": "..."}`.
+- Completed response: `{"success": true, "task_id": "...", "trace_id": "...", "started_at": ..., "finished_at": ..., "elapsed": ..., "data": [{"id": "...", "video_url": "...", "state": "succeeded"}]}`.
+
+`POST /veo/tasks` accepts:
+
+- `{"action": "retrieve", "id": "..."}` or `{"action": "retrieve", "trace_id": "..."}` for one task.
+- `{"action": "retrieve_batch", "ids": [...]}` or `{"action": "retrieve_batch", "trace_ids": [...]}` for batches.
+- Optional list filters: `offset`, `limit`, `type`, `created_at_min`, and `created_at_max`.
 
 ## Gotchas
 
@@ -123,6 +138,7 @@ POST /veo/videos
 - Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
 - Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
+- Task retrieval can also use `trace_id` or `trace_ids` when those identifiers are available
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

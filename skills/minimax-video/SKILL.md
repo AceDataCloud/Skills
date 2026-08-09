@@ -12,7 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authenticati
 
 Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/videos`. Use the V2 multimodal `content` array to supply the prompt and optional reference media.
 
-> **Setup:** See [authentication](../_shared/authentication.md). For long jobs, use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`.
+> **Setup:** See [authentication](../_shared/authentication.md). By default creation waits for completion and returns a `task`; set `async: true` or provide `callback_url` to return `task_id`/`trace_id` immediately and poll with `POST /minimax/tasks`.
 
 ## Contract
 
@@ -23,9 +23,10 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `resolution` | `768P`, `2K` | required |
 | `duration` | integer 4–15 | required |
 | `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
-| `callback_url` | public HTTP(S) webhook | omitted |
+| `async` | `true` / `false` | `false` |
+| `callback_url` | public HTTP(S) webhook; enables async mode | omitted |
 
-Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Media items use a `role`:
+Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Text items require non-empty `text` (max 7000 characters). Video and audio items require the matching reference role; image roles are optional but should be explicit when order matters:
 
 | Role | Use |
 | --- | --- |
@@ -53,9 +54,12 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
     ],
     "resolution": "768P",
     "ratio": "16:9",
-    "duration": 4
+    "duration": 4,
+    "async": true
   }'
 ```
+
+With `async: true` the response contains `task_id` and `trace_id`. Without `async` or `callback_url`, the response waits for completion and returns `{"task": {...}}`; use `task.content.url` when `task.status` is `succeeded`.
 
 ## First and last frame video
 
@@ -120,13 +124,14 @@ curl -X POST https://api.acedata.cloud/minimax/tasks \
   -d '{"action":"retrieve","id":"TASK_ID"}'
 ```
 
-Continue polling about every five seconds until the task reaches a terminal state. Use `retrieve_batch` with `ids` to check several tasks, or `delete` with `id` to remove a task. Batch listing also accepts `limit`, `offset`, `created_at_min`, and `created_at_max`.
+Continue polling about every ten seconds until the task reaches a terminal state. Use `retrieve_batch` with `ids` to check several tasks, or `delete` with `id` to remove a task. Batch listing also accepts `limit`, `offset`, `created_at_min`, and `created_at_max`.
 
 ## Gotchas
 
 - Do not send `action` to `/minimax/videos`; the API infers the mode from media inputs.
 - `duration` must be an integer, not a decimal.
 - Put the prompt in a `content` item with `type: "text"`; do not send a top-level `prompt`.
+- Do not send legacy fields such as `prompt`, `image_urls`, `audio_urls`, `messages`, or `first_frame_image`; migrate them into `content`.
 - Use `first_frame`, `last_frame`, and reference roles explicitly; do not rely on item order to determine an image's role.
 - Use public URLs that the generation service can download for every media item.
 - Returned videos are served from AceDataCloud CDN.
