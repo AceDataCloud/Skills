@@ -69,9 +69,10 @@ models include:
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
 > **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
+> (e.g. `gemini-*-image`, `gpt-image-2`) are image-generation models and do
 > not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
+> dedicated endpoints instead — OpenAI via `POST /openai/images/generations`
+> or `POST /openai/images/edits`, Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
 
 ## OpenAI-Compatible Chat

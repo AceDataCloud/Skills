@@ -11,7 +11,6 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | google-search | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
 | luma-video | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
-| sora-video | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | seedream-image | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
