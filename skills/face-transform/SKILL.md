@@ -48,7 +48,7 @@ POST /face/analyze
 }
 ```
 
-Response includes detailed keypoints: `nose`, `mouth`, `left_eye`, `right_eye`, `left_eyebrow`, `right_eyebrow`, `contour` — each as arrays of `{x, y}` coordinates.
+Response includes `face_shape_set` as an array of face keypoint objects. Each object can contain `nose`, `mouth`, `left_eye`, `right_eye`, `left_eyebrow`, `right_eyebrow`, and `contour` arrays of `{x, y}` coordinates.
 
 ### 2. Face Beautification
 
@@ -113,6 +113,8 @@ POST /face/detect-live
 }
 ```
 
+The liveness response includes numeric `score` plus `face_model_version`.
+
 ## Parameters
 
 ### Common
@@ -165,6 +167,7 @@ POST /face/detect-live
 
 - All face APIs return results synchronously. `/face/swap` additionally supports an optional `callback_url` parameter for async delivery (pass it to receive the result via webhook instead of waiting inline)
 - Face analyze returns 90+ keypoints per detected face, supporting multiple faces in one image
+- Treat `face_shape_set` as an array, not a string; each entry describes one detected face
 - Face swap uses `source_image_url` (the face to apply) and `target_image_url` (the body to apply it to)
 - All APIs are currently in **Alpha** stage — interfaces may evolve
 - Images should contain clearly visible, front-facing faces for best results

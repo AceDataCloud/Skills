@@ -172,7 +172,8 @@ POST /happyhorse/tasks
 ```
 
 A completed single-task response stores the original request in `request` and the final API result
-in `response`. Read the media URL from `response.data[].video_url`.
+in `response`. Read the media URL from `response.data[].video_url`. Output `ratio` may be `null`
+when the aspect ratio is derived from the source media.
 
 ## Gotchas
 

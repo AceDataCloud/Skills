@@ -185,7 +185,7 @@ POST /producer/upload
     {
       "id": "audio-id",
       "audio_url": "https://cdn.example.com/song.mp3",
-      "video_url": "https://cdn.example.com/video.mp4",
+      "video_url": null,
       "image_url": "https://cdn.example.com/cover.jpg",
       "title": "Song Title",
       "lyric": "full lyrics...",
@@ -204,4 +204,5 @@ POST /producer/upload
 - `weirdness` at 0 = predictable, at 1 = highly experimental
 - Upload a reference audio via `/producer/upload` to get an audio ID for use with `cover` or `extend`
 - WAV and video downloads are separate endpoints — call them after the main generation completes
+- `video_url` in `/producer/audios` responses is nullable; use `/producer/videos` when you need an MP4
 - **CRITICAL:** Check the `state` field in task responses — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
