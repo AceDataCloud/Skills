@@ -87,7 +87,7 @@ POST /seedream/tasks
 |-----------|--------|-------------|
 | `model` | see Models table | Model to use (required) |
 | `prompt` | string | Image description (required) |
-| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution; available presets depend on the selected model |
+| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"` | Output resolution; available presets depend on the selected model |
 | `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
 | `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
 | `watermark` | boolean | Add AI-generated watermark (default: true) |
@@ -108,7 +108,7 @@ POST /seedream/tasks
 - Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
 - Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
 - `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
-- 5.0 Pro supports `1K`/`2K`; 5.0 Lite supports `2K`/`3K`/`4K`; 4.5 supports `2K`/`4K`; 4.0 supports `1K`/`2K`/`4K`; `adaptive` selects a size from the reference image
+- 5.0 Pro supports `1K`/`2K`; 5.0 Lite supports `2K`/`3K`/`4K`; 4.5 supports `2K`/`4K`; 4.0 supports `1K`/`2K`/`4K`
 - `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
 - Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
 
