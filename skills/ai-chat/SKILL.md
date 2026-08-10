@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /kimi/chat/completions` | Kimi-native OpenAI-style chat completions |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -105,6 +106,33 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+| `n` | integer | Number of choices. Kimi currently accepts only `1` |
+| `reasoning_effort` | string | Kimi `kimi-k3` only: `low`, `high`, or `max` |
+| `thinking` | object | Kimi `kimi-k2.6` only: `{"type":"enabled"}` or `{"type":"disabled"}`, with optional `keep: "all"` |
+
+## Kimi-Native Chat
+
+`POST /kimi/chat/completions` uses the same required `model` and `messages`
+shape as OpenAI chat completions while exposing Kimi-specific controls.
+
+```json
+POST /kimi/chat/completions
+{
+  "model": "kimi-k2.6",
+  "messages": [{"role": "user", "content": "Think through this problem."}],
+  "n": 1,
+  "thinking": {"type": "enabled", "keep": "all"}
+}
+```
+
+Kimi-specific constraints from the OpenAPI spec:
+
+| Parameter | Values | Applies To |
+|-----------|--------|------------|
+| `n` | integer `1` only | all Kimi chat models |
+| `reasoning_effort` | `low`, `high`, `max` | `kimi-k3` |
+| `thinking.type` | `enabled`, `disabled` | `kimi-k2.6` |
+| `thinking.keep` | `all` | optional with `thinking` |
 
 ## Stateful / Agentic Conversations
 
