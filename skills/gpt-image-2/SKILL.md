@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI `gpt-image-2` through AceDataCloud. The image endpoints are **synchronous by default** (return image url(s) directly) and also support async tasks for long jobs. Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 

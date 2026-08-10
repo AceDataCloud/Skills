@@ -12,7 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authenticati
 
 Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/videos`. Use the V2 multimodal `content` array to supply the prompt and optional reference media.
 
-> **Setup:** See [authentication](../_shared/authentication.md). For long jobs, use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`.
+> **Setup:** See [authentication](../_shared/authentication.md). By default, `/minimax/videos` waits for completion and returns a `task` object. For long jobs, pass `async: true` or `callback_url`, then use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`.
 
 ## Contract
 
@@ -23,6 +23,7 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `resolution` | `768P`, `2K` | required |
 | `duration` | integer 4–15 | required |
 | `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
+| `async` | `true` / `false` | `false` |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
 Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Media items use a `role`:
@@ -112,6 +113,8 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
 ```
 
 ## Poll a task
+
+Only poll after an async request. Async creation returns `task_id` and `trace_id`; synchronous creation returns the completed `task` directly.
 
 ```bash
 curl -X POST https://api.acedata.cloud/minimax/tasks \
