@@ -18,6 +18,12 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /openai/embeddings` / `GET /openai/models` | Embeddings and model discovery |
+| `POST /gemini/chat/completions` | Gemini OpenAI-compatible chat, including SSE streaming |
+| `POST /kimi/chat/completions` | Kimi OpenAI-compatible chat, including Kimi-specific thinking controls |
+| `POST /v1/chat/completions` | Claude OpenAI-compatible chat completions |
+| `POST /v1/messages` | Claude Messages API in Anthropic-compatible request format |
+| `POST /v1/messages/count_tokens` | Estimate Claude Messages input tokens |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -59,7 +65,7 @@ models include:
 | OpenAI / reasoning | `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
 | OpenAI free-tier chat-completions | `gpt-5.5:free`, `gpt-5:free`, `gpt-4.1:free`, `gpt-4o:free`, `gpt-4o-mini:free`, `gpt-oss:free` |
 | Claude | `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
-| Gemini | `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
+| Gemini | `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-flash-lite-preview`, `gemini-3.0-pro`, `gemini-3-flash-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-2.0-flash` |
 | Grok | `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp`, `deepseek-v4-flash` |
 | Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
@@ -68,11 +74,10 @@ models include:
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> **Image-generating models are usually not chat models.** Dedicated image
+> models should be used through image endpoints. The OpenAI spec currently also
+> exposes `gpt-4o-image` on chat/responses, but Gemini image models belong on
+> `POST /v1beta/models/{model}:generateContent` or `/nano-banana/images`.
 
 ## OpenAI-Compatible Chat
 
@@ -105,6 +110,39 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Provider-Specific Chat Surfaces
+
+The Docs OpenAPI specs also expose provider-native and provider-specific chat
+routes alongside the unified `/openai/*` surface:
+
+- **Gemini:** `POST /gemini/chat/completions` accepts the same common chat
+  fields and returns `text/event-stream` when `stream: true`. Native Gemini
+  calls use `POST /v1beta/models/{model}:generateContent` or
+  `POST /v1beta/models/{model}:streamGenerateContent`; for streaming native
+  calls send `accept: text/event-stream`.
+- **Kimi:** `POST /kimi/chat/completions` supports SSE with `stream: true`.
+  `reasoning_effort` is `low`, `high`, or `max` and applies to `kimi-k3`;
+  `thinking` applies to `kimi-k2.6` as
+  `{"type":"enabled"|"disabled","keep":"all"}`.
+- **Claude:** `POST /v1/messages` accepts Anthropic-style `model`,
+  `messages`, and `max_tokens` plus `system`, `thinking`, `tools`,
+  `tool_choice`, `stream`, and `cache_control`. Content blocks can include
+  text, images, documents/PDFs, thinking, tool use, and tool results.
+  `POST /v1/messages/count_tokens` accepts the same stable input structure
+  (without generation-only fields) for rough input-size estimates.
+
+## OpenAI Audio and Realtime
+
+Additional OpenAI-compatible routes live at `/v1/*`:
+
+- `POST /v1/audio/speech` — text-to-speech with `tts-1` or `tts-1-hd`.
+- `POST /v1/audio/transcriptions` — `whisper-1` returns a complete response;
+  `gpt-transcribe` also supports `stream: true` SSE with
+  `transcript.text.delta` and final `transcript.text.done` events.
+- `GET /v1/realtime` — WebSocket realtime speech-to-speech. Query parameters
+  include `model` (default `gpt-realtime-2.1`) and `voice` (`alloy`, `ash`,
+  `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, `cedar`).
 
 ## Stateful / Agentic Conversations
 
@@ -147,7 +185,8 @@ Useful parameters:
 
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- Chat/responses/image/task OpenAI-compatible routes live under `/openai/*`;
+  audio, realtime, and Claude Messages-compatible routes use `/v1/*`.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.

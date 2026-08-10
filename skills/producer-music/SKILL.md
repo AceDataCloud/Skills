@@ -134,7 +134,9 @@ POST /producer/audios
 ```json
 POST /producer/lyrics
 {
-  "prompt": "a love song about stargazing on a summer night"
+  "prompt": {
+    "topic": "a love song about stargazing on a summer night"
+  }
 }
 ```
 
@@ -168,6 +170,7 @@ POST /producer/upload
 | `instrumental` | boolean | Pure instrumental (no vocals) |
 | `title` | string | Song title |
 | `lyric` | string | Required for every `/producer/audios` request; custom lyrics use `[Verse]`, `[Chorus]` tags, otherwise use an empty string |
+| `prompt` (`/producer/lyrics`) | object | Structured lyric prompt payload |
 | `audio_id` | string | Existing audio ID (for edit actions) |
 | `continue_at` | number | Seconds — where to extend from |
 | `replace_section_start` | number | Start time of section to replace |

@@ -140,6 +140,7 @@ POST /face/detect-live
 | `source_image_url` | Yes | URL of the face to use (replaces the face) |
 | `target_image_url` | Yes | URL of the image to put the face onto |
 | `callback_url` | No | Webhook URL for async delivery |
+| `async` | No | Return a task response instead of waiting inline |
 | `timeout` | No | Max wait time in seconds (default: 120) |
 
 ### `/face/beautify`
