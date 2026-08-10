@@ -67,32 +67,31 @@ Polling and history queries are free; the video task is settled after production
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `prompt` | string | required | Natural-language production brief: topic, audience, content, tone, and desired result |
-| `action` | string | `generate` | `generate`, `remix`, `edit`, or `extend` |
+| `action` | string | `generate` | `generate` or `edit` with Lite; adds `remix` with Standard; adds `extend` with Pro |
 | `ref_task_id` | string | - | Required for `remix`, `edit`, and `extend` |
 | `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
-| `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
-| `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
-| `duration` | integer | `30` | Target duration from 1 to 600 seconds |
-| `quality` | string | `standard` | `draft`, `standard`, or `premium` |
-| `scenario` | string | `auto` | `auto`, `narrated`, `drama`, `avatar`, `motion`, or `slideshow` |
+| `langs` | string[] | `["zh-cn"]` | Output language codes; Lite supports 1, Standard up to 2, and Pro up to 4 |
+| `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1`; Lite renders 720p/24fps, Standard and Pro render 1080p/30fps |
+| `duration` | integer | `30` | Target duration: Lite 5–30 seconds, Standard 5–120, and Pro 5–300 |
+| `quality` | string | `standard` | `lite`, `standard`, or `pro` |
+| `scenario` | string | `auto` | Lite: `auto`, `narrated`, or `captions`; Standard adds `avatar`; Pro adds `drama` |
 | `style` | string | `auto` | Preset or freeform visual direction |
 | `voice` | string | `auto` | Cross-lingual voice preset or a 32-hex-character Fish reference ID |
 | `callback_url` | string | - | Optional webhook called on success or failure |
 
 ### Quality
 
-- `draft`: fast rough cut for validating direction.
-- `standard`: balanced default for normal production.
-- `premium`: richer, more polished production with a higher cost and longer turnaround.
+- `lite`: fast 720p short video at 0.20 credits per second, up to 30 seconds.
+- `standard`: balanced 1080p production at 0.60 credits per second, up to 120 seconds.
+- `pro`: advanced 1080p production at 1.20 credits per second, up to 300 seconds.
 
 ### Scenarios
 
 - `auto`: let the director choose from the brief.
 - `narrated`: multi-scene explainer, documentary, brand, history, or product video with voiceover.
-- `drama`: acted short drama with characters and dialogue.
-- `avatar`: talking-head or digital-human video; normally provide a portrait in `file_urls`.
-- `motion`: kinetic typography, data, logo, or abstract motion graphics.
-- `slideshow`: presentation deck, pitch, or slide-led video.
+- `captions`: add captions to a source video supplied in `file_urls`.
+- `avatar`: talking-head or digital-human video; provide a portrait in `file_urls`. Requires Standard or Pro.
+- `drama`: acted short drama with characters and dialogue. Requires Pro.
 
 ### Styles
 
@@ -145,7 +144,7 @@ The first language is primary. A successful task normally returns one item per d
 
 ## Iterate on a Previous Video
 
-All iteration actions require `ref_task_id`.
+All iteration actions require `ref_task_id`. Lite supports `edit`; Standard adds `remix`; Pro adds `extend`.
 
 ### Remix
 
@@ -262,6 +261,7 @@ Prefer a concrete production brief over a list of low-level model instructions. 
 - `remix`, `edit`, and `extend` fail without `ref_task_id`.
 - `file_urls` must be public URLs, not local paths.
 - `avatar` usually needs a usable portrait reference.
+- `captions` needs a source video in `file_urls`.
 - Requested duration is a target; report the actual delivered duration from the result.
 - Multilingual requests may return fewer variants than requested if one output fails.
 - Do not resubmit the same brief merely because a long-running poll has not finished.
