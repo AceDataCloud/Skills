@@ -34,7 +34,6 @@ curl -X POST https://api.acedata.cloud/grok/videos \
 | `grok-imagine-video:official` | up to 1080p | | Higher quality. 1–15s, billed per output second |
 | `grok-imagine-video-1.5:official` | up to 1080p | | Higher quality, **image-to-video only** (`image_url` required) |
 | `grok-imagine-video` | up to 720p | | Base model, text-to-video only |
-| `grok-imagine-video-1.5-preview` | up to 720p | | 1.5 preview (grok-video.json surface) |
 
 ## Workflows
 

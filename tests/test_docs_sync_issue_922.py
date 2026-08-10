@@ -23,6 +23,14 @@ class DocsSyncIssue922Tests(unittest.TestCase):
     def test_happyhorse_documents_nullable_output_ratio(self) -> None:
         self.assertIn("Output `ratio` may be `null`", skill_text("happyhorse-video"))
 
+    def test_grok_models_match_current_openapi_surface(self) -> None:
+        self.assertNotIn("grok-imagine-video-1.5-preview", skill_text("grok-video"))
+
+    def test_removed_sora_openapi_surface_is_not_advertised(self) -> None:
+        self.assertFalse((ROOT / "skills" / "sora-video" / "SKILL.md").exists())
+        self.assertNotIn("sora-video", (ROOT / "README.md").read_text(encoding="utf-8"))
+        self.assertNotIn("mcp-sora", (ROOT / "skills" / "_shared" / "mcp-servers.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
