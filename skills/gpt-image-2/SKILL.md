@@ -40,7 +40,9 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
   -F "n=1"
 ```
 
-Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `data[0].url`.
+Default `response_format` is `"url"`: `{"data":[{"url":"https://...png"}]}` → download `data[0].url`. `response_format: "b64_json"` is also supported.
+
+Current OpenAI image model variants include `gpt-image-2`, `gpt-image-2:reverse`, `gpt-image-2:official`, `gpt-image-1.5`, `gpt-image-1`, `dall-e-3`, and `dall-e-2`.
 
 ## Sizes
 
@@ -55,6 +57,11 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 (Omit `size` or use `"auto"` to let the model pick. Custom sizes must have both sides a
 multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
 ratio ≤ 3:1 — otherwise 400.)
+
+## Parameters
+
+- Generation supports `background`, `moderation`, `output_format`, `output_compression`, `partial_images`, `quality`, `style`, `response_format`, `callback_url`, and `async`.
+- Edits support the same output controls plus `input_fidelity` (`"high"` or `"low"`).
 
 ## Tips
 

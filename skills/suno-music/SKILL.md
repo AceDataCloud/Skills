@@ -154,10 +154,18 @@ For best results follow this multi-step workflow:
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `lyric_prompt` | string | Text prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `mashup_audio_ids` | array | Source audio IDs for the `mashup` action |
+| `audio_urls` | array | External audio URLs for upload-based workflows |
 | `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
+| `weirdness` | number | Creativity/novelty control from 0 to 1 |
+| `persona_id` | string | Reuse a saved Suno persona |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `replace_section_start` / `replace_section_end` | number | Time range for `replace_section` |
+| `underpainting_start` / `underpainting_end` | number | Time range for `underpainting` |
+| `overpainting_start` / `overpainting_end` | number | Time range for `overpainting` |
+| `samples_start` / `samples_end` | number | Time range for `samples` |
 
 ## Lyrics Format
 
