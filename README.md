@@ -35,7 +35,6 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [luma-video](skills/luma-video/) | Generate videos with Luma Dream Machine |
-| [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
 | [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
@@ -208,7 +207,6 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | [mcp-flux-pro](https://pypi.org/project/mcp-flux-pro/) | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
 | luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
-| sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |

@@ -65,6 +65,10 @@ models include:
 | Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
 | GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 
+`gemini-3.6-flash` is the current recommended Gemini Flash model.
+For `gemini-3.x` Flash / thinking models, set `max_tokens` to at least
+512 so reasoning tokens do not consume the entire response budget.
+
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
