@@ -72,27 +72,30 @@ Polling and history queries are free; the video task is settled after production
 | `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
 | `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
 | `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
-| `duration` | integer | `30` | Target duration from 1 to 600 seconds |
-| `quality` | string | `standard` | `draft`, `standard`, or `premium` |
-| `scenario` | string | `auto` | `auto`, `narrated`, `drama`, `avatar`, `motion`, or `slideshow` |
+| `duration` | integer | `30` | Target duration from 5 to 300 seconds; the selected SKU sets the maximum |
+| `quality` | string | `standard` | `lite`, `standard`, or `pro` |
+| `scenario` | string | `auto` | `auto`, `narrated`, `captions`, `avatar`, or `drama`; availability depends on SKU |
 | `style` | string | `auto` | Preset or freeform visual direction |
 | `voice` | string | `auto` | Cross-lingual voice preset or a 32-hex-character Fish reference ID |
 | `callback_url` | string | - | Optional webhook called on success or failure |
 
-### Quality
+### Production SKUs
 
-- `draft`: fast rough cut for validating direction.
-- `standard`: balanced default for normal production.
-- `premium`: richer, more polished production with a higher cost and longer turnaround.
+| SKU | Price | Duration | Output | Languages | Scenarios and actions |
+|---|---:|---:|---|---:|---|
+| `lite` | 0.20 Credits/second | 5–30s | 720p/24fps | 1 | auto/narrated/captions; generate/edit |
+| `standard` | 0.60 Credits/second | 5–120s | 1080p/30fps | 2 | adds avatar and remix |
+| `pro` | 1.20 Credits/second | 5–300s | 1080p/30fps | 4 | adds drama and extend |
+
+Successful tasks are billed by delivered integer-second duration, with no 30-second minimum. Avatar uses a 1.15× multiplier, drama uses 1.35×, and each additional delivered language adds 6 Credits. Failed tasks and polling are free.
 
 ### Scenarios
 
 - `auto`: let the director choose from the brief.
 - `narrated`: multi-scene explainer, documentary, brand, history, or product video with voiceover.
-- `drama`: acted short drama with characters and dialogue.
-- `avatar`: talking-head or digital-human video; normally provide a portrait in `file_urls`.
-- `motion`: kinetic typography, data, logo, or abstract motion graphics.
-- `slideshow`: presentation deck, pitch, or slide-led video.
+- `captions`: add kinetic captions to a source video supplied in `file_urls`.
+- `avatar`: talking-head or digital-human video; provide a portrait in `file_urls` (Standard or Pro).
+- `drama`: acted short drama with characters and dialogue (Pro only).
 
 ### Styles
 
