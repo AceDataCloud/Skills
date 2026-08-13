@@ -1,6 +1,6 @@
 ---
 name: seedance-video
-description: Generate AI videos with Seedance (ByteDance) via AceDataCloud API. Use when creating videos from text prompts, animating images into motion videos, or driving Seedance 2.0 multimodal generation with real-person / character image references, reference audio, and reference video. Supports multiple models with configurable resolution (up to 4k), aspect ratio, duration, and optional audio generation.
+description: Generate and edit AI videos with Seedance via AceDataCloud API. Use for text/image video, Seedance 2.x multimodal image/audio/video reference, Seedance 2.5 pure-audio reference, edit, extend, and up to 30-second output. Supports multiple models, up to 4k, aspect ratio, and optional audio generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -20,7 +20,7 @@ Generate AI dance and motion videos through AceDataCloud's Seedance (ByteDance) 
 curl -X POST https://api.acedata.cloud/seedance/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model": "doubao-seedance-2-0-260128", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"model": "doubao-seedance-2-5-260628", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"id": "..."}`.
@@ -35,7 +35,15 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 
 ## Models
 
-### Seedance 2.0 (current generation — multimodal reference)
+### Seedance 2.5 (latest flagship)
+
+| Model | Best For | Limits |
+|-------|----------|--------|
+| `doubao-seedance-2-5-260628` | Up to 30 seconds, pure-audio or multimodal reference, video edit/extend | `480p`, `720p`; 30 images / 10 videos / 10 audios / 50 total |
+
+Use `omni_reference_task_type: "auto"`, `"edit"`, or `"extend"`. Edit and extend require `reference_video` and `ratio: "adaptive"`; edit also requires `duration: -1`. Optional `output_format` is `mp4` or `mov`.
+
+### Seedance 2.0 (multimodal reference, up to 4k)
 
 The 2.0 series adds multimodal reference inputs: real-person / character **image** references, reference **audio**, and reference **video** (see the workflows below).
 
@@ -100,9 +108,10 @@ Image roles:
 - `last_frame` — image is used as the closing frame
 - `reference_image` — image is used as a style / subject / real-person reference (Seedance 2.0 keeps the referenced person or character consistent)
 
-Reference media (Seedance 2.0 only):
-- `audio_url` — reference audio for voice timbre / background music (no `role`)
-- `video_url` — reference video for subject, camera movement, motion or overall style (no `role`)
+Reference media (Seedance 2.x):
+- `audio_url` — use `role: "reference_audio"`
+- `video_url` — use `role: "reference_video"`
+- 2.5 accepts pure-audio reference; 2.0 requires an image or video alongside audio
 
 ### 3. First-frame + Last-frame
 
@@ -148,8 +157,8 @@ POST /seedance/videos
   "content": [
     {"type": "text", "text": "a singer performing on stage, matching the reference voice and motion"},
     {"type": "image_url", "role": "reference_image", "image_url": {"url": "https://example.com/person.jpg"}},
-    {"type": "audio_url", "audio_url": {"url": "https://example.com/voice.mp3"}},
-    {"type": "video_url", "video_url": {"url": "https://example.com/motion.mp4"}}
+    {"type": "audio_url", "role": "reference_audio", "audio_url": {"url": "https://example.com/voice.mp3"}},
+    {"type": "video_url", "role": "reference_video", "video_url": {"url": "https://example.com/motion.mp4"}}
   ],
   "generate_audio": true
 }
@@ -163,13 +172,16 @@ POST /seedance/videos
 | `content` | array | Input items: `text`, `image_url`, `audio_url` (2.0), `video_url` (2.0) (required) |
 | `resolution` | `"480p"`, `"720p"`, `"1080p"`, `"4k"` | Output resolution. `4k` is `doubao-seedance-2-0-260128` (standard) only; `2-0-fast` / `2-0-mini` max out at `720p` (default: 720p for pro/2.0, 480p for lite) |
 | `ratio` | `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"21:9"`, `"adaptive"` | Aspect ratio (default: 16:9) |
-| `duration` | `2` – `15` | Duration in seconds (Seedance 2.0 supports 4–15) |
+| `duration` | `2` – `30`, or `-1` | Model-specific duration; 2.0 supports 4–15, 2.5 supports 4–30 |
 | `frames` | 29–289 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
 | `generate_audio` | `true` / `false` | Generate audio (supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore it) |
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
+| `omni_reference_task_type` | `auto`, `edit`, `extend` | Seedance 2.5 task type |
+| `output_format` | `mp4`, `mov` | Seedance 2.5 output format |
+| `tools` | object[] | Optional Seedance 2.5 tool configurations |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
 
 ## Inline Parameter Syntax
