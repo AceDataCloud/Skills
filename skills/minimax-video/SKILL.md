@@ -23,6 +23,7 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `resolution` | `768P`, `2K` | required |
 | `duration` | integer 4–15 | required |
 | `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
+| `async` | `true`, `false` | `true` |
 | `callback_url` | public HTTP(S) webhook | omitted |
 
 Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Media items use a `role`:
@@ -125,6 +126,7 @@ Continue polling about every five seconds until the task reaches a terminal stat
 ## Gotchas
 
 - Do not send `action` to `/minimax/videos`; the API infers the mode from media inputs.
+- `/minimax/videos` now returns `task_id` and `trace_id`; poll `/minimax/tasks` for generated video URLs.
 - `duration` must be an integer, not a decimal.
 - Put the prompt in a `content` item with `type: "text"`; do not send a top-level `prompt`.
 - Use `first_frame`, `last_frame`, and reference roles explicitly; do not rely on item order to determine an image's role.

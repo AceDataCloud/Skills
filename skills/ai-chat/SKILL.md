@@ -106,6 +106,25 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
+## OpenAI-Compatible Responses
+
+`POST /openai/responses` supports either a plain text `input` string or a
+structured `input` array (including tool-call and tool-output items).
+
+Common parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | One of the documented OpenAI-compatible models |
+| `input` | string or array | User input or structured response input items |
+| `stream` | boolean | Enable SSE streaming |
+| `tools` / `tool_choice` | array / string-object | Function-calling controls |
+| `parallel_tool_calls` | boolean | Allow multiple tool calls in one turn |
+| `reasoning` / `text` | object | Optional reasoning/text output controls |
+| `max_output_tokens` | integer | Output token cap |
+| `store` | boolean | Store response state for retrieval |
+| `stream_options` | object | Streaming behavior options |
+
 ## Stateful / Agentic Conversations
 
 `POST /aichat2/conversations` generalizes the legacy conversation API with
