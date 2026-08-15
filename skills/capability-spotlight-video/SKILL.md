@@ -63,6 +63,16 @@ The result must prove the topic's distinctive value from pixels, motion, UI, or 
 
 Do not accept a generic beautiful image/clip when the registry calls for typography, editing fidelity, reference consistency, multimodal control, agent tools, memory, scheduling, solving lifecycle, or review workflow.
 
+### Async hero evidence
+
+Before creating generated hero media, query that capability's recent tasks and match the selected `TOPIC_ID`, `DEMO_ID`, model, and normalized request fingerprint:
+
+- reuse a matching completed task's accepted URL/MP4;
+- resume a matching pending task instead of creating a duplicate;
+- create a new task only when no match exists or the prior match is terminal-failed.
+
+After submission, follow the MCP's returned poll interval and poll until terminal. Do not poll once and give up. For activation tests, reserve up to two minutes (for example eight 15-second polls) for hero evidence. If it is still pending after that lease, record one `ADC-SPOTLIGHT-SOURCE:v1` draft artifact containing the provider task ID, IDs/fingerprint, and no completion claim; end without Maestro. The next run must resume that task. A completed source-prep run does not count as a published Spotlight episode or consume its topic/demo diversity slot.
+
 ## 4. Choose a distinct creative system
 
 Choose compatible IDs from the registry and recent-history exclusions.
