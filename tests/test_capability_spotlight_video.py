@@ -98,6 +98,14 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     assert "Never restart production routing" in body
     assert "output/result.json" in body
     assert "30-second Standard draft" in body
+    assert "may reduce only duration and SKU" in body
+    assert "MUST still use a real accepted capability output" in body
+    assert "Never disable inner review" in body
+    assert "actual accepted output URL/MP4" in body
+    assert 'extract decoded frame 0 explicitly at `-ss 0`' in body
+    assert "no black/near-black gap" in body
+    assert "summary itself" in body
+    assert "putting IDs only in tags does not satisfy" in body
     assert "before any further inspection, waiting, polling, or narration" in body
     assert "{'code': 'task_already_exists', 'task_id': '<same UUID>'}" in body
     assert "do not generate another UUID" in body

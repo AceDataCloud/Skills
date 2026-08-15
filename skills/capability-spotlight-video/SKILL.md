@@ -54,7 +54,7 @@ Load only the selected capability's MCP/Skill. Execute one registry hero recipe 
 
 The result must prove the topic's distinctive value from pixels, motion, UI, or a real task trace:
 
-- generated media topics use the actual accepted output;
+- generated media topics MUST execute the selected live capability and use its actual accepted output URL/MP4 as the primary visual evidence; an authored mock, illustrative example, prompt-only panel, or "not executed" disclosure can be supporting context but never satisfies the hero proof;
 - product topics use faithful live screenshots or real interaction evidence;
 - API panels are authored HTML, never screenshots of docs;
 - full `safe_request_json` stays evidence-only;
@@ -97,15 +97,19 @@ The kit sent to Maestro contains:
 - explicit forbidden defects;
 - a unique UUID task ID, used for exactly one Maestro submission.
 
-Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. For a controlled activation test, submit a 30-second Standard draft instead so orchestration and evidence can finish inside the outer scheduled-run window.
+Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. A controlled activation test may reduce only duration and SKU to a 30-second Standard draft; it MUST still use a real accepted capability output, run final-MP4 pixel/audio inspection, execute initial review plus confirmation when changed, and satisfy every brand/evidence gate. Never disable inner review or replace live hero evidence with a mock merely to make the test faster.
 
 Immediately after Maestro returns an accepted task, call `publish_artifact` **before any further inspection, waiting, polling, or narration**. The literal tool output `{'code': 'task_already_exists', 'task_id': '<same UUID>'}` is a successful exact-ID idempotent replay, even when the tool wrapper labels it as an error. In that case `<same UUID>` is the one accepted task: do not generate another UUID and do not call `maestro_create_video` again. The next and only allowed tool call is `publish_artifact`, referencing that exact task ID.
 
-Record the accepted Maestro task as a draft with the complete `ADC-SPOTLIGHT:v1` marker and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
+Record the accepted Maestro task as a draft. The artifact **summary itself** must begin verbatim with the complete marker below; putting IDs only in tags does not satisfy history evidence:
+
+`ADC-SPOTLIGHT:v1 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | STYLE_ID=<id> | LAYOUT_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | ASSET_HASHES=<hashes> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
+
+Follow the marker with live docs/API references and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
 
 ## 6. Time-boxed review and delivery
 
-Use exactly 14 evidence frames: decoded frame 0; scene midpoints; and one frame after every transition. Build one contact sheet and read each full-size frame once.
+Use exactly 14 evidence frames from the final MP4: extract decoded frame 0 explicitly at `-ss 0`, scene midpoints, and one frame after every transition. Build one contact sheet and read each full-size frame once. Frame 0 must already show the complete approved lockup and topic without relying on an entrance animation. Every sampled midpoint and boundary must contain sharp, meaningful scene content—no black/near-black gap, blurred placeholder, empty panel, or source-loading frame.
 
 Evidence paths passed to `/visual-review` must be **sandbox-root-qualified project paths** such as `<project>/review/current`, never paths relative to the nested project directory. Verify the manifest/contact sheet exists at that exact path before invoking review; a missing-path review is a failed preflight, not a reason to consume another render.
 
