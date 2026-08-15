@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-connections: [acedatacloud]
+connections: [acedatacloud/acedatacloud]
 compatibility: Requires the AceDataCloud connector, AceDataCloud and Maestro MCP servers, and whichever capability MCP is selected for the current spotlight.
 ---
 
