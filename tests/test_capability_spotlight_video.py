@@ -18,6 +18,7 @@ def topic_blocks() -> list[str]:
 def test_skill_declares_runtime_and_series_evidence_contract() -> None:
     body = text(SKILL)
     assert "name: capability-spotlight-video" in body
+    assert "connections: [acedatacloud/acedatacloud]" in body
     assert "{{run_count}}" in body
     assert "{{date_iso}}" in body
     assert "maestro_list_tasks(limit=30)" in body
