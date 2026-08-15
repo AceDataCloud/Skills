@@ -37,9 +37,13 @@ def test_skill_declares_runtime_and_series_evidence_contract() -> None:
     assert "unconstrained randomness" in body
     assert "one primary capability" in body
     assert "Async hero evidence" in body
-    assert "normalized request fingerprint" in body
+    assert "first capability-specific tool call MUST be that provider's" in body
+    assert "list_tasks" in body or "batch-list" in body
+    assert "24-hour" in body
+    assert "Do not call generate/create before this lookup" in body
     assert "reuse a matching completed task" in body
-    assert "resume a matching pending task" in body
+    assert "do not call generate/create" in body
+    assert "resume a matching pending task by ID" in body
     assert "Do not poll once and give up" in body
     assert "eight 15-second polls" in body
     assert "ADC-SPOTLIGHT-SOURCE:v1" in body
