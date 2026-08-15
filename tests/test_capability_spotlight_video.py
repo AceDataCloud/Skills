@@ -99,6 +99,10 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     assert "output/result.json" in body
     assert "30-second Standard draft" in body
     assert "before any further inspection, waiting, polling, or narration" in body
+    assert "{'code': 'task_already_exists', 'task_id': '<same UUID>'}" in body
+    assert "do not generate another UUID" in body
+    assert "do not call `maestro_create_video` again" in body
+    assert "next and only allowed tool call is `publish_artifact`" in body
     assert "The outer Producer must then end" in body
     assert "sandbox-root-qualified project paths" in body
     assert "Verify the manifest/contact sheet exists" in body

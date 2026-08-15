@@ -99,7 +99,9 @@ The kit sent to Maestro contains:
 
 Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. For a controlled activation test, submit a 30-second Standard draft instead so orchestration and evidence can finish inside the outer scheduled-run window.
 
-Immediately after Maestro returns an accepted task (or exact-ID idempotent replay), call `publish_artifact` **before any further inspection, waiting, polling, or narration**. Record the accepted Maestro task as a draft with the complete `ADC-SPOTLIGHT:v1` marker and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
+Immediately after Maestro returns an accepted task, call `publish_artifact` **before any further inspection, waiting, polling, or narration**. The literal tool output `{'code': 'task_already_exists', 'task_id': '<same UUID>'}` is a successful exact-ID idempotent replay, even when the tool wrapper labels it as an error. In that case `<same UUID>` is the one accepted task: do not generate another UUID and do not call `maestro_create_video` again. The next and only allowed tool call is `publish_artifact`, referencing that exact task ID.
+
+Record the accepted Maestro task as a draft with the complete `ADC-SPOTLIGHT:v1` marker and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
 
 ## 6. Time-boxed review and delivery
 
