@@ -98,6 +98,9 @@ def test_registry_demonstrates_unique_capability_strengths() -> None:
     assert "forbidden when only `/openai/images/generations` executed" in body
     assert "requires `/openai/images/edits` in `EXECUTED_APIS`" in body
     assert "first/last frame" in body and "reference audio" in body
+    assert "provider-downloadable public HTTPS URL" in body
+    assert "never receive `data:`, `blob:`, or local-file reference URLs" in body
+    assert "2.5-only options require a Seedance 2.5 model" in body
     assert "real tool trace" in body and "Memory" in body and "Scheduled Tasks" in body
     assert "create→lease/solve→task retrieve→result" in body
     assert "brief→asset manifest→composition→visual review→final MP4" in body
