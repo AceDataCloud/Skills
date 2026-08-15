@@ -97,6 +97,11 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     assert "one concentrated same-project refinement" in body
     assert "Never restart production routing" in body
     assert "output/result.json" in body
+    assert "30-second Standard draft" in body
+    assert "before any further inspection, waiting, polling, or narration" in body
+    assert "The outer Producer must then end" in body
+    assert "sandbox-root-qualified project paths" in body
+    assert "Verify the manifest/contact sheet exists" in body
 
 
 def test_public_copy_has_no_supplier_or_secret_leaks() -> None:

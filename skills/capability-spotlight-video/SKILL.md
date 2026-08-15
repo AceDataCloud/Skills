@@ -97,11 +97,15 @@ The kit sent to Maestro contains:
 - explicit forbidden defects;
 - a unique UUID task ID, used for exactly one Maestro submission.
 
-Load Maestro only after the kit is complete. Submit one Pro 16:9 English production unless runtime inputs explicitly request another supported format/language.
+Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. For a controlled activation test, submit a 30-second Standard draft instead so orchestration and evidence can finish inside the outer scheduled-run window.
+
+Immediately after Maestro returns an accepted task (or exact-ID idempotent replay), call `publish_artifact` **before any further inspection, waiting, polling, or narration**. Record the accepted Maestro task as a draft with the complete `ADC-SPOTLIGHT:v1` marker and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
 
 ## 6. Time-boxed review and delivery
 
 Use exactly 14 evidence frames: decoded frame 0; scene midpoints; and one frame after every transition. Build one contact sheet and read each full-size frame once.
+
+Evidence paths passed to `/visual-review` must be **sandbox-root-qualified project paths** such as `<project>/review/current`, never paths relative to the nested project directory. Verify the manifest/contact sheet exists at that exact path before invoking review; a missing-path review is a failed preflight, not a reason to consume another render.
 
 Run initial `/visual-review`. If it finds blockers, perform one concentrated same-project refinement covering all findings, rerender once, inspect only affected frames plus decoded frame 0, then run one confirmation review. Never restart production routing after review and never render a third full version.
 
@@ -115,8 +119,4 @@ Both reviews must answer:
 6. Is narration complete, natural, correctly pronounced, and matched to the chosen tone?
 7. Are CTA, URLs, safe framing, transitions, and audio technically clean?
 
-After confirmation passes, Maestro writes `output/result.json`; the worker alone uploads. Record one draft video artifact whose summary begins:
-
-`ADC-SPOTLIGHT:v1 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | STYLE_ID=<id> | LAYOUT_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | ASSET_HASHES=<hashes> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
-
-Include live docs/API references and service→asset mapping after the marker. Never claim the asynchronous video is finished from the outer Producer run.
+After confirmation passes, Maestro writes `output/result.json`; the worker alone uploads. The draft artifact was already recorded by the outer Producer immediately after accepted submission. Never defer artifact recording until Maestro finishes and never claim the asynchronous video is finished from the outer Producer run.
