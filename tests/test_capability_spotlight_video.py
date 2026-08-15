@@ -36,6 +36,13 @@ def test_skill_declares_runtime_and_series_evidence_contract() -> None:
     assert "ADC-SPOTLIGHT:v1" in body
     assert "unconstrained randomness" in body
     assert "one primary capability" in body
+    assert "Async hero evidence" in body
+    assert "normalized request fingerprint" in body
+    assert "reuse a matching completed task" in body
+    assert "resume a matching pending task" in body
+    assert "Do not poll once and give up" in body
+    assert "eight 15-second polls" in body
+    assert "ADC-SPOTLIGHT-SOURCE:v1" in body
 
 
 def test_brand_kit_uses_canonical_transparent_asset_and_authored_name() -> None:
