@@ -65,11 +65,12 @@ Do not accept a generic beautiful image/clip when the registry calls for typogra
 
 ### Async hero evidence
 
-Before creating generated hero media, query that capability's recent tasks and match the selected `TOPIC_ID`, `DEMO_ID`, model, and normalized request fingerprint:
+Before creating generated hero media, the first capability-specific tool call MUST be that provider's `list_tasks`/batch-list tool with a 24-hour `created_at_min` window (or the closest supported recent-task filter). Do not call generate/create before this lookup. Compare each candidate's stored request fields—model, prompt, size/resolution, quality, count/duration, input/reference URLs, and action—against the normalized request fingerprint for the selected `TOPIC_ID` and `DEMO_ID`.
 
-- reuse a matching completed task's accepted URL/MP4;
-- resume a matching pending task instead of creating a duplicate;
-- create a new task only when no match exists or the prior match is terminal-failed.
+- reuse a matching completed task's accepted URL/MP4 and do not call generate/create;
+- resume a matching pending task by ID instead of creating a duplicate;
+- create a new task only when the list call proves no match exists or the prior match is terminal-failed;
+- if the provider has no list tool, use a `SOURCE_TASK` ID from the current task's `last_output`; do not pretend artifacts from other scheduled tasks are visible.
 
 After submission, follow the MCP's returned poll interval and poll until terminal. Do not poll once and give up. For activation tests, reserve up to two minutes (for example eight 15-second polls) for hero evidence. If it is still pending after that lease, record one `ADC-SPOTLIGHT-SOURCE:v1` draft artifact containing the provider task ID, IDs/fingerprint, and no completion claim; end without Maestro. The next run must resume that task. A completed source-prep run does not count as a published Spotlight episode or consume its topic/demo diversity slot.
 
