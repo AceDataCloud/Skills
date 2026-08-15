@@ -31,6 +31,8 @@ def test_skill_declares_runtime_and_series_evidence_contract() -> None:
         "PALETTE_ID",
         "VOICE_ID",
         "ASSET_HASHES",
+        "EXECUTED_APIS",
+        "EVIDENCE_URLS",
     ):
         assert key in body
     assert "ADC-SPOTLIGHT:v1" in body
@@ -92,6 +94,9 @@ def test_every_topic_has_multiple_demos_and_live_contract_fields() -> None:
 def test_registry_demonstrates_unique_capability_strengths() -> None:
     body = text(TOPICS)
     assert "typography" in body and "edit/composite" in body
+    assert "both the source URL and the accepted edits output URL are mandatory" in body
+    assert "forbidden when only `/openai/images/generations` executed" in body
+    assert "requires `/openai/images/edits` in `EXECUTED_APIS`" in body
     assert "first/last frame" in body and "reference audio" in body
     assert "real tool trace" in body and "Memory" in body and "Scheduled Tasks" in body
     assert "create→lease/solve→task retrieve→result" in body

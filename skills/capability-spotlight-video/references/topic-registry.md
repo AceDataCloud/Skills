@@ -12,9 +12,9 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - PROMISE: legible text and faithful edit/composite workflows, not generic text-to-image beauty shots.
 - DEMOS:
   - `gpt2-editorial-typography`: a representative editorial poster, packaging system, or wayfinding composition with a short exact headline; inspect every character and spacing. Reject ordinary architecture/still life.
-  - `gpt2-faithful-composite`: pass the canonical A symbol plus a real product/screenshot/QR source to the edits endpoint; prove the source remains faithful while the surrounding campaign changes.
+  - `gpt2-faithful-composite`: pass a real product/screenshot/QR source to `/openai/images/edits`; both the source URL and the accepted edits output URL are mandatory. This demo ID is forbidden when only `/openai/images/generations` executed—use `gpt2-editorial-typography` instead. Prove the source remains faithful while the surrounding campaign changes.
   - `gpt2-consistent-campaign`: edit one accepted hero into 2–3 placements while preserving product, typography, and brand geometry.
-- EVIDENCE: exact source(s), accepted full-resolution result, character/crop checklist, generation/edit request, authored API panel.
+- EVIDENCE: exact source(s), accepted full-resolution result, character/crop checklist, executed API path(s), accepted evidence URL(s), and authored API panel. `gpt2-faithful-composite` specifically requires `/openai/images/edits` in `EXECUTED_APIS` and its accepted output in `EVIDENCE_URLS`.
 - CREATIVE: styles `editorial,vibrant,swiss`; layouts `kinetic-type,split-proof,comparison-field`; palettes must follow the chosen recipe; voices `energetic-male,bright-female,clean-female`.
 - LIMITS: maximum 3 image calls; typography failure gets one targeted replacement; never redraw the canonical logo.
 
