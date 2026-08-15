@@ -76,9 +76,9 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
   - `seedance-character-reference`: use a safe fictional/non-private character reference across a new scene; compare identity at start/middle/end.
   - `seedance-motion-reference`: supply reference video for motion/camera language and show the generated reinterpretation.
   - `seedance-audio-reference`: pair a character image and safe reference audio; verify motion/audio result without identity claims about real people.
-- EVIDENCE: actual reference media, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle.
+- EVIDENCE: actual reference media at a provider-downloadable public HTTPS URL, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle. Remote video APIs must never receive `data:`, `blob:`, or local-file reference URLs; upload references first and verify HTTPS reachability.
 - CREATIVE: styles `cinematic,vibrant,futuristic`; layouts `timeline,comparison-field,full-bleed-case-study`; voices `bright-female,energetic-male,storyteller-male`.
-- LIMITS: never use private/celebrity identity; one generation plus one replacement; video required.
+- LIMITS: never use private/celebrity identity; one generation plus one replacement; video required; reference media must be a public HTTPS URL and `return_last_frame` or other 2.5-only options require a Seedance 2.5 model.
 
 ## TOPIC acechat-agent-workspace
 
