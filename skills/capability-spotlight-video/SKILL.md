@@ -35,7 +35,7 @@ Read `{{run_count}}`, `{{date_iso}}`, and `{{last_output}}`. Call `maestro_list_
 
 Extract the last 12 runs' fields:
 
-`FAMILY_ID TOPIC_ID DEMO_ID STYLE_ID LAYOUT_ID PALETTE_ID VOICE_ID ASSET_HASHES`
+`FAMILY_ID TOPIC_ID DEMO_ID STYLE_ID LAYOUT_ID PALETTE_ID VOICE_ID ASSET_HASHES EXECUTED_APIS EVIDENCE_URLS`
 
 Select from the topic registry using these rules:
 
@@ -114,7 +114,7 @@ Immediately after Maestro returns an accepted task, call `publish_artifact` **be
 
 Record the accepted Maestro task as a draft. The artifact **summary itself** must begin verbatim with the complete marker below; putting IDs only in tags does not satisfy history evidence:
 
-`ADC-SPOTLIGHT:v1 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | STYLE_ID=<id> | LAYOUT_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | ASSET_HASHES=<hashes> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
+`ADC-SPOTLIGHT:v1 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | STYLE_ID=<id> | LAYOUT_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | ASSET_HASHES=<hashes> | EXECUTED_APIS=<public paths> | EVIDENCE_URLS=<accepted URLs> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
 
 Follow the marker with live docs/API references and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
 
