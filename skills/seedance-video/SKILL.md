@@ -202,9 +202,9 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - `first_frame` and `last_frame` may be combined in one request, but `reference_image` is mutually exclusive with `first_frame` / `last_frame` — do not mix a reference image with first/last frames
 - `generate_audio: true` is supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
-- `audio_url` and `video_url` reference items are used by the **Seedance 2.0 series only**
+- `audio_url` and `video_url` reference items are supported in **Seedance 2.x** (including 2.5)
 - Resolution options are `480p`, `720p`, `1080p`, and `4k` (`4k` is `doubao-seedance-2-0-260128` only; `2-0-fast` / `2-0-mini` max out at `720p`) — there is no 360p or 540p
-- Duration range is **2–15 seconds** (Seedance 2.0 supports 4–15) — values outside this range will fail
+- Duration range is model-dependent: **2.0 supports 4–15**, while **2.5 supports up to 30** (and `-1` is used for 2.5 edit mode)
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
