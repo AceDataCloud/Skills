@@ -99,7 +99,10 @@ def test_registry_demonstrates_unique_capability_strengths() -> None:
     assert "requires `/openai/images/edits` in `EXECUTED_APIS`" in body
     assert "Inspect both accepted images at full resolution before scripting" in body
     assert "`present before`, `present after`, and `visibly changed`" in body
+    assert "from decoded pixels—not prompt prose" in body
+    assert "bind each row to the exact source/output URL" in body
     assert "still visible in the accepted edit cannot be called removed" in body
+    assert "absent from the labeled frame cannot be called present" in body
     assert "script, labels, and narration must all agree with the inventory" in body
     assert "first/last frame" in body and "reference audio" in body
     assert "provider-downloadable public HTTPS URL" in body
