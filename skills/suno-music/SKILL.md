@@ -140,7 +140,7 @@ For best results follow this multi-step workflow:
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
-| `/suno/vox` | POST | Extract vocal track (stem separation) |
+| `/suno/vox` | POST | Extract a vocal range; requires `audio_id`, `vocal_start` (≥ 0), and `vocal_end` (> 0) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
