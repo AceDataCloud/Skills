@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes these documented chat and model-discovery surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `GET /openai/models` | Model catalog with OpenAI and Codex-compatible metadata |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -67,6 +68,10 @@ models include:
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
+
+`GET /openai/models` returns the standard OpenAI `object` and `data` fields plus
+a `models` array with Codex metadata such as supported reasoning levels, input
+modalities, visibility, API availability, tool support, and truncation policy.
 
 > **Image-generating models are not chat models.** Names ending in `-image`
 > (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
