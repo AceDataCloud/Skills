@@ -69,9 +69,10 @@ models include:
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
-`GET /openai/models` returns the standard OpenAI `object` and `data` fields plus
-a `models` array with Codex metadata such as supported reasoning levels, input
-modalities, visibility, API availability, tool support, and truncation policy.
+`GET /openai/models` returns the standard OpenAI `object` and `data` fields and
+may also return a `models` array with Codex metadata such as supported reasoning
+levels, input modalities, visibility, API availability, tool support, and
+truncation policy.
 
 > **Image-generating models are not chat models.** Names ending in `-image`
 > (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
