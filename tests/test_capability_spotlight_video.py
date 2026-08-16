@@ -97,6 +97,10 @@ def test_registry_demonstrates_unique_capability_strengths() -> None:
     assert "both the source URL and the accepted edits output URL are mandatory" in body
     assert "forbidden when only `/openai/images/generations` executed" in body
     assert "requires `/openai/images/edits` in `EXECUTED_APIS`" in body
+    assert "Inspect both accepted images at full resolution before scripting" in body
+    assert "`present before`, `present after`, and `visibly changed`" in body
+    assert "still visible in the accepted edit cannot be called removed" in body
+    assert "script, labels, and narration must all agree with the inventory" in body
     assert "first/last frame" in body and "reference audio" in body
     assert "provider-downloadable public HTTPS URL" in body
     assert "never receive `data:`, `blob:`, or local-file reference URLs" in body
