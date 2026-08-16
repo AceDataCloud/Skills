@@ -12,7 +12,7 @@ Never use the retired 1600×900 upload `36066a80-7a14-4fd9-a7bc-7722f3be8285`, s
 
 ## Construct the lockup
 
-The source contains an A symbol plus a legacy wordmark. Crop the **A symbol only** from the transparent source, preserving its pixels and aspect ratio. Author the formal name as live HTML text:
+The source contains an A symbol plus a legacy wordmark. Crop the **A symbol only** from the transparent source, preserving its pixels and aspect ratio. For the canonical 885×282 file, the symbol occupies alpha columns `x=50…250` and the legacy wordmark begins at `x=264`; use crop box `(50, 47, 251, 231)` (right/bottom exclusive), then trim only transparent padding. Verify the derivative contains exactly the first occupied column run and no non-transparent pixel originating at source `x>=264`. A width-ratio crop is forbidden because it can retain `ceData`. Author the formal name as live HTML text:
 
 `ACE DATA CLOUD`
 
@@ -36,6 +36,7 @@ Do not place the symbol inline as the letter A inside another bitmap wordmark. T
 - Dark background: preserve cyan/blue symbol; wordmark #F8FAFC.
 - Light background: place lockup on a deliberate dark brand field; do not recolor the source symbol.
 - URLs: `https://platform.acedata.cloud` and `https://studio.acedata.cloud` as live HTML text.
+- Final CTA must include one readable action phrase such as `EXPLORE THE API`, `BUILD WITH ACE DATA CLOUD`, or `OPEN THE STUDIO`; an abstract symbol, endpoint, or decorative target alone is not a CTA.
 
 ## Reviewer geometry checks
 

@@ -62,6 +62,12 @@ def test_brand_kit_uses_canonical_transparent_asset_and_authored_name() -> None:
     assert "36066a80-7a14-4fd9-a7bc-7722f3be8285" in body
     assert "Never use" in body
     assert "legacy `AceData` or `ceData`" in body
+    assert "crop box `(50, 47, 251, 231)`" in body
+    assert "legacy wordmark begins at `x=264`" in body
+    assert "no non-transparent pixel originating at source `x>=264`" in body
+    assert "A width-ratio crop is forbidden" in body
+    assert "Final CTA must include one readable action phrase" in body
+    assert "abstract symbol, endpoint, or decorative target alone is not a CTA" in body
 
 
 def test_registry_covers_broad_platform_families_and_representative_topics() -> None:
