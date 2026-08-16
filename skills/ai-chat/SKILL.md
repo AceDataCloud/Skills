@@ -106,6 +106,37 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
+## OpenAI-Compatible Responses
+
+`POST /openai/responses` requires `model` and `input`. `input` can be a text
+string or an ordered list of message and tool-call items.
+
+```json
+POST /openai/responses
+{
+  "model": "gpt-5.6-sol",
+  "input": [
+    {"type": "message", "role": "user", "content": "List the files in the workspace."},
+    {"type": "custom_tool_call", "call_id": "call_123", "namespace": "workspace", "name": "list", "input": "{}"},
+    {"type": "custom_tool_call_output", "call_id": "call_123", "output": "[\"package.json\"]"}
+  ],
+  "tools": [
+    {"type": "custom", "name": "list", "description": "List workspace files", "format": {"type": "text"}}
+  ]
+}
+```
+
+In addition to `model`, `input`, and `tools`, the documented parameters are
+`background`, `stream`, `n`, `max_tokens`, `max_output_tokens`, `temperature`,
+`response_format`, `tool_choice`, `parallel_tool_calls`, `include`, `reasoning`,
+`text`, `store`, and `stream_options`. Function tools use `type: "function"`
+with `name`, optional `description`, `parameters`, and `strict`; their results
+use `function_call` and `function_call_output` input items. Custom tool calls
+use matching `call_id` values with `custom_tool_call` and
+`custom_tool_call_output`. Non-streaming responses return `output` items and
+may include `output_text`; streamed responses use SSE events such as
+`response.output_item.done` and `response.completed`.
+
 ## Stateful / Agentic Conversations
 
 `POST /aichat2/conversations` generalizes the legacy conversation API with
