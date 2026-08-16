@@ -140,7 +140,7 @@ For best results follow this multi-step workflow:
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
-| `/suno/vox` | POST | Extract vocal track (stem separation) |
+| `/suno/vox` | POST | Extract vocal track (stem separation); requires `audio_id`, `vocal_start` (>= 0), and `vocal_end` (> 0) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
@@ -186,6 +186,7 @@ Ending lyrics
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
+- `/suno/vox` requires a vocal time range: send `vocal_start` (0 or greater) and `vocal_end` (greater than 0) along with `audio_id`
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover

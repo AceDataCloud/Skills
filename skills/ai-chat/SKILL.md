@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `GET /openai/models` | OpenAI-compatible model list plus AceDataCloud model metadata |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -68,6 +69,12 @@ models include:
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
+`GET /openai/models` returns the OpenAI-compatible `data[]` model list and
+an AceDataCloud `models[]` metadata list. The metadata includes each model's
+`slug`, display name, supported reasoning levels, API visibility, verbosity
+support, apply-patch tool type, truncation policy, parallel-tool-call support,
+experimental tools, and `input_modalities` such as `text` and `image`.
+
 > **Image-generating models are not chat models.** Names ending in `-image`
 > (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
 > not work on any chat surface listed above. Generate images through the
@@ -105,6 +112,43 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## OpenAI-Compatible Responses
+
+```json
+POST /openai/responses
+{
+  "model": "gpt-5.6-luna",
+  "input": [
+    {"type": "message", "role": "user", "content": "Inspect the workspace."}
+  ],
+  "tools": [
+    {"type": "function", "name": "summarize", "parameters": {"type": "object"}}
+  ],
+  "parallel_tool_calls": true,
+  "stream": false
+}
+```
+
+`input` can be a string or a list of Responses input items, including
+`message`, `function_tool_call`, `function_tool_call_output`,
+`custom_tool_call`, `custom_tool_call_output`, `additional_tools`, and
+provider-specific open input items.
+
+Common parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | string | One of the documented Responses-capable models |
+| `input` | string or array | Text or Responses input items |
+| `tools` | array | `function`, `custom`, `namespace`, or provider-specific open tools |
+| `tool_choice` | string or object | `none`, `auto`, `required`, or a tool selector object |
+| `parallel_tool_calls` | boolean | Allow parallel tool calls (defaults to `true`) |
+| `reasoning` / `text` | object | Model-specific reasoning and text controls |
+| `max_output_tokens` | integer | Output-token cap; use `max_tokens` for legacy compatibility |
+| `store` | boolean | Whether the response should be stored |
+| `stream` / `stream_options` | boolean / object | Enable and configure SSE streaming |
+| `include` | array | Additional fields to include in the response |
 
 ## Stateful / Agentic Conversations
 
@@ -152,3 +196,4 @@ Useful parameters:
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
 - Free-tier model variants such as `gpt-5.5:free` are documented on `/openai/chat/completions`.
+- Use `GET /openai/models` when a client needs live model metadata such as image input support, reasoning levels, verbosity support, or parallel tool-call support.
