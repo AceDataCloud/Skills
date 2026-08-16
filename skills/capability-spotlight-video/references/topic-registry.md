@@ -74,6 +74,7 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - PROMISE: Seedance 2.0 preserves a referenced person/character and can follow audio/video references at high resolution.
 - DEMOS:
   - `seedance-character-reference`: use a safe fictional/non-private character reference across a new scene; compare identity at start/middle/end.
+  - `seedance-image-reference-control`: use a public fictional product/interface image as `reference_image`; prove visible structure/text treatment remains recognizable while the accepted MP4 adds requested camera motion. Show the exact reference URL, request, and start/middle/end decoded output frames; do not claim person/character identity or motion-reference input.
   - `seedance-motion-reference`: supply reference video for motion/camera language and show the generated reinterpretation.
   - `seedance-audio-reference`: pair a character image and safe reference audio; verify motion/audio result without identity claims about real people.
 - EVIDENCE: actual reference media at a provider-downloadable public HTTPS URL, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle. Remote video APIs must never receive `data:`, `blob:`, or local-file reference URLs; upload references first and verify HTTPS reachability.

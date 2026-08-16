@@ -112,6 +112,10 @@ def test_registry_demonstrates_unique_capability_strengths() -> None:
     assert "script, labels, and narration must all agree with the inventory" in body
     assert "first/last frame" in body and "reference audio" in body
     assert "provider-downloadable public HTTPS URL" in body
+    assert "`seedance-image-reference-control`" in body
+    assert "public fictional product/interface image as `reference_image`" in body
+    assert "start/middle/end decoded output frames" in body
+    assert "do not claim person/character identity or motion-reference input" in body
     assert "never receive `data:`, `blob:`, or local-file reference URLs" in body
     assert "2.5-only options require a Seedance 2.5 model" in body
     assert "real tool trace" in body and "Memory" in body and "Scheduled Tasks" in body
