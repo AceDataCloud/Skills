@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `GET /openai/models` | List available OpenAI-compatible models (includes metadata-rich `models` entries) |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -148,6 +149,7 @@ Useful parameters:
 ## Gotchas
 
 - The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- `GET /openai/models` returns standard OpenAI `data` plus an additional `models` array with richer metadata (reasoning levels, tool-call support, input modalities).
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
