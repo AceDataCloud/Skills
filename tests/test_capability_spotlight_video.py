@@ -128,7 +128,7 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     body = text(SKILL)
     for voice in ("energetic-male", "bright-female", "clean-female", "calm-male", "storyteller-male", "warm-female", "anchor-female", "deep-male"):
         assert voice in body
-    assert "last 3 `PALETTE_ID` and `VOICE_ID`" in body
+    assert "last 3 voice families and palettes" in body
     assert "14 evidence frames" in body
     assert "one concentrated same-project refinement" in body
     assert "Never restart production routing" in body
@@ -150,6 +150,116 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     assert "The outer Producer must then end" in body
     assert "sandbox-root-qualified project paths" in body
     assert "Verify the manifest/contact sheet exists" in body
+
+
+def test_skill_requires_sales_blueprint_before_maestro() -> None:
+    body = text(SKILL)
+    assert "SPOTLIGHT-SALES-BLUEPRINT:v2" in body
+    for field in (
+        "CAMPAIGN_MODE",
+        "PRODUCTS",
+        "FINAL_OUTCOME",
+        "AUDIENCE",
+        "ONE-LINE VALUE",
+        "PAIN",
+        "HOOK",
+        "HERO CASE",
+        "UNIQUE ADVANTAGE",
+        "PRICE",
+        "OFFER",
+        "CTA",
+        "TONE",
+        "VOICE",
+    ):
+        assert f"{field}:" in body
+    assert "Do not call Maestro until the complete blueprint passes" in body
+    assert "0–3 seconds" in body and "3–7 seconds" in body
+    assert "7–17 seconds" in body and "17–22 seconds" in body
+    assert "22–26 seconds" in body and "26–30 seconds" in body
+    assert "65–80 English words" in body
+    assert "accepted output" in body
+    assert "decoded-pixel proof" in body
+    assert "internal review language" in body
+    assert "ASSET 1 — PAIN / BEFORE" in body
+    assert "ASSET 2 — HERO ACCEPTED OUTPUT" in body
+    assert "ASSET 3 — DETAIL / COMPARISON" in body
+    assert "dynamic price cannot be evaluated" in body
+    assert "See live pricing" in body
+
+
+def test_every_topic_has_a_service_specific_sales_playbook() -> None:
+    required = (
+        "- AUDIENCE:",
+        "- PAIN:",
+        "- BASIC_INTRO:",
+        "- HERO_CASES:",
+        "- UNIQUE_ADVANTAGES:",
+        "- PRICE_SCENARIOS:",
+        "- HOOKS:",
+        "- CTA:",
+        "- TONE:",
+        "- FORBIDDEN_GENERIC_CASES:",
+    )
+    for block in topic_blocks():
+        for marker in required:
+            assert marker in block, (block.splitlines()[0], marker)
+        assert len(re.findall(r"(?m)^  - `[^`]+`:", block)) >= 2
+
+
+def test_sales_playbooks_name_distinct_product_drama() -> None:
+    body = text(TOPICS)
+    for phrase in (
+        "fix every headline",
+        "premium products",
+        "make it move—without losing it",
+        "campaign consistency wall",
+        "A chat box answers",
+        "create→solve→result",
+        "script, assets, voice, review, and final film",
+        "one token",
+    ):
+        assert phrase in body
+    assert "ordinary architecture or still-life beauty shot" in body
+    assert "fake chat bubbles" in body
+    assert "pure catalog-card walkthrough" in body
+
+
+def test_skill_is_a_general_runtime_campaign_planner() -> None:
+    body = text(SKILL)
+    assert "acedatacloud_list_services(private=false, limit=300)" in body
+    assert "Single Capability" in body
+    assert "Workflow Campaign" in body
+    assert "Platform Story" in body
+    assert "at least one candidate in each mode" in body
+    assert "SPOTLIGHT-SALES-BLUEPRINT:v2" in body
+    for field in ("CAMPAIGN_MODE", "PRODUCTS", "FINAL_OUTCOME", "BASIC_INTRO", "WORKFLOW"):
+        assert f"{field}:" in body
+    assert "capability graph" in body
+    assert "Node contract" in body
+    assert "Edge contract" in body
+    assert "2–4 services" in body
+    assert "OpenAPI" in body and "input/output" in body
+    assert "examples, not an allowlist" in body
+    assert "recent 6 `WORKFLOW_ID`" in body
+    assert "recent 4 `CAMPAIGN_MODE`, `HOOK_ID`, and climax grammar" in body
+    assert "dynamic `load_mcp_server`" in body
+    assert "2–4 MCP servers" in body
+    assert "No real hero evidence" in body
+
+
+def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
+    body = text(TOPICS)
+    assert "Anchor library — examples, not an allowlist" in body
+    assert "General derivation rubric" in body
+    for field in ("buyer/job-to-be-done", "current pain", "observable mechanism", "hero recipe", "price scenario"):
+        assert field in body
+    assert "could be copied unchanged onto another AI service" in body
+    assert "Campaign launch" in body
+    assert "Product-to-video" in body
+    assert "Agent automation" in body
+    assert "Content engine" in body
+    assert "Audio-led campaign" in body
+    assert "Platform integration" in body
 
 
 def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
