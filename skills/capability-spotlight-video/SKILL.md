@@ -194,7 +194,7 @@ The kit sent to Maestro contains:
 - explicit forbidden defects;
 - a unique UUID task ID, used for exactly one Maestro submission.
 
-Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. A controlled activation test may reduce only duration and SKU to a 30-second Standard draft; it MUST still use a real accepted capability output, run final-MP4 pixel/audio inspection, execute initial review plus confirmation when changed, and satisfy every brand/evidence gate. Never disable inner review or replace live hero evidence with a mock merely to make the test faster.
+Load Maestro only after the kit is complete. Submit one Pro production matching the requested format/language. A controlled activation test may reduce only duration and SKU to a 30-second Standard draft; it MUST still use a real accepted capability output, run final-MP4 pixel/audio inspection, execute both the initial and final-byte confirmation reviews, and satisfy every brand/evidence gate. Never disable inner review or replace live hero evidence with a mock merely to make the test faster.
 
 Immediately after Maestro returns an accepted task, call `publish_artifact` **before any further inspection, waiting, polling, or narration**. The literal tool output `{'code': 'task_already_exists', 'task_id': '<same UUID>'}` is a successful exact-ID idempotent replay, even when the tool wrapper labels it as an error. In that case `<same UUID>` is the one accepted task: do not generate another UUID and do not call `maestro_create_video` again. The next and only allowed tool call is `publish_artifact`, referencing that exact task ID.
 
@@ -210,7 +210,7 @@ Use exactly 14 evidence frames from the final MP4: extract decoded frame 0 expli
 
 Evidence paths passed to `/visual-review` must be **sandbox-root-qualified project paths** such as `<project>/review/current`, never paths relative to the nested project directory. Verify the manifest/contact sheet exists at that exact path before invoking review; a missing-path review is a failed preflight, not a reason to consume another render.
 
-Run initial `/visual-review`. If it finds blockers, perform one concentrated same-project refinement covering all findings, rerender once, inspect only affected frames plus decoded frame 0, then run one confirmation review. Never restart production routing after review and never render a third full version.
+Make an actual `Skill` call with `skill="visual-review"` and the absolute initial evidence directory. If it finds blockers, perform one concentrated same-project refinement covering all findings and rerender once. Then rebuild or verify evidence from the final MP4 bytes and make a second actual `Skill` call with the absolute confirmation evidence directory. The confirmation call is mandatory even when the initial review finds no blockers and the MP4 does not change. Never restart production routing after review and never render a third full version.
 
 Both reviews must answer:
 

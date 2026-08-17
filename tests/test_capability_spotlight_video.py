@@ -150,6 +150,9 @@ def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
     assert "The outer Producer must then end" in body
     assert "sandbox-root-qualified project paths" in body
     assert "Verify the manifest/contact sheet exists" in body
+    assert 'actual `Skill` call with `skill="visual-review"`' in body
+    assert "second actual `Skill` call" in body
+    assert "mandatory even when the initial review finds no blockers" in body
 
 
 def test_skill_requires_sales_blueprint_before_maestro() -> None:
