@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `GET /openai/models` | OpenAI-compatible model list and Codex capability metadata |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -67,6 +68,13 @@ models include:
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
+
+`GET /openai/models` returns the standard OpenAI-compatible `data` list. It may
+also include a `models` array with Codex metadata such as supported reasoning
+levels, shell and patch-tool types, parallel tool support, truncation policy,
+and `input_modalities` (`text` and/or `image`). Use this live metadata rather
+than assuming that every model supports image input or the same reasoning
+levels.
 
 > **Image-generating models are not chat models.** Names ending in `-image`
 > (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
