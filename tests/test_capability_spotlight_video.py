@@ -245,6 +245,9 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "dynamic `load_mcp_server`" in body
     assert "2–4 MCP servers" in body
     assert "No real hero evidence" in body
+    assert "exact Maestro prompt must begin with `ADC-SPOTLIGHT:v1` as its first line" in body
+    assert "no title, explanation, or Markdown fence before it" in body
+    assert "complete blueprint verbatim from the second line onward" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
