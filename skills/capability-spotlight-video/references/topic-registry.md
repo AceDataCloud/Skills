@@ -1,6 +1,31 @@
-# Capability Spotlight topic registry
+# Capability Spotlight campaign anchor library
 
-Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `DOC_QUERY`, `MCP`, `PROMISE`, `DEMOS`, `EVIDENCE`, `CREATIVE`, `LIMITS`.
+## General derivation rubric
+
+This file is an **Anchor library — examples, not an allowlist**. The runtime planner may select any live public Ace Data Cloud service, model, Agent, deployment product, cross-service workflow, or platform story when it has authorized execution or real accepted evidence.
+
+For an unlisted capability, derive and verify all of the following from the live service, model catalog, docs, OpenAPI, pricing, and accepted output:
+
+- buyer/job-to-be-done and specific work context;
+- current pain that can be visualized without fabricating a competitor result;
+- observable mechanism and input→output lifecycle;
+- unique differentiator visible in pixels, motion, audio, structured result, or a real task trace;
+- hero recipe and the exact accepted evidence required;
+- price scenario bound to a concrete request payload;
+- CTA destination and a forbidden generic case.
+
+Run the portability test: if the value proposition could be copied unchanged onto another AI service, it is not distinctive enough—derive a sharper angle or reject the candidate.
+
+For workflow mode, prove every service edge from OpenAPI fields or an executed request. Representative campaign families include:
+
+- **Campaign launch:** Search/research → copy/brief → image → reference video → Maestro;
+- **Product-to-video:** reference image → variants/refinement → controlled motion → voice/music → final production;
+- **Agent automation:** AceChat + MCP/Skill → artifact → Memory/Scheduled Task → delivered result;
+- **Content engine:** Search/WebExtrator → structured insight → image/audio/video campaign asset;
+- **Audio-led campaign:** lyrics/music/voice → visual or cover → video/production;
+- **Platform integration:** one token → multiple real modality calls → one SDK/task/billing story.
+
+Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `DOC_QUERY`, `MCP`, `PROMISE`, sales fields, `DEMOS`, `EVIDENCE`, `CREATIVE`, `LIMITS`.
 
 ## TOPIC gpt-image-2-craft
 
@@ -10,6 +35,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `gpt-image-2 image generation edits typography`
 - MCP: OpenAI
 - PROMISE: legible text and faithful edit/composite workflows, not generic text-to-image beauty shots.
+- AUDIENCE: design teams, campaign marketers, and API developers shipping customer-visible creative.
+- PAIN: AI posters should not make a team fix every headline, grid, and product detail by hand.
+- BASIC_INTRO: GPT Image 2 generates and edits production-ready visual creative where typography and composition matter.
+- HERO_CASES: oversized editorial poster reveal; faithful source→campaign composite with a decoded before/after inventory.
+- UNIQUE_ADVANTAGES: readable headline hierarchy; controlled spacing and layout; faithful edit/composite behavior.
+- PRICE_SCENARIOS: quote one exact model+size+quality+n generation or one exact edit payload; bind the displayed unit price to that payload.
+- HOOKS: `AI posters shouldn’t make you fix every headline.`; `The prompt said premium. The typography should too.`
+- CTA: `EXPLORE GPT IMAGE 2 API` → `platform.acedata.cloud/documents/gpt-image-2`.
+- TONE: energetic creative-director launch; punch the failure, pause on the poster reveal, confident price, decisive CTA.
+- FORBIDDEN_GENERIC_CASES: ordinary architecture or still-life beauty shot; feature-list narration; unverified removal/edit claim.
 - DEMOS:
   - `gpt2-editorial-typography`: a representative editorial poster, packaging system, or wayfinding composition with a short exact headline; inspect every character and spacing. Reject ordinary architecture/still life.
   - `gpt2-faithful-composite`: pass a real product/screenshot/QR source to `/openai/images/edits`; both the source URL and the accepted edits output URL are mandatory. This demo ID is forbidden when only `/openai/images/generations` executed—use `gpt2-editorial-typography` instead. Inspect both accepted images at full resolution before scripting. Record `present before`, `present after`, and `visibly changed` from decoded pixels—not prompt prose, URL order, dimensions, or filenames—and bind each row to the exact source/output URL. Only claim differences that this comparison proves. An element still visible in the accepted edit cannot be called removed, replaced, or omitted; an element absent from the labeled frame cannot be called present.
@@ -26,6 +61,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `nano banana consistent subject variants`
 - MCP: Nano_Banana
 - PROMISE: one unmistakable subject remains coherent while location, angle, season, or usage changes.
+- AUDIENCE: brand teams and creators building multi-placement campaigns from one approved subject.
+- PAIN: campaign variations lose the product geometry or character identity from frame to frame.
+- BASIC_INTRO: Nano Banana turns one approved subject into a coherent campaign family across visibly different scenes.
+- HERO_CASES: 2×2 campaign consistency wall across four environments; four-beat fictional character continuity reveal.
+- UNIQUE_ADVANTAGES: subject consistency; editable variations; campaign-scale reuse from one reference.
+- PRICE_SCENARIOS: quote one exact model+count+reference payload and show the per-generation unit.
+- HOOKS: `One campaign. Four worlds. Same product.`; `Your character should not change actors between frames.`
+- CTA: `BUILD A CONSISTENT CAMPAIGN` → `studio.acedata.cloud`.
+- TONE: playful visual launch; rapid variant build, satisfying 2×2 lock, upbeat CTA.
+- FORBIDDEN_GENERIC_CASES: four unrelated pretty images; tiny subject; no side-by-side consistency proof.
 - DEMOS:
   - `nano-product-worlds`: one fictional product across four genuinely different commercial environments.
   - `nano-character-continuity`: one non-real fictional character across four narrative beats with stable face, clothing, and proportions.
@@ -41,6 +86,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `seedream high resolution commercial image`
 - MCP: Seedream
 - PROMISE: high-resolution commercial material detail, controlled depth, and art-directed still life.
+- AUDIENCE: ecommerce, packaging, and premium-brand teams that need campaign-ready product imagery.
+- PAIN: “Good enough” AI imagery does not sell premium products when materials, depth, and copy space feel generic.
+- BASIC_INTRO: Seedream creates art-directed commercial images with controlled material detail, depth, and usable composition.
+- HERO_CASES: full campaign image→ceramic/textile macro push; environmental product scene→copy-space and material callouts.
+- UNIQUE_ADVANTAGES: visible fine material texture; natural depth and lighting; deliberate commercial copy space.
+- PRICE_SCENARIOS: quote one exact model+output_pixels+count payload; show Credits when dynamic USD cannot be evaluated.
+- HOOKS: `“Good enough” imagery doesn’t sell premium products.`; `Zoom in. The material should still sell the story.`
+- CTA: `TRY SEEDREAM IN THE STUDIO` → `studio.acedata.cloud`.
+- TONE: premium and sensory; restrained pain, luxurious full-screen reveal, warm confident price, inviting CTA.
+- FORBIDDEN_GENERIC_CASES: generic dark glass; purposeless still life; tiny product; empty proof cards; claims not visible in the crop.
 - DEMOS:
   - `seedream-material-macro`: luxury object/material macro with layered natural depth.
   - `seedream-environmental-campaign`: a bright environmental product scene with useful copy space and precise material rendering.
@@ -56,6 +111,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `MiniMax H3 video first last frame multimodal reference`
 - MCP: Minimax
 - PROMISE: H3 combines text with first/last frame, image, video, or audio references for controlled motion.
+- AUDIENCE: video teams that need a planned transition or performance rather than an uncontrolled text-to-video clip.
+- PAIN: a strong first frame is wasted when the generated movement cannot land on the intended final beat.
+- BASIC_INTRO: MiniMax H3 combines text and multimodal references to control the beginning, movement, and destination of a shot.
+- HERO_CASES: first→last frame cinematic transition; reference performance with observable source→motion relationship.
+- UNIQUE_ADVANTAGES: multimodal control; coherent transition endpoints; camera-specific motion.
+- PRICE_SCENARIOS: quote one exact model+duration+resolution+reference payload.
+- HOOKS: `A transition needs a destination—not a surprise ending.`; `Direct the first frame. Direct the last. Let motion connect them.`
+- CTA: `DIRECT YOUR NEXT SHOT` → `studio.acedata.cloud`.
+- TONE: cinematic tension and release; hold endpoints, accelerate through motion, land confidently.
+- FORBIDDEN_GENERIC_CASES: attractive but unrelated text-to-video; no endpoint comparison; static beauty shot.
 - DEMOS:
   - `h3-first-last-transition`: generate distinct first and last frames, then prove a coherent 6–8 second transition between them.
   - `h3-reference-performance`: use one reference image plus reference audio or video and show the accepted input→motion output relationship.
@@ -72,6 +137,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `Seedance 2.0 reference image audio video character consistency`
 - MCP: Seedance
 - PROMISE: Seedance 2.0 preserves a referenced person/character and can follow audio/video references at high resolution.
+- AUDIENCE: product, campaign, and creative-development teams turning approved frames into controlled motion.
+- PAIN: turning a static design into video often loses the structure, text treatment, subject, or visual language already approved.
+- BASIC_INTRO: Seedance adds cinematic movement while using image, video, or audio references to control what must remain recognizable.
+- HERO_CASES: reference dashboard freeze→camera-motion reveal→structure comparison; safe fictional character or motion-reference transformation.
+- UNIQUE_ADVANTAGES: reference control; purposeful camera motion; recognizable visual structure across the shot.
+- PRICE_SCENARIOS: quote one exact model+resolution+duration+reference payload; never quote a default duration for a different model.
+- HOOKS: `You already designed the frame. Now make it move—without losing it.`; `Motion should add energy, not erase approval.`
+- CTA: `GENERATE YOUR FIRST VIDEO` → `studio.acedata.cloud`.
+- TONE: cinematic product launch; stillness on the hook, explosive motion reveal, confident technical beat, strong CTA.
+- FORBIDDEN_GENERIC_CASES: unreferenced cinematic clip; “cinematic motion” as the only benefit; person identity claim without proof.
 - DEMOS:
   - `seedance-character-reference`: use a safe fictional/non-private character reference across a new scene; compare identity at start/middle/end.
   - `seedance-image-reference-control`: use a public fictional product/interface image as `reference_image`; prove visible structure/text treatment remains recognizable while the accepted MP4 adds requested camera motion. Show the exact reference URL, request, and start/middle/end decoded output frames; do not claim person/character identity or motion-reference input.
@@ -89,6 +164,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `AceChat aichat2 MCP Skills Memory Scheduled Tasks Realtime`
 - MCP: AceDataCloud
 - PROMISE: a stateful agent workspace combines conversations, tools, MCP, Skills, Memory, Artifacts, schedules, and realtime voice.
+- AUDIENCE: developers and operators who need an agent to execute repeatable work, not merely answer a chat message.
+- PAIN: A chat box answers; it does not remember the workflow, call the right systems, deliver an artifact, and run again tomorrow.
+- BASIC_INTRO: AceChat is a stateful agent workspace that combines live tools, MCP, Skills, Memory, Artifacts, Scheduled Tasks, and realtime voice.
+- HERO_CASES: one real tool trace that produces an artifact; memory→schedule→completed run lifecycle with sanitized evidence.
+- UNIQUE_ADVANTAGES: real MCP/Skill execution; persistent context and memory; artifacts and scheduled automation in one workspace.
+- PRICE_SCENARIOS: show the actual model/tool call Credits when returned; otherwise use `See live pricing` and never invent a flat workspace price.
+- HOOKS: `A chat box answers. A workspace gets the work done.`; `If the work repeats tomorrow, the agent should remember.`
+- CTA: `OPEN ACECHAT` → `studio.acedata.cloud`.
+- TONE: sharp technical confidence; rapid tool expansion, satisfying artifact result, calm automation proof, decisive CTA.
+- FORBIDDEN_GENERIC_CASES: fake chat bubbles; feature-list narration; invented UI; private memory or token; tool trace without a result.
 - DEMOS:
   - `acechat-tool-trace`: run a safe read-only task with one MCP and one Skill; show the real tool trace and resulting artifact.
   - `acechat-memory-schedule`: demonstrate a real memory/scheduled-task lifecycle using sanitized UI screenshots and authored flow.
@@ -105,6 +190,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `captcha task recognition hcaptcha recaptcha turnstile image2text`
 - MCP: hCaptcha, reCAPTCHA, Turnstile
 - PROMISE: one authenticated asynchronous lifecycle handles multiple challenge families and returns auditable results.
+- AUDIENCE: authorized QA, automation, and operations teams handling owned/test challenge workflows.
+- PAIN: challenge handling blocks a workflow when submission, solving, polling, and result retrieval are fragmented or opaque.
+- BASIC_INTRO: Ace Data Cloud exposes an auditable asynchronous create→solve→result lifecycle across supported challenge families.
+- HERO_CASES: synthetic image2text timer from create to result; owned test challenge moving through leased/solved/retrieved states.
+- UNIQUE_ADVANTAGES: one lifecycle; explicit task state; auditable result retrieval without blocking the caller.
+- PRICE_SCENARIOS: quote the exact owned/test recognition endpoint payload; task polling is shown as free only when the live rule proves zero.
+- HOOKS: `A blocked workflow should not become a blind workflow.`; `Create. Solve. Retrieve. Keep the caller moving.`
+- CTA: `EXPLORE CAPTCHA APIS` → `platform.acedata.cloud`.
+- TONE: urgent operations problem→fast timer resolution→calm auditable close; never celebratory bypass language.
+- FORBIDDEN_GENERIC_CASES: third-party bypass framing; credential collection; fake token; feature matrix with no real task lifecycle.
 - DEMOS:
   - `captcha-image2text`: use a synthetic/local numeric challenge, submit it, and show the real recognized result.
   - `captcha-task-lifecycle`: show create→lease/solve→task retrieve→result from a safe owned/test challenge.
@@ -121,6 +216,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `Maestro AI video production review remix edit extend`
 - MCP: Maestro
 - PROMISE: one brief becomes a reviewed, narrated, branded final production—not merely one generated clip.
+- AUDIENCE: marketing and product teams coordinating script, assets, voice, editing, review, and delivery.
+- PAIN: a product video stalls across disconnected script, asset, voice, editing, and review tools before anyone gets a finished film.
+- BASIC_INTRO: Maestro turns one production brief into script, assets, narration, composition, independent review, and a delivered video project.
+- HERO_CASES: fragmented script, assets, voice, review, and final film steps collapse into one real delivered production; initial review blockers→one refinement→confirmed final bytes.
+- UNIQUE_ADVANTAGES: complete production pipeline; built-in independent review; editable/reusable project and final deliverables.
+- PRICE_SCENARIOS: quote the exact quality+duration+aspect+language request; show actual delivered-duration billing and failed-task zero charge only when live rules/docs verify it.
+- HOOKS: `A brief is not a video. Five disconnected tools are not a workflow.`; `Script, assets, voice, review, final film—one production brief.`
+- CTA: `CREATE WITH MAESTRO` → `studio.acedata.cloud`.
+- TONE: controlled overwhelm→rapid workflow collapse→emotional final-film payoff→confident offer.
+- FORBIDDEN_GENERIC_CASES: self-referential process cards with no final film; proof checklist as the whole story; recursive Maestro production.
 - DEMOS:
   - `maestro-brief-to-film`: show a real brief→asset manifest→composition→visual review→final MP4 chain.
   - `maestro-review-refine`: show real initial review blockers, one concentrated refinement, confirmation review, and exact-byte delivery.
@@ -137,6 +242,16 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 - DOC_QUERY: `Ace Data Cloud services models unified API documentation`
 - MCP: AceDataCloud
 - PROMISE: developers discover and call a broad catalog through consistent authentication, docs, task, and billing conventions.
+- AUDIENCE: developers integrating multiple AI modalities without maintaining separate credentials, SDKs, and billing systems.
+- PAIN: every new model adds another credential, request shape, polling loop, SDK, and bill to maintain.
+- BASIC_INTRO: Ace Data Cloud gives developers one token, one catalog, consistent task patterns, unified billing, and official SDK workflows across modalities.
+- HERO_CASES: one token drives a real image→video→chat workflow; fragmented integration cards collapse into one SDK path and delivered results.
+- UNIQUE_ADVANTAGES: one authentication layer; discoverable live catalog; consistent SDK/task/billing conventions.
+- PRICE_SCENARIOS: quote each showcased call from its real response or use `See live pricing`; never collapse unlike modalities into a fake single flat price.
+- HOOKS: `Every new model should not add another integration project.`; `One token. One catalog. Build across modalities.`
+- CTA: `EXPLORE THE API CATALOG` → `platform.acedata.cloud/models`.
+- TONE: developer overwhelm→clean consolidation→fast multi-modal result→confident platform CTA.
+- FORBIDDEN_GENERIC_CASES: pure catalog-card walkthrough; unsupported model counts; generic architecture diagram with no real calls/results.
 - DEMOS:
   - `platform-live-catalog`: query real services/models/docs, then spotlight three different modalities with live cards and public API paths.
   - `platform-one-token-workflow`: explain one safe credential pattern across chat/image/video/search without showing private values.

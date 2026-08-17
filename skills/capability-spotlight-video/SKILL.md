@@ -22,7 +22,7 @@ Read before acting:
 
 Load the AceDataCloud MCP and verify candidates with the public catalog—not memory:
 
-1. `acedatacloud_list_services` / `acedatacloud_get_service`
+1. `acedatacloud_list_services(private=false, limit=300)` / `acedatacloud_get_service` — enumerate the complete current public service catalog, not a hand-maintained shortlist;
 2. `acedatacloud_list_apis` / `acedatacloud_get_api_spec`
 3. `acedatacloud_search_docs` / `acedatacloud_get_doc`
 4. `acedatacloud_list_model_catalog` when the topic names a model
@@ -37,20 +37,42 @@ Extract the last 12 runs' fields:
 
 `FAMILY_ID TOPIC_ID DEMO_ID STYLE_ID LAYOUT_ID PALETTE_ID VOICE_ID ASSET_HASHES EXECUTED_APIS EVIDENCE_URLS`
 
-Select from the topic registry using these rules:
+Do not select from the registry as a closed menu: its anchors are examples, not an allowlist. Build at least one candidate in each mode before choosing:
 
-- no `TOPIC_ID` from the last 8 runs;
-- no `DEMO_ID` from the last 12 runs;
-- a family may appear at most once in the last 3 runs;
-- avoid the last 4 `STYLE_ID` and `LAYOUT_ID`, last 3 `PALETTE_ID` and `VOICE_ID`;
+1. **Single Capability** — one service/model, one distinctive hero result;
+2. **Workflow Campaign** — 2–4 services that produce one visible buyer outcome;
+3. **Platform Story** — unified auth, catalog, SDK, tasks, billing, Agent, or automation proved by real calls/results.
+
+Score every candidate on live truth, unique sales value, hero evidence, executable authorization, compatible assets, price evidence, and recent-history diversity. The highest-scoring eligible candidate wins; do not default to Image or to the easiest service.
+
+Apply these exclusions:
+
+- no `TOPIC_ID` from the last 8 runs for a single-capability episode;
+- no `DEMO_ID` or `HERO_CASE_ID` from the last 12 runs;
+- no recent 6 `WORKFLOW_ID` repeats;
+- avoid the recent 4 `CAMPAIGN_MODE`, `HOOK_ID`, and climax grammar;
+- avoid the last 3 voice families and palettes;
+- the same service may return only with a different buyer, job, hero, and offer;
 - derive a reproducible tiebreaker from `{{date_iso}}:{{run_count}}`; do not use unconstrained randomness;
-- stop when history or live evidence is unavailable—never fall back to a generic image showcase.
+- stop when history, authorization, live pricing, or hero evidence is unavailable—never fall back to a generic showcase.
 
-Write the selected IDs before generating anything.
+Write the selected campaign mode and all marker IDs before generating anything.
 
-## 3. Prove the unique advantage
+## 3. Build and prove the capability graph
 
-Load only the selected capability's MCP/Skill. Execute one registry hero recipe and inspect its full-resolution result.
+For a workflow candidate, build a small runtime capability graph before calling any generation tool.
+
+**Node contract:** service/model, input modality, output modality, sync/async lifecycle, poll API, supported reference roles, authorized MCP/Skill, price payload, and accepted asset.
+
+**Edge contract:** connect nodes only when an actual output can legally become the next input. Prove every edge from an OpenAPI input/output field or an already executed request. Valid patterns include public image URL→image edit/reference video, public video URL→remix/caption/Maestro, text/research→brief/script/voice, audio URL→reference-audio video/production, and tool trace→artifact/automation evidence. Never connect services because their names merely sound compatible.
+
+A workflow uses **2–4 services** and sells one final outcome, not a logo parade. Each step must contribute to the same hero result and carry request/task/result evidence. A platform story needs at least two real cross-modal calls/results; a catalog card alone is not a hero.
+
+aichat2 supports dynamic `load_mcp_server`, but unattended authorization is bounded. Load only the selected **2–4 MCP servers** from the current authorized pool; do not preload every schema or claim an unconnected service executed. A service outside the execution pool is eligible only when a real accepted public artifact already exists and its provenance is explicit.
+
+## 4. Prove the unique advantage
+
+Load only the selected capability MCPs/Skills. Execute or reuse the selected hero recipe and inspect every final asset at full resolution.
 
 The result must prove the topic's distinctive value from pixels, motion, UI, or a real task trace:
 
@@ -74,16 +96,77 @@ Before creating generated hero media, the first capability-specific tool call MU
 
 After submission, follow the MCP's returned poll interval and poll until terminal. Do not poll once and give up. For activation tests, reserve up to two minutes (for example eight 15-second polls) for hero evidence. If it is still pending after that lease, record one `ADC-SPOTLIGHT-SOURCE:v1` draft artifact containing the provider task ID, IDs/fingerprint, and no completion claim; end without Maestro. The next run must resume that task. A completed source-prep run does not count as a published Spotlight episode or consume its topic/demo diversity slot.
 
-## 4. Choose a distinct creative system
+## 4. Write the sales blueprint before Maestro
+
+This is a **product sales video**, not an API walkthrough or an internal evidence reel. Before loading Maestro, write the complete human-readable plan below. Do not call Maestro until the complete blueprint passes the preflight at the end of this section.
+
+```text
+SPOTLIGHT-SALES-BLUEPRINT:v2
+CAMPAIGN_MODE: single | workflow | platform
+PRODUCTS: <1–4 service/model ids>
+FINAL_OUTCOME: <one thing the buyer gets>
+AUDIENCE: <specific buyer in a specific work context>
+ONE-LINE VALUE: <the outcome they are buying>
+PAIN: <one concrete current frustration>
+HOOK: <the first spoken and on-screen line>
+BASIC_INTRO: <what it is, for whom, and the outcome>
+HERO CASE: <one real representative accepted example>
+UNIQUE ADVANTAGE: <the visibly provable reason to choose this capability/workflow/platform>
+WORKFLOW: <ordered service/input/output/evidence edges, or N/A>
+PRICE: <real quote(s), unit, source, request payload, and verification time>
+OFFER: <what is easy or valuable about starting now>
+CTA: <action plus destination>
+TONE: <emotional arc>
+VOICE: <voice id plus performance direction>
+```
+
+Then write a scene-by-scene storyboard. Every scene includes its time range, sales purpose, exact asset role/URL, on-screen copy, verbatim narration, transition/pacing, and the claim its pixels prove.
+
+Use this 30-second persuasion sequence:
+
+- **0–3 seconds — Hook:** Ace Data Cloud is visible immediately while a concrete pain, desire, or striking real result earns attention. Never use a slow logo intro or open by reading the product name.
+- **3–7 seconds — Basic introduction:** one sentence says what the product is, who it is for, and the outcome it creates. Do not read a feature menu.
+- **7–17 seconds — Hero case:** the real accepted output dominates the frame and creates the visual climax. Show input→result, ordinary→distinctive, or blocked→completed according to the topic playbook.
+- **17–22 seconds — Three advantages:** at most three short, concrete benefits supported by the hero pixels or real workflow.
+- **22–26 seconds — Integration and price:** show one minimal call or one-token workflow plus one understandable live price anchor.
+- **26–30 seconds — Offer and CTA:** give a specific action and destination; the voice finishes with an action verb rather than reading URLs.
+
+The complete narration is **65–80 English words**, written before submission. Use short sentences, pauses, and emphasis. Its emotional arc is pain/recognition → discovery → excited reveal → confident price → decisive action. Never say `accepted output`, `decoded-pixel proof`, `evidence bundle`, or other internal review language in customer-facing copy. Do not stretch neutral documentation prose across the runtime.
+
+Map every supplied URL so Maestro never guesses:
+
+```text
+ASSET 1 — PAIN / BEFORE — <real URL, or explicitly AUTHOR-RENDERED PAIN with no fake product/UI claim>
+ASSET 2 — HERO ACCEPTED OUTPUT — <mandatory accepted URL and why it proves the advantage>
+ASSET 3 — DETAIL / COMPARISON — <real URL or declared decoded derivative with exact crop/state>
+```
+
+Pricing is evidence, not ad-lib copy. Prefer the actual hero call's returned Credit cost. Otherwise evaluate the topic's explicit `PRICE_SCENARIOS` payload against live pricing. Convert Credits to USD only when the current package rate is available and recorded in the blueprint. If a dynamic price cannot be evaluated, display Credits or `See live pricing`; never guess dollars, a discount, or a competitor comparison.
+
+Preflight all nine questions before loading Maestro:
+
+1. Does the first line create a concrete pain or desire within three seconds?
+2. Does one sentence explain the product, buyer, and outcome?
+3. Is the hero case distinctive to this service rather than generically attractive?
+4. Is there one visible climax that works without narration?
+5. Are all three advantages demonstrated by this case?
+6. Is the price real, current, understandable, and bound to the demo request?
+7. Does the CTA say what to do and where?
+8. Does the narration sound like a sales performance rather than documentation?
+9. Are hook, case, pacing, and voice visibly different from recent episodes?
+
+If any answer is no, revise the blueprint before Maestro. **No real hero evidence means no Maestro submission.** Include the complete blueprint in the Maestro production brief and in the draft artifact metadata so the episode is auditable before asynchronous rendering.
+
+## 5. Choose a distinct creative system
 
 Choose compatible IDs from the registry and recent-history exclusions.
 
 Voice families:
 
-- high-energy launch: `energetic-male`, `bright-female`
-- technical explainer: `clean-female`, `calm-male`
-- brand story/case study: `storyteller-male`, `warm-female`
-- benchmark/news: `anchor-female`, `deep-male`
+- high-energy launch: `energetic-male`, `bright-female` — urgent hook, visible smile on reveal, decisive CTA;
+- premium product desire: `storyteller-male`, `warm-female` — intimate pain, sensory reveal, confident offer;
+- technical confidence: `clean-female`, `calm-male`, `anchor-female` — crisp mechanism, energized hero, slower price;
+- benchmark/news: `anchor-female`, `deep-male` — use only when a verified metric is the hook, never as the default documentary cadence.
 
 Styles: `editorial`, `swiss`, `industrial`, `luxury`, `vibrant`, `retro`, `futuristic`.
 
@@ -93,18 +176,21 @@ Preserve source-media palettes. Brand consistency comes from the approved lockup
 
 Generate narration only through Maestro's brokered Fish override. Verify the complete transcript, seven scene beats, final spoken CTA, proper-noun pronunciation, natural pace, and no missing tail. Do not stretch narration merely to fill runtime.
 
-## 5. Build the production kit
+## 6. Build the production kit
 
 Use the brand kit exactly. The first decoded frame names Ace Data Cloud and the capability. The final frame returns to the lockup and approved URLs.
 
 The kit sent to Maestro contains:
 
 - live facts and source URLs;
+- for workflow mode, every ordered step's service, input, output, API/task ID, accepted URL, and the OpenAPI/request proof for each edge;
+- for platform mode, at least two real cross-modal calls/results rather than catalog-only cards;
 - selected IDs and recent-history exclusions;
 - canonical brand source and authored wordmark rules;
 - exact evidence assets with service→asset mapping;
 - evidence-only request plus display request;
-- one clear viewer promise, scene plan, narration, voice/style/layout IDs;
+- the complete `SPOTLIGHT-SALES-BLUEPRINT:v2`, including hook, pain, basic introduction, hero case, three advantages, price proof, offer, CTA, storyboard, and verbatim narration;
+- one clear viewer promise plus voice performance/style/layout IDs;
 - explicit forbidden defects;
 - a unique UUID task ID, used for exactly one Maestro submission.
 
@@ -118,7 +204,7 @@ Record the accepted Maestro task as a draft. The artifact **summary itself** mus
 
 Follow the marker with live docs/API references and service→asset mapping. The outer Producer must then end; it must not poll Maestro. Artifact recording is part of submission, not a post-production step.
 
-## 6. Time-boxed review and delivery
+## 7. Time-boxed review and delivery
 
 Use exactly 14 evidence frames from the final MP4: extract decoded frame 0 explicitly at `-ss 0`, scene midpoints, and one frame after every transition. Build one contact sheet and read each full-size frame once. Frame 0 must already show the complete approved lockup and topic without relying on an entrance animation. Every sampled midpoint and boundary must contain sharp, meaningful scene content—no black/near-black gap, blurred placeholder, empty panel, or source-loading frame.
 
