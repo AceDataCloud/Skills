@@ -155,7 +155,7 @@ Preflight all nine questions before loading Maestro:
 8. Does the narration sound like a sales performance rather than documentation?
 9. Are hook, case, pacing, and voice visibly different from recent episodes?
 
-If any answer is no, revise the blueprint before Maestro. **No real hero evidence means no Maestro submission.** Include the complete blueprint in the Maestro production brief and in the draft artifact metadata so the episode is auditable before asynchronous rendering.
+If any answer is no, revise the blueprint before Maestro. **No real hero evidence means no Maestro submission.** The exact Maestro prompt must begin with `ADC-SPOTLIGHT:v1` as its first line, with no title, explanation, or Markdown fence before it. Put the complete blueprint verbatim from the second line onward, and include it in the draft artifact metadata so the episode is auditable before asynchronous rendering.
 
 ## 5. Choose a distinct creative system
 
