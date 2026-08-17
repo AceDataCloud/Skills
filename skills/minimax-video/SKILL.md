@@ -12,7 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authenticati
 
 Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/videos`. Use the V2 multimodal `content` array to supply the prompt and optional reference media.
 
-> **Setup:** See [authentication](../_shared/authentication.md). Creation is always asynchronous: save the returned `task_id`, then use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`.
+> **Setup:** See [authentication](../_shared/authentication.md). The HTTP API waits for the final result by default. Agents and MCP clients should send `"async": true`, save the returned `task_id`, then use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`. MiniMax MCP generation tools expose `async` and default it to `true`.
 
 ## Contract
 
@@ -23,7 +23,8 @@ Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/vi
 | `resolution` | `768P`, `2K` | required |
 | `duration` | integer 4–15 | required |
 | `ratio` | `adaptive`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | omitted |
-| `callback_url` | public HTTP(S) webhook | omitted |
+| `async` | `true`, `false` | `false` at the HTTP API; `true` in MiniMax MCP tools |
+| `callback_url` | public HTTP(S) webhook; also enables async mode | omitted |
 
 Each `content` item has a `type` of `text`, `image_url`, `video_url`, or `audio_url`; set the matching field to the text or public URL. Media items use a `role`:
 
@@ -53,7 +54,8 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
     ],
     "resolution": "768P",
     "ratio": "16:9",
-    "duration": 4
+    "duration": 4,
+    "async": true
   }'
 ```
 
@@ -80,7 +82,8 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
   ],
   "resolution": "768P",
   "ratio": "9:16",
-  "duration": 8
+  "duration": 8,
+  "async": true
 }
 ```
 
@@ -107,7 +110,8 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
   ],
   "resolution": "768P",
   "ratio": "9:16",
-  "duration": 8
+  "duration": 8,
+  "async": true
 }
 ```
 
