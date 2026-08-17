@@ -117,7 +117,7 @@ Every topic block must keep this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `
 
 - FAMILY: ai-video-production
 - SERVICE: maestro
-- APIS: `/maestro/videos`, `/maestro/tasks`, `/maestro/estimates`
+- APIS: `/maestro/videos`, `/maestro/tasks`
 - DOC_QUERY: `Maestro AI video production review remix edit extend`
 - MCP: Maestro
 - PROMISE: one brief becomes a reviewed, narrated, branded final production—not merely one generated clip.
