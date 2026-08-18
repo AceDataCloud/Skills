@@ -26,10 +26,13 @@ def test_skill_declares_runtime_and_series_evidence_contract() -> None:
         "FAMILY_ID",
         "TOPIC_ID",
         "DEMO_ID",
-        "STYLE_ID",
-        "LAYOUT_ID",
+        "FILM_ARCHETYPE",
+        "VISUAL_WORLD",
+        "SHOT_GRAMMAR",
+        "RHYTHM_PATTERN",
         "PALETTE_ID",
         "VOICE_ID",
+        "SOUND_WORLD",
         "ASSET_HASHES",
         "EXECUTED_APIS",
         "EVIDENCE_URLS",
@@ -37,16 +40,16 @@ def test_skill_declares_runtime_and_series_evidence_contract() -> None:
         assert key in body
     assert "ADC-SPOTLIGHT:v1" in body
     assert "unconstrained randomness" in body
-    assert "one primary capability" in body
-    assert "Async hero evidence" in body
-    assert "first capability-specific tool call MUST be that provider's" in body
+    assert "one **premium, product-specific sales film**" in body
+    assert "## 4. Reuse tasks before spending" in body
+    assert "first capability-specific call MUST be the provider's" in body
     assert "list_tasks" in body or "batch-list" in body
     assert "24-hour" in body
-    assert "Do not call generate/create before this lookup" in body
-    assert "reuse a matching completed task" in body
-    assert "do not call generate/create" in body
+    assert "Do not generate before this lookup" in body
+    assert "reuse a matching completed request" in body
+    assert "accepted public URL" in body
     assert "resume a matching pending task by ID" in body
-    assert "Do not poll once and give up" in body
+    assert "Poll according to the returned interval until terminal" in body
     assert "eight 15-second polls" in body
     assert "ADC-SPOTLIGHT-SOURCE:v1" in body
 
@@ -124,70 +127,55 @@ def test_registry_demonstrates_unique_capability_strengths() -> None:
     assert "video is mandatory evidence" in body
 
 
-def test_skill_rotates_voice_style_layout_and_keeps_review_bounded() -> None:
+def test_skill_rotates_creative_genome_and_keeps_review_bounded() -> None:
     body = text(SKILL)
-    for voice in ("energetic-male", "bright-female", "clean-female", "calm-male", "storyteller-male", "warm-female", "anchor-female", "deep-male"):
-        assert voice in body
-    assert "last 3 voice families and palettes" in body
-    assert "14 evidence frames" in body
-    assert "one concentrated same-project refinement" in body
-    assert "Never restart production routing" in body
-    assert "output/result.json" in body
-    assert "30-second Standard draft" in body
-    assert "may reduce only duration and SKU" in body
-    assert "MUST still use a real accepted capability output" in body
-    assert "Never disable inner review" in body
-    assert "actual accepted output URL/MP4" in body
-    assert 'extract decoded frame 0 explicitly at `-ss 0`' in body
-    assert "no black/near-black gap" in body
-    assert "summary itself" in body
-    assert "putting IDs only in tags does not satisfy" in body
-    assert "before any further inspection, waiting, polling, or narration" in body
-    assert "{'code': 'task_already_exists', 'task_id': '<same UUID>'}" in body
-    assert "do not generate another UUID" in body
-    assert "do not call `maestro_create_video` again" in body
-    assert "next and only allowed tool call is `publish_artifact`" in body
-    assert "The outer Producer must then end" in body
-    assert "sandbox-root-qualified project paths" in body
-    assert "Verify the manifest/contact sheet exists" in body
+    for archetype in (
+        "brand anthem",
+        "product reveal",
+        "workflow transformation",
+        "launch trailer",
+        "kinetic manifesto",
+        "cinematic UI demo",
+        "multi-modal montage",
+        "visual poem",
+    ):
+        assert archetype in body
+    assert "recent 3 transition-system, voice-family, sound-world, or palette-family" in body
+    assert "one concentrated pass" in body
     assert 'actual `Skill` call with `skill="visual-review"`' in body
-    assert "second actual `Skill` call" in body
-    assert "mandatory even when the initial review finds no blockers" in body
+    assert "second actual confirmation call" in body
+    assert "output/result.json" not in body  # worker-owned detail is not part of the outer planner
+    assert "before waiting or polling" in body
+    assert "task_already_exists" in body
+    assert "do not generate another UUID or resubmit" in body
+    assert "outer task ends after `recorded=true`" in body
 
 
 def test_skill_requires_sales_blueprint_before_maestro() -> None:
     body = text(SKILL)
-    assert "SPOTLIGHT-SALES-BLUEPRINT:v2" in body
+    assert "ACE-DATA-CLOUD-SALES-BLUEPRINT:v3" in body
     for field in (
         "CAMPAIGN_MODE",
         "PRODUCTS",
         "FINAL_OUTCOME",
         "AUDIENCE",
-        "ONE-LINE VALUE",
         "PAIN",
-        "HOOK",
-        "HERO CASE",
-        "UNIQUE ADVANTAGE",
+        "PROMISE",
+        "HERO_CASE",
+        "UNIQUE_ADVANTAGE",
+        "WORKFLOW",
         "PRICE",
         "OFFER",
         "CTA",
-        "TONE",
-        "VOICE",
+        "MATERIAL_MIX",
+        "QUALITY_GATES",
     ):
-        assert f"{field}:" in body
-    assert "Do not call Maestro until the complete blueprint passes" in body
-    assert "0–3 seconds" in body and "3–7 seconds" in body
-    assert "7–17 seconds" in body and "17–22 seconds" in body
-    assert "22–26 seconds" in body and "26–30 seconds" in body
-    assert "65–80 English words" in body
-    assert "accepted output" in body
-    assert "decoded-pixel proof" in body
-    assert "internal review language" in body
-    assert "ASSET 1 — PAIN / BEFORE" in body
-    assert "ASSET 2 — HERO ACCEPTED OUTPUT" in body
-    assert "ASSET 3 — DETAIL / COMPARISON" in body
-    assert "dynamic price cannot be evaluated" in body
-    assert "See live pricing" in body
+        assert field in body
+    assert "Before Maestro, write" in body
+    assert "fixed six-scene or fixed timestamp storyboard" in body
+    assert "who buys, what changes, why this product is distinctive" in body
+    assert "Integration/price appears only when it advances the sale" in body
+    assert "never place labels such as `accepted output`, `decoded proof`" in body
 
 
 def test_every_topic_has_a_service_specific_sales_playbook() -> None:
@@ -233,24 +221,20 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "Single Capability" in body
     assert "Workflow Campaign" in body
     assert "Platform Story" in body
-    assert "at least one candidate in each mode" in body
-    assert "SPOTLIGHT-SALES-BLUEPRINT:v2" in body
-    for field in ("CAMPAIGN_MODE", "PRODUCTS", "FINAL_OUTCOME", "BASIC_INTRO", "WORKFLOW"):
-        assert f"{field}:" in body
-    assert "capability graph" in body
+    assert "at least one eligible candidate in every mode" in body
+    assert "ACE-DATA-CLOUD-SALES-BLUEPRINT:v3" in body
+    assert "runtime capability graph" in body
     assert "Node contract" in body
     assert "Edge contract" in body
     assert "2–4 services" in body
-    assert "OpenAPI" in body and "input/output" in body
+    assert "proved by OpenAPI or an executed request" in body
     assert "examples, not an allowlist" in body
-    assert "recent 6 `WORKFLOW_ID`" in body
-    assert "recent 4 `CAMPAIGN_MODE`, `HOOK_ID`, and climax grammar" in body
-    assert "dynamic `load_mcp_server`" in body
-    assert "2–4 MCP servers" in body
-    assert "No real hero evidence" in body
-    assert "exact Maestro prompt must begin with `ADC-SPOTLIGHT:v1` as its first line" in body
-    assert "no title, explanation, or Markdown fence before it" in body
-    assert "complete blueprint verbatim from the second line onward" in body
+    assert "recent 6 `FILM_ARCHETYPE`" in body
+    assert "recent 4 campaign-mode, climax-device, or rhythm-pattern" in body
+    assert "selected 2–4 MCP servers" in body
+    assert "real hero evidence" in body
+    assert "It MUST NOT contain `ADC-SPOTLIGHT:v1`" in body
+    assert "artifact summary—not the Maestro prompt" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
@@ -280,3 +264,91 @@ def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
         "actual_api_key",
     ):
         assert forbidden not in combined
+
+
+def test_v4_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
+    body = text(SKILL)
+    assert 'metadata:\n  author: acedatacloud\n  version: "4.0"' in body
+    assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
+    assert 'route to `/general-video`' in body
+    assert '`scenario=auto`, `quality=pro`' in body
+    assert 'never use `spotlight_prepare.py`, `spotlight_renderer.py`' in body
+    assert 'MUST NOT contain `ADC-SPOTLIGHT:v1`' in body
+    assert 'artifact summary—not the Maestro prompt—begins' in body
+    assert '`ADC-SPOTLIGHT:v1 | BLUEPRINT=v3' in body
+
+
+def test_v4_uses_freeform_blueprint_and_structural_creative_genome() -> None:
+    body = text(SKILL)
+    assert 'ACE-DATA-CLOUD-SALES-BLUEPRINT:v3' in body
+    for field in (
+        'FILM_ARCHETYPE',
+        'VISUAL_WORLD',
+        'SHOT_GRAMMAR',
+        'RHYTHM_PATTERN',
+        'OPENING_DEVICE',
+        'CLIMAX_DEVICE',
+        'TRANSITION_SYSTEM',
+        'BRAND_BEHAVIOR',
+        'SOUND_WORLD',
+        'MATERIAL_MIX',
+    ):
+        assert field in body
+    assert 'Do **not** write a fixed six-scene or fixed timestamp storyboard' in body
+    for obsolete in ('0–3 seconds', '3–7 seconds', '7–17 seconds', '17–22 seconds', '22–26 seconds', '26–30 seconds'):
+        assert obsolete not in body
+    assert 'creative distance' in body
+    assert 'palette or labels' in body
+    assert 'generic cyan dashboard' in body
+
+
+def test_v4_requires_rich_materials_by_campaign_mode() -> None:
+    body = text(SKILL)
+    assert 'Require at least four useful visual roles' in body
+    assert 'Require 5–8 roles covering 2–4 real stages' in body
+    assert 'at least three distinct modalities or product surfaces and three real results' in body
+    assert 'catalog-only slideshow is forbidden' in body
+    assert 'One unchanged still may not be stretched through the film' in body
+    assert 'audio-reactive visual world' in body
+    assert 'never fake chat bubbles' in body
+
+
+def test_v4_general_video_professional_director_contract() -> None:
+    body = text(SKILL)
+    for phrase in (
+        'house-style.md',
+        'video-composition.md',
+        'one-sentence concept angle',
+        'embedded font pairing',
+        'foreground-density plan',
+        'prompt expansion',
+        'modular sub-compositions',
+        'Fish narration timing',
+        'actual `Skill` call with `skill="visual-review"`',
+        'second actual confirmation call',
+    ):
+        assert phrase in body
+    assert 'Formal production uses **Pro**, never Standard' in body
+    assert 'Reviewer receives the Blueprint, Creative Genome' in body
+
+
+def test_anchor_topics_supply_multiple_creative_opportunities() -> None:
+    for block in topic_blocks():
+        for marker in (
+            '- VISUAL_WORLDS:',
+            '- FILM_ARCHETYPES:',
+            '- MATERIAL_OPPORTUNITIES:',
+            '- FORBIDDEN_REPETITION:',
+        ):
+            assert marker in block, (block.splitlines()[0], marker)
+    body = text(TOPICS)
+    assert 'Creative opportunity fields' in body
+    assert 'palette or voice swap alone never counts' in body
+
+
+def test_brand_identity_is_stable_but_behavior_must_rotate() -> None:
+    body = text(BRAND)
+    assert 'Identity stays fixed; brand behavior rotates' in body
+    assert 'energy rail, mask edge, registration grid, spatial portal' in body
+    assert 'Do not repeat the same brand entrance' in body
+    assert 'Brand consistency is identity and craft—not template sameness' in body

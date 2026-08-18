@@ -48,3 +48,15 @@ At frame 0 and CTA verify:
 4. gap and clear space are balanced at full resolution;
 5. neither element is stretched, cropped, blurred, or inside a source rectangle;
 6. the lockup is readable before any entrance animation; decoded frame 0 is authoritative.
+
+## Identity stays fixed; brand behavior rotates
+
+The canonical symbol crop, authored `ACE DATA CLOUD`, clear space, and public URLs never change. The way the identity behaves in motion MUST change with the Creative Genome:
+
+- it may become an energy rail, mask edge, registration grid, spatial portal, light source, typographic cadence, object transition, or audio sting;
+- it may live on a sourced palette rather than forcing every scene to cyan/navy;
+- frame 0 needs immediate brand/product desire, but not a repeated static logo card;
+- the middle may use an active brand system rather than a tiny corner watermark;
+- CTA composition must fit this film's archetype, not reuse the same centered button every episode.
+
+Do not repeat the same brand entrance, corner placement, cyan frame, logo scale, CTA layout, or sound sting from the recent three films. Brand consistency is identity and craft—not template sameness.
