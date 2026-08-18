@@ -69,13 +69,14 @@ POST /flux/images
   "prompt": "change the background to a beach sunset",
   "action": "edit",
   "image_url": "https://example.com/photo.jpg",
-  "model": "flux-kontext-pro"
+  "model": "flux-kontext-pro",
+  "size": "16:9"
 }
 ```
 
 ## Gotchas
 
-- Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro/flux-2 models, aspect ratios (e.g., `"16:9"`) with kontext models
+- `size` is required; use pixel dimensions (e.g., `"1024x1024"`) with dev/pro/flux-2 models and aspect ratios (e.g., `"16:9"`) with kontext models
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
