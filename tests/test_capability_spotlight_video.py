@@ -352,3 +352,31 @@ def test_brand_identity_is_stable_but_behavior_must_rotate() -> None:
     assert 'energy rail, mask edge, registration grid, spatial portal' in body
     assert 'Do not repeat the same brand entrance' in body
     assert 'Brand consistency is identity and craft—not template sameness' in body
+
+
+
+def test_preview_phase_gate_forbids_production_actions() -> None:
+    body = text(SKILL)
+    assert "Phase gate — preview means planning only" in body
+    assert "never attempt to load Maestro" in body
+    assert "never generate media, call `publish_artifact`" in body
+    assert "text-only future handoff contract" in body
+    assert "They are not actions for the preview run" in body
+
+
+def test_run_count_enforces_eight_breadth_lanes() -> None:
+    body = text(SKILL)
+    assert "((run_count - 1) mod 8) + 1" in body
+    for lane in (
+        "image craft / typography / edit fidelity",
+        "cross-service workflow transformation",
+        "video / motion / reference control",
+        "Agent / MCP / artifact / scheduled lifecycle",
+        "audio / music / voice with an audio-reactive world",
+        "search / extraction / structured-data outcome",
+        "platform brand anthem with three real surfaces/modalities",
+        "deployment / bot / operational lifecycle",
+    ):
+        assert lane in body
+    assert "LANE_BLOCKED=<reason>" in body
+    assert "Never silently collapse back to image" in body
