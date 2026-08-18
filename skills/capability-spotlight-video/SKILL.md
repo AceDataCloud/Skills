@@ -18,6 +18,18 @@ Read first:
 - [brand kit](references/brand-kit.md)
 - [topic registry](references/topic-registry.md)
 
+## Phase gate — preview means planning only
+
+When the caller says `preview-only`, this rule overrides every later production section:
+
+- load only this Skill and the explicitly allowed AceDataCloud discovery MCP;
+- query catalog/docs/OpenAPI/pricing only;
+- never attempt to load Maestro or any capability/media-generation MCP;
+- never generate media, call `publish_artifact`, or start a production task;
+- output the three candidates, selected Blueprint, Creative History marker, completion marker, and a **text-only future handoff contract**, then stop.
+
+The production sections below describe what a separately authorized future task must do. They are not actions for the preview run.
+
 ## 1. Discover live truth
 
 Load the AceDataCloud MCP and verify candidates from live public sources:
@@ -51,6 +63,19 @@ Score live truth, sales specificity, hero strength, authorization, price proof, 
 - no recent 4 campaign-mode, climax-device, or rhythm-pattern repeat;
 - no recent 3 transition-system, voice-family, sound-world, or palette-family repeat;
 - a returning service must change at least four of buyer, job, hero, archetype, visual world, and offer.
+
+Use `run_count` to select one mandatory breadth lane before candidate scoring (`((run_count - 1) mod 8) + 1`). At least one candidate must be eligible for that lane, and the selected candidate must come from it unless live truth/material evidence makes the whole lane ineligible:
+
+1. image craft / typography / edit fidelity;
+2. cross-service workflow transformation;
+3. video / motion / reference control;
+4. Agent / MCP / artifact / scheduled lifecycle;
+5. audio / music / voice with an audio-reactive world;
+6. search / extraction / structured-data outcome;
+7. platform brand anthem with three real surfaces/modalities;
+8. deployment / bot / operational lifecycle with sanitized real status evidence.
+
+If the mandatory lane is ineligible, record `LANE_BLOCKED=<reason>` in Creative History and choose the highest-scoring candidate from the least-recent eligible family. Never silently collapse back to image. The recent-history exclusions still apply inside each lane.
 
 Use `date_iso:run_count` only as a deterministic tiebreaker; do not use unconstrained randomness. `creative_policy` influences scoring but never becomes a fixed shot template:
 
