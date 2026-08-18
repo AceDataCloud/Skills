@@ -27,6 +27,17 @@ For workflow mode, prove every service edge from OpenAPI fields or an executed r
 
 Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`, `DOC_QUERY`, `MCP`, `PROMISE`, sales fields, `DEMOS`, `EVIDENCE`, `CREATIVE`, `LIMITS`.
 
+## Creative opportunity fields
+
+Every anchor below supplies product truth and sales angles, not a fixed film template. At planning time derive and record:
+
+- `VISUAL_WORLDS`: at least two product-derived worlds;
+- `FILM_ARCHETYPES`: at least two compatible structures;
+- `MATERIAL_OPPORTUNITIES`: real visual/audio/UI roles that can make the film rich;
+- `FORBIDDEN_REPETITION`: the recent visual grammar or lazy treatment that would make this topic feel generic.
+
+When a topic block has no explicit values, derive them from its promise, hero cases, evidence, and limits before eligibility scoring. A palette or voice swap alone never counts as a different creative treatment.
+
 ## TOPIC gpt-image-2-craft
 
 - FAMILY: ai-image
@@ -51,6 +62,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `gpt2-consistent-campaign`: edit one accepted hero into 2–3 placements while preserving product, typography, and brand geometry.
 - EVIDENCE: exact source(s), accepted full-resolution result, three-column before/after/change inventory, character/crop checklist, executed API path(s), accepted evidence URL(s), and authored API panel. `gpt2-faithful-composite` specifically requires `/openai/images/edits` in `EXECUTED_APIS` and its accepted output in `EVIDENCE_URLS`; the script, labels, and narration must all agree with the inventory.
 - CREATIVE: styles `editorial,vibrant,swiss`; layouts `kinetic-type,split-proof,comparison-field`; palettes must follow the chosen recipe; voices `energetic-male,bright-female,clean-female`.
+- VISUAL_WORLDS: editorial print lab; kinetic campaign wall.
+- FILM_ARCHETYPES: product reveal; kinetic manifesto; before/after case film.
+- MATERIAL_OPPORTUNITIES: full poster; type macro; source/edit comparison; campaign applications.
+- FORBIDDEN_REPETITION: generic prompt card→image→three proof labels.
 - LIMITS: maximum 3 image calls; typography failure gets one targeted replacement; never redraw the canonical logo.
 
 ## TOPIC nano-banana-consistency
@@ -76,6 +91,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `nano-character-continuity`: one non-real fictional character across four narrative beats with stable face, clothing, and proportions.
 - EVIDENCE: full 2×2 result; per-quadrant consistency matrix; exact request/result mapping.
 - CREATIVE: styles `editorial,warm,pastel`; layouts `comparison-field,full-bleed-case-study`; voices `warm-female,storyteller-male,clean-female`.
+- VISUAL_WORLDS: campaign world switcher; continuity control room.
+- FILM_ARCHETYPES: workflow transformation; multi-modal montage; before/after case film.
+- MATERIAL_OPPORTUNITIES: 2×2 consistency wall; subject crops; environment variants; edit lifecycle.
+- FORBIDDEN_REPETITION: four unrelated pretty images in a static grid.
 - LIMITS: reject if geometry or identity drifts; environments must differ visibly.
 
 ## TOPIC seedream-commercial-detail
@@ -101,6 +120,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `seedream-environmental-campaign`: a bright environmental product scene with useful copy space and precise material rendering.
 - EVIDENCE: full-resolution crop details plus full frame; exact model/size request.
 - CREATIVE: styles `luxury,warm,editorial`; layouts `full-bleed-case-study,split-proof`; voices `warm-female,calm-male,storyteller-male`.
+- VISUAL_WORLDS: tactile product atelier; luminous material gallery.
+- FILM_ARCHETYPES: product cinematic; luxury visual poem; sensorial reveal.
+- MATERIAL_OPPORTUNITIES: campaign full frame; macro crops; copy-space pan; material/light alternates.
+- FORBIDDEN_REPETITION: one still-life image stretched through the runtime.
 - LIMITS: do not reuse dark glass/prism studios; no fabricated brand marks.
 
 ## TOPIC minimax-h3-multimodal
@@ -127,6 +150,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `h3-cinematic-t2v`: a camera-specific text-to-video recipe with observable motion, not a static beauty shot.
 - EVIDENCE: actual input references, real accepted MP4, start/middle/end frames, request and task lifecycle.
 - CREATIVE: styles `cinematic,industrial,futuristic`; layouts `timeline,split-proof,full-bleed-case-study`; voices `energetic-male,deep-male,bright-female`.
+- VISUAL_WORLDS: cinematic transition chamber; performance stage.
+- FILM_ARCHETYPES: launch trailer; continuous-camera reveal; visual poem.
+- MATERIAL_OPPORTUNITIES: first frame; last frame; motion clip; reference audio/waveform; decoded beats.
+- FORBIDDEN_REPETITION: generic clip with no visible source→motion relationship.
 - LIMITS: one H3 generation plus one bounded replacement; video is mandatory evidence.
 
 ## TOPIC seedance-2-reference-control
@@ -154,6 +181,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `seedance-audio-reference`: pair a character image and safe reference audio; verify motion/audio result without identity claims about real people.
 - EVIDENCE: actual reference media at a provider-downloadable public HTTPS URL, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle. Remote video APIs must never receive `data:`, `blob:`, or local-file reference URLs; upload references first and verify HTTPS reachability.
 - CREATIVE: styles `cinematic,vibrant,futuristic`; layouts `timeline,comparison-field,full-bleed-case-study`; voices `bright-female,energetic-male,storyteller-male`.
+- VISUAL_WORLDS: camera-control launch bay; spatial UI world.
+- FILM_ARCHETYPES: cinematic UI demo; static→motion transformation; launch trailer.
+- MATERIAL_OPPORTUNITIES: approved reference; full motion clip; start/middle/end frames; structure comparison.
+- FORBIDDEN_REPETITION: replaying one five-second clip for most of the film.
 - LIMITS: never use private/celebrity identity; one generation plus one replacement; video required; reference media must be a public HTTPS URL and `return_last_frame` or other 2.5-only options require a Seedance 2.5 model.
 
 ## TOPIC acechat-agent-workspace
@@ -180,6 +211,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `acechat-realtime-workspace`: demonstrate the real realtime/voice connection and one supported tool interaction without fabricated UI.
 - EVIDENCE: faithful live UI capture, sanitized tool trace, public API/docs, real artifact or scheduled run metadata.
 - CREATIVE: styles `swiss,industrial,editorial`; layouts `ui-walkthrough,timeline,split-proof`; voices `clean-female,calm-male,anchor-female`.
+- VISUAL_WORLDS: living operations room; tool-to-artifact workspace.
+- FILM_ARCHETYPES: cinematic UI journey; workflow transformation; metric-to-human payoff.
+- MATERIAL_OPPORTUNITIES: real tool trace; artifact; schedule lifecycle; sanitized UI states.
+- FORBIDDEN_REPETITION: fake chat bubbles and feature-menu cards.
 - LIMITS: no account data, tokens, private memory, fake chat messages, or invented UI.
 
 ## TOPIC captcha-solving-lifecycle
@@ -206,6 +241,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `captcha-family-matrix`: compare hCaptcha/reCAPTCHA/Turnstile request shapes and one successful test result without targeting third-party accounts.
 - EVIDENCE: synthetic or owned challenge only, real task IDs redacted in public frames, terminal result, minimal request/lifecycle diagram.
 - CREATIVE: styles `industrial,swiss,futuristic`; layouts `timeline,comparison-field,ui-walkthrough`; voices `calm-male,clean-female,anchor-female`.
+- VISUAL_WORLDS: precision task relay; timed operations tunnel.
+- FILM_ARCHETYPES: precision-pulse explainer; blocked→completed case film.
+- MATERIAL_OPPORTUNITIES: owned challenge; timer/status states; result lifecycle; safe metrics.
+- FORBIDDEN_REPETITION: security-bypass framing or generic architecture diagram.
 - LIMITS: authorized test use only; no bypass of third-party controls, credential collection, or private site data.
 
 ## TOPIC maestro-agent-production
@@ -232,6 +271,10 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `maestro-remix`: use a safe prior task to demonstrate a targeted edit/remix with before/after evidence.
 - EVIDENCE: real sanitized progress, review frames, result manifest, final MP4, actual duration/codec; no self-referential fake process UI.
 - CREATIVE: styles `editorial,swiss,futuristic`; layouts `timeline,ui-walkthrough,comparison-field`; voices `storyteller-male,anchor-female,deep-male`.
+- VISUAL_WORLDS: director room; production pipeline stage.
+- FILM_ARCHETYPES: workflow transformation; behind-the-film brand piece; launch trailer.
+- MATERIAL_OPPORTUNITIES: brief; real assets; composition; review frames; final MP4.
+- FORBIDDEN_REPETITION: self-referential proof checklist without an emotional final film.
 - LIMITS: one parent Maestro task per Spotlight; avoid recursive unbounded video production.
 
 ## TOPIC platform-unified-api
@@ -257,4 +300,8 @@ Every anchor topic block keeps this schema: `TOPIC`, `FAMILY`, `SERVICE`, `APIS`
   - `platform-one-token-workflow`: explain one safe credential pattern across chat/image/video/search without showing private values.
 - EVIDENCE: live catalog responses, model modalities, public docs, authored architecture; no unsupported model-count claims.
 - CREATIVE: styles `swiss,editorial,industrial`; layouts `comparison-field,timeline,ui-walkthrough`; voices `anchor-female,calm-male,energetic-male`.
+- VISUAL_WORLDS: multi-modal launch system; one-token creative universe.
+- FILM_ARCHETYPES: brand anthem; multi-modal montage; workflow transformation.
+- MATERIAL_OPPORTUNITIES: at least three real results/surfaces; one motion role; platform payoff.
+- FORBIDDEN_REPETITION: catalog-card slideshow or repeated cyan dashboard.
 - LIMITS: use only live catalog facts; this is an occasional platform overview, not the default fallback.
