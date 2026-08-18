@@ -378,5 +378,17 @@ def test_run_count_enforces_eight_breadth_lanes() -> None:
         "deployment / bot / operational lifecycle",
     ):
         assert lane in body
-    assert "LANE_BLOCKED=<reason>" in body
+    assert "LANE_BLOCKED=<specific live-truth/material reason>" in body
     assert "Never silently collapse back to image" in body
+
+
+
+def test_lane_selection_is_a_mechanical_lock_not_a_score_bonus() -> None:
+    body = text(SKILL)
+    assert "hard selection lock, not a score bonus" in body
+    assert "A higher score from another lane cannot override it" in body
+    assert "MANDATORY_LANE=<1-8>:<lane-name>" in body
+    assert "LANE_RESULT=selected" in body
+    assert "LANE_RESULT=blocked" in body
+    assert "completion marker repeats `lane=<1-8>" in body
+    assert "never emit a selected topic from another lane" in body

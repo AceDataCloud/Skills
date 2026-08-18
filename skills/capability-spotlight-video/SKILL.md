@@ -75,7 +75,16 @@ Use `run_count` to select one mandatory breadth lane before candidate scoring (`
 7. platform brand anthem with three real surfaces/modalities;
 8. deployment / bot / operational lifecycle with sanitized real status evidence.
 
-If the mandatory lane is ineligible, record `LANE_BLOCKED=<reason>` in Creative History and choose the highest-scoring candidate from the least-recent eligible family. Never silently collapse back to image. The recent-history exclusions still apply inside each lane.
+The mandatory lane is a hard selection lock, not a score bonus. Candidate A/B/C labels are not a global ranking: first identify the lane candidate, then compare creative treatments inside that lane. A higher score from another lane cannot override it.
+
+Before final output, run this mechanical lane preflight:
+
+- write `MANDATORY_LANE=<1-8>:<lane-name>` in Creative History;
+- if the selected topic belongs to it, write `LANE_RESULT=selected`;
+- otherwise the entire lane must be ineligible, write `LANE_RESULT=blocked` and `LANE_BLOCKED=<specific live-truth/material reason>`, then select the least-recent eligible family;
+- never emit a selected topic from another lane with `LANE_RESULT=selected`.
+
+The completion marker repeats `lane=<1-8> | lane_result=selected|blocked`. Never silently collapse back to image. Recent-history exclusions still apply inside each lane.
 
 Use `date_iso:run_count` only as a deterministic tiebreaker; do not use unconstrained randomness. `creative_policy` influences scoring but never becomes a fixed shot template:
 
