@@ -20,7 +20,7 @@ Generate and edit images through AceDataCloud's Flux API.
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "size": "1024x1024", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
@@ -69,7 +69,8 @@ POST /flux/images
   "prompt": "change the background to a beach sunset",
   "action": "edit",
   "image_url": "https://example.com/photo.jpg",
-  "model": "flux-kontext-pro"
+  "model": "flux-kontext-pro",
+  "size": "16:9"
 }
 ```
 
