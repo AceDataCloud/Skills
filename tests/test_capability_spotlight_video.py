@@ -247,6 +247,8 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "MUST NOT launch an Agent" in body
     assert "Do not run deprecated `validate` or `inspect`" in body
     assert "confirm delivery by turn 240" in body
+    assert "one blocker-only contingency patch" in body
+    assert "A second contingency loop is forbidden" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
