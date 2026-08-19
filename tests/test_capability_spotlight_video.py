@@ -243,6 +243,10 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "decode at full resolution" in body
     assert "semantic fit to `HERO_CASE`" in body
     assert "metadata, filename, URL, or task status alone never proves" in body
+    assert "initial render by turn 140" in body
+    assert "MUST NOT launch an Agent" in body
+    assert "Do not run deprecated `validate` or `inspect`" in body
+    assert "confirm delivery by turn 240" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:

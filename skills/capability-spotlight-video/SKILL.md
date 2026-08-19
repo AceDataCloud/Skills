@@ -201,6 +201,8 @@ It MUST NOT contain `ADC-SPOTLIGHT:v1`; that marker is reserved for the outer ar
 
 Formal production uses **Pro**, never Standard as a quality proxy. Choose format from `{{format}}`; `auto-diverse` must also avoid the recent three formats and fit the content/channel.
 
+Treat Pro turns as a delivery budget, not an invitation to explore: finish the initial render by turn 140; use only `check` plus a contact sheet and at most six targeted frames for each review; Do not run deprecated `validate` or `inspect`. The visual-review call MUST NOT launch an Agent or recursively inventory evidence—read the manifest, contact sheet, and targeted frames directly. Consolidate all blockers into one repair, run one final `check`, one final render, one final-byte review, and confirm delivery by turn 240. Stop optional inspection when any milestone is at risk.
+
 Immediately after Maestro accepts the unique UUID task, call `publish_artifact` before waiting or polling. Exact-ID `task_already_exists` is a successful idempotent replay: do not generate another UUID or resubmit.
 
 The artifact summary—not the Maestro prompt—begins:
