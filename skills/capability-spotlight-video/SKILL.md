@@ -214,10 +214,11 @@ Follow it with the complete Blueprint and role→asset provenance. The outer tas
 The Blueprint defines archetype-specific gates plus these invariants:
 
 - decoded frame 0 contains clear brand or product desire—not blank/loading/disclaimer;
-- real hero material is visually dominant, not reduced to evidence cards;
+- for a 30-second format, final-byte `ffprobe` duration is 29.95–30.05 seconds; any other requested format uses the same ±0.05-second tolerance;
+- the selected real hero occupies a visually primary region for at least 40% of runtime, including one near-full-frame hold of at least 3 continuous seconds; authored type/UI may support it but never substitute for it;
 - composition variety and pacing match this run's genome;
 - no static material is dragged beyond the limit appropriate to the archetype;
 - customer copy contains no internal review language, private sourcing facts or invented claims;
 - narration/audio are complete and the CTA is readable.
 
-Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes and make a second actual confirmation call even when no initial blocker exists. The Reviewer receives the Blueprint, Creative Genome, role map, and evidence and judges whether this film fulfilled **its chosen director language**, not whether it resembles previous episodes.
+Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime from the final contact sheet, and make a second actual confirmation call even when no initial blocker exists. If duration, hero-share, audio, CTA, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Blueprint, Creative Genome, role map, and evidence and judges whether this film fulfilled **its chosen director language**, not whether it resembles previous episodes.
