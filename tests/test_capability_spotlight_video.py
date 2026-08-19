@@ -235,6 +235,10 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "real hero evidence" in body
     assert "It MUST NOT contain `ADC-SPOTLIGHT:v1`" in body
     assert "artifact summary—not the Maestro prompt" in body
+    assert "29.95–30.05 seconds" in body
+    assert "at least 40% of runtime" in body
+    assert "near-full-frame hold of at least 3 continuous seconds" in body
+    assert "MUST NOT return an accepted submission" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
