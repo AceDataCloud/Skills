@@ -116,7 +116,7 @@ For generated hero media, the first capability-specific call MUST be the provide
 
 Poll according to the returned interval until terminal. For activation/source preparation, reserve up to two minutes (for example eight 15-second polls). If still pending, record one `ADC-SPOTLIGHT-SOURCE:v1` draft artifact with task ID and fingerprint, make no completion claim, and end without Maestro.
 
-Inspect every selected asset at full resolution. Generated media MUST use a real accepted result. Product/Agent/deployment stories use faithful, sanitized screenshots or lifecycle evidence. Full request JSON is evidence-only; customer-facing frames never contain internal review or provenance language.
+Inspect every selected asset at full resolution. Before Blueprint approval, perform a complete body download for every selected URL, require non-zero bytes, decode at full resolution, and inspect pixel-level semantic fit to `HERO_CASE` and its assigned material role. A metadata, filename, URL, or task status alone never proves availability, visual content, or semantic relevance. A failed download, decode, or semantic-fit check makes that asset ineligible: choose another asset or candidate and do not submit Maestro. Generated media MUST use a real accepted result. Product/Agent/deployment stories use faithful, sanitized screenshots or lifecycle evidence. Full request JSON is evidence-only; customer-facing frames never contain internal review or provenance language.
 
 ## 5. Require a rich material plan
 

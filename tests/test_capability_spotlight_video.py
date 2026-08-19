@@ -239,6 +239,10 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "at least 40% of runtime" in body
     assert "near-full-frame hold of at least 3 continuous seconds" in body
     assert "MUST NOT return an accepted submission" in body
+    assert "complete body download" in body
+    assert "decode at full resolution" in body
+    assert "semantic fit to `HERO_CASE`" in body
+    assert "metadata, filename, URL, or task status alone never proves" in body
 
 
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
