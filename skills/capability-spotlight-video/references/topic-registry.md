@@ -18,7 +18,9 @@ For an unlisted capability, derive and verify all of the following from the live
 - payload dimensions that determine Credits and the concrete outcome bought;
 - focus-specific treatment opportunities plus any genuinely inapplicable focus enhancement.
 
-For every selected topic derive compact `API_FOCUS`, `PRICE_FOCUS`, and `EFFECT_FOCUS` notes before Blueprint approval. API focus names endpoint/request/lifecycle/result; price focus binds payload→Credits→outcome; effect focus names current state→accepted result→visible change. These are runtime derivations, so unlisted topics remain eligible.
+For every selected topic derive compact `API_FOCUS`, `PRICE_FOCUS`, and `EFFECT_FOCUS` notes before Blueprint approval. API focus names endpoint/request/lifecycle/result; price focus binds payload→Credits→outcome; effect focus names current state→accepted result→visible change. These always feed the private Truth Ledger; they enter the MP4 fully only when primary, as one compact proof cue when secondary, and may remain absent otherwise.
+
+Also derive `ONE_BIG_IDEA`, `HERO_FIRST`, a three-item `PROOF_PALETTE`, API/price `DISPLAY_POLICY`, and `ANTI_REPETITION`. The three proofs must support one proposition rather than become three feature labels. Material opportunities are an editorial palette, not a requirement to display every source, stage, or alternate. These are runtime derivations, so unlisted topics remain eligible.
 
 Run the portability test: if the value proposition could be copied unchanged onto another AI service, it is not distinctive enough—derive a sharper angle or reject the candidate.
 
@@ -172,7 +174,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - APIS: `/seedance/videos`, `/seedance/tasks`
 - DOC_QUERY: `Seedance 2.0 reference image audio video character consistency`
 - MCP: Seedance
-- PROMISE: Seedance 2.0 preserves a referenced person/character and can follow audio/video references at high resolution.
+- PROMISE: Seedance 2.0 turns a verified approved reference frame into controlled motion while preserving the visual structure proven by the selected accepted result.
 - AUDIENCE: product, campaign, and creative-development teams turning approved frames into controlled motion.
 - PAIN: turning a static design into video often loses the structure, text treatment, subject, or visual language already approved.
 - BASIC_INTRO: Seedance adds cinematic movement while using image, video, or audio references to control what must remain recognizable.
@@ -193,7 +195,11 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - VISUAL_WORLDS: camera-control launch bay; spatial UI world.
 - FILM_ARCHETYPES: cinematic UI demo; static→motion transformation; launch trailer.
 - MATERIAL_OPPORTUNITIES: approved reference; full motion clip; start/middle/end frames; structure comparison.
-- FORBIDDEN_REPETITION: replaying one five-second clip for most of the film.
+- ONE_BIG_IDEA: `This controlled five-second result cost 8.4 Credits.` when the verified 720p/5s/reference payload and accepted result still match live truth.
+- HERO_FIRST: open on the accepted moving result already in motion; never begin with a duplicated workflow board, approval card, guides, or explanatory setup.
+- PROOF_PALETTE: accepted motion result; compact `Seedance 2.0 · 720p · 5s · first-frame reference · 8.4 Credits` value cue; source-reference→recognizable-motion comparison.
+- DISPLAY_POLICY: price may lead only for `price-value`; API stays one compact payload cue unless `api-integration` is primary. Use one `RUN SEEDANCE` CTA and one verified destination.
+- FORBIDDEN_REPETITION: replaying one five-second clip for most of the film; duplicated before/after boards; separate chapters that rename “controlled”, “recognizable”, or “coherent”; detached price cards.
 - LIMITS: never use private/celebrity identity; one generation plus one replacement; video required; reference media must be a public HTTPS URL and `return_last_frame` or other 2.5-only options require a Seedance 2.5 model.
 
 ## TOPIC acechat-agent-workspace
@@ -203,14 +209,14 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - APIS: `/aichat2/conversations`, `/aichat2/mcp-servers`, `/aichat2/skills`, `/aichat2/memories`, `/aichat2/artifacts`, `/aichat2/scheduled-tasks`, `/aichat2/realtime`
 - DOC_QUERY: `AceChat aichat2 MCP Skills Memory Scheduled Tasks Realtime`
 - MCP: AceDataCloud
-- PROMISE: a stateful agent workspace combines conversations, tools, MCP, Skills, Memory, Artifacts, schedules, and realtime voice.
+- PROMISE: a stateful agent workspace lets the next run begin with usable context and deliver another reviewable artifact instead of restarting from zero.
 - AUDIENCE: developers and operators who need an agent to execute repeatable work, not merely answer a chat message.
 - PAIN: A chat box answers; it does not remember the workflow, call the right systems, deliver an artifact, and run again tomorrow.
 - BASIC_INTRO: AceChat is a stateful agent workspace that combines live tools, MCP, Skills, Memory, Artifacts, Scheduled Tasks, and realtime voice.
 - HERO_CASES: one real tool trace that produces an artifact; memory→schedule→completed run lifecycle with sanitized evidence.
 - UNIQUE_ADVANTAGES: real MCP/Skill execution; persistent context and memory; artifacts and scheduled automation in one workspace.
 - PRICE_SCENARIOS: show the actual model/tool call Credits when returned; otherwise use `See live pricing` and never invent a flat workspace price.
-- HOOKS: `A chat box answers. A workspace gets the work done.`; `If the work repeats tomorrow, the agent should remember.`
+- HOOKS: `CONTEXT SHOULDN'T RESET.`; `The next run starts with what the last run learned.`
 - CTA: `OPEN ACECHAT` → `studio.acedata.cloud`.
 - TONE: sharp technical confidence; rapid tool expansion, satisfying artifact result, calm automation proof, decisive CTA.
 - FORBIDDEN_GENERIC_CASES: fake chat bubbles; feature-list narration; invented UI; private memory or token; tool trace without a result.
@@ -223,8 +229,12 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - VISUAL_WORLDS: living operations room; tool-to-artifact workspace.
 - FILM_ARCHETYPES: cinematic UI journey; workflow transformation; metric-to-human payoff.
 - MATERIAL_OPPORTUNITIES: real tool trace; artifact; schedule lifecycle; sanitized UI states.
-- FORBIDDEN_REPETITION: fake chat bubbles and feature-menu cards.
-- LIMITS: no account data, tokens, private memory, fake chat messages, or invented UI.
+- ONE_BIG_IDEA: `CONTEXT SHOULDN'T RESET.`
+- HERO_FIRST: open on a glowing real delivered artifact connecting immediately to `RUN AGAIN`; do not reveal the full workspace architecture first.
+- PROOF_PALETTE: sanitized real artifact; retained usable-context evidence; completed scheduled-run metadata returning to the next run. Tool, Skill, catalog, and trace may appear only as a fast montage inside these proofs.
+- DISPLAY_POLICY: omit GPT/base-model pricing unless price-value is primary; `RUN AGAIN` is product proof, never a second CTA. End only with `OPEN ACECHAT` and `studio.acedata.cloud`.
+- FORBIDDEN_REPETITION: fake chat bubbles; feature-menu cards; permanent five-card workspace walls; a headline for every tool/Skill/catalog/schedule step; synonymous “workspace gets work done” claims; token-pricing chapters.
+- LIMITS: no account data, tokens, private memory, fake chat messages, invented UI, or flat workspace price.
 
 ## TOPIC captcha-solving-lifecycle
 

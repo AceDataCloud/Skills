@@ -174,59 +174,65 @@ def test_skill_requires_sales_blueprint_before_maestro() -> None:
     assert "Before Maestro, write" in body
     assert "fixed six-scene or fixed timestamp storyboard" in body
     assert "who buys, what changes, why this product is distinctive" in body
-    assert "one exact integration anchor" in body
-    assert "one payload-bound value anchor" in body
+    assert "always verified in the private Truth Ledger" in body
     assert "never place labels such as `accepted output`, `decoded proof`" in body
 
 
-def test_skill_requires_content_focus_and_final_byte_coverage() -> None:
+def test_skill_separates_truth_from_advertising_expression() -> None:
     body = text(SKILL)
-    assert "ACE-DATA-CLOUD-CONTENT-COVERAGE:v1" in body
-    for focus in (
-        "effect-proof",
-        "api-integration",
-        "price-value",
-        "workflow-mechanism",
-        "buyer-transformation",
-    ):
-        assert focus in body
+    assert "ACE-DATA-CLOUD-TRUTH-LEDGER:v2" in body
     for field in (
+        "BUYER_CONTEXT",
         "BUYER_PAIN",
         "PROMISED_EFFECT",
         "PROOF_ASSET",
-        "INTEGRATION_ANCHOR",
-        "VALUE_ANCHOR",
         "MECHANISM",
-        "SEMANTIC_BEATS",
+        "API_TRUTH",
+        "PRICE_TRUTH",
+        "CTA_DESTINATION",
+        "CLAIM_EVIDENCE",
+        "DISPLAY_DECISION",
     ):
         assert field in body
-    assert "PRIMARY_FOCUS" in body
-    assert "SECONDARY_FOCUS" in body
-    assert "mandatory lane" in body
-    assert "fixed timestamp" in body
-    assert "exact public endpoint" in body
-    assert "4–7-line safe request" in body
-    assert "sync/async lifecycle" in body
-    assert "payload-bound Credits" in body
-    assert "concrete outcome purchased" in body
-    assert "same composition for at least 2 continuous seconds" in body
-    assert "targeted final-byte frames at the start, midpoint, and end" in body
-    assert "integration and value anchors" in body
-
-    assert "FINAL-BYTE-COVERAGE:v1" in body
-    for column in (
-        "Dimension",
-        "Treatment",
-        "Status",
-        "Timestamp/range",
-        "Caption",
-        "Narration",
-        "Visual/result",
+    assert "ACE-DATA-CLOUD-CREATIVE-PROMISE:v1" in body
+    for field in (
+        "ONE_BIG_IDEA",
+        "HERO_FIRST",
+        "PROOF_1",
+        "PROOF_2",
+        "PROOF_3",
+        "SECONDARY_FOCUS_FOLD",
+        "MATERIAL_PALETTE",
+        "DISPLAYED_API_POLICY",
+        "DISPLAYED_PRICE_POLICY",
     ):
-        assert column in body
-    assert "pass|na|fail" in body
-    assert "Provenance or Blueprint text that never reached the MP4 does not count" in body
-    assert "primary and secondary focus depth" in body
+        assert field in body
+    assert "exactly three materially distinct proofs" in body
+    assert "secondary focus must fold into exactly one proof" in body
+    assert "may be absent from the MP4" in body
+    assert "editorial palette, not a display obligation" in body
+    assert "No truth dimension earns a standalone scene" in body
+
+
+def test_skill_uses_cold_ad_effectiveness_review() -> None:
+    body = text(SKILL)
+    assert "FINAL-BYTE-AD-EFFECTIVENESS:v1" in body
+    for field in (
+        "ONE_LINE_RECALL",
+        "HERO_FIRST",
+        "THREE_DISTINCT_PROOFS",
+        "FOCUS_HIERARCHY",
+        "CLUTTER_REPETITION",
+        "API_PRICE_CONSISTENCY",
+        "ONE_CTA",
+        "TECHNICAL_DELIVERY",
+        "VERDICT",
+    ):
+        assert field in body
+    assert "without reading the Blueprint or Truth Ledger" in body
+    assert "first second" in body
+    assert "silent first three seconds" in body
+    assert "one semantic focal point" in body
     assert "MUST NOT return an accepted submission" in body
 
 
@@ -319,6 +325,20 @@ def test_registry_derives_api_price_and_effect_focus_evidence() -> None:
     assert "EFFECT_FOCUS" in body
 
 
+def test_registry_has_seedance_and_acechat_ad_rebuild_guards() -> None:
+    body = text(TOPICS)
+    for phrase in (
+        "This controlled five-second result cost 8.4 Credits.",
+        "open on the accepted moving result already in motion",
+        "RUN SEEDANCE",
+        "CONTEXT SHOULDN'T RESET.",
+        "glowing real delivered artifact",
+        "omit GPT/base-model pricing",
+        "RUN AGAIN` is product proof, never a second CTA",
+    ):
+        assert phrase in body
+
+
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
     body = text(TOPICS)
     assert "Anchor library — examples, not an allowlist" in body
@@ -348,9 +368,9 @@ def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
         assert forbidden not in combined
 
 
-def test_v5_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
+def test_v6_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
     body = text(SKILL)
-    assert 'metadata:\n  author: acedatacloud\n  version: "5.0"' in body
+    assert 'metadata:\n  author: acedatacloud\n  version: "6.0"' in body
     assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
     assert 'route to `/general-video`' in body
     assert '`scenario=auto`, `quality=pro`' in body
@@ -411,7 +431,7 @@ def test_v4_general_video_professional_director_contract() -> None:
     ):
         assert phrase in body
     assert 'Formal production uses **Pro**, never Standard' in body
-    assert 'Reviewer receives the Blueprint, Content Coverage contract, Creative Genome' in body
+    assert 'Reviewer receives the Ledger only after its blind assessment' in body
 
 
 def test_anchor_topics_supply_multiple_creative_opportunities() -> None:

@@ -4,7 +4,7 @@ description: Plan and submit a recurring series of diverse, premium Ace Data Clo
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "5.0"
+  version: "6.0"
 connections: [acedatacloud/acedatacloud]
 compatibility: Requires the AceDataCloud connector, Maestro MCP, and only the capability MCPs authorized for the selected campaign.
 ---
@@ -169,33 +169,56 @@ Do **not** write a fixed six-scene or fixed timestamp storyboard. Describe emoti
 
 The Blueprint must still answer: who buys, what changes, why this product is distinctive, which real result proves it, what it costs, and what to do next. Narration length follows the selected format and must finish before the CTA hold.
 
-Immediately after Blueprint v3, write:
+Immediately after Blueprint v3, write the complete private truth record:
 
 ```text
-ACE-DATA-CLOUD-CONTENT-COVERAGE:v1
+ACE-DATA-CLOUD-TRUTH-LEDGER:v2
+MANDATORY_LANE: <server-authoritative lane>
 PRIMARY_FOCUS: <server-authoritative id>
 SECONDARY_FOCUS: <server-authoritative id>
-BUYER_PAIN: <specific buyer and visible current-state pain>
-PROMISED_EFFECT: <observable buyer result>
-PROOF_ASSET: <real result that substantiates the effect>
-INTEGRATION_ANCHOR: <exact public endpoint plus action/lifecycle>
-VALUE_ANCHOR: <payload-bound Credits plus concrete outcome purchased>
-MECHANISM: <why this input becomes this output>
-CTA: <action plus destination>
-SEMANTIC_BEATS: <flexible content beats, not a fixed timestamp or scene template>
+BUYER_CONTEXT: <verified buyer and job>
+BUYER_PAIN: <verified current-state pain>
+PROMISED_EFFECT: <observable result>
+PROOF_ASSET: <real accepted result>
+MECHANISM: <verified reason the input produces the result>
+API_TRUTH: <exact endpoint, safe request, lifecycle, terminal result>
+PRICE_TRUTH: <payload dimensions, live Credits, concrete outcome>
+CTA_DESTINATION: <verified action and public destination>
+CLAIM_EVIDENCE: <claim→source/asset mapping>
+DISPLAY_DECISION: <which verified truths enter the customer film and why>
 ```
 
-Every film must communicate buyer/pain, promise/effect, real proof, one exact integration anchor, one payload-bound value anchor, and CTA through caption, narration, or unmistakable final-byte visual evidence. The primary focus receives one complete explanatory beat; the secondary focus receives one supporting beat; remaining anchors stay concise. Reject a candidate when this cannot fit legibly in the selected duration. Do not restore a fixed timestamp storyboard.
+Every factual dimension is always verified in the private Truth Ledger. Facts that remain off-screen are still available to the Reviewer and artifact provenance. The Ledger is evidence, not customer copy: never turn its rows into a checklist, card wall, chapter sequence, narration list, or equal-weight layout.
+
+Then write the customer-facing creative hierarchy:
+
+```text
+ACE-DATA-CLOUD-CREATIVE-PROMISE:v1
+ONE_BIG_IDEA: <one non-compound buyer proposition>
+HERO_FIRST: <accepted result and how it leads the film>
+PROOF_1: <what it made or did>
+PROOF_2: <why the result is credible or controlled>
+PROOF_3: <why it is worth acting on now>
+SECONDARY_FOCUS_FOLD: <proof 1|2|3>
+CTA: <one action plus one destination>
+MATERIAL_PALETTE: <available roles, including unused provenance assets>
+DISPLAYED_API_POLICY: <full|compact|absent>
+DISPLAYED_PRICE_POLICY: <full|compact|absent>
+```
+
+The film sells exactly one `ONE_BIG_IDEA`, opens on the accepted hero result before explanation, and uses exactly three materially distinct proofs that support that same idea. The secondary focus must fold into exactly one proof; it cannot create a parallel storyline or fourth proof. Use exactly one CTA.
+
+API and price remain fully verified in the Ledger. When primary they receive a compelling customer-facing treatment; when secondary they receive one compact cue inside a proof; otherwise they may be absent from the MP4. Any fact that does appear must exactly match the Ledger. No truth dimension earns a standalone scene, card, caption, or narration sentence merely because it was verified.
 
 The five focus treatments are:
 
-- `effect-proof`: establish a relevant current state, show the accepted result, state the visible change, and connect it to the buyer outcome. A beauty shot without before/change/outcome fails. It may compress but never omit integration and value anchors.
-- `api-integration`: show the exact public endpoint, a 4–7-line safe request using `$ACEDATACLOUD_API_KEY`, input/action, sync/async lifecycle and polling/retrieval when applicable, and the real terminal result. Explain how the request produces the buyer outcome; never show a raw provenance dump.
-- `price-value`: show the payload/model/size/duration/count/reference dimensions that determine live payload-bound Credits and the concrete outcome purchased in the same composition for at least 2 continuous seconds. A detached price card, unqualified “from” price, or unproved fiat/savings claim fails. Final review must supply targeted final-byte frames at the start, midpoint, and end of that continuous range; Blueprint text, narration alone, or an artifact summary cannot prove this focus.
-- `workflow-mechanism`: show ordered input→operation→result, legal proved edges and lifecycle. A single-service film explains real controls rather than inventing a workflow; a multi-service film explains why every stage is necessary and sells one outcome.
-- `buyer-transformation`: name the buyer/context, recognizable pain, changed working state, real proof, distinctive advantage, and a specific reason to act. Generic “work smarter” language fails.
+- `effect-proof`: dramatize the accepted result, visible change, and buyer outcome. API/price stay subordinate unless selected as the secondary proof.
+- `api-integration`: make endpoint→request→lifecycle→terminal result the drama, using a 4–7-line safe request with `$ACEDATACLOUD_API_KEY`, not a compliance insert.
+- `price-value`: make payload dimensions→Credits→purchased outcome the singular value argument, integrated with the result rather than detached as a rate card.
+- `workflow-mechanism`: dramatize ordered input→necessary operation→result; compress supporting steps into proof, never a logo parade or feature menu.
+- `buyer-transformation`: dramatize one concrete changed working state and the real result that makes it believable; generic “work smarter” language fails.
 
-Palette, voice, format, or archetype changes cannot satisfy a content focus. Focus is a hard treatment lock inside the mandatory lane and does not replace existing Creative Genome distance rules.
+Material-role minimums establish an editorial palette, not a display obligation. Use only materials that strengthen the One Big Idea and three proofs; unused roles remain provenance. Palette, voice, format, or archetype changes cannot satisfy a focus. Do not restore a fixed timestamp storyboard.
 
 ## 7. Choose a professional, product-derived creative world
 
@@ -251,19 +274,21 @@ The Blueprint defines archetype-specific gates plus these invariants:
 - customer copy contains no internal review language, private sourcing facts or invented claims;
 - narration/audio are complete and the CTA is readable.
 
-For both initial and final-byte review, create this matrix from the rendered MP4—not from planning prose:
+For both initial and final-byte review, create this cold-review record from the rendered MP4:
 
 ```text
-FINAL-BYTE-COVERAGE:v1
-| Dimension | Treatment | Status | Timestamp/range | Caption | Narration | Visual/result |
-| buyer-pain | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
-| effect-proof | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
-| api-integration | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
-| price-value | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
-| workflow-mechanism | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
-| CTA | base | pass|fail | ... | ... | ... | ... |
+FINAL-BYTE-AD-EFFECTIVENESS:v1
+ONE_LINE_RECALL: <one idea recalled from MP4 alone>
+HERO_FIRST: <pass|fail + first-substantive-visual evidence>
+THREE_DISTINCT_PROOFS: <pass|fail + proof 1/2/3 evidence>
+FOCUS_HIERARCHY: <pass|fail + primary dominance and secondary fold>
+CLUTTER_REPETITION: <pass|fail + simultaneous claims/repeated copy/composition evidence>
+API_PRICE_CONSISTENCY: <pass|fail|na + Ledger comparison>
+ONE_CTA: <pass|fail + action/destination/final-frame evidence>
+TECHNICAL_DELIVERY: <pass|fail + duration/codecs/audio/hero share>
+VERDICT: <accepted|blocked>
 ```
 
-A `pass` needs a final-MP4 timestamp/range plus caption, narration (or explicit `none`), and visible result evidence where applicable. A primary `price-value` pass additionally needs one ≥2-second range and start/mid/end decoded frames where payload, Credits, and purchased outcome are simultaneously legible. `na` may waive only a genuinely inapplicable focus enhancement; it cannot waive base integration or value anchors. Provenance or Blueprint text that never reached the MP4 does not count. Base sales coverage, primary and secondary focus depth, and CTA must all pass; contradictions between captions, narration, API/price truth, and visible results are blockers.
+The independent Reviewer first watches the decoded film without reading the Blueprint or Truth Ledger. It must state the one-line recall, judge whether the accepted result earns attention in the first second, verify the silent first three seconds still communicate the product advantage, identify exactly three distinct proofs, and reject equal-weight cards, simultaneous independent claims, synonymous headlines, repeated compositions, compliance inserts, or multiple CTAs. Each beat has one semantic focal point; visual density may add craft and atmosphere, never more sales propositions.
 
-Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime and the coverage matrix from the final contact sheet/transcript, and make a second actual confirmation call even when no initial blocker exists. If duration, hero-share, audio, CTA, final-byte coverage, primary/secondary focus depth, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Blueprint, Content Coverage contract, Creative Genome, role map, and evidence and judges both sales clarity and **its chosen director language**, not whether it resembles previous episodes.
+Only after that cold pass may the Reviewer compare every visible or spoken API, price, payload, result, and CTA against the Ledger. A non-primary API or price may be absent; unsupported or contradictory claims fail. Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime and ad-effectiveness evidence from the final contact sheet/transcript, and make a second actual confirmation call even when no initial blocker exists. If recall, hero-first, proof distinctness, focus hierarchy, clutter/repetition, truth consistency, duration, hero-share, audio, one CTA, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Ledger only after its blind assessment.
