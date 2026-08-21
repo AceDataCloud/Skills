@@ -12,7 +12,13 @@ For an unlisted capability, derive and verify all of the following from the live
 - unique differentiator visible in pixels, motion, audio, structured result, or a real task trace;
 - hero recipe and the exact accepted evidence required;
 - price scenario bound to a concrete request payload;
-- CTA destination and a forbidden generic case.
+- CTA destination and a forbidden generic case;
+- customer-facing exact endpoint and one safe minimal-request recipe;
+- lifecycle/result evidence that connects the request to the real outcome;
+- payload dimensions that determine Credits and the concrete outcome bought;
+- focus-specific treatment opportunities plus any genuinely inapplicable focus enhancement.
+
+For every selected topic derive compact `API_FOCUS`, `PRICE_FOCUS`, and `EFFECT_FOCUS` notes before Blueprint approval. API focus names endpoint/request/lifecycle/result; price focus binds payload→Credits→outcome; effect focus names current state→accepted result→visible change. These are runtime derivations, so unlisted topics remain eligible.
 
 Run the portability test: if the value proposition could be copied unchanged onto another AI service, it is not distinctive enough—derive a sharper angle or reject the candidate.
 
@@ -56,6 +62,9 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - CTA: `EXPLORE GPT IMAGE 2 API` → `platform.acedata.cloud/documents/gpt-image-2`.
 - TONE: energetic creative-director launch; punch the failure, pause on the poster reveal, confident price, decisive CTA.
 - FORBIDDEN_GENERIC_CASES: ordinary architecture or still-life beauty shot; feature-list narration; unverified removal/edit claim.
+- API_FOCUS: `/openai/images/generations`; authored 4–7-line request with model, size, quality, and prompt; sync response or async task lifecycle must end at the exact accepted poster.
+- PRICE_FOCUS: the same model+size+quality+n payload → live Credits → one accepted campaign-ready poster; never detach the number from this result.
+- EFFECT_FOCUS: manual headline/grid repair pain → accepted decoded poster → readable hierarchy and controlled spacing visible in full frame and type crops.
 - DEMOS:
   - `gpt2-editorial-typography`: a representative editorial poster, packaging system, or wayfinding composition with a short exact headline; inspect every character and spacing. Reject ordinary architecture/still life.
   - `gpt2-faithful-composite`: pass a real product/screenshot/QR source to `/openai/images/edits`; both the source URL and the accepted edits output URL are mandatory. This demo ID is forbidden when only `/openai/images/generations` executed—use `gpt2-editorial-typography` instead. Inspect both accepted images at full resolution before scripting. Record `present before`, `present after`, and `visibly changed` from decoded pixels—not prompt prose, URL order, dimensions, or filenames—and bind each row to the exact source/output URL. Only claim differences that this comparison proves. An element still visible in the accepted edit cannot be called removed, replaced, or omitted; an element absent from the labeled frame cannot be called present.

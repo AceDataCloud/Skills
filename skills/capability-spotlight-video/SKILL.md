@@ -4,7 +4,7 @@ description: Plan and submit a recurring series of diverse, premium Ace Data Clo
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "4.0"
+  version: "5.0"
 connections: [acedatacloud/acedatacloud]
 compatibility: Requires the AceDataCloud connector, Maestro MCP, and only the capability MCPs authorized for the selected campaign.
 ---
@@ -64,7 +64,7 @@ Score live truth, sales specificity, hero strength, authorization, price proof, 
 - no recent 3 transition-system, voice-family, sound-world, or palette-family repeat;
 - a returning service must change at least four of buyer, job, hero, archetype, visual world, and offer.
 
-Use `run_count` to select one mandatory breadth lane before candidate scoring (`((run_count - 1) mod 8) + 1`). At least one candidate must be eligible for that lane, and the selected candidate must come from it unless live truth/material evidence makes the whole lane ineligible:
+The scheduled task supplies the **mandatory lane**, `PRIMARY_FOCUS`, and `SECONDARY_FOCUS` as server-authoritative values. Never recompute or override them. At least one candidate must be eligible for that mandatory lane, and the selected candidate must come from it unless live truth/material evidence makes the whole lane ineligible:
 
 1. image craft / typography / edit fidelity;
 2. cross-service workflow transformation;
@@ -79,7 +79,7 @@ The mandatory lane is a hard selection lock, not a score bonus. Candidate A/B/C 
 
 Before final output, run this mechanical lane preflight:
 
-- write `MANDATORY_LANE=<1-8>:<lane-name>` in Creative History;
+- write `MANDATORY_LANE=<1-8>:<lane-name> | PRIMARY_FOCUS=<id> | SECONDARY_FOCUS=<id>` immediately after `CREATIVE-HISTORY:v1`, before long Creative Genome fields;
 - if the selected topic belongs to it, write `LANE_RESULT=selected`;
 - otherwise the entire lane must be ineligible, write `LANE_RESULT=blocked` and `LANE_BLOCKED=<specific live-truth/material reason>`, then select the least-recent eligible family;
 - never emit a selected topic from another lane with `LANE_RESULT=selected`.
@@ -167,7 +167,35 @@ FORBIDDEN_REPETITIONS / QUALITY_GATES
 
 Do **not** write a fixed six-scene or fixed timestamp storyboard. Describe emotional beats, hero moments, material roles, and 3–6 measurable quality gates; the general-video Director owns scene count, timing, layouts, and transitions.
 
-The Blueprint must still answer: who buys, what changes, why this product is distinctive, which real result proves it, what it costs, and what to do next. Integration/price appears only when it advances the sale. Narration length follows the selected format and must finish before the CTA hold.
+The Blueprint must still answer: who buys, what changes, why this product is distinctive, which real result proves it, what it costs, and what to do next. Narration length follows the selected format and must finish before the CTA hold.
+
+Immediately after Blueprint v3, write:
+
+```text
+ACE-DATA-CLOUD-CONTENT-COVERAGE:v1
+PRIMARY_FOCUS: <server-authoritative id>
+SECONDARY_FOCUS: <server-authoritative id>
+BUYER_PAIN: <specific buyer and visible current-state pain>
+PROMISED_EFFECT: <observable buyer result>
+PROOF_ASSET: <real result that substantiates the effect>
+INTEGRATION_ANCHOR: <exact public endpoint plus action/lifecycle>
+VALUE_ANCHOR: <payload-bound Credits plus concrete outcome purchased>
+MECHANISM: <why this input becomes this output>
+CTA: <action plus destination>
+SEMANTIC_BEATS: <flexible content beats, not a fixed timestamp or scene template>
+```
+
+Every film must communicate buyer/pain, promise/effect, real proof, one exact integration anchor, one payload-bound value anchor, and CTA through caption, narration, or unmistakable final-byte visual evidence. The primary focus receives one complete explanatory beat; the secondary focus receives one supporting beat; remaining anchors stay concise. Reject a candidate when this cannot fit legibly in the selected duration. Do not restore a fixed timestamp storyboard.
+
+The five focus treatments are:
+
+- `effect-proof`: establish a relevant current state, show the accepted result, state the visible change, and connect it to the buyer outcome. A beauty shot without before/change/outcome fails. It may compress but never omit integration and value anchors.
+- `api-integration`: show the exact public endpoint, a 4–7-line safe request using `$ACEDATACLOUD_API_KEY`, input/action, sync/async lifecycle and polling/retrieval when applicable, and the real terminal result. Explain how the request produces the buyer outcome; never show a raw provenance dump.
+- `price-value`: show the payload/model/size/duration/count/reference dimensions that determine live payload-bound Credits and the concrete outcome purchased. A detached price card, unqualified “from” price, or unproved fiat/savings claim fails.
+- `workflow-mechanism`: show ordered input→operation→result, legal proved edges and lifecycle. A single-service film explains real controls rather than inventing a workflow; a multi-service film explains why every stage is necessary and sells one outcome.
+- `buyer-transformation`: name the buyer/context, recognizable pain, changed working state, real proof, distinctive advantage, and a specific reason to act. Generic “work smarter” language fails.
+
+Palette, voice, format, or archetype changes cannot satisfy a content focus. Focus is a hard treatment lock inside the mandatory lane and does not replace existing Creative Genome distance rules.
 
 ## 7. Choose a professional, product-derived creative world
 
@@ -207,7 +235,7 @@ Immediately after Maestro accepts the unique UUID task, call `publish_artifact` 
 
 The artifact summary—not the Maestro prompt—begins:
 
-`ADC-SPOTLIGHT:v1 | BLUEPRINT=v3 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | WORKFLOW_ID=<id-or-na> | FILM_ARCHETYPE=<id> | VISUAL_WORLD=<id> | SHOT_GRAMMAR=<id> | RHYTHM_PATTERN=<id> | OPENING_DEVICE=<id> | CLIMAX_DEVICE=<id> | TRANSITION_SYSTEM=<id> | STYLE_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | SOUND_WORLD=<id> | FORMAT=<id> | ASSET_HASHES=<hashes> | EXECUTED_APIS=<paths> | EVIDENCE_URLS=<urls> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
+`ADC-SPOTLIGHT:v1 | BLUEPRINT=v3 | PRIMARY_FOCUS=<id> | SECONDARY_FOCUS=<id> | COVERAGE_CONTRACT=v1 | FAMILY_ID=<id> | TOPIC_ID=<id> | DEMO_ID=<id> | WORKFLOW_ID=<id-or-na> | FILM_ARCHETYPE=<id> | VISUAL_WORLD=<id> | SHOT_GRAMMAR=<id> | RHYTHM_PATTERN=<id> | OPENING_DEVICE=<id> | CLIMAX_DEVICE=<id> | TRANSITION_SYSTEM=<id> | STYLE_ID=<id> | PALETTE_ID=<id> | VOICE_ID=<id> | SOUND_WORLD=<id> | FORMAT=<id> | ASSET_HASHES=<hashes> | EXECUTED_APIS=<paths> | EVIDENCE_URLS=<urls> | MAESTRO_TASK=<uuid> | SUBMISSION=accepted`
 
 Follow it with the complete Blueprint and role→asset provenance. The outer task ends after `recorded=true`; it must not claim the asynchronous film is complete.
 
@@ -223,4 +251,19 @@ The Blueprint defines archetype-specific gates plus these invariants:
 - customer copy contains no internal review language, private sourcing facts or invented claims;
 - narration/audio are complete and the CTA is readable.
 
-Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime from the final contact sheet, and make a second actual confirmation call even when no initial blocker exists. If duration, hero-share, audio, CTA, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Blueprint, Creative Genome, role map, and evidence and judges whether this film fulfilled **its chosen director language**, not whether it resembles previous episodes.
+For both initial and final-byte review, create this matrix from the rendered MP4—not from planning prose:
+
+```text
+FINAL-BYTE-COVERAGE:v1
+| Dimension | Treatment | Status | Timestamp/range | Caption | Narration | Visual/result |
+| buyer-pain | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
+| effect-proof | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
+| api-integration | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
+| price-value | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
+| workflow-mechanism | base/primary/secondary | pass|na|fail | ... | ... | ... | ... |
+| CTA | base | pass|fail | ... | ... | ... | ... |
+```
+
+A `pass` needs a final-MP4 timestamp/range plus caption, narration (or explicit `none`), and visible result evidence where applicable. `na` may waive only a genuinely inapplicable focus enhancement; it cannot waive base integration or value anchors. Provenance or Blueprint text that never reached the MP4 does not count. Base sales coverage, primary and secondary focus depth, and CTA must all pass; contradictions between captions, narration, API/price truth, and visible results are blockers.
+
+Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime and the coverage matrix from the final contact sheet/transcript, and make a second actual confirmation call even when no initial blocker exists. If duration, hero-share, audio, CTA, final-byte coverage, primary/secondary focus depth, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Blueprint, Content Coverage contract, Creative Genome, role map, and evidence and judges both sales clarity and **its chosen director language**, not whether it resembles previous episodes.
