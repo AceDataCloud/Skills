@@ -209,6 +209,8 @@ def test_skill_requires_content_focus_and_final_byte_coverage() -> None:
     assert "sync/async lifecycle" in body
     assert "payload-bound Credits" in body
     assert "concrete outcome purchased" in body
+    assert "same composition for at least 2 continuous seconds" in body
+    assert "targeted final-byte frames at the start, midpoint, and end" in body
     assert "integration and value anchors" in body
 
     assert "FINAL-BYTE-COVERAGE:v1" in body
