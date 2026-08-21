@@ -174,8 +174,58 @@ def test_skill_requires_sales_blueprint_before_maestro() -> None:
     assert "Before Maestro, write" in body
     assert "fixed six-scene or fixed timestamp storyboard" in body
     assert "who buys, what changes, why this product is distinctive" in body
-    assert "Integration/price appears only when it advances the sale" in body
+    assert "one exact integration anchor" in body
+    assert "one payload-bound value anchor" in body
     assert "never place labels such as `accepted output`, `decoded proof`" in body
+
+
+def test_skill_requires_content_focus_and_final_byte_coverage() -> None:
+    body = text(SKILL)
+    assert "ACE-DATA-CLOUD-CONTENT-COVERAGE:v1" in body
+    for focus in (
+        "effect-proof",
+        "api-integration",
+        "price-value",
+        "workflow-mechanism",
+        "buyer-transformation",
+    ):
+        assert focus in body
+    for field in (
+        "BUYER_PAIN",
+        "PROMISED_EFFECT",
+        "PROOF_ASSET",
+        "INTEGRATION_ANCHOR",
+        "VALUE_ANCHOR",
+        "MECHANISM",
+        "SEMANTIC_BEATS",
+    ):
+        assert field in body
+    assert "PRIMARY_FOCUS" in body
+    assert "SECONDARY_FOCUS" in body
+    assert "mandatory lane" in body
+    assert "fixed timestamp" in body
+    assert "exact public endpoint" in body
+    assert "4–7-line safe request" in body
+    assert "sync/async lifecycle" in body
+    assert "payload-bound Credits" in body
+    assert "concrete outcome purchased" in body
+    assert "integration and value anchors" in body
+
+    assert "FINAL-BYTE-COVERAGE:v1" in body
+    for column in (
+        "Dimension",
+        "Treatment",
+        "Status",
+        "Timestamp/range",
+        "Caption",
+        "Narration",
+        "Visual/result",
+    ):
+        assert column in body
+    assert "pass|na|fail" in body
+    assert "Provenance or Blueprint text that never reached the MP4 does not count" in body
+    assert "primary and secondary focus depth" in body
+    assert "MUST NOT return an accepted submission" in body
 
 
 def test_every_topic_has_a_service_specific_sales_playbook() -> None:
@@ -251,6 +301,22 @@ def test_skill_is_a_general_runtime_campaign_planner() -> None:
     assert "A second contingency loop is forbidden" in body
 
 
+def test_registry_derives_api_price_and_effect_focus_evidence() -> None:
+    body = text(TOPICS)
+    for phrase in (
+        "customer-facing exact endpoint",
+        "safe minimal-request recipe",
+        "lifecycle/result evidence",
+        "payload dimensions that determine Credits",
+        "concrete outcome bought",
+        "focus-specific treatment opportunities",
+    ):
+        assert phrase in body
+    assert "API_FOCUS" in body
+    assert "PRICE_FOCUS" in body
+    assert "EFFECT_FOCUS" in body
+
+
 def test_registry_is_an_anchor_library_not_a_closed_catalog() -> None:
     body = text(TOPICS)
     assert "Anchor library — examples, not an allowlist" in body
@@ -280,9 +346,9 @@ def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
         assert forbidden not in combined
 
 
-def test_v4_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
+def test_v5_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
     body = text(SKILL)
-    assert 'metadata:\n  author: acedatacloud\n  version: "4.0"' in body
+    assert 'metadata:\n  author: acedatacloud\n  version: "5.0"' in body
     assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
     assert 'route to `/general-video`' in body
     assert '`scenario=auto`, `quality=pro`' in body
@@ -343,7 +409,7 @@ def test_v4_general_video_professional_director_contract() -> None:
     ):
         assert phrase in body
     assert 'Formal production uses **Pro**, never Standard' in body
-    assert 'Reviewer receives the Blueprint, Creative Genome' in body
+    assert 'Reviewer receives the Blueprint, Content Coverage contract, Creative Genome' in body
 
 
 def test_anchor_topics_supply_multiple_creative_opportunities() -> None:
@@ -378,9 +444,10 @@ def test_preview_phase_gate_forbids_production_actions() -> None:
     assert "They are not actions for the preview run" in body
 
 
-def test_run_count_enforces_eight_breadth_lanes() -> None:
+def test_server_enforces_eight_breadth_lanes() -> None:
     body = text(SKILL)
-    assert "((run_count - 1) mod 8) + 1" in body
+    assert "server-authoritative values" in body
+    assert "Never recompute or override them" in body
     for lane in (
         "image craft / typography / edit fidelity",
         "cross-service workflow transformation",
