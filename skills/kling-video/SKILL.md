@@ -165,8 +165,8 @@ POST /kling/talking-photo
 | `action` | `"text2video"`, `"image2video"`, `"extend"` | Generation mode |
 | `model` | See models table | Model to use |
 | `prompt` | string | Required generation or continuation instructions |
-| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
-| `duration` | O1: `5`; v3/v3-omni: `3`–`15`; others: `5`, `10` | Duration in seconds |
+| `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (default `std`; `4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
+| `duration` | O1: `5`; v3/v3-omni: `3`–`15`; others: `5`, `10` | Duration in seconds (default `5`) |
 | `start_image_url` | URL | Required first frame for `action=image2video` |
 | `end_image_url` | URL | Optional end frame for `image2video`; requires `start_image_url` |
 | `video_id` | string | Existing Kling video ID required by `action=extend` |
