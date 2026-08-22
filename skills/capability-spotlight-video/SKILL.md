@@ -4,7 +4,7 @@ description: Plan and submit a recurring series of diverse, premium Ace Data Clo
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "7.0"
+  version: "8.0"
 connections: [acedatacloud/acedatacloud]
 compatibility: Requires the AceDataCloud connector, Maestro MCP, and only the capability MCPs authorized for the selected campaign.
 ---
@@ -120,6 +120,41 @@ For generated hero media, the first capability-specific call MUST be the provide
 Poll according to the returned interval until terminal. For activation/source preparation, reserve up to two minutes (for example eight 15-second polls). If still pending, record one `ADC-SPOTLIGHT-SOURCE:v1` draft artifact with task ID and fingerprint, make no completion claim, and end without Maestro.
 
 Inspect every selected asset at full resolution. Before Blueprint approval, perform a complete body download for every selected URL, require non-zero bytes, decode at full resolution, and inspect pixel-level semantic fit to `HERO_CASE` and its assigned material role. A metadata, filename, URL, or task status alone never proves availability, visual content, or semantic relevance. A failed download, decode, or semantic-fit check makes that asset ineligible: choose another asset or candidate and do not submit Maestro. Generated media MUST use a real accepted result. Product/Agent/deployment stories use faithful, sanitized screenshots or lifecycle evidence. Full request JSON is evidence-only; customer-facing frames never contain internal review or provenance language.
+
+
+Before any Maestro handoff, write and validate this private material contract:
+
+```text
+PRODUCTION_PACK:v2
+SOURCE_PROVENANCE:v1
+PROVIDER_TOOL_CALL: <actual list/get/generate tool and returned record>
+SOURCE_TASK_ID: <exact provider task ID>
+REQUEST_FINGERPRINT: <normalized model/action/prompt/size/ratio/duration/quality/count/reference fields>
+TERMINAL_OUTPUT: <terminal status and exact result field>
+ACCEPTED_URL: <the URL returned by that same terminal task>
+FULL_BODY_SHA256: <hash after a complete GET>
+DECODED_MEDIA: <dimensions, duration, codec, frame rate, and semantic role>
+ASSET_CLASS: <executed-artifact | observed-ui | illustrative>
+```
+
+The chain is indivisible: provider tool call → exact task → request fingerprint → terminal output → exact accepted URL → full GET → SHA-256 → decoded media. Run a mechanical **payload/result consistency** check over model, ratio/size, duration, references, count, and action. Any contradiction makes the asset ineligible. When no actual list/get/generate task record proves this chain, a public URL is reference-only; it must not satisfy executed Hero or Proof evidence.
+
+Before generating or accepting any derivative, write:
+
+```text
+IDENTITY_INVARIANTS:v1
+OBJECT_OR_SUBJECT_COUNT: <exact count>
+GEOMETRY: <stable shapes, topology, placement relationships>
+EXACT_TEXT: <required literal text and occurrence count>
+COLOR_AND_MATERIAL: <stable colors/materials>
+REQUIRED_ELEMENTS: <must remain>
+FORBIDDEN_ELEMENTS: <must not appear>
+INVARIANT_MATRIX: <invariant × source/derivative pass|fail with pixel evidence>
+```
+
+Compare every row from full-resolution decoded pixels, including object/module count. A prose conclusion such as “identity preserved” cannot override a failed invariant. Reject the derivative instead of explaining away drift.
+
+Classify every product material as `executed-artifact | observed-ui | illustrative`. Illustrative media may establish mood or explain a mechanism, but it is never a real executed artifact or effect proof. Sanitize observed UI with explicit customer-safe crops: exclude Credits or 积分 balance, prompt or task body, account data, credentials/tokens, private memory, internal payload, and private runtime text. Re-decode the exact cropped asset before handoff.
 
 ## 5. Require a rich material plan
 
@@ -268,6 +303,11 @@ The Maestro production prompt begins with the non-routing line:
 
 It MUST NOT contain `ADC-SPOTLIGHT:v1`; that marker is reserved for the outer artifact summary. Explicitly submit a structured Maestro request with `quality=pro`, `scenario=auto` or `narrated`, a product-derived `style`, a product-appropriate `voice` preset, the channel `aspect`, a 25–60 second soft-target `duration` unless the campaign needs another Pro-valid duration, `langs`, the complete Production Pack brief, and all verified core-material `file_urls`. Voice is a Maestro JSON field—never attach an arbitrary pre-generated voice preview as a substitute. `duration` is a soft editorial target within Pro's 5–300 second limit, not permission to cut narration or CTA.
 
+
+Treat that soft target as an upper delivery boundary for this campaign: plan narration and the edit master at least 3 seconds below the requested duration, and require the final master to remain at or below it. Complete the initial render by 75% of the production budget. The final 20% is reserved only for one concentrated repair, confirmation review, final mux, and delivery manifest; do not add a new asset, chapter, or storyline there. Stop optional inspection before it can displace delivery.
+
+For narrated advertising, target integrated loudness of `-16 ±2 LUFS`, true peak at or below -1.5 dBFS, complete narration before the CTA hold, and preserve audible but subordinate music/SFX. These are final-byte checks, not reasons to pre-generate voice outside Maestro.
+
 Explicitly require:
 
 - route to `/general-video`;
@@ -284,7 +324,7 @@ Formal production uses **Pro**, never Standard as a quality proxy. Choose format
 
 Treat Pro turns as a delivery budget, not an invitation to explore: finish the initial render by turn 140; use only `check` plus a contact sheet and at most six targeted frames for each review; Do not run deprecated `validate` or `inspect`. The visual-review call MUST NOT launch an Agent or recursively inventory evidence—read the manifest, contact sheet, and targeted frames directly. Consolidate all blockers into one repair, run one final `check`, one final render, and one final-byte review. If that review exposes a new release blocker, allow one blocker-only contingency patch followed by one re-render and one confirmation review; do not change story, audio, assets, or already-passing scenes. A second contingency loop is forbidden. Then confirm delivery by turn 240 and stop optional inspection when any milestone is at risk.
 
-Immediately after Maestro accepts the unique UUID task, call `publish_artifact` before waiting or polling. Exact-ID `task_already_exists` is a successful idempotent replay: do not generate another UUID or resubmit.
+Immediately after Maestro accepts the unique UUID task, call `publish_artifact` with exact parameters `kind=video` and `status=draft` before waiting or polling. At ACK time it is never `delivered`. Exact-ID `task_already_exists` is a successful idempotent replay: do not generate another UUID or resubmit.
 
 The artifact summary—not the Maestro prompt—begins:
 
@@ -313,6 +353,7 @@ HERO_FIRST: <pass|fail + first-substantive-visual evidence>
 THREE_DISTINCT_PROOFS: <pass|fail + proof 1/2/3 evidence>
 FOCUS_HIERARCHY: <pass|fail + primary dominance and secondary fold>
 CLUTTER_REPETITION: <pass|fail + simultaneous claims/repeated copy/composition evidence>
+PACING_MOTION_DENSITY: <pass|fail + composition states, near-static holds, and continuous-real-motion evidence>
 API_PRICE_CONSISTENCY: <pass|fail|na + Ledger comparison>
 ONE_CTA: <pass|fail + action/destination/final-frame evidence>
 TECHNICAL_DELIVERY: <pass|fail + duration/codecs/audio/hero share>
@@ -320,5 +361,8 @@ VERDICT: <accepted|blocked>
 ```
 
 The independent Reviewer first watches the decoded film without reading the Blueprint or Truth Ledger. It must state the one-line recall, judge whether the accepted result earns attention in the first second, verify the silent first three seconds still communicate the product advantage, identify exactly three distinct proofs, and reject equal-weight cards, simultaneous independent claims, synonymous headlines, repeated compositions, compliance inserts, or multiple CTAs. Each beat has one semantic focal point; visual density may add craft and atmosphere, never more sales propositions.
+
+
+Apply a mechanical pacing gate without imposing a fixed scene template. For a still-driven 25–45 second film, no near-static single composition may persist for more than 6 seconds. In the 14-frame contact sheet, more than two consecutive near-identical samples fails. Require at least five materially distinct composition states, unless continuous real motion supplies equivalent visual progression. Decoded frame 0 must combine a readable Ace Data Cloud brand, the capability, and the real Hero; a weak corner label does not satisfy brand impact. Record all of this under `PACING_MOTION_DENSITY`; a failure blocks delivery.
 
 Only after that cold pass may the Reviewer compare every visible or spoken API, price, payload, result, and CTA against the Ledger. A non-primary API or price may be absent; unsupported or contradictory claims fail. Make an actual `Skill` call with `skill="visual-review"` against complete initial evidence. Fix blockers in one concentrated pass. Rebuild evidence from the exact final MP4 bytes, measure duration with `ffprobe`, verify hero runtime and ad-effectiveness evidence from the final contact sheet/transcript, and make a second actual confirmation call even when no initial blocker exists. If recall, hero-first, proof distinctness, focus hierarchy, clutter/repetition, truth consistency, duration, hero-share, audio, one CTA, or either review fails, Maestro MUST NOT return an accepted submission. The Reviewer receives the Ledger only after its blind assessment.

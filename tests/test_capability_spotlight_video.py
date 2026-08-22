@@ -368,9 +368,9 @@ def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
         assert forbidden not in combined
 
 
-def test_v8_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
+def test_v10_routes_production_pack_v2_to_general_video_without_spotlight_renderer_marker() -> None:
     body = text(SKILL)
-    assert 'metadata:\n  author: acedatacloud\n  version: "7.0"' in body
+    assert 'metadata:\n  author: acedatacloud\n  version: "8.0"' in body
     assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
     assert 'route to `/general-video`' in body
     assert '`quality=pro`' in body
@@ -541,3 +541,80 @@ def test_v8_sets_maestro_voice_style_scenario_and_soft_duration_in_json() -> Non
     assert 'never attach an arbitrary pre-generated voice preview' in body
     assert "Pro's 5–300 second limit" in body
     assert 'soft editorial target' in body
+
+
+def test_v10_requires_task_backed_source_provenance() -> None:
+    body = text(SKILL)
+    assert "PRODUCTION_PACK:v2" in body
+    assert "SOURCE_PROVENANCE:v1" in body
+    for field in (
+        "PROVIDER_TOOL_CALL",
+        "SOURCE_TASK_ID",
+        "REQUEST_FINGERPRINT",
+        "TERMINAL_OUTPUT",
+        "ACCEPTED_URL",
+        "FULL_BODY_SHA256",
+        "DECODED_MEDIA",
+    ):
+        assert field in body
+    assert "payload/result consistency" in body
+    assert "public URL is reference-only" in body
+    assert "must not satisfy executed Hero or Proof" in body
+
+
+def test_v10_requires_pixel_checked_identity_invariants() -> None:
+    body = text(SKILL)
+    assert "IDENTITY_INVARIANTS:v1" in body
+    for field in (
+        "OBJECT_OR_SUBJECT_COUNT",
+        "GEOMETRY",
+        "EXACT_TEXT",
+        "COLOR_AND_MATERIAL",
+        "REQUIRED_ELEMENTS",
+        "FORBIDDEN_ELEMENTS",
+        "INVARIANT_MATRIX",
+    ):
+        assert field in body
+    assert "full-resolution decoded pixels" in body
+    assert "identity preserved" in body
+    assert "cannot override a failed invariant" in body
+
+
+def test_v10_separates_observed_and_illustrative_product_materials() -> None:
+    body = text(SKILL)
+    assert "executed-artifact | observed-ui | illustrative" in body
+    assert "illustrative" in body and "effect proof" in body
+    assert "Credits or 积分 balance" in body
+    assert "prompt or task body" in body
+    assert "account data" in body
+    assert "internal payload" in body
+
+
+def test_v10_enforces_advertising_motion_density() -> None:
+    body = text(SKILL)
+    assert "PACING_MOTION_DENSITY" in body
+    assert "more than 6 seconds" in body
+    assert "more than two consecutive near-identical samples" in body
+    assert "at least five materially distinct composition states" in body
+    assert "continuous real motion" in body
+    assert "weak corner label" in body
+
+
+def test_v10_reserves_delivery_budget_and_locks_draft_status() -> None:
+    body = text(SKILL)
+    assert "at least 3 seconds below the requested duration" in body
+    assert "75% of the production budget" in body
+    assert "final 20%" in body
+    assert "kind=video" in body
+    assert "status=draft" in body
+    assert "never `delivered`" in body
+    assert "-16 ±2 LUFS" in body
+    assert "true peak at or below -1.5 dBFS" in body
+
+
+def test_v10_seedance_requires_same_task_request_result_chain() -> None:
+    body = text(TOPICS)
+    assert "same retrievable Seedance task" in body
+    assert "probe returning null" in body
+    assert "unrelated public MP4" in body
+    assert "Ratio/size, duration, model, and reference fields must agree" in body
