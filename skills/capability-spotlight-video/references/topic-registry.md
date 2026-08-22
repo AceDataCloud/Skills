@@ -77,7 +77,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - FILM_ARCHETYPES: product reveal; kinetic manifesto; before/after case film.
 - MATERIAL_OPPORTUNITIES: full poster; type macro; source/edit comparison; campaign applications.
 - FORBIDDEN_REPETITION: generic prompt card→image→three proof labels.
-- LIMITS: maximum 3 image calls; typography failure gets one targeted replacement; never redraw the canonical logo.
+- LIMITS: maximum 3 image calls; typography failure gets one targeted replacement; never redraw the canonical logo. For consistent-campaign derivatives, inventory object/module count, geometry, exact text, colors/materials, and required/forbidden elements before editing, then reject any full-resolution invariant drift.
 
 ## TOPIC nano-banana-consistency
 
@@ -190,7 +190,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
   - `seedance-image-reference-control`: use a public fictional product/interface image as `reference_image`; prove visible structure/text treatment remains recognizable while the accepted MP4 adds requested camera motion. Show the exact reference URL, request, and start/middle/end decoded output frames; do not claim person/character identity or motion-reference input.
   - `seedance-motion-reference`: supply reference video for motion/camera language and show the generated reinterpretation.
   - `seedance-audio-reference`: pair a character image and safe reference audio; verify motion/audio result without identity claims about real people.
-- EVIDENCE: actual reference media at a provider-downloadable public HTTPS URL, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle. Remote video APIs must never receive `data:`, `blob:`, or local-file reference URLs; upload references first and verify HTTPS reachability.
+- EVIDENCE: actual reference media at a provider-downloadable public HTTPS URL, accepted output MP4, frame/contact sheet, minimal multimodal request, task lifecycle. The same retrievable Seedance task must prove request payload → terminal result URL → decoded MP4; a probe returning null, an unrelated public MP4, or metadata without a task record is ineligible. Ratio/size, duration, model, and reference fields must agree with decoded output. Remote video APIs must never receive `data:`, `blob:`, or local-file reference URLs; upload references first and verify HTTPS reachability.
 - CREATIVE: styles `cinematic,vibrant,futuristic`; layouts `timeline,comparison-field,full-bleed-case-study`; voices `bright-female,energetic-male,storyteller-male`.
 - VISUAL_WORLDS: camera-control launch bay; spatial UI world.
 - FILM_ARCHETYPES: cinematic UI demo; static→motion transformation; launch trailer.
@@ -224,7 +224,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
   - `acechat-tool-trace`: run a safe read-only task with one MCP and one Skill; show the real tool trace and resulting artifact.
   - `acechat-memory-schedule`: demonstrate a real memory/scheduled-task lifecycle using sanitized UI screenshots and authored flow.
   - `acechat-realtime-workspace`: demonstrate the real realtime/voice connection and one supported tool interaction without fabricated UI.
-- EVIDENCE: faithful live UI capture, sanitized tool trace, public API/docs, real artifact or scheduled run metadata.
+- EVIDENCE: faithful live UI capture, sanitized tool trace, public API/docs, real delivered artifact and scheduled run metadata. Label concept visuals as illustrative; they cannot prove an Agent executed or delivered the depicted result. Crop UI to exclude Credits/积分 balance, account data, tokens, private memory, prompts/task bodies, internal payloads, and unrelated runtime text.
 - CREATIVE: styles `swiss,industrial,editorial`; layouts `ui-walkthrough,timeline,split-proof`; voices `clean-female,calm-male,anchor-female`.
 - VISUAL_WORLDS: living operations room; tool-to-artifact workspace.
 - FILM_ARCHETYPES: cinematic UI journey; workflow transformation; metric-to-human payoff.
