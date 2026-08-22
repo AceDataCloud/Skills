@@ -39,7 +39,7 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 
 | Model | Best For | Limits |
 |-------|----------|--------|
-| `doubao-seedance-2-5-260628` | Up to 30 seconds, pure-audio or multimodal reference, video edit/extend | `480p`, `720p`; 30 images / 10 videos / 10 audios / 50 total |
+| `doubao-seedance-2-5-260628` | Up to 30 seconds, pure-audio or multimodal reference, video edit/extend | `480p`, `720p`, `1080p`; 30 images / 10 videos / 10 audios / 50 total |
 
 Use `omni_reference_task_type: "auto"`, `"edit"`, or `"extend"`. Edit and extend require `reference_video` and `ratio: "adaptive"`; edit also requires `duration: -1`. Optional `output_format` is `mp4` or `mov`.
 
@@ -172,7 +172,7 @@ POST /seedance/videos
 | `content` | array | Input items: `text`, `image_url`, `audio_url` (2.0), `video_url` (2.0) (required) |
 | `resolution` | `"480p"`, `"720p"`, `"1080p"`, `"4k"` | Output resolution. `4k` is `doubao-seedance-2-0-260128` (standard) only; `2-0-fast` / `2-0-mini` max out at `720p` (default: 720p for pro/2.0, 480p for lite) |
 | `ratio` | `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"21:9"`, `"adaptive"` | Aspect ratio (default: 16:9) |
-| `duration` | `2` – `30`, or `-1` | Model-specific duration; 2.0 supports 4–15, 2.5 supports 4–30 |
+| `duration` | `2` – `30`, or `-1` | 1.0: 2–12 (no auto); 1.5 Pro: 4–12/-1; 2.0: 4–15/-1; 2.5: 4–30/-1 |
 | `frames` | 29–289 (must satisfy 25+4n) | Frame count — mutually exclusive with `duration` |
 | `seed` | -1 to 4294967295 | Seed for reproducible results (-1 = random) |
 | `generate_audio` | `true` / `false` | Generate audio (supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore it) |
@@ -181,7 +181,9 @@ POST /seedance/videos
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `omni_reference_task_type` | `auto`, `edit`, `extend` | Seedance 2.5 task type |
 | `output_format` | `mp4`, `mov` | Seedance 2.5 output format |
-| `tools` | object[] | Optional Seedance 2.5 tool configurations |
+| `tools` | object[] | Seedance 2.5 web search tool, e.g. `[{"type":"web_search"}]` |
+| `priority` | 0–9 | Seedance 2.5 queue priority |
+| `safety_identifier` | string | Stable anonymous end-user ID (max 64 chars; do not send PII) |
 | `execution_expires_after` | number | Task timeout threshold in seconds |
 
 ## Inline Parameter Syntax
@@ -202,9 +204,9 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - `first_frame` and `last_frame` may be combined in one request, but `reference_image` is mutually exclusive with `first_frame` / `last_frame` — do not mix a reference image with first/last frames
 - `generate_audio: true` is supported by `doubao-seedance-1-5-pro-251215` and the `doubao-seedance-2-0` series; other models ignore this field
 - Lite models are split: `*-lite-t2v-*` only accepts text, `*-lite-i2v-*` only accepts image-to-video
-- `audio_url` and `video_url` reference items are used by the **Seedance 2.0 series only**
+- `audio_url` and `video_url` reference items are supported by Seedance 2.0 and 2.5; 2.5 also supports pure-audio reference
 - Resolution options are `480p`, `720p`, `1080p`, and `4k` (`4k` is `doubao-seedance-2-0-260128` only; `2-0-fast` / `2-0-mini` max out at `720p`) — there is no 360p or 540p
-- Duration range is **2–15 seconds** (Seedance 2.0 supports 4–15) — values outside this range will fail
+- Duration is model-specific: 1.0 supports 2–12; 1.5 Pro supports 4–12/-1; 2.0 supports 4–15/-1; 2.5 supports 4–30/-1
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
