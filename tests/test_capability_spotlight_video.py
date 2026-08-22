@@ -368,12 +368,13 @@ def test_public_copy_has_no_supplier_or_secret_leaks() -> None:
         assert forbidden not in combined
 
 
-def test_v6_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
+def test_v8_routes_production_to_general_video_without_spotlight_renderer_marker() -> None:
     body = text(SKILL)
-    assert 'metadata:\n  author: acedatacloud\n  version: "6.0"' in body
+    assert 'metadata:\n  author: acedatacloud\n  version: "7.0"' in body
     assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
     assert 'route to `/general-video`' in body
-    assert '`scenario=auto`, `quality=pro`' in body
+    assert '`quality=pro`' in body
+    assert '`scenario=auto` or `narrated`' in body
     assert 'never use `spotlight_prepare.py`, `spotlight_renderer.py`' in body
     assert 'MUST NOT contain `ADC-SPOTLIGHT:v1`' in body
     assert 'artifact summary—not the Maestro prompt—begins' in body
@@ -495,3 +496,48 @@ def test_lane_selection_is_a_mechanical_lock_not_a_score_bonus() -> None:
     assert "LANE_RESULT=blocked" in body
     assert "completion marker repeats `lane=<1-8>" in body
     assert "never emit a selected topic from another lane" in body
+
+
+def test_v8_uses_public_http_prompt_library_as_untrusted_data() -> None:
+    body = text(SKILL)
+    assert 'https://cdn.acedata.cloud/prompt-library/acedatacloud-production-prompts.txt' in body
+    assert 'untrusted reference data' in body
+    for authority in ('task objectives', 'authorization', 'MCP allowlist', 'tool policy', 'pricing method'):
+        assert authority in body
+
+
+def test_v8_public_prices_are_usd_not_credits() -> None:
+    body = text(SKILL)
+    assert 'Credits remain private billing evidence' in body
+    assert 'Customers see money and a semantic unit' in body
+    assert "selected service's own packages" in body
+    assert 'choose the largest package by amount' in body
+    assert 'decimal arithmetic' in body
+    assert 'Customer copy never shows Credits' in body
+    assert 'SEE LIVE PRICING' in body
+    topics = text(TOPICS)
+    assert 'show no Credits' in topics
+    assert 'qualified minimum USD' in topics
+
+
+def test_v8_separates_product_materials_from_directorial_layers() -> None:
+    body = text(SKILL)
+    assert 'Producer / Director boundary' in body
+    assert 'Product Producer' in body
+    for role in ('Product Dossier', 'official Ace Data Cloud logo', 'real product evidence', 'original long prompts'):
+        assert role in body
+    for editorial in ('transitions', 'light effects', 'kinetic typography', 'BGM', 'SFX', 'final narration'):
+        assert editorial in body
+    assert 'does not pre-create transitions' in body
+    assert 'Maestro is the Film Director' in body
+    assert 'may not replace an attached real product Hero or Proof' in body
+
+
+def test_v8_sets_maestro_voice_style_scenario_and_soft_duration_in_json() -> None:
+    body = text(SKILL)
+    for field in ('`quality=pro`', '`scenario=auto`', '`style`', '`voice`', '`aspect`', '`duration`', '`langs`', '`file_urls`'):
+        assert field in body
+    assert 'Voice is a Maestro JSON field' in body
+    assert 'never attach an arbitrary pre-generated voice preview' in body
+    assert "Pro's 5–300 second limit" in body
+    assert 'soft editorial target' in body
