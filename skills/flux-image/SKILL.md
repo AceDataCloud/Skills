@@ -20,7 +20,7 @@ Generate and edit images through AceDataCloud's Flux API.
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "size": "1024x1024", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
@@ -69,13 +69,15 @@ POST /flux/images
   "prompt": "change the background to a beach sunset",
   "action": "edit",
   "image_url": "https://example.com/photo.jpg",
-  "model": "flux-kontext-pro"
+  "model": "flux-kontext-pro",
+  "size": "1:1"
 }
 ```
 
 ## Gotchas
 
 - Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro/flux-2 models, aspect ratios (e.g., `"16:9"`) with kontext models
+- `size` is required for both generation and editing requests
 - Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
