@@ -59,7 +59,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: GPT Image 2 generates and edits production-ready visual creative where typography and composition matter.
 - HERO_CASES: oversized editorial poster reveal; faithful source→campaign composite with a decoded before/after inventory.
 - UNIQUE_ADVANTAGES: readable headline hierarchy; controlled spacing and layout; faithful edit/composite behavior.
-- PRICE_SCENARIOS: quote one exact model+size+quality+n generation or one exact edit payload; bind the displayed unit price to that payload.
+- PRICE_SCENARIOS: quote one exact model+size+quality+n generation or edit payload as a qualified minimum USD per image/result using this service's largest public Usage package.
 - HOOKS: `AI posters shouldn’t make you fix every headline.`; `The prompt said premium. The typography should too.`
 - CTA: `EXPLORE GPT IMAGE 2 API` → `platform.acedata.cloud/documents/gpt-image-2`.
 - TONE: energetic creative-director launch; punch the failure, pause on the poster reveal, confident price, decisive CTA.
@@ -92,7 +92,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: Nano Banana turns one approved subject into a coherent campaign family across visibly different scenes.
 - HERO_CASES: 2×2 campaign consistency wall across four environments; four-beat fictional character continuity reveal.
 - UNIQUE_ADVANTAGES: subject consistency; editable variations; campaign-scale reuse from one reference.
-- PRICE_SCENARIOS: quote one exact model+count+reference payload and show the per-generation unit.
+- PRICE_SCENARIOS: quote one exact model+count+reference payload as a qualified minimum USD per generated result using this service's largest public Usage package.
 - HOOKS: `One campaign. Four worlds. Same product.`; `Your character should not change actors between frames.`
 - CTA: `BUILD A CONSISTENT CAMPAIGN` → `studio.acedata.cloud`.
 - TONE: playful visual launch; rapid variant build, satisfying 2×2 lock, upbeat CTA.
@@ -121,7 +121,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: Seedream creates art-directed commercial images with controlled material detail, depth, and usable composition.
 - HERO_CASES: full campaign image→ceramic/textile macro push; environmental product scene→copy-space and material callouts.
 - UNIQUE_ADVANTAGES: visible fine material texture; natural depth and lighting; deliberate commercial copy space.
-- PRICE_SCENARIOS: quote one exact model+output_pixels+count payload; show Credits when dynamic USD cannot be evaluated.
+- PRICE_SCENARIOS: quote one exact model+output_pixels+count payload as a qualified minimum USD per image; show the qualified customer-facing USD semantic unit; if it cannot be evaluated deterministically, use `SEE LIVE PRICING` and show no Credits.
 - HOOKS: `“Good enough” imagery doesn’t sell premium products.`; `Zoom in. The material should still sell the story.`
 - CTA: `TRY SEEDREAM IN THE STUDIO` → `studio.acedata.cloud`.
 - TONE: premium and sensory; restrained pain, luxurious full-screen reveal, warm confident price, inviting CTA.
@@ -150,7 +150,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: MiniMax H3 combines text and multimodal references to control the beginning, movement, and destination of a shot.
 - HERO_CASES: first→last frame cinematic transition; reference performance with observable source→motion relationship.
 - UNIQUE_ADVANTAGES: multimodal control; coherent transition endpoints; camera-specific motion.
-- PRICE_SCENARIOS: quote one exact model+duration+resolution+reference payload.
+- PRICE_SCENARIOS: quote one exact model+duration+resolution+reference payload in the rule's true USD unit; fixed duration tiers stay per request, not fabricated per second.
 - HOOKS: `A transition needs a destination—not a surprise ending.`; `Direct the first frame. Direct the last. Let motion connect them.`
 - CTA: `DIRECT YOUR NEXT SHOT` → `studio.acedata.cloud`.
 - TONE: cinematic tension and release; hold endpoints, accelerate through motion, land confidently.
@@ -215,7 +215,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: AceChat is a stateful agent workspace that combines live tools, MCP, Skills, Memory, Artifacts, Scheduled Tasks, and realtime voice.
 - HERO_CASES: one real tool trace that produces an artifact; memory→schedule→completed run lifecycle with sanitized evidence.
 - UNIQUE_ADVANTAGES: real MCP/Skill execution; persistent context and memory; artifacts and scheduled automation in one workspace.
-- PRICE_SCENARIOS: show the actual model/tool call Credits when returned; otherwise use `See live pricing` and never invent a flat workspace price.
+- PRICE_SCENARIOS: show customer-facing USD only when exact model/tool units and the service package can be evaluated; otherwise use `SEE LIVE PRICING` and never invent a flat workspace price.
 - HOOKS: `CONTEXT SHOULDN'T RESET.`; `The next run starts with what the last run learned.`
 - CTA: `OPEN ACECHAT` → `studio.acedata.cloud`.
 - TONE: sharp technical confidence; rapid tool expansion, satisfying artifact result, calm automation proof, decisive CTA.
@@ -279,7 +279,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: Maestro turns one production brief into script, assets, narration, composition, independent review, and a delivered video project.
 - HERO_CASES: fragmented script, assets, voice, review, and final film steps collapse into one real delivered production; initial review blockers→one refinement→confirmed final bytes.
 - UNIQUE_ADVANTAGES: complete production pipeline; built-in independent review; editable/reusable project and final deliverables.
-- PRICE_SCENARIOS: quote the exact quality+duration+aspect+language request; show actual delivered-duration billing and failed-task zero charge only when live rules/docs verify it.
+- PRICE_SCENARIOS: quote the exact quality+duration+aspect+language request as qualified USD using the service package; show actual delivered-duration billing and failed-task zero charge only when live rules/docs verify it.
 - HOOKS: `A brief is not a video. Five disconnected tools are not a workflow.`; `Script, assets, voice, review, final film—one production brief.`
 - CTA: `CREATE WITH MAESTRO` → `studio.acedata.cloud`.
 - TONE: controlled overwhelm→rapid workflow collapse→emotional final-film payoff→confident offer.
