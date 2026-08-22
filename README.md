@@ -59,7 +59,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 ### Connectors
 
-These skills drive third-party connectors users wire up at [auth.acedata.cloud/user/connections](https://auth.acedata.cloud/user/connections). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
+These skills drive third-party connectors users wire up at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
 
 | Skill | Description | Connection |
 |-------|-------------|------------|

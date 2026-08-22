@@ -58,7 +58,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect 掘金 at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -145,7 +145,7 @@ def api_env(method: str, path: str, jar: list, *, body=None) -> dict:
         msg = env.get("err_msg", "")
         if err in (401, 403) or "登录" in str(msg):
             die(f"auth failed (err_no={err}: {msg}) — cookie likely expired. "
-                f"Reconnect at https://auth.acedata.cloud/user/connections.")
+                f"Reconnect at https://studio.acedata.cloud/console/connectors.")
         die(f"juejin API error on {path} (err_no={err}): {msg}")
     return env
 

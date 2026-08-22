@@ -55,7 +55,7 @@ class ModeSelection(unittest.TestCase):
     def test_no_credential_dies_with_a_reconnect_hint(self):
         code, payload = run(["whoami"], {})
         self.assertEqual(code, 1)
-        self.assertIn("connections", payload["error"])
+        self.assertIn("console/connectors", payload["error"])
 
     def test_cookie_jar_without_ctoken_is_rejected(self):
         jar = [c for c in COOKIES if c["name"] != "yuque_ctoken"]

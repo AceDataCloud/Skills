@@ -31,12 +31,12 @@ connector injected. Check the environment first and follow the matching section:
 ```sh
 if [ -n "$DISCORD_USER_TOKEN" ]; then echo "mode: user-token (full)"; \
 elif [ -n "$DISCORD_TOKEN" ]; then echo "mode: oauth (read-only)"; \
-else echo "no Discord connection — connect at https://auth.acedata.cloud/user/connections"; fi
+else echo "no Discord connection — connect at https://studio.acedata.cloud/console/connectors"; fi
 ```
 
 Both tokens are **secret — full account access. Never echo or print them.** On
 `401`, the token expired or was revoked — tell the user to reconnect at
-`auth.acedata.cloud/user/connections`. On `429`, sleep the `retry_after`
+`studio.acedata.cloud/console/connectors`. On `429`, sleep the `retry_after`
 seconds, then retry; never parallelize.
 
 ---

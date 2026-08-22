@@ -51,7 +51,7 @@ python3 "$JJ" whoami
 ```
 
 On an auth error (`err_no` 401 / "请登录") the cookie is expired — have the user
-reconnect at <https://auth.acedata.cloud/user/connections>. Do **not** loop-retry.
+reconnect at <https://studio.acedata.cloud/console/connectors>. Do **not** loop-retry.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 

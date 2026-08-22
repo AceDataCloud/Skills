@@ -77,7 +77,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect 开源中国 at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -141,7 +141,7 @@ def request(method: str, url: str, jar: list, *, headers=None, body=None, write:
         if e.code in (301, 302, 303, 307, 308):
             die(f"开源中国 redirected {method} {url} — not followed, so no "
                 f"credential left oschina.net. You are most likely logged out; "
-                f"reconnect at https://auth.acedata.cloud/user/connections."
+                f"reconnect at https://studio.acedata.cloud/console/connectors."
                 + (" This was a WRITE: its outcome is UNKNOWN — check your "
                    "drafts before retrying." if write else ""))
         raw = e.read()
@@ -179,7 +179,7 @@ def api_call(method: str, path: str, jar: list, *, body=None, write: bool = Fals
         code = env.get("code")
         if code in (40001, 401, 403) or "未登录" in msg or "登录" in msg:
             die(f"auth failed (code={code}: {msg}) — cookie likely expired. "
-                f"Reconnect at https://auth.acedata.cloud/user/connections.")
+                f"Reconnect at https://studio.acedata.cloud/console/connectors.")
         die(f"开源中国 API error on {path} (code={code}): {msg}")
     return env.get("result")
 

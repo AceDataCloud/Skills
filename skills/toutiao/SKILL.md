@@ -58,7 +58,7 @@ python3 "$TT" whoami
 ```
 
 On an auth error the cookie is expired — tell the user to reconnect at
-<https://auth.acedata.cloud/user/connections>. Do **not** retry in a loop.
+<https://studio.acedata.cloud/console/connectors>. Do **not** retry in a loop.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 
@@ -104,7 +104,7 @@ unless the body already carries 头条-hosted images).
   publish with 头条's own message — relay it, don't retry in a loop.
 - **14-day edit window**: 头条 refuses edits to articles published more than 14
   days ago, so this skill does not offer an edit command.
-- **Cookie expiry**: reconnect at auth.acedata.cloud/user/connections.
+- **Cookie expiry**: reconnect at studio.acedata.cloud/console/connectors.
 - **Never print `TOUTIAO_COOKIES`** — it is full account access.
 - **ToS**: cookie automation acts only on the user's own account with their own
   captured cookie; the user owns that risk.

@@ -62,7 +62,7 @@ def api_request(method: str, path: str, payload: dict[str, Any] | None = None) -
     if not token:
         raise DiscordBotError(
             "DISCORDBOT_TOKEN is not set; connect Discord Bot at "
-            "https://auth.acedata.cloud/user/connections"
+            "https://studio.acedata.cloud/console/connectors"
         )
     body = json.dumps(payload).encode() if payload is not None else None
     request = urllib.request.Request(

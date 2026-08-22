@@ -100,7 +100,7 @@ def parse_cookie_jar(raw: str) -> list[dict]:
         die(
             "REDDIT_COOKIES is missing a valid reddit_session — log in on reddit.com, "
             "re-capture with the ACE extension, then reconnect at "
-            "https://auth.acedata.cloud/user/connections."
+            "https://studio.acedata.cloud/console/connectors."
         )
     return normalized
 
@@ -308,7 +308,7 @@ class RedditClient:
             return cls("cookie", cookies=parse_cookie_jar(raw_cookies))
         die(
             "No Reddit credential is available — connect Reddit with Cookie or OAuth at "
-            "https://auth.acedata.cloud/user/connections."
+            "https://studio.acedata.cloud/console/connectors."
         )
 
     @property
@@ -375,7 +375,7 @@ class RedditClient:
         if status in {401, 403}:
             die(
                 f"Reddit authentication failed ({status}) — the credential may be expired or blocked. "
-                "Reconnect at https://auth.acedata.cloud/user/connections."
+                "Reconnect at https://studio.acedata.cloud/console/connectors."
             )
         if status == 429:
             die("Reddit rate limit reached (429). Wait before retrying; do not loop-retry.")

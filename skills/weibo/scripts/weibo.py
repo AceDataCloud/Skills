@@ -61,7 +61,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect 微博 at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -142,7 +142,7 @@ def get_json(url, jar):
     status, text = request("GET", url, jar)
     if status in (401, 403):
         die(f"auth failed ({status}) on {url} — cookie likely expired. "
-            f"Reconnect at https://auth.acedata.cloud/user/connections.")
+            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -153,7 +153,7 @@ def st_token(jar):
     tok = cookie_value(jar, "XSRF-TOKEN")
     if not tok:
         die("no XSRF-TOKEN cookie — reconnect 微博 at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     return tok
 
 
@@ -165,7 +165,7 @@ def wb_uid(jar):
     uid = data.get("uid")
     if not uid:
         die("not logged in or uid unavailable (cookie expired?) — reconnect 微博 "
-            "at https://auth.acedata.cloud/user/connections.")
+            "at https://studio.acedata.cloud/console/connectors.")
     return uid
 
 

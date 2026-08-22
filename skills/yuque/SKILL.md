@@ -49,7 +49,7 @@ python3 "$Y" whoami
 ```
 
 On an auth error, ask the user to reconnect at
-<https://auth.acedata.cloud/user/connections>. Never ask for their password,
+<https://studio.acedata.cloud/console/connectors>. Never ask for their password,
 and never ask them to paste a Cookie into the chat.
 
 ## Read

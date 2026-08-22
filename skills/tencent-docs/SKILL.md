@@ -56,7 +56,7 @@ Common error codes:
 
 | code | meaning | what to do |
 |---|---|---|
-| `400006` | access token invalid / expired | tell the user to reconnect 腾讯文档 at <https://auth.acedata.cloud/user/connections> — do **not** loop-retry |
+| `400006` | access token invalid / expired | tell the user to reconnect 腾讯文档 at <https://studio.acedata.cloud/console/connectors> — do **not** loop-retry |
 | `400007` | VIP (超级会员) privilege required | the requested capability needs a Tencent Docs 超级会员; tell the user, link <https://docs.qq.com/vip> |
 | `400008` | 积分 (credits) insufficient | AI-generation quota is exhausted; tell the user to top up |
 | `11607` / `-32603` | bad request params | recheck `fileID` / `type` / body fields against the recipe below |

@@ -54,7 +54,7 @@ def load_token() -> str:
     tok = os.environ.get("DISCORD_USER_TOKEN")
     if not tok:
         die("DISCORD_USER_TOKEN is not set — connect Discord (User Token) at "
-            "https://auth.acedata.cloud/user/connections, then retry.")
+            "https://studio.acedata.cloud/console/connectors, then retry.")
     return tok.strip()
 
 
@@ -208,7 +208,7 @@ def main() -> None:
         asyncio.run(run(args))
     except LoginFailure as e:
         die("auth failed — the Discord user token is wrong or expired. Reconnect "
-            f"at https://auth.acedata.cloud/user/connections. ({e})")
+            f"at https://studio.acedata.cloud/console/connectors. ({e})")
     except Forbidden as e:
         die(f"forbidden by Discord (no access to that channel/server, or blocked): {e}")
     except NotFound as e:
@@ -222,7 +222,7 @@ def main() -> None:
         die(f"Discord API error (HTTP {status}): {e}")
     except Exception as e:
         die(f"Discord request failed ({type(e).__name__}: {e}). Likely an expired "
-            "token — reconnect at https://auth.acedata.cloud/user/connections.")
+            "token — reconnect at https://studio.acedata.cloud/console/connectors.")
 
 
 if __name__ == "__main__":

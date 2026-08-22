@@ -47,7 +47,7 @@ python3 "$SKILL_DIR/scripts/oschina.py" whoami
 ```
 
 If this fails with an auth error, the cookie has expired. Ask the user to
-reconnect at `https://auth.acedata.cloud/user/connections` rather than retrying.
+reconnect at `https://studio.acedata.cloud/console/connectors` rather than retrying.
 
 ## Create a draft — GATED
 

@@ -40,7 +40,7 @@ python3 "$H" publications          # list the user's blogs (verifies the cookie)
 ```
 
 On an auth error the cookie is expired — have the user reconnect at
-<https://auth.acedata.cloud/user/connections>. Do **not** loop-retry.
+<https://studio.acedata.cloud/console/connectors>. Do **not** loop-retry.
 
 ## ⚠️ Non-Pro blogs are automoderated — write EDITORIAL, not ads
 

@@ -30,7 +30,7 @@ than retrying.
 
 Errors are JSON `{"code": <n>, "message": "<reason>"}`. A `401` means the
 bot token is wrong/reset — ask the user to re-paste it at
-`auth.acedata.cloud/user/connections`. A `429` carries `retry_after`
+`studio.acedata.cloud/console/connectors`. A `429` carries `retry_after`
 (seconds) — sleep that long, then retry; never parallelize.
 
 ## Sending safety

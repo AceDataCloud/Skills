@@ -110,7 +110,7 @@ def load_cookies() -> list:
     raw = os.environ.get(env)
     if not raw:
         die(f"{env} is not set — connect 51CTO at "
-            f"https://auth.acedata.cloud/user/connections, then retry.")
+            f"https://studio.acedata.cloud/console/connectors, then retry.")
     try:
         jar = json.loads(raw)
     except json.JSONDecodeError as e:
@@ -149,13 +149,13 @@ def cookie_header(jar: list, url: str) -> str:
         pair = f"{name}={value}"
         if any(ch in pair for ch in "\r\n\x00"):
             die("a cookie in the jar contains a line break and cannot be sent — "
-                "reconnect at https://auth.acedata.cloud/user/connections.")
+                "reconnect at https://studio.acedata.cloud/console/connectors.")
         try:
             pair.encode("latin-1")
         except UnicodeEncodeError:
             die("a cookie in the jar contains characters that cannot be sent in "
                 "an HTTP header — reconnect at "
-                "https://auth.acedata.cloud/user/connections.")
+                "https://studio.acedata.cloud/console/connectors.")
         parts.append(pair)
     return "; ".join(parts)
 
@@ -197,7 +197,7 @@ def request(method: str, url: str, jar: list, *, headers=None, form=None,
         if e.code in (301, 302, 303, 307, 308):
             die("51CTO redirected the request — not followed, so no credential "
                 "left 51cto.com. You are most likely logged out; reconnect at "
-                "https://auth.acedata.cloud/user/connections."
+                "https://studio.acedata.cloud/console/connectors."
                 + (" This was a WRITE: its outcome is UNKNOWN — check your "
                    "drafts before retrying." if write else ""))
         # Draining the error body can itself raise (IncompleteRead / reset).
@@ -228,7 +228,7 @@ def publish_page(jar: list) -> tuple[str, dict]:
     status, html = request("GET", PUBLISH_PAGE, jar)
     if status in (401, 403):
         die("auth failed — cookie expired or invalid. Reconnect at "
-            "https://auth.acedata.cloud/user/connections.")
+            "https://studio.acedata.cloud/console/connectors.")
     if status != 200:
         die(f"unexpected status {status} loading the 51CTO publish page")
     m = _USER_RE.search(html)
@@ -238,10 +238,10 @@ def publish_page(jar: list) -> tuple[str, dict]:
         # changed" instead of always blaming the cookie.
         if "/user/login" in html or "home.51cto.com/login" in html:
             die("not logged in to 51CTO — reconnect at "
-                "https://auth.acedata.cloud/user/connections.")
+                "https://studio.acedata.cloud/console/connectors.")
         die("could not confirm the 51CTO session from the publish page — either "
             "the cookie expired or 51CTO changed its markup. Try reconnecting "
-            "at https://auth.acedata.cloud/user/connections; if that does not "
+            "at https://studio.acedata.cloud/console/connectors; if that does not "
             "help, this skill needs updating.")
     link, avatar = m.group(1), m.group(2)
     csrf_m = _CSRF_RE.search(html)
