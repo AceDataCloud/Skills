@@ -32,6 +32,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
 | `wan2.6-i2v` | Image-to-Video | Animating a still image into video |
 | `wan2.6-r2v` | Reference Video-to-Video | Character extraction and transfer from reference video |
 | `wan2.6-i2v-flash` | Image-to-Video (Fast) | Quick image-to-video generation |
+| `wan3.0-video` | All-in-One | Text, frames, reference media, files, and public links |
 
 ## Workflows
 
@@ -150,3 +151,24 @@ POST /wan/videos
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 
 > **MCP:** `pip install mcp-wan` | Hosted: `https://wan.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+
+
+## Wan 3 All-in-One
+
+`wan3.0-video` infers the workflow from `media`. Supported types are `first_frame`, `last_frame`, `reference_image` (up to 10), `reference_video` (up to 5, 15 seconds total), `reference_audio` (up to 5, 15 seconds total), `file`, and `link`. Frame mode cannot be mixed with reference/file/link mode.
+
+```json
+POST /wan/videos
+{
+  "model": "wan3.0-video",
+  "prompt": "Use image 1 to create a cinematic product video",
+  "media": [{"type":"reference_image","url":"https://cdn.acedata.cloud/r9vsv9.png"}],
+  "resolution": "720P",
+  "ratio": "16:9",
+  "duration": 5,
+  "audio": true,
+  "async": true
+}
+```
+
+Wan 3 supports 2–30 seconds or `-1` automatic duration. Poll with the existing `/wan/tasks` endpoint.

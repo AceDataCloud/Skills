@@ -27,6 +27,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
+| [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
 | [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
 
@@ -211,6 +212,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
 | sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
+| qwen-image | [mcp-qwen-image](https://pypi.org/project/mcp-qwen-image/) | `pip install mcp-qwen-image` | `https://qwen-image.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | happyhorse-video | [mcp-happyhorse](https://pypi.org/project/mcp-happyhorse/) | `pip install mcp-happyhorse` | `https://happyhorse.mcp.acedata.cloud/mcp` |
