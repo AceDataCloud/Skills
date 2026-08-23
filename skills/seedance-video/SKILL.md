@@ -181,7 +181,7 @@ POST /seedance/videos
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
 | `omni_reference_task_type` | `auto`, `edit`, `extend` | Seedance 2.5 task type |
 | `output_format` | `mp4`, `mov` | Seedance 2.5 output format |
-| `tools` | object[] | Seedance 2.5 web search tool, e.g. `[{"type":"web_search"}]` |
+| `tools` | object[] | At most one Seedance 2.5 `web_search` tool; optional `limit` / `max_keyword` are 1–50, and `sources` can contain `toutiao`, `douyin`, `moji`, or `search_engine` |
 | `priority` | 0–9 | Seedance 2.5 queue priority |
 | `safety_identifier` | string | Stable anonymous end-user ID (max 64 chars; do not send PII) |
 | `execution_expires_after` | number | Task timeout threshold in seconds |

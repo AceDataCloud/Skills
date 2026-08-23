@@ -18,6 +18,7 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/messages` | Native Claude Messages API |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -105,6 +106,32 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Native Claude Messages
+
+Use `POST /v1/messages` for Claude's native Messages API. For current Claude
+models, configure adaptive thinking and the desired reasoning effort:
+
+```json
+{
+  "model": "claude-opus-5",
+  "max_tokens": 1024,
+  "thinking": {
+    "type": "adaptive",
+    "display": "summarized"
+  },
+  "output_config": {
+    "effort": "high"
+  },
+  "messages": [
+    {"role": "user", "content": "Solve this step by step."}
+  ]
+}
+```
+
+`output_config.effort` accepts `"low"`, `"medium"`, `"high"`, `"xhigh"`, or
+`"max"`. Set `thinking.display` to `"summarized"` for a processed thinking
+summary, or `"omitted"` to retain only the opaque signature for later turns.
 
 ## Stateful / Agentic Conversations
 

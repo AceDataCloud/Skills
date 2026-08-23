@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
   -d '{"action": "text2video", "prompt": "a cat playing piano on a rooftop at sunset", "model": "kling-v3", "mode": "std", "duration": 5}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /kling/tasks` with `{"action": "retrieve", "id": "..."}`; use `{"action": "retrieve_batch", "ids": ["..."]}` for multiple tasks.
 ## Models
 
 | Model | Quality | Best For |
@@ -125,6 +125,7 @@ POST /kling/motion
 {
   "image_url": "https://example.com/subject.jpg",
   "video_url": "https://example.com/motion-reference.mp4",
+  "model_name": "kling-v3",
   "mode": "std",
   "character_orientation": "image"
 }
@@ -175,9 +176,14 @@ POST /kling/talking-photo
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
 | `camera_control` | object | Camera movement parameters |
-| `image_list` | array | Omni reference images for `kling-o1` / `kling-v3-omni`; each item has `image_url` and optional `type` (`first_frame` / `end_frame`). Up to 7 images without a reference video, or 4 with one, including first/end frames |
+| `image_list` | array | Up to 7 Omni reference images for `kling-o1` / `kling-v3-omni`; each item has `image_url` and optional `type` (`first_frame` / `end_frame`) |
 | `video_list` | array | One MP4/MOV Omni reference video for `kling-o1` / `kling-v3-omni` (3–10s, 720–2160px, 24–60fps, ≤200MB); item has `video_url`, `refer_type` (`feature` / `base`), and `keep_original_sound` (`yes` / `no`) |
-| `callback_url` | string | Async callback URL |
+| `callback_url` | URL | Async callback URL for video, motion, lip-sync, or talking-photo requests |
+| `async` | `true`, `false` | Return a task immediately for video, motion, lip-sync, or talking-photo requests |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion-control model |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Preserve the reference video's original audio |
+| `watermark_info` (`/kling/motion`) | string | Watermark information |
+| `prompt` (`/kling/motion`, `/kling/talking-photo`) | string | Optional generation instructions |
 | `mode` (`/kling/lip-sync`) | `"audio2video"`, `"text2video"` | Lip-sync mode |
 | `video_url` (`/kling/lip-sync`) | URL | Source video URL for lip-sync |
 | `video_id` (`/kling/lip-sync`) | string | Existing Kling video ID for lip-sync |
