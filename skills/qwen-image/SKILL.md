@@ -45,6 +45,24 @@ curl -X POST https://api.acedata.cloud/qwen-image/images \
 
 Use 1–3 reference images. `prompt_extend_mode=agent` is text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1.
 
+## Parameters
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `model` | `"qwen-image-3.0"`, `"qwen-image-3.0-pro"` | Required model |
+| `prompt` | 1–18,000 characters | Required generation or editing instruction |
+| `image_urls` | URL array | Optional reference images for editing |
+| `n` | 1–6 (default `1`) | Number of images to generate |
+| `size` | `WIDTH*HEIGHT` | Output dimensions |
+| `prompt_extend` | boolean (default `true`) | Enable prompt expansion |
+| `prompt_extend_mode` | `"direct"`, `"agent"` | Prompt expansion mode |
+| `enable_thinking` | boolean (default `true`) | Enable model reasoning |
+| `negative_prompt` | string | Content to avoid |
+| `seed` | 0–2,147,483,647 | Reproducibility seed |
+| `watermark` | boolean (default `false`) | Add a watermark |
+| `async` | boolean (default `false`) | Return an asynchronous task |
+| `callback_url` | URL | Async completion webhook |
+
 ## Async tasks
 
 Set `async: true` or provide `callback_url`. Poll the returned task with:
@@ -54,6 +72,6 @@ POST /qwen-image/tasks
 {"action":"retrieve","id":"TASK_ID"}
 ```
 
-Task retrieval is free. Keep polling every 15 seconds until the response is terminal.
+Use `action: "retrieve_batch"` with `ids` to retrieve multiple tasks. Task retrieval is free. Keep polling every 15 seconds until the response is terminal.
 
 > **MCP:** `pip install mcp-qwen-image` | Hosted: `https://qwen-image.mcp.acedata.cloud/mcp`

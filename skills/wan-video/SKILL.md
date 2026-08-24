@@ -128,7 +128,7 @@ POST /wan/videos
 |-----------|----------|--------|-------------|
 | `action` | Yes | `"text2video"`, `"image2video"` | Action type |
 | `prompt` | Yes | string | Scene description |
-| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"` | Model |
+| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"`, `"wan3.0-video"` | Model |
 | `image_url` | For image2video | string | Source image URL (required for image-to-video) |
 | `negative_prompt` | No | string (max 500 chars) | Content to exclude from generation |
 | `reference_video_urls` | For r2v | array of strings | Reference videos for character/timbre extraction |
@@ -140,6 +140,11 @@ POST /wan/videos
 | `duration` | No | `5`, `10`, `15` | Video duration in seconds |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
+| `async` | No | boolean | Return an asynchronous task |
+| `media` | For `wan3.0-video` | array | Input media objects with required `type` and `url` |
+| `ratio` | For `wan3.0-video` | `"adaptive"`, `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"` | Output aspect ratio |
+| `seed` | No | 0–2,147,483,647 | Reproducibility seed |
+| `watermark` | No | boolean (default `false`) | Add a watermark |
 
 ## Gotchas
 
@@ -172,3 +177,5 @@ POST /wan/videos
 ```
 
 Wan 3 supports 2–30 seconds or `-1` automatic duration. Poll with the existing `/wan/tasks` endpoint.
+
+Use `action: "retrieve_batch"` with `ids` to retrieve multiple Wan tasks.

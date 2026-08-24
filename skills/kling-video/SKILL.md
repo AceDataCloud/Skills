@@ -189,7 +189,11 @@ POST /kling/talking-photo
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
 | `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion generation quality mode |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion generation model |
 | `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Character orientation source |
+| `keep_original_sound` (`/kling/motion`) | `"yes"`, `"no"` | Preserve the reference video's audio |
+| `prompt` (`/kling/motion`) | string | Optional motion instruction |
+| `watermark_info` (`/kling/motion`) | object | Watermark configuration |
 | `image_url` (`/kling/talking-photo`) | URL | Source portrait image |
 | `audio_url` (`/kling/talking-photo`) | URL | Driving audio track |
 | `model` (`/kling/talking-photo`) | `"kling-v1"`, `"kling-v1-6"`, `"kling-v2-master"`, `"kling-v2-1-master"`, `"kling-v2-5-turbo"`, `"kling-v2-6"` | Talking-photo model |
@@ -208,6 +212,7 @@ POST /kling/talking-photo
 - `element_list` is intentionally unavailable because upstream Element IDs are not tenant-scoped; use `image_list` for subject references
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
+- Lip-sync text is limited to 120 characters; `voice_speed` must be 0.8–2.0
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
