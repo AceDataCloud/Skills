@@ -15,6 +15,7 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 - **flux-image** — Generate and edit images with Flux (Black Forest Labs)
 - **seedream-image** — Generate and edit images with ByteDance Seedream
 - **nano-banana-image** — Generate and edit images with Google Gemini (NanoBanana)
+- **qwen-image** — Generate and edit images with Qwen Image 3
 
 ### AI Video Generation
 - **luma-video** — Generate videos with Luma Dream Machine

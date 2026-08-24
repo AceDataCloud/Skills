@@ -29,6 +29,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
 | [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
+| [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 
 ### AI Video Generation
 
