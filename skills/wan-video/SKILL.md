@@ -1,6 +1,6 @@
 ---
 name: wan-video
-description: Generate AI videos with Wan (Alibaba) via AceDataCloud API. Use when creating videos from text prompts or animating images into video. Supports text-to-video, image-to-video, reference video transfer, multi-resolution (480P-1080P), and optional audio.
+description: Generate AI videos with Wan (Alibaba) via AceDataCloud API. Use when creating videos from text prompts, images, or mixed media. Supports text-to-video, image-to-video, reference video transfer, multi-resolution (480P-1080P), and optional audio.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
   -d '{"action": "text2video", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "wan2.6-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"id": "..."}`; batch polling accepts `{"action":"retrieve_batch","ids":["..."]}`.
 ## Models
 
 | Model | Type | Best For |
@@ -32,6 +32,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
 | `wan2.6-i2v` | Image-to-Video | Animating a still image into video |
 | `wan2.6-r2v` | Reference Video-to-Video | Character extraction and transfer from reference video |
 | `wan2.6-i2v-flash` | Image-to-Video (Fast) | Quick image-to-video generation |
+| `wan3.0-video` | Multimodal Video | Generating video from text, images, and other media |
 
 ## Workflows
 
@@ -125,27 +126,31 @@ POST /wan/videos
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `action` | Yes | `"text2video"`, `"image2video"` | Action type |
-| `prompt` | Yes | string | Scene description |
-| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"` | Model |
-| `image_url` | For image2video | string | Source image URL (required for image-to-video) |
+| `action` | No | `"text2video"`, `"image2video"` | Action type (default: `"text2video"`) |
+| `prompt` | No | string | Scene description |
+| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"`, `"wan3.0-video"` | Model |
+| `image_url` | No | string | Source image URL |
+| `media` | No | array | Additional media inputs |
 | `negative_prompt` | No | string (max 500 chars) | Content to exclude from generation |
 | `reference_video_urls` | For r2v | array of strings | Reference videos for character/timbre extraction |
 | `shot_type` | No | `"single"`, `"multi"` | Continuous shot or multi-cut editing |
 | `audio` | No | boolean | Enable audio in the generated video |
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
+| `ratio` | No | `"adaptive"`, `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"` | Output aspect ratio |
 | `size` | No | string | The size of the generated video |
-| `duration` | No | `5`, `10`, `15` | Video duration in seconds |
+| `duration` | No | `2`–`30`, or `-1` | Video duration in seconds (`-1` enables automatic duration) |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
+| `seed` | No | integer | Seed for reproducible generation |
+| `watermark` | No | boolean | Add a watermark (default: `false`) |
 | `callback_url` | No | string | Async webhook notification URL |
+| `async` | No | boolean | Request asynchronous processing |
 
 ## Gotchas
 
-- `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
 - `reference_video_urls` is used only with `wan2.6-r2v` for character/timbre transfer
 - `negative_prompt` has a maximum length of 500 characters
-- Supported durations are 5, 10, or 15 seconds only
+- `duration` accepts 2–30 seconds, or `-1` for automatic duration
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 
