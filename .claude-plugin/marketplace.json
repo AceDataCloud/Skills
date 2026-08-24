@@ -29,7 +29,8 @@
         "./skills/happyhorse-video",
         "./skills/seedance-video",
         "./skills/maestro-video",
-        "./skills/wan-video"
+        "./skills/wan-video",
+        "./skills/qwen-image"
       ]
     },
     {
