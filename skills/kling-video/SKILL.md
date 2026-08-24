@@ -188,6 +188,7 @@ POST /kling/talking-photo
 | `voice_id` (`/kling/lip-sync`) | string | Voice preset ID used in `text2video` |
 | `voice_language` (`/kling/lip-sync`) | `"zh"`, `"en"` | TTS language for `text2video` (default `zh`) |
 | `voice_speed` (`/kling/lip-sync`) | number | TTS speaking speed (default `1.0`) |
+| `model_name` (`/kling/motion`) | `"kling-v2-6"`, `"kling-v3"` | Motion model version |
 | `mode` (`/kling/motion`) | `"std"`, `"pro"` | Motion generation quality mode |
 | `character_orientation` (`/kling/motion`) | `"image"`, `"video"` | Character orientation source |
 | `image_url` (`/kling/talking-photo`) | URL | Source portrait image |

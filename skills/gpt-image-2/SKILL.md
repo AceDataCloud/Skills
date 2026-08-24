@@ -14,6 +14,8 @@ OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+Model variants: use `gpt-image-2` by default, `gpt-image-2:official` for the official stable channel with true 2K / 4K output at 2× price, or `gpt-image-2:reverse` for the cost-optimized equivalent route.
+
 ## 1. Generate (text → image)
 
 ```bash
@@ -26,8 +28,9 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
 
 Multipart. Pass one or more source images via repeated `image[]` (local files with
-`@`, or URLs). Use it to **fuse a real logo/QR into a generated scene**, keep a subject
-consistent across scenes, or restyle a screenshot.
+`@`, or URLs). JSON requests can also pass `image` as a URL, base64 string, or an
+array of up to 16 images. Use it to **fuse a real logo/QR into a generated scene**,
+keep a subject consistent across scenes, or restyle a screenshot.
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
@@ -44,17 +47,24 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 
 ## Sizes
 
-`size` is `WxH` (a preset) or `"auto"`. Common presets:
+`size` is `WIDTHxHEIGHT` or `"auto"`. Common presets:
 
 | Aspect | Sizes |
 |---|---|
 | 16:9 | `1792x1024` (HD), `2048x1152`, `3840x2160` (4K) |
 | 9:16 | `1024x1792`, `1152x2048`, `2160x3840` |
 | 1:1 | `1024x1024`, `2048x2048`, `2880x2880` (4K) |
+| 4:3 | `1536x1024`, `2048x1536`, `3264x2448` |
+| 3:4 | `1024x1536`, `1536x2048`, `2448x3264` |
 
-(Omit `size` or use `"auto"` to let the model pick. Custom sizes must have both sides a
-multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
-ratio ≤ 3:1 — otherwise 400.)
+For generation, `size: "auto"` plans the canvas from explicit size/ratio hints in
+the prompt; omitting `size` uses the model default aspect ratio. For edits, omitting
+`size` is equivalent to `"auto"`: `gpt-image-2` first honors explicit prompt size
+intent, then falls back to the first reference image size if no usable size intent is
+found. Custom sizes must have both sides as multiples of 16, long side ≤ 3840, and
+total pixels ≤ 8,294,400 — otherwise 400. Pass an explicit `WIDTHxHEIGHT` when you
+need exact control; completed generations are not retried automatically for output
+pixel differences, avoiding duplicate generation charges.
 
 ## Tips
 
