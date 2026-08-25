@@ -52,9 +52,12 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 | 9:16 | `1024x1792`, `1152x2048`, `2160x3840` |
 | 1:1 | `1024x1024`, `2048x2048`, `2880x2880` (4K) |
 
-(Omit `size` or use `"auto"` to let the model pick. Custom sizes must have both sides a
-multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
-ratio ≤ 3:1 — otherwise 400.)
+Omitting `size` is equivalent to `"auto"`: `gpt-image-2` first honors explicit
+size intent in the prompt (pixels, aspect ratio, orientation, 4K / high-res, or
+named canvas); if no size intent is found, it falls back to the first reference
+image's dimensions. Final dimensions are normalized before submission. Custom
+sizes must have both sides a multiple of 16, each side ≤ 3840, total pixels
+between 655,360 and 8,294,400, and an aspect ratio ≤ 3:1 — otherwise 400.
 
 ## Tips
 
