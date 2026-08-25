@@ -63,16 +63,20 @@ models include:
 | Grok | `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
 | Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
-| GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
+| GLM | `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+For direct GLM calls, use the OpenAI-compatible `POST /glm/chat/completions`
+endpoint; `glm-5.3` is the latest flagship model, with 1M context and up to
+128K output.
+
+> **For image generation/editing, prefer the dedicated image endpoints.**
+> Some multimodal/image-capable model names appear in `/aichat2/conversations`,
+> but image workflows should usually use the purpose-built endpoints — Gemini via
+> `POST /v1beta/models/{model}:generateContent`, `/nano-banana/images`, or
+> OpenAI-compatible `/openai/images/generations` and `/openai/images/edits`.
 
 ## OpenAI-Compatible Chat
 
