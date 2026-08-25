@@ -137,16 +137,21 @@ POST /wan/videos
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
 | `size` | No | string | The size of the generated video |
-| `duration` | No | `5`, `10`, `15` | Video duration in seconds |
+| `duration` | No | integer `2`–`30`, or `-1` | Video duration in seconds, or automatic duration |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
+| `async` | No | boolean | Return a task ID for asynchronous processing |
+| `media` | For Wan 3 | array (up to 10) | Reference media items with `type` and `url` |
+| `ratio` | For Wan 3 | `"adaptive"`, `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"` | Output aspect ratio |
+| `seed` | No | integer `0`–`2147483647` | Reproducibility seed |
+| `watermark` | No | boolean | Add a watermark to the output |
 
 ## Gotchas
 
 - `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
 - `reference_video_urls` is used only with `wan2.6-r2v` for character/timbre transfer
 - `negative_prompt` has a maximum length of 500 characters
-- Supported durations are 5, 10, or 15 seconds only
+- `duration` accepts integers from 2 through 30, or `-1` for automatic duration
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 
