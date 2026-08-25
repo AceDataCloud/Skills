@@ -25,9 +25,9 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
 
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
 
-Multipart. Pass one or more source images via repeated `image[]` (local files with
-`@`, or URLs). Use it to **fuse a real logo/QR into a generated scene**, keep a subject
-consistent across scenes, or restyle a screenshot.
+For JSON requests, pass `image` as one public URL or an array of up to 16 URLs. For multipart
+uploads, repeat `image[]` for up to 16 local files. Use it to **fuse a real logo/QR into a
+generated scene**, keep a subject consistent across scenes, or restyle a screenshot.
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
@@ -41,6 +41,13 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
 ```
 
 Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `data[0].url`.
+
+### Image options
+
+Both endpoints accept `background` (`transparent`, `opaque`, or `auto`), `output_format`
+(`png`, `jpeg`, or `webp`), `output_compression` (0–100), `quality`, `response_format`
+(`url` or `b64_json`), `callback_url`, and `async`. Edits also accept `input_fidelity`
+(`high` or `low`) to control preservation of input details.
 
 ## Sizes
 

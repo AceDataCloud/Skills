@@ -70,7 +70,7 @@ POST /suno/audios
 
 ### 3. Extend a Song
 
-Continue an existing song from a specific timestamp with new lyrics.
+Continue an existing song from a specific timestamp. `continue_at` is the boundary: `lyric` and `style` guide only the newly generated segment after it; they do not replace the source audio before it.
 
 ```json
 POST /suno/audios
@@ -105,7 +105,7 @@ For best results follow this multi-step workflow:
 3. **Generate music** — `POST /suno/audios` with custom action, lyrics + style
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
-6. **Optional: Concat** — Use concat action to merge extended segments
+6. **Optional: Concat** — Use concat only to explicitly merge multiple extension segments when needed
 7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
@@ -186,7 +186,7 @@ Ending lyrics
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
-- The `concat` action merges extended song segments — requires audio_id of the extended track
+- An `extend` result may already include the source audio before `continue_at`; inspect its content and duration before using `concat`. Use `concat` only when independently generated extension segments must be merged, with the last extended segment's `audio_id`
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover
 
