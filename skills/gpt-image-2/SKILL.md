@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI `gpt-image-2` through AceDataCloud. Two endpoints are synchronous by default (return image url(s) directly) and can run asynchronously with `callback_url` or `async: true`. Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -23,11 +23,18 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
   -d '{"model":"gpt-image-2","prompt":"a clean dark tech hero background with a glowing API hub, lots of negative space","size":"1792x1024","n":1}'
 ```
 
+Model variants are `gpt-image-2` (default), `gpt-image-2:reverse` (same capabilities/cost as default), and `gpt-image-2:official` (official channel, true 2K/4K support, billed at 2× the default per-image price and no automatic downgrade).
+
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
 
-Multipart. Pass one or more source images via repeated `image[]` (local files with
-`@`, or URLs). Use it to **fuse a real logo/QR into a generated scene**, keep a subject
-consistent across scenes, or restyle a screenshot.
+Pass one or more source images as JSON `image` URLs/base64 strings (string or array, up to 16), or use multipart `image[]` local file uploads. Use it to **fuse a real logo/QR into a generated scene**, keep a subject consistent across scenes, or restyle a screenshot.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-image-2","image":["https://cdn.acedata.cloud/source.png"],"prompt":"Restyle this as a crisp product hero image","size":"2048x2048","n":1}'
+```
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
@@ -59,11 +66,12 @@ ratio ≤ 3:1 — otherwise 400.)
 ## Tips
 
 - **Editing keeps things faithful** — to place a logo/QR exactly, pass it as one of the
-  `image[]` and say "keep its exact colors/shape, do not redraw it".
+  `image` inputs and say "keep its exact colors/shape, do not redraw it".
 - For **character/scene consistency** across video beats, generate one hero image, then
   `edits` it per beat instead of regenerating from scratch.
 - Text in images renders legibly — good for titles/labels you don't want to overlay in HTML.
 - `n` accepts **1–10** and you are billed **per image returned**, not per request — `n: 4`
   costs 4×. (`response_format: "b64_json"` still requires `n: 1`.)
+- `output_format` supports `png`, `jpeg`, or `webp`; `background` supports `transparent`, `opaque`, or `auto`; `quality` supports `auto`, `high`, `medium`, `low`, and legacy `standard`/`hd` where applicable.
 - Both endpoints are synchronous by default. For long 4K jobs pass `callback_url` (optionally
   with `async: true`) and poll `POST /openai/tasks` with `{"id": "<task_id>"}`.

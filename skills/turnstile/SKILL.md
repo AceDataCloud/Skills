@@ -53,7 +53,7 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | `website_url` | ✓ | The full URL of the page containing the Turnstile widget |
 | `action` | | Custom `action` value — only needed when the target page sets a custom action |
 | `cdata` | | Custom `cData` value — only needed when the target page sets a custom cData |
-| `async` | | When `true`, return immediately with a `task_id`; poll `POST /captcha/tasks` to retrieve the token |
+| `async` | | When `true`, return immediately with a `task_id`; query `POST /captcha/tasks` to read the token when ready |
 
 ## Response Fields
 
@@ -77,7 +77,7 @@ POST /captcha/token/turnstile
 }
 ```
 
-Then poll `POST /captcha/tasks` with the returned `task_id`:
+The server starts solving the task after creation and continues even if the client disconnects. Query `POST /captcha/tasks` with the returned `task_id` to read the persisted status; this endpoint never advances task processing:
 
 ```json
 POST /captcha/tasks
@@ -85,6 +85,8 @@ POST /captcha/tasks
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md) for the full polling contract.
+
+`/captcha/tasks` returns `processing` until the server persists `ready`, or HTTP 504 `timeout` after the 120-second deadline. Creating an async task and reading `processing` or `timeout` is not charged; the existing one-time settlement happens when a ready token is first read.
 
 ## Using the Token
 
@@ -105,7 +107,7 @@ response = requests.post(
 - Both `website_key` and `website_url` are **required**
 - The token is single-use and valid for ~120s — use within 60s for best results
 - `action` and `cdata` are optional and only required when the target site explicitly uses them
-- You are billed only when a token is successfully solved
+- You are billed only when a ready token is first read; creating async tasks, reading `processing`, and timed-out tasks are not charged
 - Synchronous mode blocks until the token is ready (typically 10–30s); use `async: true` for non-blocking operation
 
 > **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.

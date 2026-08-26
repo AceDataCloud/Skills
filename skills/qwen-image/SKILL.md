@@ -43,7 +43,7 @@ curl -X POST https://api.acedata.cloud/qwen-image/images \
 }
 ```
 
-Use 1–3 reference images. `prompt_extend_mode=agent` is text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1.
+Use 1–3 reference images. `prompt_extend` defaults to `true`; `prompt_extend_mode` is `direct` or `agent`, with `agent` text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1. Optional controls include `negative_prompt`, `seed` (0–2147483647), and `watermark`.
 
 ## Async tasks
 
