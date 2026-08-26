@@ -45,6 +45,8 @@ curl -X POST https://api.acedata.cloud/qwen-image/images \
 
 Use 1–3 reference images. `prompt_extend_mode=agent` is text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1.
 
+Successful responses include `data[].image_url`, `usage`, and `cost`. The `cost` object reports `amount`, `currency`, and `list_amount`.
+
 ## Async tasks
 
 Set `async: true` or provide `callback_url`. Poll the returned task with:
