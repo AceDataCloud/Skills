@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/wan/videos \
   -d '{"action": "text2video", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "wan2.6-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /wan/tasks` with `{"action":"retrieve","id":"..."}`; batch with `{"action":"retrieve_batch","ids":[...]}`.
 ## Models
 
 | Model | Type | Best For |
@@ -126,27 +126,32 @@ POST /wan/videos
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `action` | Yes | `"text2video"`, `"image2video"` | Action type |
-| `prompt` | Yes | string | Scene description |
-| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"` | Model |
+| `action` | No | `"text2video"`, `"image2video"` | Action type (default: `text2video`) |
+| `prompt` | For text guidance | string | Scene description |
+| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"`, `"wan3.0-video"` | Model |
 | `image_url` | For image2video | string | Source image URL (required for image-to-video) |
 | `negative_prompt` | No | string (max 500 chars) | Content to exclude from generation |
 | `reference_video_urls` | For r2v | array of strings | Reference videos for character/timbre extraction |
+| `media` | For Wan 3 references | array (max 10) | Wan 3 media references with `type` and `url` |
 | `shot_type` | No | `"single"`, `"multi"` | Continuous shot or multi-cut editing |
 | `audio` | No | boolean | Enable audio in the generated video |
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
+| `ratio` | No | `"adaptive"`, `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"` | Wan 3 output aspect ratio |
 | `size` | No | string | The size of the generated video |
-| `duration` | No | `5`, `10`, `15` | Video duration in seconds |
+| `duration` | No | `2`–`30` or `-1` | Video duration in seconds; `-1` lets Wan 3 choose automatically |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
+| `seed` | No | integer 0–2147483647 | Optional reproducibility seed |
+| `watermark` | No | boolean | Add a watermark (default: false) |
 | `callback_url` | No | string | Async webhook notification URL |
+| `async` | No | boolean | Return a task immediately instead of blocking |
 
 ## Gotchas
 
 - `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
 - `reference_video_urls` is used only with `wan2.6-r2v` for character/timbre transfer
 - `negative_prompt` has a maximum length of 500 characters
-- Supported durations are 5, 10, or 15 seconds only
+- Wan 3 supports 2–30 seconds or `-1` automatic duration; legacy Wan 2.6 models keep their model-specific duration limits
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 
@@ -172,3 +177,4 @@ POST /wan/videos
 ```
 
 Wan 3 supports 2–30 seconds or `-1` automatic duration. Poll with the existing `/wan/tasks` endpoint.
+Successful task responses include the final `video_url`, actual usage such as resolution, input/output seconds, frame rate, and aspect ratio, plus settlement details in `cost`.

@@ -60,8 +60,8 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | Field | Description |
 |-------|-------------|
 | `token` | The solved Turnstile token to submit as `cf-turnstile-response` |
-| `started_at` | ISO-8601 timestamp when solving began |
-| `finished_at` | ISO-8601 timestamp when solving completed |
+| `started_at` | Unix timestamp in seconds when solving began |
+| `finished_at` | Unix timestamp in seconds when solving completed |
 | `elapsed` | Total solving time in seconds |
 
 ## Async Mode
@@ -86,6 +86,8 @@ POST /captcha/tasks
 
 > **Async:** See [async task polling](../_shared/async-tasks.md) for the full polling contract.
 
+If polling returns HTTP 504 with `code: "timeout"` and `status: "failed"`, stop polling that `task_id`; the timeout is terminal, repeat polls return the same failure, and the failed task is not billed. Ready and timed-out terminal responses include `started_at`, `finished_at`, and `elapsed`.
+
 ## Using the Token
 
 Submit the token to the target site as `cf-turnstile-response`:
@@ -106,6 +108,7 @@ response = requests.post(
 - The token is single-use and valid for ~120s — use within 60s for best results
 - `action` and `cdata` are optional and only required when the target site explicitly uses them
 - You are billed only when a token is successfully solved
+- HTTP 504 async timeouts are terminal failures and are not billed
 - Synchronous mode blocks until the token is ready (typically 10–30s); use `async: true` for non-blocking operation
 
 > **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.

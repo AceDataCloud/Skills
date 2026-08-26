@@ -43,7 +43,7 @@ curl -X POST https://api.acedata.cloud/qwen-image/images \
 }
 ```
 
-Use 1–3 reference images. `prompt_extend_mode=agent` is text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1.
+Use 1–3 reference images. `prompt_extend_mode=agent` is text-to-image only. `n` supports 1–6. Output size uses `WIDTH*HEIGHT`, with pixel area between 512×512 and 2048×2048 and aspect ratio between 1:8 and 8:1. Successful responses include permanent CDN image URLs in `data`, actual generation counts/dimensions in `usage`, and settlement details in `cost`.
 
 ## Async tasks
 
@@ -55,5 +55,7 @@ POST /qwen-image/tasks
 ```
 
 Task retrieval is free. Keep polling every 15 seconds until the response is terminal.
+
+For multiple tasks, use `{"action":"retrieve_batch","ids":["TASK_ID_1","TASK_ID_2"]}`.
 
 > **MCP:** `pip install mcp-qwen-image` | Hosted: `https://qwen-image.mcp.acedata.cloud/mcp`
