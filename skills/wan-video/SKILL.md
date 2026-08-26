@@ -126,9 +126,9 @@ POST /wan/videos
 
 | Parameter | Required | Values | Description |
 |-----------|----------|--------|-------------|
-| `action` | Yes | `"text2video"`, `"image2video"` | Action type |
-| `prompt` | Yes | string | Scene description |
-| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"` | Model |
+| `model` | Yes | `"wan2.6-t2v"`, `"wan2.6-i2v"`, `"wan2.6-r2v"`, `"wan2.6-i2v-flash"`, `"wan3.0-video"` | Model |
+| `action` | Wan 2.6 | `"text2video"`, `"image2video"` | Action type for Wan 2.6 flows |
+| `prompt` | Usually | string | Scene description (optional for some reference-only Wan 3 flows) |
 | `image_url` | For image2video | string | Source image URL (required for image-to-video) |
 | `negative_prompt` | No | string (max 500 chars) | Content to exclude from generation |
 | `reference_video_urls` | For r2v | array of strings | Reference videos for character/timbre extraction |
@@ -136,9 +136,14 @@ POST /wan/videos
 | `audio` | No | boolean | Enable audio in the generated video |
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
+| `ratio` | No | `"adaptive"`, `"16:9"`, `"4:3"`, `"1:1"`, `"3:4"`, `"9:16"` | Aspect ratio (Wan 3) |
 | `size` | No | string | The size of the generated video |
-| `duration` | No | `5`, `10`, `15` | Video duration in seconds |
+| `duration` | No | Wan 2.6: `5`, `10`, `15`; Wan 3: `2`–`30` or `-1` | Video duration in seconds |
+| `media` | Wan 3 | array | Wan 3 media descriptors (`first_frame`, `last_frame`, `reference_image`, `reference_video`, `reference_audio`, `file`, `link`) |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
+| `seed` | No | integer (`0` to `2147483647`) | Deterministic seed |
+| `watermark` | No | boolean | Enable or disable watermark |
+| `async` | No | boolean | Return task immediately (poll `/wan/tasks`) |
 | `callback_url` | No | string | Async webhook notification URL |
 
 ## Gotchas
@@ -146,7 +151,7 @@ POST /wan/videos
 - `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
 - `reference_video_urls` is used only with `wan2.6-r2v` for character/timbre transfer
 - `negative_prompt` has a maximum length of 500 characters
-- Supported durations are 5, 10, or 15 seconds only
+- Wan 2.6 durations are 5, 10, or 15 seconds; Wan 3 supports 2–30 seconds or `-1` auto duration
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 
