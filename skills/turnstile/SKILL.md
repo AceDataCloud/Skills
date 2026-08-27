@@ -60,8 +60,8 @@ Use the returned `token` as the `cf-turnstile-response` value when submitting fo
 | Field | Description |
 |-------|-------------|
 | `token` | The solved Turnstile token to submit as `cf-turnstile-response` |
-| `started_at` | ISO-8601 timestamp when solving began |
-| `finished_at` | ISO-8601 timestamp when solving completed |
+| `started_at` | Unix timestamp (seconds, float) when solving began |
+| `finished_at` | Unix timestamp (seconds, float) when solving completed |
 | `elapsed` | Total solving time in seconds |
 
 ## Async Mode
@@ -107,5 +107,6 @@ response = requests.post(
 - `action` and `cdata` are optional and only required when the target site explicitly uses them
 - You are billed only when a token is successfully solved
 - Synchronous mode blocks until the token is ready (typically 10–30s); use `async: true` for non-blocking operation
+- Polling `POST /captcha/tasks` only reads persisted status; it does not drive task execution
 
 > **MCP:** See [MCP servers](../_shared/mcp-servers.md) for tool-use integration.
