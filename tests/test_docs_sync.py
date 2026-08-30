@@ -19,6 +19,13 @@ class DocsSyncTests(unittest.TestCase):
             all(f"`{field}`" in skill for field in ("amount", "currency", "list_amount"))
         )
 
+    def test_turnstile_terminal_timeout_is_documented(self) -> None:
+        skill = (ROOT / "skills" / "turnstile" / "SKILL.md").read_text()
+
+        self.assertIn('HTTP 504 with `code: "timeout"`', skill)
+        self.assertIn("120-second deadline", skill)
+        self.assertIn("timed-out tasks are not charged", skill)
+
 
 if __name__ == "__main__":
     unittest.main()
