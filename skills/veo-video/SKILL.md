@@ -23,14 +23,14 @@ curl -X POST https://api.acedata.cloud/veo/videos \
   -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"action":"retrieve","id":"..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/veo/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from above>"}'
+  -d '{"action":"retrieve","id":"<task_id from above>"}'
 ```
 
 ## Models
@@ -122,7 +122,7 @@ POST /veo/videos
 - `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
 - Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
-- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
+- Task polling requires `action`: use `{"action":"retrieve","id":"..."}` for one task or `{"action":"retrieve_batch","ids":[...]}` for batches
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

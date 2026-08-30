@@ -18,7 +18,6 @@ Skills are located in the `skills/` directory (also mirrored to `.agents/skills/
 
 ### AI Video Generation
 - **luma-video** — Generate videos with Luma Dream Machine
-- **sora-video** — Generate videos with OpenAI Sora
 - **veo-video** — Generate videos with Google Veo (native audio)
 - **kling-video** — Generate videos with Kuaishou Kling (motion control)
 - **hailuo-video** — Generate videos with Hailuo / MiniMax

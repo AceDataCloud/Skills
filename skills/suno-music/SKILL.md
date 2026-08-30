@@ -106,7 +106,7 @@ For best results follow this multi-step workflow:
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
-7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+7. **Optional: Convert** — Get MP3 (`/suno/mp3`), WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
 
@@ -138,6 +138,7 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
+| `/suno/mp3` | POST | Convert/render a track to MP3 by `audio_id` |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
