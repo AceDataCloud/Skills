@@ -137,7 +137,7 @@ POST /wan/videos
 | `audio_url` | No | string | Reference audio URL |
 | `resolution` | No | `"480P"`, `"720P"`, `"1080P"` | Output resolution (default: 720P) |
 | `size` | No | string | The size of the generated video |
-| `duration` | No | `5`, `10`, `15` | Video duration in seconds |
+| `duration` | No | integer `2`–`30`, or `-1` | Video duration in seconds (`-1` = automatic duration) |
 | `prompt_extend` | No | boolean | Enable LLM-based prompt rewriting |
 | `callback_url` | No | string | Async webhook notification URL |
 
@@ -146,7 +146,7 @@ POST /wan/videos
 - `image_url` is **required** for `wan2.6-i2v` and `wan2.6-i2v-flash` models
 - `reference_video_urls` is used only with `wan2.6-r2v` for character/timbre transfer
 - `negative_prompt` has a maximum length of 500 characters
-- Supported durations are 5, 10, or 15 seconds only
+- Supported duration input is integer `2`–`30` or `-1` (automatic duration)
 - Default resolution is 720P; use 1080P for higher quality at increased cost
 - `shot_type: "multi"` produces multi-cut edits rather than a single continuous shot
 

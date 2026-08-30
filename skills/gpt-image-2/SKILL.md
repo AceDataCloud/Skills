@@ -10,11 +10,13 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI GPT Image through AceDataCloud. Two endpoints are **synchronous by default** (return image url(s) directly) and also support `async` + `callback_url`. Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
 ## 1. Generate (text → image)
+
+Supported model values include `gpt-image-2`, `gpt-image-2:reverse`, and `gpt-image-2:official`.
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/generations \
@@ -25,9 +27,10 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
 
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
 
-Multipart. Pass one or more source images via repeated `image[]` (local files with
-`@`, or URLs). Use it to **fuse a real logo/QR into a generated scene**, keep a subject
-consistent across scenes, or restyle a screenshot.
+Supports both `application/json` and `multipart/form-data`.
+- JSON: pass `image` as URL/base64 (string or array, up to 16 images).
+- Multipart: pass one or more source images via repeated `image[]`.
+Use it to **fuse a real logo/QR into a generated scene**, keep a subject consistent across scenes, or restyle a screenshot.
 
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
@@ -63,7 +66,6 @@ ratio ≤ 3:1 — otherwise 400.)
 - For **character/scene consistency** across video beats, generate one hero image, then
   `edits` it per beat instead of regenerating from scratch.
 - Text in images renders legibly — good for titles/labels you don't want to overlay in HTML.
-- `n` accepts **1–10** and you are billed **per image returned**, not per request — `n: 4`
-  costs 4×. (`response_format: "b64_json"` still requires `n: 1`.)
+- `n` accepts **1–10**. For `gpt-image-2` / `gpt-image-2:reverse`, billing is per returned image; `gpt-image-2:official` settles by returned token usage. (`response_format: "b64_json"` still requires `n: 1`.)
 - Both endpoints are synchronous by default. For long 4K jobs pass `callback_url` (optionally
   with `async: true`) and poll `POST /openai/tasks` with `{"id": "<task_id>"}`.
