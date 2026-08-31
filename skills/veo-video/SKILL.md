@@ -23,14 +23,14 @@ curl -X POST https://api.acedata.cloud/veo/videos \
   -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"action": "retrieve", "id": "..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
 curl -X POST https://api.acedata.cloud/veo/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from above>"}'
+  -d '{"action": "retrieve", "id": "<task_id from above>"}'
 ```
 
 ## Models
@@ -107,22 +107,23 @@ POST /veo/videos
 |-----------|--------|-------------|
 | `action` | `"text2video"`, `"image2video"`, `"ingredients2video"`, `"get1080p"` | Generation mode |
 | `model` | see Models table | Model to use |
-| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution (default: 720p) |
-| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio — only valid for `image2video` |
-| `image_urls` | array of strings | Reference image URLs — for `image2video` (up to 2) or `ingredients2video` (up to 3) |
+| `resolution` | `"4k"`, `"1080p"`, `"gif"` | Output resolution |
+| `aspect_ratio` | `"16:9"`, `"9:16"` | Aspect ratio |
+| `image_urls` | array of strings | Reference image URLs |
 | `video_id` | string | Video to upscale — only for `get1080p` |
 | `translation` | `true` / `false` | Auto-translate prompt to English (default: false) |
+
+`POST /veo/tasks` also supports `action: "retrieve_batch"` with `ids`, and
+`action: "list"` with optional `offset`, `limit`, `type`, `created_at_min`, and
+`created_at_max`.
 
 ## Gotchas
 
 - Veo 3 and 3.1 models generate **native audio**
 - The `get1080p` action uses `video_id` (from a prior generation), not a URL
-- `aspect_ratio` is **only valid** for the `image2video` action
-- `image_urls` accepts an array — up to 2 images for `image2video`, up to 3 for `ingredients2video`
-- `veo31-fast-ingredients` **requires** image input — it cannot do text-only generation
 - Documented `aspect_ratio` values are only `"16:9"` and `"9:16"`
 - `translation: true` auto-translates Chinese or other non-English prompts before sending to Veo
-- Task polling uses `id` (not `task_id`) in the `/veo/tasks` request body
+- Task polling uses `action: "retrieve"` and `id` (not `task_id`) in the `/veo/tasks` request body
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
 > **MCP:** `pip install mcp-veo` | Hosted: `https://veo.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
