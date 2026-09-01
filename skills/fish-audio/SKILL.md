@@ -24,12 +24,16 @@ curl -X POST https://api.acedata.cloud/fish/tts \
   -d '{"text":"你好，欢迎使用 AceData Cloud。","reference_id":"d7900c21663f485ab63ebdb7e5905036","format":"mp3"}'
 ```
 
-Synchronous responses return a direct audio URL:
+Synchronous responses return a direct audio URL and final billing information:
 
 ```json
-{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
+{
+  "audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3",
+  "cost":{"amount":1,"currency":"Credits","list_amount":1}
+}
 ```
 
+`cost.amount` is the actual charge and `cost.currency` its unit. `cost.list_amount`, when present, is the pre-discount amount.
 ## Endpoints
 
 | Endpoint | Purpose |
@@ -81,6 +85,7 @@ Headers:
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"..."}`.
+> The initial asynchronous acknowledgement does not include `cost`; the callback includes top-level `cost` and a terminal `/fish/tasks` response includes it in `response.cost`.
 
 ## Parameters — `/fish/tts`
 
