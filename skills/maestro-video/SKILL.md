@@ -34,7 +34,6 @@ curl -X POST https://api.acedata.cloud/maestro/videos \
     "prompt": "Create a 30-second beginner-friendly video explaining vector databases. End with one memorable takeaway.",
     "aspect": "16:9",
     "duration": 30,
-    "quality": "standard",
     "scenario": "narrated",
     "langs": ["en"]
   }'
@@ -72,29 +71,23 @@ Polling and history queries are free; the video task is settled after production
 | `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
 | `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
 | `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
-| `duration` | integer | `30` | Target duration from 5 to 300 seconds; the selected SKU sets the maximum |
-| `quality` | string | `standard` | `lite`, `standard`, or `pro` |
-| `scenario` | string | `auto` | `auto`, `narrated`, `captions`, `avatar`, or `drama`; availability depends on SKU |
+| `duration` | integer | `30` | Target duration from 5 to 300 seconds |
+| `scenario` | string | `auto` | `auto`, `narrated`, `captions`, `avatar`, or `drama` |
 | `style` | string | `auto` | Preset or freeform visual direction |
 | `voice` | string | `auto` | Cross-lingual voice preset or a 32-hex-character Fish reference ID |
 | `callback_url` | string | - | Optional webhook called on success or failure |
 
-### Production SKUs
+### Production contract
 
-| SKU | Price | Duration | Output | Languages | Scenarios and actions |
-|---|---:|---:|---|---:|---|
-| `lite` | 0.20 Credits/second | 5–30s | 720p/24fps | 1 | auto/narrated/captions; generate/edit |
-| `standard` | 0.60 Credits/second | 5–120s | 1080p/30fps | 2 | adds avatar and remix |
-| `pro` | 1.20 Credits/second | 5–300s | 1080p/30fps | 4 | adds drama and extend |
+Every request uses the complete production capability: all actions and scenarios, 5–300 seconds, up to 4 languages, and 1080p/30fps output. The base price is 0.60 Credits per delivered second. Avatar uses a 1.15× multiplier, drama uses 1.35×, and each additional delivered language adds 6 Credits. Failed tasks and polling are free.
 
-Successful tasks are billed by delivered integer-second duration, with no 30-second minimum. Avatar uses a 1.15× multiplier, drama uses 1.35×, and each additional delivered language adds 6 Credits. Failed tasks and polling are free.
 
 ### Scenarios
 
 - `auto`: let the director choose from the brief.
 - `narrated`: multi-scene explainer, documentary, brand, history, or product video with voiceover.
 - `captions`: add kinetic captions to a source video supplied in `file_urls`.
-- `avatar`: talking-head or digital-human video; provide a portrait in `file_urls` (Standard or Pro).
+- `avatar`: talking-head or digital-human video; provide a portrait in `file_urls`.
 - `drama`: acted short drama with characters and dialogue (Pro only).
 
 ### Styles
