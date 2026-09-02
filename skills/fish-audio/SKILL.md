@@ -24,10 +24,10 @@ curl -X POST https://api.acedata.cloud/fish/tts \
   -d '{"text":"你好，欢迎使用 AceData Cloud。","reference_id":"d7900c21663f485ab63ebdb7e5905036","format":"mp3"}'
 ```
 
-Synchronous responses return a direct audio URL:
+Synchronous responses return a direct audio URL and final billing details:
 
 ```json
-{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
+{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3","cost":{"amount":1.2,"currency":"credits","list_amount":1.5}}
 ```
 
 ## Endpoints
@@ -80,7 +80,7 @@ Headers:
 }
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"..."}`.
+> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /fish/tasks` with `{"id":"..."}`. Completed task records expose the final TTS response under `response`; `response.cost.amount` is the actual Credits charged and matches the callback's top-level `cost`.
 
 ## Parameters — `/fish/tts`
 
@@ -114,4 +114,4 @@ Headers:
 - The documented TTS endpoint is `POST /fish/tts` — not `/fish/audios`.
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
-- Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
+- Synchronous requests return `audio_url` and top-level `cost` directly; async jobs should be polled via `/fish/tasks`.
