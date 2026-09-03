@@ -158,6 +158,7 @@ For best results follow this multi-step workflow:
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `replace_section_result_mode` | `"full_song"`, `"candidates"` | For `replace_section`: return completed songs (default) or unmerged replacement-section candidates |
 
 ## Lyrics Format
 
