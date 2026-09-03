@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes these documented chat surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
@@ -18,6 +18,8 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1beta/models/{model}:generateContent` | Native Gemini generate-content API |
+| `POST /v1beta/models/{model}:streamGenerateContent` | Native Gemini SSE streaming API |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -105,6 +107,15 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+### Native Gemini usage
+
+Native Gemini responses include Gemini's `usageMetadata` and a normalized `usage`
+object. Read token counts from `usage.prompt_tokens`, `usage.completion_tokens`,
+and `usage.total_tokens`; reasoning usage may appear as `usage.thoughts_tokens`.
+When available, the optional `usage.cost` contains `amount`, `currency`, and
+`list_amount`. For streaming responses, use the terminal SSE event for authoritative
+usage. The stream ends when the connection closes and does not emit `data: [DONE]`.
 
 ## Stateful / Agentic Conversations
 

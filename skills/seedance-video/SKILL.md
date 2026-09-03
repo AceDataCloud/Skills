@@ -41,7 +41,7 @@ curl -X POST https://api.acedata.cloud/seedance/tasks \
 |-------|----------|--------|
 | `doubao-seedance-2-5-260628` | Up to 30 seconds, pure-audio or multimodal reference, video edit/extend | `480p`, `720p`, `1080p`; 30 images / 10 videos / 10 audios / 50 total |
 
-Use `omni_reference_task_type: "auto"`, `"edit"`, or `"extend"`. Edit and extend require `reference_video` and `ratio: "adaptive"`; edit also requires `duration: -1`. Optional `output_format` is `mp4` or `mov`.
+Use `omni_reference_task_type: "auto"`, `"reference"`, `"edit"`, or `"extend"`. `reference` requires at least one reference image, video, or audio. Edit and extend require `reference_video` and `ratio: "adaptive"`; edit also requires `duration: -1`. Optional `output_format` is `mp4` or `mov`.
 
 ### Seedance 2.0 (multimodal reference, up to 4k)
 
@@ -179,7 +179,7 @@ POST /seedance/videos
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
-| `omni_reference_task_type` | `auto`, `edit`, `extend` | Seedance 2.5 task type |
+| `omni_reference_task_type` | `auto`, `reference`, `edit`, `extend` | Seedance 2.5 task type |
 | `output_format` | `mp4`, `mov` | Seedance 2.5 output format |
 | `tools` | object[] | Seedance 2.5 web search tool, e.g. `[{"type":"web_search"}]` |
 | `priority` | 0–9 | Seedance 2.5 queue priority |

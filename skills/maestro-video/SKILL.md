@@ -68,7 +68,7 @@ Polling and history queries are free; the video task is settled after production
 | `prompt` | string | required | Natural-language production brief: topic, audience, content, tone, and desired result |
 | `action` | string | `generate` | `generate`, `remix`, `edit`, or `extend` |
 | `ref_task_id` | string | - | Required for `remix`, `edit`, and `extend` |
-| `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
+| `file_urls` | string[] | - | Up to 20 public image, video, or audio references |
 | `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
 | `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
 | `duration` | integer | `30` | Target duration from 5 to 300 seconds |
@@ -88,7 +88,7 @@ Every request uses the complete production capability: all actions and scenarios
 - `narrated`: multi-scene explainer, documentary, brand, history, or product video with voiceover.
 - `captions`: add kinetic captions to a source video supplied in `file_urls`.
 - `avatar`: talking-head or digital-human video; provide a portrait in `file_urls`.
-- `drama`: acted short drama with characters and dialogue (Pro only).
+- `drama`: acted short drama with characters and dialogue.
 
 ### Styles
 
