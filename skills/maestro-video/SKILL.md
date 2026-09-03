@@ -68,7 +68,7 @@ Polling and history queries are free; the video task is settled after production
 | `prompt` | string | required | Natural-language production brief: topic, audience, content, tone, and desired result |
 | `action` | string | `generate` | `generate`, `remix`, `edit`, or `extend` |
 | `ref_task_id` | string | - | Required for `remix`, `edit`, and `extend` |
-| `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
+| `file_urls` | string[] | - | Public image, video, or audio references (up to 20 URLs) |
 | `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
 | `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
 | `duration` | integer | `30` | Target duration from 5 to 300 seconds |

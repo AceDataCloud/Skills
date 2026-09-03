@@ -27,8 +27,14 @@ curl -X POST https://api.acedata.cloud/fish/tts \
 Synchronous responses return a direct audio URL:
 
 ```json
-{"audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3"}
+{
+  "audio_url":"https://platform.r2.fish.audio/task/8a72ff9840234006a9f74cb2fa04f978.mp3",
+  "cost":{"amount":0.0123,"currency":"credit","list_amount":0.0134}
+}
 ```
+
+`cost.amount` is the actual deducted Credits for this synthesis; `list_amount` is the
+pre-discount amount when available.
 
 ## Endpoints
 

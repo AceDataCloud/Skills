@@ -179,7 +179,7 @@ POST /seedance/videos
 | `camerafixed` | `true` / `false` | Fix the camera position during generation |
 | `watermark` | `true` / `false` | Add a watermark to the generated video |
 | `return_last_frame` | `true` / `false` | Return the last frame of the generated video |
-| `omni_reference_task_type` | `auto`, `edit`, `extend` | Seedance 2.5 task type |
+| `omni_reference_task_type` | `auto`, `reference`, `edit`, `extend` | Seedance 2.5 task type |
 | `output_format` | `mp4`, `mov` | Seedance 2.5 output format |
 | `tools` | object[] | Seedance 2.5 web search tool, e.g. `[{"type":"web_search"}]` |
 | `priority` | 0–9 | Seedance 2.5 queue priority |
