@@ -1,6 +1,6 @@
 ---
 name: fish-audio
-description: Generate AI text-to-speech audio with Fish Audio and browse public reference voices via AceDataCloud API. Use when creating voiceover/narration audio (TTS), synthesizing multilingual speech, or selecting a Fish reference voice from the model catalog.
+description: Generate AI text-to-speech audio with Fish Audio, clone voices from audio samples, and browse public reference voices via AceDataCloud API. Use when creating voiceover/narration audio (TTS), synthesizing multilingual speech, cloning a voice, or selecting a Fish reference voice from the model catalog.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -35,6 +35,7 @@ Synchronous responses return a direct audio URL:
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /fish/tts` | Text-to-speech generation |
+| `POST /fish/model` | Create a cloned voice from a public audio URL |
 | `GET /fish/model` | Browse/search public Fish reference voices |
 | `GET /fish/model/{id}` | Fetch one reference voice by ID |
 | `POST /fish/tasks` | Poll async TTS jobs when `async: true` |
@@ -52,7 +53,26 @@ The response includes `items[]` with public voice metadata such as `_id`, `title
 `languages`, `tags`, `visibility`, and `state`. Use an item `_id` as
 `reference_id` in TTS requests.
 
-### 2. Text-to-Speech
+### 2. Clone a voice
+
+Provide a publicly accessible audio sample URL; multipart and binary uploads are
+not supported by this endpoint.
+
+```json
+POST /fish/model
+{
+  "title": "My Cloned Voice",
+  "voices": "https://example.com/sample-voice.mp3",
+  "description": "A clean narration sample",
+  "tags": ["narration", "en"],
+  "enhance_audio_quality": true
+}
+```
+
+`title` and `voices` are required. `voices` must be one HTTP(S) URL string,
+not an array. The response's `_id` can be used as `reference_id` for TTS.
+
+### 3. Text-to-Speech
 
 ```json
 POST /fish/tts
@@ -66,7 +86,7 @@ Headers:
 }
 ```
 
-### 3. Async TTS
+### 4. Async TTS
 
 ```json
 POST /fish/tts
@@ -115,3 +135,5 @@ Headers:
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
+- `POST /fish/model` accepts a publicly accessible audio URL only; use a clean,
+  single-speaker MP3 or WAV sample for best cloning results.
