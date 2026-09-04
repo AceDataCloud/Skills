@@ -1,6 +1,6 @@
 ---
 name: fish-audio
-description: Generate AI text-to-speech audio with Fish Audio and browse public reference voices via AceDataCloud API. Use when creating voiceover/narration audio (TTS), synthesizing multilingual speech, or selecting a Fish reference voice from the model catalog.
+description: Generate AI text-to-speech audio, use saved voices, or create a one-shot voice clone from an HTTPS reference audio URL and exact transcript via AceDataCloud API.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -66,7 +66,28 @@ Headers:
 }
 ```
 
-### 3. Async TTS
+### 3. One-shot voice cloning
+
+Use a temporary reference voice without creating a persistent model:
+
+```json
+POST /fish/tts
+Headers:
+  model: s2-pro
+
+{
+  "text": "New speech in the referenced voice.",
+  "format": "mp3",
+  "references": [{
+    "audio": "https://cdn.acedata.cloud/reference.mp3",
+    "text": "The exact words spoken in the reference audio."
+  }]
+}
+```
+
+`audio` must be a public HTTPS MP3/WAV URL and `text` must be the exact transcript. Use one reference lasting 10–270 seconds. Do not combine `references` with `reference_id`; use `reference_id` when the same saved/public voice will be reused. Raw bytes, Base64, data URIs, and MessagePack are not accepted by the AceDataCloud endpoint.
+
+### 4. Async TTS
 
 ```json
 POST /fish/tts
@@ -105,7 +126,7 @@ Headers:
 | `max_new_tokens` | integer | Maximum generated tokens |
 | `normalize` | boolean | Normalize generated audio |
 | `prosody` | object | Prosody tuning |
-| `references` | array | Additional reference objects |
+| `references` | array | One `{audio, text}` object for a one-shot voice clone; mutually exclusive with `reference_id` |
 | `callback_url` | string | Async callback URL |
 | `async` | boolean | Run asynchronously and poll `/fish/tasks` |
 
@@ -114,4 +135,6 @@ Headers:
 - The documented TTS endpoint is `POST /fish/tts` — not `/fish/audios`.
 - Choose the Fish engine with the **`model` request header**, not a JSON `model` field.
 - Use `reference_id` from `GET /fish/model` — not `voice_id`.
+- Use `references` for a one-shot clone that is not saved as a model.
+- Billing is based on the target text UTF-8 byte count; the reference audio does not add a separate clone fee.
 - Synchronous requests return `audio_url` directly; async jobs should be polled via `/fish/tasks`.
