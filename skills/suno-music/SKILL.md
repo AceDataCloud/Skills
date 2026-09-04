@@ -146,7 +146,7 @@ For best results follow this multi-step workflow:
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio for extend/cover (`audio_url` required; optional `mode`, `name`, `callback_url`) |
 | `/suno/tasks` | POST | Query task status and results |
 
 ## Advanced Parameters
@@ -158,6 +158,10 @@ For best results follow this multi-step workflow:
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `replace_section_result_mode` | string | `replace_section` output mode: `full_song` (default, returns stitched full songs) or `candidates` (returns replacement candidates for manual concat) |
+| `mode` | string | Upload mode for `/suno/upload`: `standard` (default) or `enhanced` (async; requires `name`) |
+| `name` | string | Upload name for `/suno/upload` when `mode: "enhanced"` (1-100 chars) |
+| `callback_url` | string | Optional upload callback URL for `/suno/upload` async completion |
 
 ## Lyrics Format
 
@@ -186,8 +190,10 @@ Ending lyrics
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
+- `replace_section_result_mode` defaults to `full_song`; use `candidates` if you want raw replacement candidates and will stitch manually via `concat`
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- `/suno/upload` `mode: "enhanced"` runs async and returns task metadata; poll `/suno/tasks` (or use `callback_url`) before using the uploaded `audio_id`
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
