@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   publish:
@@ -23,8 +24,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.14.0
           registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@^11.5.1
 
       - name: Generate date-based version
         id: version
@@ -60,10 +64,8 @@ jobs:
       - name: Set version
         run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
 
-      - name: Publish
+      - name: Publish with npm trusted publishing
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   create-release:
     name: Create GitHub Release
