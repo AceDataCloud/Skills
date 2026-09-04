@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes these documented chat surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
@@ -18,6 +18,8 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation |
+| `POST /v1beta/models/{model}:streamGenerateContent` | Native Gemini streaming |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -70,7 +72,8 @@ models include:
 
 > **Image-generating models are not chat models.** Names ending in `-image`
 > (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
+> not work on the OpenAI-compatible or stateful chat surfaces above. Generate
+> images through the
 > dedicated endpoints instead — Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
 
@@ -82,6 +85,7 @@ POST /openai/chat/completions
   "model": "gpt-4.1",
   "messages": [{"role": "user", "content": "Write a haiku about observability."}],
   "stream": true,
+  "stream_options": {"include_usage": true},
   "tools": [
     {
       "type": "function",
@@ -103,8 +107,21 @@ Common parameters:
 | `temperature` / `top_p` | number | Sampling controls |
 | `max_tokens` | integer | Output cap |
 | `stream` | boolean | Enable SSE streaming |
+| `stream_options` | object | Set `include_usage: true` to request usage in the final SSE event |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Native Gemini
+
+Native Gemini requests use `contents` rather than OpenAI-style `messages`. Both
+`generateContent` and the terminal `streamGenerateContent` event return
+`usageMetadata` plus a normalized `usage` object with token counts. When
+available, `usage.cost` contains `amount`, `currency`, and optional
+`list_amount`; treat it as a preview rather than the final bill.
+
+Native Gemini streams end when the connection closes and do not emit
+`data: [DONE]`. Intermediate events may omit usage; use the terminal event for
+authoritative usage data.
 
 ## Stateful / Agentic Conversations
 
