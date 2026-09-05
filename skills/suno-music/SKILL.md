@@ -106,7 +106,7 @@ For best results follow this multi-step workflow:
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
-7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), MP3 (`/suno/mp3`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
 
@@ -140,13 +140,14 @@ For best results follow this multi-step workflow:
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
+| `/suno/mp3` | POST | Re-export audio as MP3 |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio (`audio_url` required); optional `mode` (`standard`/`enhanced`), `name` (required in enhanced mode), and `callback_url` |
 | `/suno/tasks` | POST | Query task status and results |
 
 ## Advanced Parameters
@@ -189,5 +190,6 @@ Ending lyrics
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- `/suno/upload` supports `mode: "enhanced"` for difficult/reference-owned audio; enhanced uploads are async and return task metadata (`task_id`, `trace_id`), and require a 1–100 character `name`
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
