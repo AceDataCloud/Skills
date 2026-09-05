@@ -23,7 +23,7 @@ curl -X POST https://api.acedata.cloud/suno/audios \
   -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
-> **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "<task_id>"}` every 3-5 seconds.
+> **Async/polling:** Long-running endpoints may return `task_id`/`trace_id` immediately. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`; batch polling returns `{ "items": [...], "count": n }`.
 
 ## Available Models
 
@@ -106,7 +106,7 @@ For best results follow this multi-step workflow:
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
-7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+7. **Optional: Convert** — Get MP3 (`/suno/mp3`), WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
 
@@ -138,26 +138,47 @@ For best results follow this multi-step workflow:
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
+| `/suno/mp3` | POST | Convert/get MP3 file URL for a song; requires `audio_id`; supports optional `callback_url` and `async` |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
-| `/suno/vox` | POST | Extract vocal track (stem separation) |
+| `/suno/vox` | POST | Extract vocal track; requires `audio_id`, `vocal_start`, and `vocal_end`; supports optional `callback_url` and `async` |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio by URL; requires `audio_url`; optional `mode` (`standard` default, or `enhanced`), `name`, and `callback_url`; returns `data.audio_id` or `task_id`/`trace_id` for polling |
 | `/suno/tasks` | POST | Query task status and results |
 
 ## Advanced Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | string | Prompt used to auto-generate lyrics |
 | `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `audio_urls` | array | External audio URL(s) for upload/audio-reference workflows |
+| `mashup_audio_ids` | array | Audio IDs to combine for `mashup` |
+| `weirdness` | number | Creative/weirdness control |
+| `persona_id` | string | Reusable persona ID for artist/persona workflows |
+| `overpainting_start` / `overpainting_end` | number | Time range for `overpainting` |
+| `underpainting_start` / `underpainting_end` | number | Time range for `underpainting` |
+| `samples_start` / `samples_end` | number | Time range for `samples` |
+| `replace_section_start` / `replace_section_end` | number | Time range for `replace_section` |
+| `replace_section_result_mode` | string | `candidates` or `full_song`; default `full_song` |
+
+### Upload Parameters
+
+`POST /suno/upload` accepts `audio_url` plus optional upload-processing controls:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `audio_url` | string | Publicly accessible audio URL (required) |
+| `mode` | `"standard"`, `"enhanced"` | Upload mode; defaults to `"standard"` |
+| `name` | string | Required for `"enhanced"` mode; 1–100 characters |
+| `callback_url` | string | HTTPS webhook for enhanced async completion |
 
 ## Lyrics Format
 
@@ -179,8 +200,8 @@ Ending lyrics
 
 ## Gotchas
 
-- All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
-- **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
+- Long-running calls may return `task_id`/`trace_id`; poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`. Batch polling returns `{items,count}`.
+- Do not stop polling just because a URL exists. For `/suno/audios`, final clip objects use `state: "succeeded"` with top-level `success: true`; other endpoints may expose completion inside the task `response` payload, e.g. `/suno/vox` uses `data.status: "complete"` and `data.vocal_audio_url`.
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
@@ -188,6 +209,7 @@ Ending lyrics
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
-- Upload external audio via `/suno/upload` before using it with extend/cover
+- External-audio workflows use URL-based inputs: `/suno/upload` accepts `audio_url`, while `/suno/audios` also exposes `audio_urls` for upload/audio-reference actions. Standard upload returns `data.audio_id`; enhanced upload returns `task_id`/`trace_id`, so poll `/suno/tasks` and read `response.data.audio_id` when complete
+- Enhanced uploads can be used for Cover, Samples, and Mashup; account-bound operations such as accompaniment/MIDI extraction and stem separation may still be restricted
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
