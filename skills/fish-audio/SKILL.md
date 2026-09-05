@@ -116,7 +116,7 @@ Headers:
 | Parameter | Type / Values | Description |
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
-| `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
+| `reference_id` | string or string[] | Saved/public voice ID(s) from `GET /fish/model`; mutually exclusive with `references` |
 | `format` | `"mp3"`, `"wav"`, `"pcm"` | Output format |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |

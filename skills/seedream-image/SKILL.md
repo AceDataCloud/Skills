@@ -51,6 +51,8 @@ Use Lite web search only when current information matters:
 {"tools": [{"type": "web_search"}]}
 ```
 
+Use `optimize_prompt_options.mode` for prompt optimization (`standard`, or `fast` where the selected model supports it).
+
 ## Transparent-background Pro edit
 
 Use one transparent PNG input and PNG output:
