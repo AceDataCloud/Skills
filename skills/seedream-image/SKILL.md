@@ -1,115 +1,123 @@
 ---
 name: seedream-image
-description: Generate and edit AI images with Seedream (ByteDance) via AceDataCloud API. Use when creating images from text prompts, editing existing images, or working with high-resolution outputs. Supports Seedream 4.0, 4.5, and 5.0 models.
+description: Generate, edit, stream, or decompose images with Seedream 5.0 via AceDataCloud. Use for text-to-image, reference-image editing, related image sets, transparent-background edits, or editable layer extraction.
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-seedream for tool-use.
+  version: "1.1"
+compatibility: Requires ACEDATACLOUD_API_TOKEN (see ../_shared/authentication.md). Optionally pair with mcp-seedream-pro or seedream-cli.
 ---
 
-# Seedream Image Generation
+# Seedream Image
 
-Generate and edit AI images through AceDataCloud's Seedream (ByteDance) API.
+Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authorization: Bearer $ACEDATACLOUD_API_TOKEN` and JSON request bodies.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## Pick the model from the requested capability
 
-## Quick Start
+| Capability | Seedream 5.0 Pro | Seedream 5.0 Lite |
+|---|---|---|
+| Model ID | `doubao-seedream-5-0-pro-260628` | `doubao-seedream-5-0-260128` (alias: `doubao-seedream-5-0-lite-260128`) |
+| Generate/edit one image | Yes | Yes |
+| Reference images | Up to 10 | Up to 14 |
+| Related image set | No | Yes; input + output ≤ 15 |
+| Streaming / web search | No | Yes |
+| Layer decomposition / transparent background | Yes | No |
+| Prompt optimization | `standard`, `fast` | `standard` |
+| Preset sizes | `1K`, `1.5K`, `2K` | `2K`, `3K`, `4K` |
+
+Seedream 4.5 and 4.0 remain available for compatibility. Do not send a parameter to a model that does not support it.
+
+## Generate or edit
 
 ```bash
-curl -X POST https://api.acedata.cloud/seedream/images \
+curl https://api.acedata.cloud/seedream/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a cyberpunk cat wearing VR goggles in a neon city", "model": "doubao-seedream-5-0-260128"}'
+  -d '{
+    "model": "doubao-seedream-5-0-260128",
+    "prompt": "a four-panel storyboard of a courier crossing a rainy neon city",
+    "size": "2K",
+    "sequential_image_generation": "auto",
+    "sequential_image_generation_options": {"max_images": 4},
+    "watermark": false
+  }'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedream/tasks` with `{"id": "..."}`.
-## Models
+For editing, add `image` as one URL/Base64 string or an array. `response_format` is `url` or `b64_json`; 5.0 Pro/Lite also support `output_format` as `jpeg` or `png`. Explicit dimensions use `WIDTHxHEIGHT` and must satisfy the selected model's pixel and aspect-ratio limits.
 
-| Model | Version | Best For |
-|-------|---------|----------|
-| `doubao-seedream-5-0-260128` | Seedream 5.0 | Latest, highest quality (default) |
-| `doubao-seedream-5-0-pro-260628` | Seedream 5.0 Pro | Highest-quality Seedream 5.0 model |
-| `doubao-seedream-4-5-251128` | Seedream 4.5 | High quality, balanced |
-| `doubao-seedream-4-0-250828` | Seedream 4.0 | Reliable generation |
-
-## Workflows
-
-### 1. Text-to-Image
+Use Lite web search only when current information matters:
 
 ```json
-POST /seedream/images
+{"tools": [{"type": "web_search"}]}
+```
+
+## Transparent-background Pro edit
+
+Use one transparent PNG input and PNG output:
+
+```json
 {
-  "prompt": "a serene Japanese garden with cherry blossoms and a red bridge",
-  "model": "doubao-seedream-5-0-260128",
-  "size": "1K"
+  "model": "doubao-seedream-5-0-pro-260628",
+  "prompt": "replace the parrot with a peacock",
+  "image": "https://example.com/layer.png",
+  "background": "transparent",
+  "output_format": "png",
+  "size": "1.5K"
 }
 ```
 
-### 2. Image Editing (Image-to-Image)
+Do not combine `background` with layer decomposition. `transparent` with JPEG is invalid.
 
-Edit an existing image by providing the source image URL(s) and a descriptive prompt. Seedream 5.0 Pro, 5.0 Lite, 4.5, and 4.0 all support image input.
+## Decompose an image into editable layers
 
-```json
-POST /seedream/images
-{
-  "prompt": "change the sky to a golden sunset",
-  "model": "doubao-seedream-5-0-260128",
-  "image": ["https://example.com/photo.jpg"]
-}
+`layer_decomposition` is Pro-only and requires exactly one PNG/JPEG. Omit `prompt` for automatic decomposition, describe desired elements in natural language, or use normalized `<bbox>` coordinates.
+
+```bash
+curl https://api.acedata.cloud/seedream/images \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "doubao-seedream-5-0-pro-260628",
+    "image": "https://example.com/poster.png",
+    "layer_decomposition": true,
+    "size": "auto",
+    "watermark": false
+  }'
 ```
 
-### 3. Async Generation with Task Polling
+The response contains one base image (`z_index: 0`) and up to 16 transparent PNG layers. Each layer can include `name`, `description`, and `bounding_box.absolute`/`normalized`. To recompose, scale each layer to its bounding-box width and height, place it at left/top, and draw in ascending `z_index`. Any layer failure fails the whole decomposition.
 
-Pass a `callback_url` to receive results asynchronously via webhook, or poll `/seedream/tasks` for the result:
+## Async tasks
 
-```json
-POST /seedream/images
-{
-  "prompt": "an epic fantasy landscape",
-  "model": "doubao-seedream-5-0-260128",
-  "callback_url": "https://api.acedata.cloud/health"
-}
-```
-
-Poll the returned `task_id`:
+Generation can take time. Prefer `"async": true`; the response returns `task_id`. Poll using:
 
 ```json
 POST /seedream/tasks
-{"id": "<task_id>"}
+{"action": "retrieve", "id": "<task_id>"}
 ```
 
-## Parameters
+Follow [async task polling](../_shared/async-tasks.md). Use `callback_url` only when a real public webhook exists. Do not use a health endpoint as a fake callback.
 
-### Generation
+## Streaming
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `model` | see Models table | Model to use (required) |
-| `prompt` | string | Image description (required) |
-| `size` | `"1K"`, `"2K"`, `"3K"`, `"4K"`, `"adaptive"` | Output resolution; available presets depend on the selected model |
-| `sequential_image_generation` | `"auto"`, `"disabled"` | Generate related images in sequence (5.0, 4.5, 4.0 only) |
-| `stream` | boolean | Stream images as they're generated (5.0, 4.5, 4.0 only) |
-| `watermark` | boolean | Add AI-generated watermark (default: true) |
-| `output_format` | `"jpeg"`, `"png"` | Output file format (Seedream 5.0 only; default: jpeg) |
-| `response_format` | `"url"`, `"b64_json"` | Response format (default: url) |
-| `tools` | array | Enable tools, e.g. `[{"type": "web_search"}]` (Seedream 5.0 only) |
-| `callback_url` | string | Webhook URL for async delivery; returns `task_id` immediately |
+Lite/4.x support streaming. Send `"stream": true` with `Accept: application/x-ndjson`; read one normalized JSON event per line until `image_generation.completed`. Do not combine streaming with `async` or `callback_url`.
 
-### Editing
+- `image_generation.partial_succeeded`: one generated image
+- `image_generation.partial_failed`: one failed item; other Lite images may still succeed
+- `image_generation.completed`: final usage and the only billing completion
 
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `image` | Yes (for editing) | Array of image URLs or base64 strings (max 10MB each) |
-| `prompt` | Yes | Describe the desired edit |
+## Agent tools
 
-## Gotchas
+- MCP: `pip install mcp-seedream-pro`; use `seedream_generate_image`, `seedream_edit_image`, `seedream_decompose_image`, then poll with `seedream_get_task`.
+- CLI: `pip install seedream-cli`; use `seedream generate`, `seedream edit`, `seedream decompose`, or `seedream generate --stream --json`.
+- Hosted MCP: `https://seedream.mcp.acedata.cloud/mcp`.
 
-- Model names now use the `doubao-*` naming convention (e.g. `doubao-seedream-5-0-260128`)
-- Image editing uses the same `/seedream/images` endpoint with the `image` array parameter (no separate edit endpoint)
-- `size` replaces separate `width`/`height` params; use `"1K"` for 1024×1024, `"2K"` for 2048×2048, etc.
-- 5.0 Pro supports `1K`/`2K`; 5.0 Lite supports `2K`/`3K`/`4K`; 4.5 supports `2K`/`4K`; 4.0 supports `1K`/`2K`/`4K`; `adaptive` selects a size from the reference image
-- `stream` and `sequential_image_generation` are only available for Seedream 5.0, 4.5, and 4.0
-- Pass `callback_url` to get a `task_id` immediately and avoid blocking; poll `/seedream/tasks` for the result — use `"https://api.acedata.cloud/health"` as a placeholder to force async mode without a real webhook
+MCP image tools are asynchronous, so use REST or CLI for real-time streaming.
 
-> **MCP:** `pip install mcp-seedream` | Hosted: `https://seedream.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+## Result and billing safeguards
+
+- URL results expire; persist files promptly.
+- Lite `data[]` may mix successful images and per-item `error` objects. Count only successful images.
+- Pro layer items are billed individually by actual output size; the base and every successful layer count separately.
+- Preserve `z_index`, bounding boxes, item errors, `tools`, and `usage`; do not flatten the response to a URL list.
+- Never estimate final billed cost from requested size alone. Use the returned `cost`/usage and the live pricing page: https://platform.acedata.cloud/services/seedream?tab=pricing.
