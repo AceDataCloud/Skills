@@ -140,13 +140,14 @@ For best results follow this multi-step workflow:
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
+| `/suno/mp3` | POST | Retrieve/export MP3 audio for a song |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio for extend/cover; supports `standard` and async `enhanced` modes |
 | `/suno/tasks` | POST | Query task status and results |
 
 ## Advanced Parameters
@@ -158,6 +159,19 @@ For best results follow this multi-step workflow:
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+
+### Upload parameters — `/suno/upload`
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `audio_url` | string | Required public audio URL to upload |
+| `mode` | `"standard"` \| `"enhanced"` | Upload mode; defaults to `standard` |
+| `name` | string | Required for `enhanced`; 1-100 characters |
+| `callback_url` | string | Optional HTTPS callback for async enhanced upload completion |
+
+`standard` upload returns `data.audio_id` directly. `enhanced` upload is always
+asynchronous and returns `task_id`/`trace_id`; poll `/suno/tasks` and read the
+final `response.data.audio_id`.
 
 ## Lyrics Format
 
@@ -189,5 +203,6 @@ Ending lyrics
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover
+- Use `mode: "enhanced"` on `/suno/upload` only for owned or authorized audio that standard upload cannot process; enhanced uploads require `name`, may take several minutes, and can be used for Cover, Samples, and Mashup when complete
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
