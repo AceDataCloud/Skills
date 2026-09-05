@@ -22,10 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22.14.0
-          registry-url: https://registry.npmjs.org
+          node-version: 24
 
       - name: Upgrade npm for trusted publishing
         run: npm install --global npm@^11.5.1
@@ -65,7 +64,9 @@ jobs:
         run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
 
       - name: Publish with npm trusted publishing
-        run: npm publish --access public
+        run: |
+          unset NODE_AUTH_TOKEN NPM_CONFIG_USERCONFIG
+          npm publish --access public --registry=https://registry.npmjs.org
 
   create-release:
     name: Create GitHub Release
