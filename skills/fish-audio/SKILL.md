@@ -116,7 +116,7 @@ Headers:
 | Parameter | Type / Values | Description |
 |-----------|---------------|-------------|
 | `text` | string | Text to synthesize (required) |
-| `reference_id` | string | Public/reference voice ID from `GET /fish/model` |
+| `reference_id` | string or string[] | Public/reference voice ID(s) from `GET /fish/model`; mutually exclusive with `references` |
 | `format` | `"mp3"`, `"wav"`, `"pcm"` | Output format |
 | `sample_rate` | integer | Optional output sample rate |
 | `mp3_bitrate` | `64`, `128`, `192` | MP3 bitrate |
@@ -126,7 +126,7 @@ Headers:
 | `max_new_tokens` | integer | Maximum generated tokens |
 | `normalize` | boolean | Normalize generated audio |
 | `prosody` | object | Prosody tuning |
-| `references` | array | One `{audio, text}` object for a one-shot voice clone; mutually exclusive with `reference_id` |
+| `references` | array | Exactly one `{audio, text}` object for a one-shot voice clone; `audio` must be a public HTTPS URL and `text` the transcript; mutually exclusive with `reference_id` |
 | `callback_url` | string | Async callback URL |
 | `async` | boolean | Run asynchronously and poll `/fish/tasks` |
 
