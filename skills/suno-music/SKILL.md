@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -130,6 +130,67 @@ For best results follow this multi-step workflow:
 | `samples` | Add samples to an uploaded song |
 | `inspo` | Generate a song inspired by an existing audio |
 
+## Custom Music Models (Beta)
+
+Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and cost before submitting it.
+
+### Create
+
+```json
+POST /suno/custom-models
+{
+  "action": "create",
+  "name": "My Album Sound",
+  "audio_urls": [
+    "https://cdn.example.com/track-01.mp3",
+    "https://cdn.example.com/track-02.mp3",
+    "https://cdn.example.com/track-03.mp3",
+    "https://cdn.example.com/track-04.mp3",
+    "https://cdn.example.com/track-05.mp3",
+    "https://cdn.example.com/track-06.mp3"
+  ]
+}
+```
+
+Send a stable `Idempotency-Key` header and reuse it after network failures. Save the returned `id`; query it until `status` is `ready`.
+
+### Query and list
+
+```json
+POST /suno/custom-models
+{"action": "retrieve", "id": "<custom-model-id>"}
+```
+
+```json
+POST /suno/custom-models
+{"action": "retrieve_batch", "status": "ready", "limit": 20, "offset": 0}
+```
+
+### Generate
+
+```json
+POST /suno/custom-models
+{
+  "action": "generate",
+  "id": "<ready-custom-model-id>",
+  "lyric": "[Verse]\nOriginal lyrics here",
+  "style": "warm indie pop",
+  "title": "New Song",
+  "async": true
+}
+```
+
+Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
+
+### Archive
+
+```json
+POST /suno/custom-models
+{"action": "delete", "id": "<custom-model-id>"}
+```
+
+`delete` archives the platform resource and prevents further use. `capacity_released: false` means it does not promise that model capacity was released.
+
 ## Auxiliary Endpoints
 
 | Endpoint | Method | Purpose |
@@ -148,6 +209,7 @@ For best results follow this multi-step workflow:
 | `/suno/persona` | DELETE | Delete a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
+| `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 
 ## Advanced Parameters
 
