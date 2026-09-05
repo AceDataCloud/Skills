@@ -86,6 +86,7 @@ POST /nano-banana/images
 - `:official` variants (e.g., `nano-banana:official`) route through the official channel
 - Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
+- A 403 response can indicate content safety filtering (`error.code: "forbidden"`)
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
 > **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
