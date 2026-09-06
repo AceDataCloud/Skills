@@ -74,17 +74,20 @@ POST /nano-banana/images
 | `model` | `"nano-banana"`, `"nano-banana-2-lite"`, `"nano-banana-2"`, `"nano-banana-pro"`, `"nano-banana:official"`, `"nano-banana-2-lite:official"`, `"nano-banana-2:official"`, `"nano-banana-pro:official"` | Model to use |
 | `prompt` | string | Image description or editing instruction |
 | `image_urls` | array of strings | Source image URLs (required for edit action) |
+| `count` | integer `1`-`4` | Number of images to request (default `1`) |
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
 | `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
+| `async` | boolean | Force async task behavior for request handling |
 
 ## Gotchas
 
 - Editing does **NOT** require a mask — just describe the change in natural language
 - Editing uses the same `/nano-banana/images` endpoint with `action: "edit"` and `image_urls` array (not a separate `/edit` path)
 - `nano-banana-2` is the second-generation model; `nano-banana-pro` offers the highest quality
+- `nano-banana-2-lite` only supports `1K` resolution
 - `:official` variants (e.g., `nano-banana:official`) route through the official channel
-- Task polling uses `id` (not `task_id`) in the `/nano-banana/tasks` request body
+- Task polling supports both single-task `{"id":"..."}` with `action: "retrieve"` and batch `{"ids":[...],"action":"retrieve_batch"}`
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
