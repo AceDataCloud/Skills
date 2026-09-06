@@ -8,7 +8,8 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-MODULE_PATH = Path(__file__).parents[1] / "skills" / "tiktok" / "scripts" / "tiktok.py"
+SKILL_PATH = Path(__file__).parents[1] / "skills" / "tiktok" / "SKILL.md"
+MODULE_PATH = SKILL_PATH.parent / "scripts" / "tiktok.py"
 spec = importlib.util.spec_from_file_location("tiktok_script", MODULE_PATH)
 tiktok = importlib.util.module_from_spec(spec)
 assert spec.loader
@@ -37,6 +38,19 @@ class TikTokScriptTests(unittest.TestCase):
 
     def tearDown(self):
         self.token_patch.stop()
+
+    def test_skill_requires_draft_confirmation_before_one_upload(self):
+        skill = SKILL_PATH.read_text(encoding="utf-8")
+        workflow = skill[skill.index("Required order:") : skill.index("### FILE_UPLOAD")]
+
+        self.assertIn('"kind": "tiktok.upload_draft"', workflow)
+        self.assertNotIn('kind: "generic"', workflow)
+        self.assertLess(workflow.index("request_action_confirmation"), workflow.index("exactly one upload"))
+        self.assertIn("Never call `upload` again while polling", workflow)
+        self.assertIn("/post/publish/inbox/video/init/", skill)
+        self.assertIn("/v2/post/publish/video/init/", skill)
+        self.assertIn("Do not call it", skill)
+        self.assertIn("SEND_TO_USER_INBOX", skill)
 
     def test_file_upload_initializes_and_puts_one_chunk(self):
         init = Response({"data": {"publish_id": "pub_1", "upload_url": "https://upload.test/one"}, "error": {"code": "ok"}})

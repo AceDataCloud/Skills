@@ -12,7 +12,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "2.2"
+  version: "2.3"
 ---
 
 Call the **TikTok API v2** with `curl + jq`. The user's OAuth bearer token is in
@@ -50,8 +50,18 @@ drafts**; they open the TikTok app to add caption, sound and privacy, then post.
 Required order:
 
 1. Download the exact video locally, but do not upload it yet.
-2. Call `request_action_confirmation` with `kind: "generic"`, the real video
-   preview, and a summary that says this uploads to drafts rather than publishing.
+2. Call `request_action_confirmation` with this draft-only shape, using the real
+   video URL and its real duration when known. Do not pass `detail`, publishing
+   settings, or editable fields:
+
+   ```json
+   {
+     "kind": "tiktok.upload_draft",
+     "title": "Upload to TikTok drafts",
+     "summary": "Upload this video to TikTok inbox/drafts; it will not be published.",
+     "preview": {"type": "video", "url": "https://…/actual-video.mp4", "duration_sec": 30}
+   }
+   ```
 3. If cancelled, stop. If confirmed, run exactly one upload:
    `python3 skills/tiktok/scripts/tiktok.py upload video.mp4`.
 4. Poll with `python3 skills/tiktok/scripts/tiktok.py status PUBLISH_ID` until
