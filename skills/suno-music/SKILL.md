@@ -211,6 +211,25 @@ POST /suno/custom-models
 | `/suno/tasks` | POST | Query task status and results |
 | `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 
+## Upload Reference Audio
+
+Upload audio you own or are authorized to use before using `upload_extend` or `upload_cover`.
+
+- **Standard** (default): provide a publicly accessible `audio_url`. A successful upload costs 0.06 Credits; failed uploads are free.
+- **Enhanced**: provide a publicly accessible HTTPS `audio_url`, `"mode": "enhanced"`, and a 1–100 character `name`. Processing is asynchronous and typically takes at least 2 minutes. A successful upload costs 1.87 Credits; failed processing is free.
+
+```json
+POST /suno/upload
+{
+  "audio_url": "https://cdn.example.com/authorized-song.mp3",
+  "mode": "enhanced",
+  "name": "My Song",
+  "callback_url": "https://example.com/webhooks/suno"
+}
+```
+
+Enhanced uploads return `task_id` and `trace_id`; poll `/suno/tasks` or use the HTTPS `callback_url`, then read the uploaded ID from `response.data.audio_id`. Enhanced-upload IDs support Cover, Samples, and Mashup. Other cross-account operations are not guaranteed.
+
 ## Advanced Parameters
 
 | Parameter | Type | Description |
