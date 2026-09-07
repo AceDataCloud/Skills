@@ -55,10 +55,12 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 ```
 
 An OAuth access token can instead authorize the same management host when it
-includes the required `applications:*`, `credentials:*`, `usage:read`, or
-`orders:*` scopes. OAuth access tokens expire according to `expires_in`; request
-`offline_access` for refresh capability and handle refresh failure by
-reauthorizing.
+includes the required `applications:read`/`applications:write`,
+`credentials:read`/`credentials:write`, `usage:read`, or
+`orders:read`/`orders:write` scopes (or a suitable `platform:read`,
+`platform:write`, or `platform` aggregate). OAuth access tokens expire according
+to `expires_in`; request `offline_access` for refresh capability and handle
+refresh failure by reauthorizing.
 
 > A normal token only ever sees **its own** account data. A superuser token sees
 > every user's data and is required for admin operations (announcements).

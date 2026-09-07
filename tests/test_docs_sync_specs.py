@@ -24,6 +24,7 @@ class DocsSyncSpecTests(unittest.TestCase):
         text = skill_text("suno-music")
         for detail in ("10 Credit", "0.90 Credits", "0.06 Credits", "1.87 Credit"):
             self.assertIn(detail, text)
+        self.assertIn('"mode": "enhanced"', text)
         self.assertIn("a `name` of 1–100 characters", text)
 
     def test_shared_auth_distinguishes_oauth_tokens(self) -> None:
@@ -32,7 +33,7 @@ class DocsSyncSpecTests(unittest.TestCase):
         )
         self.assertIn("currently 15 days", auth)
         self.assertIn("HTTP 200 from `/oauth2/revoke`", auth)
-        self.assertIn("`credentials:*`", skill_text("acedatacloud"))
+        self.assertIn("`credentials:read`/`credentials:write`", skill_text("acedatacloud"))
 
 
 if __name__ == "__main__":

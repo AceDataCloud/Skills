@@ -214,7 +214,7 @@ POST /suno/custom-models
 ### Upload modes
 
 - `standard` requires a publicly accessible `audio_url`. Successful uploads cost **0.06 Credits**; failed uploads are not charged.
-- `enhanced` requires a public HTTPS `audio_url` and a `name` of 1–100 characters. It is always asynchronous, typically takes at least two minutes, and may include an HTTPS `callback_url`. Confirm the **1.87 Credit** charge before submitting it; failed processing is not charged.
+- Set `"mode": "enhanced"` to use enhanced upload. It requires a public HTTPS `audio_url` and a `name` of 1–100 characters, is always asynchronous, typically takes at least two minutes, and may include an HTTPS `callback_url`. Confirm the **1.87 Credit** charge before submitting it; failed processing is not charged.
 
 ## Advanced Parameters
 
