@@ -132,7 +132,7 @@ For best results follow this multi-step workflow:
 
 ## Custom Music Models (Beta)
 
-Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and cost before submitting it.
+Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation (10 Credits on success; failures are not charged). Ask the user to confirm the files and cost before submitting it.
 
 ### Create
 
@@ -148,7 +148,8 @@ POST /suno/custom-models
     "https://cdn.example.com/track-04.mp3",
     "https://cdn.example.com/track-05.mp3",
     "https://cdn.example.com/track-06.mp3"
-  ]
+  ],
+  "callback_url": "https://example.com/webhooks/suno"
 }
 ```
 
@@ -175,12 +176,11 @@ POST /suno/custom-models
   "id": "<ready-custom-model-id>",
   "lyric": "[Verse]\nOriginal lyrics here",
   "style": "warm indie pop",
-  "title": "New Song",
-  "async": true
+  "title": "New Song"
 }
 ```
 
-Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
+Successful custom-model generation consumes 0.90 Credits; failures are not charged. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
 
 ### Archive
 
@@ -207,7 +207,7 @@ POST /suno/custom-models
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio for extend/cover; standard mode requires `audio_url`, enhanced mode also requires `mode: "enhanced"` and `name` (1–100 chars), with optional `callback_url` |
 | `/suno/tasks` | POST | Query task status and results |
 | `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 
@@ -250,6 +250,6 @@ Ending lyrics
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
-- Upload external audio via `/suno/upload` before using it with extend/cover
+- Upload external audio via `/suno/upload` before using it with extend/cover. Standard upload defaults to `mode: "standard"` and returns `data.audio_id`; enhanced upload is async, usually takes 2+ minutes, returns `task_id`/`trace_id`, and the final uploaded ID is at `response.data.audio_id`
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
