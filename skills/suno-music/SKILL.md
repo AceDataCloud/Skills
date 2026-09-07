@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -106,7 +106,7 @@ For best results follow this multi-step workflow:
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
-7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+7. **Optional: Convert** — Get MP3 (`/suno/mp3`), WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
 
@@ -130,67 +130,6 @@ For best results follow this multi-step workflow:
 | `samples` | Add samples to an uploaded song |
 | `inspo` | Generate a song inspired by an existing audio |
 
-## Custom Music Models (Beta)
-
-Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and cost before submitting it.
-
-### Create
-
-```json
-POST /suno/custom-models
-{
-  "action": "create",
-  "name": "My Album Sound",
-  "audio_urls": [
-    "https://cdn.example.com/track-01.mp3",
-    "https://cdn.example.com/track-02.mp3",
-    "https://cdn.example.com/track-03.mp3",
-    "https://cdn.example.com/track-04.mp3",
-    "https://cdn.example.com/track-05.mp3",
-    "https://cdn.example.com/track-06.mp3"
-  ]
-}
-```
-
-Send a stable `Idempotency-Key` header and reuse it after network failures. Save the returned `id`; query it until `status` is `ready`.
-
-### Query and list
-
-```json
-POST /suno/custom-models
-{"action": "retrieve", "id": "<custom-model-id>"}
-```
-
-```json
-POST /suno/custom-models
-{"action": "retrieve_batch", "status": "ready", "limit": 20, "offset": 0}
-```
-
-### Generate
-
-```json
-POST /suno/custom-models
-{
-  "action": "generate",
-  "id": "<ready-custom-model-id>",
-  "lyric": "[Verse]\nOriginal lyrics here",
-  "style": "warm indie pop",
-  "title": "New Song",
-  "async": true
-}
-```
-
-Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
-
-### Archive
-
-```json
-POST /suno/custom-models
-{"action": "delete", "id": "<custom-model-id>"}
-```
-
-`delete` archives the platform resource and prevents further use. `capacity_released: false` means it does not promise that model capacity was released.
-
 ## Auxiliary Endpoints
 
 | Endpoint | Method | Purpose |
@@ -198,10 +137,11 @@ POST /suno/custom-models
 | `/suno/lyrics` | POST | Generate structured lyrics from a prompt (`model`: `"default"` or `"remi-v1"`) |
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
+| `/suno/mp3` | POST | Get MP3 audio (`audio_id` required; optional `callback_url`, `async`) |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
-| `/suno/vox` | POST | Extract vocal track (stem separation) |
+| `/suno/vox` | POST | Extract vocal track (requires `audio_id`, `vocal_start`, `vocal_end`) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
@@ -209,13 +149,12 @@ POST /suno/custom-models
 | `/suno/persona` | DELETE | Delete a reusable persona |
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
-| `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 
 ## Advanced Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | string | Structured prompt text for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
