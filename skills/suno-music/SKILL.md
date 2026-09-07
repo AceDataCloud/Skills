@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -106,7 +106,7 @@ For best results follow this multi-step workflow:
 4. **Poll task** — `POST /suno/tasks` with `id` (or `ids` for batch) until status is complete
 5. **Optional: Extend** — Use extend action to add more sections
 6. **Optional: Concat** — Use concat action to merge extended segments
-7. **Optional: Convert** — Get WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
+7. **Optional: Convert** — Get MP3 (`/suno/mp3`), WAV (`/suno/wav`), MIDI (`/suno/midi`), or MP4 (`/suno/mp4`)
 
 ## Available Actions
 
@@ -130,67 +130,6 @@ For best results follow this multi-step workflow:
 | `samples` | Add samples to an uploaded song |
 | `inspo` | Generate a song inspired by an existing audio |
 
-## Custom Music Models (Beta)
-
-Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and cost before submitting it.
-
-### Create
-
-```json
-POST /suno/custom-models
-{
-  "action": "create",
-  "name": "My Album Sound",
-  "audio_urls": [
-    "https://cdn.example.com/track-01.mp3",
-    "https://cdn.example.com/track-02.mp3",
-    "https://cdn.example.com/track-03.mp3",
-    "https://cdn.example.com/track-04.mp3",
-    "https://cdn.example.com/track-05.mp3",
-    "https://cdn.example.com/track-06.mp3"
-  ]
-}
-```
-
-Send a stable `Idempotency-Key` header and reuse it after network failures. Save the returned `id`; query it until `status` is `ready`.
-
-### Query and list
-
-```json
-POST /suno/custom-models
-{"action": "retrieve", "id": "<custom-model-id>"}
-```
-
-```json
-POST /suno/custom-models
-{"action": "retrieve_batch", "status": "ready", "limit": 20, "offset": 0}
-```
-
-### Generate
-
-```json
-POST /suno/custom-models
-{
-  "action": "generate",
-  "id": "<ready-custom-model-id>",
-  "lyric": "[Verse]\nOriginal lyrics here",
-  "style": "warm indie pop",
-  "title": "New Song",
-  "async": true
-}
-```
-
-Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
-
-### Archive
-
-```json
-POST /suno/custom-models
-{"action": "delete", "id": "<custom-model-id>"}
-```
-
-`delete` archives the platform resource and prevents further use. `capacity_released: false` means it does not promise that model capacity was released.
-
 ## Auxiliary Endpoints
 
 | Endpoint | Method | Purpose |
@@ -198,6 +137,7 @@ POST /suno/custom-models
 | `/suno/lyrics` | POST | Generate structured lyrics from a prompt (`model`: `"default"` or `"remi-v1"`) |
 | `/suno/style` | POST | Optimize/refine a style description |
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
+| `/suno/mp3` | POST | Get MP3 audio for a song; requires `audio_id`, with optional `callback_url` and `async` |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
@@ -207,19 +147,27 @@ POST /suno/custom-models
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio for extend/cover; requires `audio_url`, with optional `mode` (`"standard"` or `"enhanced"`), `name`, and `callback_url` |
 | `/suno/tasks` | POST | Query task status and results |
-| `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 
 ## Advanced Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
+| `lyric_prompt` | string | Prompt for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
 | `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `mashup_audio_ids` | string[] | Audio IDs to blend with the `mashup` action |
+| `audio_urls` | string[] | Uploaded/source audio URLs for upload-based actions |
+| `weirdness` | number | Creative variation control from `0` to `1` |
+| `persona_id` | string | Reusable persona ID for persona-guided generation |
+| `overpainting_start` / `overpainting_end` | number | Time range controls for `overpainting` |
+| `samples_start` / `samples_end` | number | Time range controls for `samples` |
+| `underpainting_start` / `underpainting_end` | number | Time range controls for `underpainting` |
+| `replace_section_start` / `replace_section_end` | number | Time range to replace for `replace_section` |
+| `replace_section_result_mode` | `"candidates"` or `"full_song"` | Result mode for `replace_section` (defaults to `"full_song"`) |
 
 ## Lyrics Format
 
@@ -250,6 +198,6 @@ Ending lyrics
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
-- Upload external audio via `/suno/upload` before using it with extend/cover
+- Upload external audio via `/suno/upload` before using it with extend/cover. The upload request requires `audio_url`; `mode` defaults to `"standard"` and may be set to `"enhanced"`
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
