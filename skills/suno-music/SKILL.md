@@ -200,6 +200,7 @@ POST /suno/custom-models
 | `/suno/mashup-lyrics` | POST | Combine two sets of lyrics |
 | `/suno/mp4` | POST | Get MP4 video version of a song |
 | `/suno/wav` | POST | Convert to lossless WAV format |
+| `/suno/mp3` | POST | Convert or retrieve MP3 format |
 | `/suno/midi` | POST | Extract MIDI data for DAW editing |
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
@@ -220,6 +221,12 @@ POST /suno/custom-models
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `weirdness` | number | Creative variation strength from 0 to 1 |
+| `replace_section_start` / `replace_section_end` | number | Time range to replace when using `action: "replace_section"` |
+| `replace_section_result_mode` | string | `full_song` (default) or `candidates` result mode for section replacement |
+| `overpainting_start` / `overpainting_end` | number | Time range for adding vocals to uploaded audio |
+| `underpainting_start` / `underpainting_end` | number | Time range for adding accompaniment to uploaded audio |
+| `samples_start` / `samples_end` | number | Time range for sample-based generation |
 
 ## Lyrics Format
 
@@ -250,6 +257,6 @@ Ending lyrics
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
-- Upload external audio via `/suno/upload` before using it with extend/cover
+- Upload external audio via `/suno/upload` before using it with extend/cover; `mode` can be `standard` (default) or `enhanced`
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
