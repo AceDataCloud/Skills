@@ -36,3 +36,5 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
   }
 }
 ```
+
+Browser OAuth and manually supplied API keys are separate connection paths. Only use OAuth where the MCP server and client document support for it, verify requested scopes on the consent page, and do not substitute an OAuth access token for a general service API key.

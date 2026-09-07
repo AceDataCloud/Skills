@@ -30,10 +30,11 @@ This is the **management / console** API at `https://platform.acedata.cloud/api/
 — the same surface the web console uses. It is **different** from the
 data-generation API at `api.acedata.cloud` (image / video / music / search generation).
 
-## Setup — use a PLATFORM token, not a service token
+## Setup — use a platform or scoped OAuth token, not a service token
 
-The management API is authenticated with a **platform token** (or a logged-in
-user token), **not** the per-service API token used for `api.acedata.cloud`.
+The management API is authenticated with a **platform token** or an OAuth access
+token with suitable scopes, **not** the per-service API token used for
+`api.acedata.cloud`.
 
 1. Create one at [platform.acedata.cloud/console/platform-tokens](https://platform.acedata.cloud/console/platform-tokens)
    (or `POST /api/v1/platform-tokens/`). It starts with `platform-` and never expires.
@@ -52,6 +53,12 @@ ACEDATACLOUD_PLATFORM_TOKEN=platform-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
   https://platform.acedata.cloud/api/v1/applications/
 ```
+
+An OAuth access token can instead authorize the same management host when it
+includes the required `applications:*`, `credentials:*`, `usage:read`, or
+`orders:*` scopes. OAuth access tokens expire according to `expires_in`; request
+`offline_access` for refresh capability and handle refresh failure by
+reauthorizing.
 
 > A normal token only ever sees **its own** account data. A superuser token sees
 > every user's data and is required for admin operations (announcements).

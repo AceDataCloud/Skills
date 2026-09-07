@@ -132,7 +132,7 @@ For best results follow this multi-step workflow:
 
 ## Custom Music Models (Beta)
 
-Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and cost before submitting it.
+Custom models learn reusable musical characteristics from 6–24 authorized audio files. Creation is a paid, long-running operation. Ask the user to confirm the files and the **10 Credit** charge before submitting it; failed creation is not charged.
 
 ### Create
 
@@ -180,7 +180,7 @@ POST /suno/custom-models
 }
 ```
 
-Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
+Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`. Successful generation costs **0.90 Credits**; failed generation is not charged. Querying and archiving models are free.
 
 ### Archive
 
@@ -207,9 +207,14 @@ POST /suno/custom-models
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |
-| `/suno/upload` | POST | Upload external audio for extend/cover |
+| `/suno/upload` | POST | Upload external audio in `standard` (default) or `enhanced` mode |
 | `/suno/tasks` | POST | Query task status and results |
 | `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
+
+### Upload modes
+
+- `standard` requires a publicly accessible `audio_url`. Successful uploads cost **0.06 Credits**; failed uploads are not charged.
+- `enhanced` requires a public HTTPS `audio_url` and a `name` of 1–100 characters. It is always asynchronous, typically takes at least two minutes, and may include an HTTPS `callback_url`. Confirm the **1.87 Credit** charge before submitting it; failed processing is not charged.
 
 ## Advanced Parameters
 
@@ -250,6 +255,6 @@ Ending lyrics
 - `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
-- Upload external audio via `/suno/upload` before using it with extend/cover
+- Upload external audio via `/suno/upload` before using it with extend/cover; poll `/suno/tasks` for enhanced uploads
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

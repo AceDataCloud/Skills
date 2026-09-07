@@ -42,7 +42,11 @@ curl -X POST https://api.acedata.cloud/<endpoint> \
 | **Service Token** | Single service | Default. Created per-subscription |
 | **Global Token** | All services | Create from the platform's global credentials page |
 
+Service and global API tokens are distinct from `platform-*` management tokens and OAuth access tokens. OAuth access tokens are scope-bound JWTs whose lifetime is given by `expires_in` (currently 15 days); request `offline_access` when a refresh token is needed.
+
 ## Gotchas
 
 - Tokens are **service-scoped** by default — if you get a 401 on a different service, create a global token or a token for that specific service
-- Tokens do not expire, but can be revoked from the platform
+- Service and global API tokens are long-lived until their configured expiration or manual revocation; do not assume OAuth access tokens are non-expiring
+- Do not interchange service API tokens, `platform-*` management tokens, and OAuth access tokens
+- OAuth refresh-token lifetime is deployment-dependent; handle refresh failure by reauthorizing. HTTP 200 from `/oauth2/revoke` does not currently guarantee immediate JWT invalidation
