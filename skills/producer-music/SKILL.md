@@ -172,9 +172,9 @@ POST /producer/upload
 | `continue_at` | number | Seconds — where to extend from |
 | `replace_section_start` | number | Start time of section to replace |
 | `replace_section_end` | number | End time of section to replace |
-| `lyrics_strength` | 0-1 | Lyrics adherence (default: 0.7) |
-| `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
-| `weirdness` | 0-1 | Creative randomness (default: 0.5) |
+| `lyrics_strength` | number (0-1) | Lyrics adherence |
+| `sound_strength` | number (0.2-1) | Sound quality weight |
+| `weirdness` | number (0-1) | Creative randomness |
 | `seed` | string | Seed for reproducibility |
 
 ## Response Structure

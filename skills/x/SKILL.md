@@ -62,6 +62,13 @@ python3 $X trends --category trending --limit 20             # trending|for-you|
 
 `--user` accepts either an `@screen_name` (the `@` is optional) or a numeric id.
 
+### AceDataCloud X information API note
+
+If you are calling AceDataCloud's X information API instead of the cookie-based
+CLI above, `POST https://api.acedata.cloud/x/retweets` requires a non-empty
+`note_id` for the tweet id. Use `note_id`, not the older `post_id` field;
+`cursor` is optional for pagination.
+
 ## Verify the connection first
 
 ```sh

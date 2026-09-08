@@ -42,6 +42,13 @@ scopes (`user.info.stats`, `user.info.profile`, `video.list`), which this app
 has not been granted — don't call `/v2/video/list/` or request those fields,
 they will fail with `scope_not_authorized`.
 
+## AceDataCloud TikTok information API note
+
+If you are calling AceDataCloud's TikTok Information API instead of the OAuth
+upload flow below, `POST https://api.acedata.cloud/tiktok/user` requires one
+non-empty identifier: either `unique_id` or `user_id`. `cursor` is optional for
+pagination; do not send an empty identifier.
+
 ## Upload the video to the user's drafts
 
 This is the working path. The video lands in the creator's TikTok **inbox /
@@ -138,5 +145,4 @@ path above.
 - `SEND_TO_USER_INBOX` is success for this flow, not an intermediate state.
   Don't wait for `PUBLISH_COMPLETE` — that only happens once the user posts
   from the app.
-
 

@@ -49,12 +49,12 @@ Response:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `content` | Yes | The original long URL to shorten |
+| `content` | Yes | URI string for the original long URL to shorten |
 
 ## Gotchas
 
 - Short URLs use the `suro.id` domain
 - Results are returned synchronously — no task polling needed
-- The `content` field must be a valid URL to shorten
+- The `content` field must be a valid URI string to shorten
 
 > **MCP:** `pip install mcp-shorturl` | Hosted: `https://short-url.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
