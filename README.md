@@ -2,13 +2,13 @@
 
 <p align="center">
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
-  <a href="https://platform.acedata.cloud"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
+  <a href="https://platform.acedata.cloud/?utm_source=github&utm_medium=repo&utm_campaign=skills-catalog"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
   <a href="https://www.npmjs.com/package/@acedatacloud/skills"><img src="https://img.shields.io/npm/v/@acedatacloud/skills.svg" alt="npm"></a>
   <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
 </p>
 
-[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, LLM chat, web search, and more.
+[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=repo&utm_campaign=skills-catalog) AI services — music, image, video generation, LLM chat, web search, and more.
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
@@ -83,7 +83,7 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 
 ## Prerequisites
 
-Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
+Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=repo&utm_campaign=skills-catalog):
 
 1. Register an account
 2. Browse and subscribe to a service (most have free quota)
