@@ -26,6 +26,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
+| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5 Flare or Sunburst |
 | [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
