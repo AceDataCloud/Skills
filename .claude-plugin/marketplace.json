@@ -18,6 +18,7 @@
         "./skills/suno-music",
         "./skills/producer-music",
         "./skills/fish-audio",
+        "./skills/gpt-image-2-5",
         "./skills/flux-image",
         "./skills/seedream-image",
         "./skills/nano-banana-image",
