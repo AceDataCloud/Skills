@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md).
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-kling for tool-use.
 ---
 
 # Kling Video Generation
@@ -212,3 +212,5 @@ POST /kling/talking-photo
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
+
+> **MCP:** `pip install mcp-kling` | Hosted: `https://kling.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
