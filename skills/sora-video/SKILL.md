@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's OpenAI Sora API.
 curl -X POST https://api.acedata.cloud/sora/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a golden retriever running on a beach at sunset", "model": "sora-2"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /sora/tasks` with `{"id": "..."}`.

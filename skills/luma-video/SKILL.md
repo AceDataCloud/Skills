@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's Luma Dream Machine API.
 curl -X POST https://api.acedata.cloud/luma/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a drone flying over a mountain lake at sunrise", "action": "generate"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /luma/tasks` with `{"id": "..."}`.

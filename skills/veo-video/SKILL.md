@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's Google Veo API.
 curl -X POST https://api.acedata.cloud/veo/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "text2video", "prompt": "a whale breaching in slow motion at golden hour", "model": "veo3"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /veo/tasks` with `{"id": "..."}`.

@@ -27,6 +27,13 @@ Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authori
 
 Seedream 4.5 and 4.0 remain available for compatibility. Do not send a parameter to a model that does not support it.
 
+## Verify setup before generation
+
+1. Ask the MCP client to discover tools and confirm `seedream_list_models` is available.
+2. Call `seedream_list_models`. This in-process information tool does not call the generation API and does not consume credits.
+3. Do not invoke generation merely to verify setup. Review [live pricing](https://platform.acedata.cloud/services/seedream?tab=pricing&utm_source=agent-skill&utm_medium=skill&utm_campaign=seedream-first-paid-call), then show the selected model and options.
+4. Obtain explicit user confirmation before the first paid generation call. Stop here until the user confirms.
+
 ## Generate or edit
 
 ```bash

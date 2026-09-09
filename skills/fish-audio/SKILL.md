@@ -96,8 +96,7 @@ Headers:
 
 {
   "text": "Longer narration for background processing.",
-  "async": true,
-  "callback_url": "https://api.acedata.cloud/health"
+  "async": true
 }
 ```
 

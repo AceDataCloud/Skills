@@ -20,7 +20,7 @@ Generate AI videos through AceDataCloud's Grok (xAI) API.
 curl -X POST https://api.acedata.cloud/grok/videos \
   -H "Authorization: ******" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a futuristic city at night with flying cars and neon lights", "model": "grok-imagine-video-1.5-fast:reverse", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a futuristic city at night with flying cars and neon lights", "model": "grok-imagine-video-1.5-fast:reverse", "async": true}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /grok/tasks` with `{"id": "..."}`.
