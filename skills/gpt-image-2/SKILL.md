@@ -1,6 +1,6 @@
 ---
 name: gpt-image-2
-description: Generate and EDIT images with OpenAI gpt-image-2 via AceDataCloud API. Use when you need high-fidelity images from a prompt, or to edit/composite existing images (e.g. fuse a real logo/QR/screenshot into a scene, keep characters consistent, restyle). Strong at legible text and faithful editing.
+description: Generate and EDIT images with OpenAI gpt-image-2, gpt-image-2.5-flare, and gpt-image-2.5-sunburst via AceDataCloud API. Use when you need high-fidelity images from a prompt, or to edit/composite existing images (e.g. fuse a real logo/QR/screenshot into a scene, keep characters consistent, restyle). Strong at legible text and faithful editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # gpt-image-2 — Image Generation & Editing
 
-OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
+OpenAI `gpt-image-2`, `gpt-image-2.5-flare`, and `gpt-image-2.5-sunburst` through AceDataCloud. Both endpoints are synchronous by default and also support asynchronous task responses. Their standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and they composite/restyle them faithfully — great for on-brand video assets and character consistency.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -40,7 +40,7 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
   -F "n=1"
 ```
 
-Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `data[0].url`.
+Response (both endpoints): synchronous requests return `{"created":0,"data":[{"url":"https://...png"}]}`; asynchronous requests return `{"task_id":"..."}`.
 
 ## Sizes
 
