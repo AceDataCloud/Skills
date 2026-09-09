@@ -20,7 +20,7 @@ Generate AI-powered music through AceDataCloud's Suno API.
 curl -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v6", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "<task_id>"}` every 3-5 seconds.
@@ -29,7 +29,10 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 
 | Model | Best For |
 |-------|---------|
-| `chirp-v5-5` | Latest, highest quality |
+| `chirp-v6` | Current v6 model |
+| `chirp-v6-wild` | v6 Wild model |
+| `chirp-v6-mini` | v6 Mini model |
+| `chirp-v5-5` | Previous model name, retained for compatibility |
 | `chirp-v5` | High quality |
 | `chirp-v4-5-plus` | Enhanced v4.5 |
 | `chirp-v4-5` | Good balance of quality and speed |
@@ -47,7 +50,7 @@ Generate a song from a text description. Suno creates lyrics, style, and music a
 POST /suno/audios
 {
   "prompt": "an upbeat electronic track about the future of AI",
-  "model": "chirp-v5-5",
+  "model": "chirp-v6",
   "instrumental": false
 }
 ```
@@ -63,7 +66,7 @@ POST /suno/audios
   "lyric": "[Verse]\nCode is poetry in motion\n[Chorus]\nWe build the future tonight",
   "title": "Digital Dreams",
   "style": "Synthwave, Electronic, Dreamy",
-  "model": "chirp-v5-5",
+  "model": "chirp-v6",
   "vocal_gender": "f"
 }
 ```
