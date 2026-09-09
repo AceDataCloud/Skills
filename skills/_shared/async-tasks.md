@@ -1,41 +1,30 @@
 # Async Task Polling
 
-Most generation APIs (images, video, music) are asynchronous — they return a `task_id` immediately, and you poll for the result.
+Generation endpoints can take time. Follow the service-specific contract: some endpoints support a native `async: true` flag, some return a task by default, and others can deliver completion to a webhook. Do not assume one switch works for every service.
 
-## Pattern
+## Poll a task
 
-**Step 1:** Submit with `callback_url` to force async mode and get a `task_id` immediately.
-
-```bash
-curl -X POST https://api.acedata.cloud/<service>/<resource> \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "...", "callback_url": "https://api.acedata.cloud/health"}'
-```
-
-Using `"callback_url": "https://api.acedata.cloud/health"` as a placeholder forces async mode even without a real webhook endpoint.
-
-**Step 2:** Poll the task endpoint every 3-5 seconds until the status is terminal.
+When the service returns a task ID, poll its documented task endpoint every 3–5 seconds until the status is terminal.
 
 ```bash
 curl -X POST https://api.acedata.cloud/<service>/tasks \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from step 1>"}'
+  -d '{"id": "<task_id>"}'
 ```
 
-For batch polling, use:
+Use the exact ID field and terminal states documented by the service Skill. Stop after a bounded timeout, and surface terminal failures instead of polling forever.
 
-```bash
-curl -X POST https://api.acedata.cloud/<service>/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
-```
+## Use callbacks only with a real webhook
 
-## Important Notes
+Set `callback_url` only when the user owns a real public HTTP(S) webhook that can receive completion POSTs. A health endpoint, documentation page, placeholder URL, or URL the user does not control is not a webhook.
 
-- Always use `callback_url` to avoid long-running HTTP connections that time out
-- Poll every 3-5 seconds for music, every 5 seconds for images/video
-- Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
+Callbacks and polling are independent completion mechanisms. If a request returns a task ID, polling may be sufficient without a callback. If the service documents a native `async: true` flag, prefer that flag for task-based execution and omit `callback_url` unless webhook delivery is also required.
+
+## Rules
+
+- Confirm the selected service supports the requested async mechanism before adding fields.
+- Never invent `async`, `callback_url`, or task fields that are absent from the service contract.
+- Never use a health endpoint as a fake callback.
+- Do not log tokens or include them in callback URLs.
+- Treat generation as potentially credit-consuming; review live pricing and obtain explicit user confirmation before the first paid request.

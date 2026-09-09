@@ -20,7 +20,7 @@ Generate AI-powered music through AceDataCloud's Suno API.
 curl -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v6", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v6"}'
 ```
 
 > **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "<task_id>"}` every 3-5 seconds.
@@ -244,7 +244,7 @@ Ending lyrics
 
 ## Gotchas
 
-- All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- Generation may return a task ID. Poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`. Add `callback_url` only for a real public webhook the user controls.
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")

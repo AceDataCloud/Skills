@@ -14,6 +14,13 @@ Generate and edit AI images through AceDataCloud's NanoBanana (Gemini-based) API
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Verify setup before generation
+
+1. Ask the MCP client to discover tools and confirm `nanobanana_list_models` is available.
+2. Call `nanobanana_list_models`. This in-process information tool does not call the generation API and does not consume credits.
+3. Do not invoke generation merely to verify setup. Review [live pricing](https://platform.acedata.cloud/pricing?utm_source=agent-skill&utm_medium=skill&utm_campaign=nanobanana-first-paid-call), then show the selected model and options.
+4. Obtain explicit user confirmation before the first paid generation call. Stop here until the user confirms.
+
 ## Quick Start
 
 ```bash

@@ -14,6 +14,10 @@ Replace this with your skill instructions.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Verify before a paid operation
+
+Use a documented local information or discovery tool first when one exists. It must not call a generation endpoint or consume credits. Review live pricing, show the selected model and options, and obtain explicit user confirmation before the first paid request.
+
 ## Quick Start
 
 ```bash

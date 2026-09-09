@@ -14,13 +14,20 @@ Generate and edit images through AceDataCloud's Flux API.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Verify setup before generation
+
+1. Ask the MCP client to discover tools and confirm `flux_list_models` is available.
+2. Call `flux_list_models`. This in-process information tool does not call the generation API and does not consume credits.
+3. Do not invoke generation merely to verify setup. Review [live pricing](https://platform.acedata.cloud/pricing?utm_source=agent-skill&utm_medium=skill&utm_campaign=flux-first-paid-call), then show the selected model and options.
+4. Obtain explicit user confirmation before the first paid generation call. Stop here until the user confirms.
+
 ## Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev"}'
 ```
 
 > **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
@@ -80,6 +87,6 @@ POST /flux/images
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
 - `flux-2-max` produces highest quality but is slowest — use dev/klein/flex for iteration and max for final output
-- All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- Generation may return a task ID. Poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`. Add `callback_url` only for a real public webhook the user controls.
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)

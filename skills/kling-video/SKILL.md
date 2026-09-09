@@ -14,6 +14,13 @@ Generate AI videos through AceDataCloud's Kuaishou Kling API.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
+## Verify setup before generation
+
+1. Ask the MCP client to discover tools and confirm `kling_list_models` is available.
+2. Call `kling_list_models`. This in-process information tool does not call the generation API and does not consume credits.
+3. Do not invoke generation merely to verify setup. Review [live pricing](https://platform.acedata.cloud/pricing?utm_source=agent-skill&utm_medium=skill&utm_campaign=kling-first-paid-call), then show the selected model and options.
+4. Obtain explicit user confirmation before the first paid generation call. Stop here until the user confirms.
+
 ## Quick Start
 
 ```bash
@@ -209,7 +216,7 @@ POST /kling/talking-photo
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
-- `pro` mode costs roughly 2x `std` mode but generates faster with better quality
+- `pro` mode targets higher quality and speed than `std`; review live pricing before choosing a mode
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
 
