@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-09-10",
+  "source": {
+    "repository": "https://github.com/AceDataCloud/MCPs",
+    "revision": "3ef59b4dbaef9eb9d0c55d9281b2bd34f8c931c1",
+    "field": "project.name in <alias>/pyproject.toml"
+  },
+  "mappings": [
+    {"skill": "acedatacloud", "package": "mcp-acedatacloud", "endpoint": "https://mcp.acedata.cloud/mcp"},
+    {"skill": "flux-image", "package": "mcp-flux-pro", "endpoint": "https://flux.mcp.acedata.cloud/mcp"},
+    {"skill": "google-search", "package": "mcp-serp", "endpoint": "https://serp.mcp.acedata.cloud/mcp"},
+    {"skill": "happyhorse-video", "package": "mcp-happyhorse", "endpoint": "https://happyhorse.mcp.acedata.cloud/mcp"},
+    {"skill": "kling-video", "package": "mcp-kling", "endpoint": "https://kling.mcp.acedata.cloud/mcp"},
+    {"skill": "luma-video", "package": "mcp-luma", "endpoint": "https://luma.mcp.acedata.cloud/mcp"},
+    {"skill": "maestro-video", "package": "mcp-maestro", "endpoint": "https://maestro.mcp.acedata.cloud/mcp"},
+    {"skill": "nano-banana-image", "package": "mcp-nanobanana-pro", "endpoint": "https://nanobanana.mcp.acedata.cloud/mcp"},
+    {"skill": "qwen-image", "package": "mcp-qwen-image", "endpoint": "https://qwen-image.mcp.acedata.cloud/mcp"},
+    {"skill": "seedance-video", "package": "mcp-seedance", "endpoint": "https://seedance.mcp.acedata.cloud/mcp"},
+    {"skill": "seedream-image", "package": "mcp-seedream-pro", "endpoint": "https://seedream.mcp.acedata.cloud/mcp"},
+    {"skill": "short-url", "package": "mcp-shorturl", "endpoint": "https://short-url.mcp.acedata.cloud/mcp"},
+    {"skill": "sora-video", "package": "mcp-sora", "endpoint": "https://sora.mcp.acedata.cloud/mcp"},
+    {"skill": "suno-music", "package": "mcp-suno", "endpoint": "https://suno.mcp.acedata.cloud/mcp"},
+    {"skill": "veo-video", "package": "mcp-veo", "endpoint": "https://veo.mcp.acedata.cloud/mcp"},
+    {"skill": "wan-video", "package": "mcp-wan", "endpoint": "https://wan.mcp.acedata.cloud/mcp"}
+  ]
+}
