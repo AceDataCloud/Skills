@@ -20,7 +20,7 @@ Generate AI-powered music through AceDataCloud's Suno API.
 curl -X POST https://api.acedata.cloud/suno/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v5-5", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "a happy pop song about coding", "model": "chirp-v6", "callback_url": "https://api.acedata.cloud/health"}'
 ```
 
 > **Async:** All generation is async. See [async task polling](../_shared/async-tasks.md). Poll via `POST /suno/tasks` with `{"id": "<task_id>"}` every 3-5 seconds.
@@ -29,7 +29,10 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 
 | Model | Best For |
 |-------|---------|
-| `chirp-v5-5` | Latest, highest quality |
+| `chirp-v6` | Recommended, highest quality |
+| `chirp-v6-wild` | Creative variation |
+| `chirp-v6-mini` | Faster v6 generation |
+| `chirp-v5-5` | Highest quality v5 model |
 | `chirp-v5` | High quality |
 | `chirp-v4-5-plus` | Enhanced v4.5 |
 | `chirp-v4-5` | Good balance of quality and speed |
@@ -47,7 +50,7 @@ Generate a song from a text description. Suno creates lyrics, style, and music a
 POST /suno/audios
 {
   "prompt": "an upbeat electronic track about the future of AI",
-  "model": "chirp-v5-5",
+  "model": "chirp-v6",
   "instrumental": false
 }
 ```
@@ -63,7 +66,7 @@ POST /suno/audios
   "lyric": "[Verse]\nCode is poetry in motion\n[Chorus]\nWe build the future tonight",
   "title": "Digital Dreams",
   "style": "Synthwave, Electronic, Dreamy",
-  "model": "chirp-v5-5",
+  "model": "chirp-v6",
   "vocal_gender": "f"
 }
 ```
@@ -243,7 +246,7 @@ Ending lyrics
 
 - All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 - **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
-- Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
+- Lyrics max: 3,000 characters for `chirp-v3-5`/`chirp-v4`, and 5,000 for `chirp-v4-5` through `chirp-v5-5`. v6 limits are not yet documented. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
