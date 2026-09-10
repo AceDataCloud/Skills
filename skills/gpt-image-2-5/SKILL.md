@@ -14,8 +14,10 @@ Use one exact model ID for every request:
 
 - `gpt-image-2.5-flare` — faster generation.
 - `gpt-image-2.5-sunburst` — higher-fidelity output and editing control.
+- `gpt-image-2.5-flare:official` — Flare using the official, token-billed variant.
+- `gpt-image-2.5-sunburst:official` — Sunburst using the official, token-billed variant.
 
-Do not send `gpt-image-2.5`; it is not a model ID.
+Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -48,5 +50,6 @@ The result is in `data[].url`.
 - Custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
 - `quality` accepts `auto`, `low`, `medium`, or `high`.
 - `n` accepts 1–10 and billing uses the number of images returned. Use URL output for `n>1`; `b64_json` requires `n=1`.
+- The `:official` variants bill for actual text, reference-image, and output-image tokens; use returned usage records for final cost.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
 - Image editing accepts URL input in JSON or local files with multipart form data.
