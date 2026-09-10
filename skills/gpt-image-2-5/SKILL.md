@@ -49,4 +49,4 @@ The result is in `data[].url`.
 - `quality` accepts `auto`, `low`, `medium`, or `high`.
 - `n` accepts 1–10 and billing uses the number of images returned. Use URL output for `n>1`; `b64_json` requires `n=1`.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
-- Image editing accepts URL input in JSON or local files with multipart form data.
+- Image editing JSON accepts one URL or an array of up to 16 URLs; multipart accepts repeated `image` fields for local files.

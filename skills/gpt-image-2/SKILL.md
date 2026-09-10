@@ -25,7 +25,7 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
 
 ## 2. Edit / composite (images + prompt → image)  ← the powerful one
 
-Multipart. Pass one or more source images via repeated `image[]` (local files with
+Multipart. Pass one or more source images (up to 16) via repeated `image` (local files with
 `@`, or URLs). Use it to **fuse a real logo/QR into a generated scene**, keep a subject
 consistent across scenes, or restyle a screenshot.
 
@@ -34,8 +34,8 @@ curl -X POST https://api.acedata.cloud/openai/images/edits \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -F "model=gpt-image-2" \
   -F "prompt=Place this logo crisply in the top-left on the tech background; keep the logo's exact colors and shape." \
-  -F "image[]=@background.png" \
-  -F "image[]=@logo.png" \
+  -F "image=@background.png" \
+  -F "image=@logo.png" \
   -F "size=1792x1024" \
   -F "n=1"
 ```
@@ -59,7 +59,7 @@ ratio ≤ 3:1 — otherwise 400.)
 ## Tips
 
 - **Editing keeps things faithful** — to place a logo/QR exactly, pass it as one of the
-  `image[]` and say "keep its exact colors/shape, do not redraw it".
+  `image` fields and say "keep its exact colors/shape, do not redraw it".
 - For **character/scene consistency** across video beats, generate one hero image, then
   `edits` it per beat instead of regenerating from scratch.
 - Text in images renders legibly — good for titles/labels you don't want to overlay in HTML.
