@@ -16,7 +16,7 @@ Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authori
 
 | Capability | Seedream 5.0 Pro | Seedream 5.0 Lite |
 |---|---|---|
-| Model ID | `doubao-seedream-5-0-pro-260628` | `doubao-seedream-5-0-260128` (alias: `doubao-seedream-5-0-lite-260128`) |
+| Model ID | `doubao-seedream-5-0-pro-260628` | `doubao-seedream-5-0-lite-260128` |
 | Generate/edit one image | Yes | Yes |
 | Reference images | Up to 10 | Up to 14 |
 | Related image set | No | Yes; input + output ≤ 15 |
@@ -34,7 +34,7 @@ curl https://api.acedata.cloud/seedream/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "doubao-seedream-5-0-260128",
+    "model": "doubao-seedream-5-0-lite-260128",
     "prompt": "a four-panel storyboard of a courier crossing a rainy neon city",
     "size": "2K",
     "sequential_image_generation": "auto",
