@@ -11,6 +11,8 @@ class GPTImage25SkillContractTests(unittest.TestCase):
 
         self.assertIn("gpt-image-2.5-flare:official", text)
         self.assertIn("gpt-image-2.5-sunburst:official", text)
+        self.assertIn("actual text, reference-image, and output-image tokens", text)
+        self.assertIn("Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`", text)
 
 
 if __name__ == "__main__":

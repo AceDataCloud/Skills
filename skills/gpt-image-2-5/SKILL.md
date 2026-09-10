@@ -17,7 +17,7 @@ Use one exact model ID for every request:
 - `gpt-image-2.5-flare:official` — Flare using the official, token-billed variant.
 - `gpt-image-2.5-sunburst:official` — Sunburst using the official, token-billed variant.
 
-Do not send `gpt-image-2.5`; it is not a model ID.
+Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
