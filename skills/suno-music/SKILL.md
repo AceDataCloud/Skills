@@ -184,6 +184,7 @@ POST /suno/custom-models
 ```
 
 Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
+`persona_id` cannot be used with a custom music model: the API returns HTTP 400 before submitting the generation and does not bill the request. For Persona generation, use `/suno/audios` with `artist_consistency` or `artist_consistency_vox`.
 
 ### Archive
 
