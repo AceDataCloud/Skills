@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-nano-banana for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-nanobanana-pro for tool-use.
 ---
 
 # NanoBanana Image Generation
@@ -88,4 +88,4 @@ POST /nano-banana/images
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
-> **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** `pip install mcp-nanobanana-pro` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
