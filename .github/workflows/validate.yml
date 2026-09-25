@@ -81,6 +81,9 @@ jobs:
 
           echo "All skills validated successfully"
 
+      - name: Validate PlatformBackend sidecar generator
+        run: python3 -m unittest tests.test_sync_from_platformbackend -v
+
       - name: Run skill script tests
         run: python3 -m unittest discover -s tests -p 'test_*.py'
 

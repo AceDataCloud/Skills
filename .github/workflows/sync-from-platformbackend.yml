@@ -1,0 +1,91 @@
+name: Sync from PlatformBackend
+
+on:
+  repository_dispatch:
+    types: [platform-contracts-updated]
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full PlatformBackend commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: platform-contract-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Skills
+        uses: actions/checkout@v4
+        with:
+          path: Skills
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.BOT_GITHUB_TOKEN }}
+
+      - name: Resolve source SHA
+        id: source
+        env:
+          SOURCE_SHA: ${{ github.event.client_payload.source_sha || inputs.source_sha }}
+        run: |
+          if ! printf '%s' "$SOURCE_SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "::error::A full PlatformBackend source SHA is required."
+            exit 1
+          fi
+          echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact PlatformBackend source
+        uses: actions/checkout@v4
+        with:
+          repository: AceDataCloud/PlatformBackend
+          ref: ${{ steps.source.outputs.sha }}
+          path: PlatformBackend
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.BOT_GITHUB_TOKEN }}
+
+      - name: Compile, verify, and generate Skill sidecars
+        run: |
+          test "$(git -C PlatformBackend rev-parse HEAD)" = "${{ steps.source.outputs.sha }}"
+          bundle=$(mktemp -d)
+          python PlatformBackend/scripts/ecosystem_contracts.py \
+            --backend-dir PlatformBackend compile \
+            --output-dir "$bundle" \
+            --source-sha "${{ steps.source.outputs.sha }}"
+          python PlatformBackend/scripts/ecosystem_contracts.py verify \
+            --bundle-dir "$bundle" \
+            --source-sha "${{ steps.source.outputs.sha }}"
+          python Skills/scripts/sync_from_platformbackend.py \
+            --bundle "$bundle" \
+            --skills-dir Skills/skills
+
+      - name: Open generated-reference PR
+        working-directory: Skills
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.BOT_GITHUB_TOKEN }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          existing=$(gh pr list --state open --search "$SOURCE_SHA in:body" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "PR #$existing already tracks $SOURCE_SHA."
+            exit 0
+          fi
+          git add 'skills/*/references/platform.generated.json' 'skills/*/references/platform.generated.md'
+          if git diff --cached --quiet; then
+            echo "Skill references already match $SOURCE_SHA."
+            exit 0
+          fi
+          branch="sync/platform-contract-${SOURCE_SHA:0:12}"
+          git config user.name "Ace Data Cloud Dev"
+          git config user.email "dev@acedata.cloud"
+          git checkout -b "$branch"
+          git commit -m "sync: PlatformBackend contracts ${SOURCE_SHA:0:12}" \
+            -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "sync: PlatformBackend contracts ${SOURCE_SHA:0:12}" \
+            --body "Generated machine-owned Skill reference sidecars from AceDataCloud/PlatformBackend@$SOURCE_SHA. Curated SKILL.md files are unchanged. Normal validation is required before merge.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
