@@ -65,7 +65,7 @@ jobs:
       - name: Open generated-reference PR
         working-directory: Skills
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
           SOURCE_SHA: ${{ steps.source.outputs.sha }}
         run: |
           existing=$(gh pr list --state open --search "$SOURCE_SHA in:body" --json number --jq '.[0].number // empty')
