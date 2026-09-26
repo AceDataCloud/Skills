@@ -1,0 +1,142 @@
+<!-- Generated from PlatformBackend. Do not edit manually. -->
+# Platform contract
+
+Source: `AceDataCloud/PlatformBackend@92a3426774282880f59b72c83c7e368ddadea99c`
+
+## Services
+
+- `claude`
+- `gemini`
+- `glm`
+- `grok`
+- `kimi`
+- `openai`
+
+## Endpoints
+
+- `POST` `/v1/chat/completions` — Claude Chat Completion API
+- `POST` `/v1/messages` — Claude Messages API
+- `POST` `/v1/messages/count_tokens` — Claude Messages Count Tokens API
+- `POST` `/gemini/chat/completions` — Gemini Chat Completion API
+- `POST` `/v1beta/models/:generateContent` — Gemini Generate Content API
+- `POST` `/gemini/videos` — Gemini Videos API
+- `POST` `/gemini/tasks` — Gemini Tasks API
+- `POST` `/glm/chat/completions` — GLM Chat Completion API
+- `POST` `/grok/chat/completions` — Grok Chat Completion API
+- `POST` `/grok/videos` — Grok Videos Generation API
+- `POST` `/grok/tasks` — Grok Tasks API
+- `POST` `/kimi/chat/completions` — Kimi Chat Completion API
+- `POST` `/openai/chat/completions` — OpenAI Chat Completion API
+- `POST` `/openai/embeddings` — OpenAI Embeddings API
+- `POST` `/openai/images/generations` — OpenAI Images Generations API
+- `GET` `/openai/models` — OpenAI Models API
+- `POST` `/openai/responses` — OpenAI Responses API
+- `POST` `/openai/images/edits` — OpenAI Images Edits API
+- `POST` `/v1/audio/speech` — OpenAI Audio Speech API
+- `POST` `/v1/audio/transcriptions` — OpenAI Audio Transcriptions API
+- `POST` `/v1/realtime` — OpenAI Realtime API
+- `POST` `/openai/tasks` — OpenAI Tasks API
+
+## Models
+
+- `claude-3-5-haiku-20241022`
+- `claude-3-5-sonnet-20240620`
+- `claude-3-5-sonnet-20241022`
+- `claude-3-7-sonnet-20250219`
+- `claude-3-haiku-20240307`
+- `claude-3-sonnet-20240229`
+- `claude-fable-5`
+- `claude-fable-5-1`
+- `claude-haiku-4-5-20251001`
+- `claude-opus-4-1-20250805`
+- `claude-opus-4-20250514`
+- `claude-opus-4-5-20251101`
+- `claude-opus-4-6`
+- `claude-opus-4-7`
+- `claude-opus-4-8`
+- `claude-opus-5`
+- `claude-opus-5-5`
+- `claude-sonnet-4-20250514`
+- `claude-sonnet-4-5-20250929`
+- `claude-sonnet-4-6`
+- `claude-sonnet-5`
+- `gemini-2.5-flash`
+- `gemini-2.5-flash-image`
+- `gemini-2.5-flash-lite`
+- `gemini-2.5-pro`
+- `gemini-3-flash-preview`
+- `gemini-3-pro-image`
+- `gemini-3.1-flash-image`
+- `gemini-3.1-flash-lite`
+- `gemini-3.1-pro-preview`
+- `gemini-3.5-flash`
+- `gemini-3.5-flash-lite`
+- `gemini-3.6-flash`
+- `gemini-3.7-flash`
+- `gemini-3.8-flash`
+- `glm-3-turbo`
+- `glm-4.5`
+- `glm-4.6`
+- `glm-4.7`
+- `glm-5`
+- `glm-5-turbo`
+- `glm-5.1`
+- `glm-5.2`
+- `glm-5.3`
+- `gpt-4`
+- `gpt-4.1`
+- `gpt-4.1-mini`
+- `gpt-4.1-nano`
+- `gpt-4.1:free`
+- `gpt-4o`
+- `gpt-4o-2024-05-13`
+- `gpt-4o-all`
+- `gpt-4o-image`
+- `gpt-4o-mini`
+- `gpt-4o-mini:free`
+- `gpt-4o:free`
+- `gpt-5`
+- `gpt-5-all`
+- `gpt-5-mini`
+- `gpt-5-nano`
+- `gpt-5-pro`
+- `gpt-5.1`
+- `gpt-5.1-all`
+- `gpt-5.2`
+- `gpt-5.4`
+- `gpt-5.4-mini`
+- `gpt-5.4-nano`
+- `gpt-5.4-pro`
+- `gpt-5.5`
+- `gpt-5.5-pro`
+- `gpt-5.5:free`
+- `gpt-5.6-luna`
+- `gpt-5.6-sol`
+- `gpt-5.6-terra`
+- `gpt-5:free`
+- `gpt-6-astra`
+- `gpt-6-luna`
+- `gpt-6-sol`
+- `gpt-image-1`
+- `gpt-oss:free`
+- `gpt-realtime`
+- `gpt-realtime-2`
+- `gpt-realtime-2.1`
+- `gpt-realtime-2.1-mini`
+- `gpt-realtime-mini`
+- `grok-3`
+- `grok-4`
+- `grok-4.5`
+- `grok-4.7`
+- `kimi-k2-thinking`
+- `kimi-k2-thinking-turbo`
+- `kimi-k2.5`
+- `kimi-k2.6`
+- `kimi-k3`
+- `o1`
+- `o1-mini`
+- `o1-pro`
+- `o3`
+- `o3-mini`
+- `o3-pro`
+- `o4-mini`

@@ -1,0 +1,465 @@
+{
+  "apis": [
+    {
+      "id": "6b2b437b-b6d5-466c-8750-b16650072593",
+      "method": "POST",
+      "name": "Claude Chat Completion API",
+      "path": "/v1/chat/completions",
+      "path2": "/claude/chat/completions",
+      "stage": "Beta",
+      "title": "Claude Chat Completion API"
+    },
+    {
+      "id": "a43a98fc-f833-4cfb-8596-8066faad2c42",
+      "method": "POST",
+      "name": "Claude Messages API",
+      "path": "/v1/messages",
+      "path2": "/claude/messages",
+      "stage": "Beta",
+      "title": "Claude Messages API"
+    },
+    {
+      "id": "01011450-70f7-430f-a8a3-97b0903b0a24",
+      "method": "POST",
+      "name": "Claude Messages Count Tokens API",
+      "path": "/v1/messages/count_tokens",
+      "path2": "/claude/messages/count_tokens",
+      "stage": "Production",
+      "title": "Claude Messages Count Tokens API"
+    },
+    {
+      "id": "94b49b55-2ea8-4d46-a93c-eb308e1a52d5",
+      "method": "POST",
+      "name": "Gemini Chat Completion API",
+      "path": "/gemini/chat/completions",
+      "path2": "/v1/chat/completions",
+      "stage": "Beta",
+      "title": "Gemini Chat Completion API"
+    },
+    {
+      "id": "7a632630-eb9f-4776-b11c-8cc86ae250d7",
+      "method": "POST",
+      "name": "Gemini Generate Content API",
+      "path": "/v1beta/models/:generateContent",
+      "path2": "/v1beta/models/:streamGenerateContent",
+      "stage": "Beta",
+      "title": "Gemini Generate Content API"
+    },
+    {
+      "id": "d9d2fd18-5b1e-4218-b572-a75cf46f5451",
+      "method": "POST",
+      "name": "Gemini Videos API",
+      "path": "/gemini/videos",
+      "stage": "Beta",
+      "tags": [
+        "gemini",
+        "video",
+        "aivideo"
+      ],
+      "title": "Gemini Videos API"
+    },
+    {
+      "id": "e6bd925d-0c49-47be-a5c5-d087604a8e75",
+      "method": "POST",
+      "name": "Gemini Tasks API",
+      "path": "/gemini/tasks",
+      "stage": "Production",
+      "tags": [
+        "gemini",
+        "video",
+        "tasks"
+      ],
+      "title": "Gemini Tasks API"
+    },
+    {
+      "id": "f0392e69-ad58-40b9-b28b-e1feee258603",
+      "method": "POST",
+      "name": "GLM Chat Completion API",
+      "path": "/glm/chat/completions",
+      "path2": "/v1/chat/completions",
+      "stage": "Beta",
+      "title": "GLM Chat Completion API"
+    },
+    {
+      "id": "aff80c74-b190-445b-9124-6422ed763c50",
+      "method": "POST",
+      "name": "Grok Chat Completion API",
+      "path": "/grok/chat/completions",
+      "path2": "/v1/chat/completions",
+      "stage": "Beta",
+      "title": "Grok Chat Completion API"
+    },
+    {
+      "id": "c1c460c7-adc7-42c2-b7b0-d4bdfaa66222",
+      "method": "POST",
+      "name": "Grok Videos Generation API",
+      "path": "/grok/videos",
+      "stage": "Beta",
+      "tags": [
+        "grok",
+        "video",
+        "aivideo"
+      ],
+      "title": "Grok Videos Generation API"
+    },
+    {
+      "id": "e517b391-fdc6-4a30-a05f-eb88cb4b0a63",
+      "method": "POST",
+      "name": "Grok Tasks API",
+      "path": "/grok/tasks",
+      "stage": "Production",
+      "tags": [
+        "grok",
+        "video",
+        "tasks"
+      ],
+      "title": "Grok Tasks API"
+    },
+    {
+      "id": "5c4649ee-22c6-44ea-84d6-6ecc3674f998",
+      "method": "POST",
+      "name": "Kimi Chat Completion API",
+      "path": "/kimi/chat/completions",
+      "path2": "/v1/chat/completions",
+      "stage": "Beta",
+      "title": "Kimi Chat Completion API"
+    },
+    {
+      "id": "c9969b66-effb-4753-b504-a82c4d16f83f",
+      "method": "POST",
+      "name": "OpenAI Chat Completion API",
+      "path": "/openai/chat/completions",
+      "path2": "/v1/chat/completions",
+      "stage": "Production",
+      "title": "OpenAI Chat Completion API"
+    },
+    {
+      "id": "a0840c8a-2b9a-4407-8aaf-0057f0e1f65c",
+      "method": "POST",
+      "name": "OpenAI Embeddings API",
+      "path": "/openai/embeddings",
+      "path2": "/v1/embeddings",
+      "stage": "Production",
+      "title": "OpenAI Embeddings API"
+    },
+    {
+      "id": "8f01fe72-8a3e-4872-8d8d-330cde179b3a",
+      "method": "POST",
+      "name": "OpenAI Images Generations API",
+      "path": "/openai/images/generations",
+      "path2": "/v1/images/generations",
+      "stage": "Production",
+      "title": "OpenAI Images Generations API"
+    },
+    {
+      "id": "df57157e-2a4f-43f6-870b-fd3c530827e6",
+      "method": "GET",
+      "name": "OpenAI Models API",
+      "path": "/openai/models",
+      "path2": "/v1/models",
+      "stage": "Production",
+      "title": "OpenAI Models API"
+    },
+    {
+      "id": "ed972a38-ecef-4fcb-af33-750de42d25dc",
+      "method": "POST",
+      "name": "OpenAI Responses API",
+      "path": "/openai/responses",
+      "path2": "/v1/responses",
+      "stage": "Production",
+      "title": "OpenAI Responses API"
+    },
+    {
+      "id": "fb74083e-bb68-48d5-8ba6-b5a224400cd3",
+      "method": "POST",
+      "name": "OpenAI Images Edits API",
+      "path": "/openai/images/edits",
+      "path2": "/v1/images/edits",
+      "stage": "Beta",
+      "title": "OpenAI Images Edits API"
+    },
+    {
+      "id": "078d0146-f820-4617-b98e-47ba15a93d60",
+      "name": "OpenAI Audio Speech API",
+      "path": "/v1/audio/speech",
+      "path2": "/openai/audio/speech",
+      "stage": "Beta",
+      "tags": [
+        "openai",
+        "audio",
+        "speech",
+        "tts",
+        "aiaudio"
+      ],
+      "title": "OpenAI Audio Speech API"
+    },
+    {
+      "id": "60f037ff-7d2f-4ea4-ae42-feba542c8cb2",
+      "name": "OpenAI Audio Transcriptions API",
+      "path": "/v1/audio/transcriptions",
+      "path2": "/openai/audio/transcriptions",
+      "stage": "Beta",
+      "tags": [
+        "openai",
+        "audio",
+        "transcriptions",
+        "speech-to-text"
+      ],
+      "title": "OpenAI Audio Transcriptions API"
+    },
+    {
+      "id": "a5292a2e-d6a7-4215-a56c-e470ee2028db",
+      "name": "OpenAI Realtime API",
+      "path": "/v1/realtime",
+      "path2": "/openai/realtime",
+      "stage": "Alpha",
+      "tags": [
+        "openai",
+        "realtime",
+        "voice",
+        "audio"
+      ],
+      "title": "OpenAI Realtime API"
+    },
+    {
+      "id": "8ff29e12-b814-4484-ab50-d39773a7a563",
+      "method": "POST",
+      "name": "OpenAI Tasks API",
+      "path": "/openai/tasks",
+      "stage": "Beta",
+      "title": "OpenAI Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Glm.Glm-Mcp.Description",
+      "examples": [
+        "Agent.Service.Glm.Glm-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "glm-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://glm.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-glm",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "GLM MCP",
+      "source_url": "https://pypi.org/project/mcp-glm/",
+      "status": "stable",
+      "summary": "Agent.Service.Glm.Glm-Mcp.Summary"
+    },
+    {
+      "description": "Agent.Service.Grok.Grok-Mcp.Description",
+      "examples": [
+        "Agent.Service.Grok.Grok-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "grok-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://grok.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-grok",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Grok MCP",
+      "source_url": "https://github.com/AceDataCloud/GrokMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Grok.Grok-Mcp.Summary"
+    },
+    {
+      "description": "Agent.Service.Openai.Openai-Mcp.Description",
+      "examples": [
+        "Agent.Service.Openai.Openai-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "openai-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://openai.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-openai",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "OpenAI MCP",
+      "source_url": "https://github.com/AceDataCloud/OpenAIMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Openai.Openai-Mcp.Summary"
+    }
+  ],
+  "models": [
+    "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet-20240620",
+    "claude-3-5-sonnet-20241022",
+    "claude-3-7-sonnet-20250219",
+    "claude-3-haiku-20240307",
+    "claude-3-sonnet-20240229",
+    "claude-fable-5",
+    "claude-fable-5-1",
+    "claude-haiku-4-5-20251001",
+    "claude-opus-4-1-20250805",
+    "claude-opus-4-20250514",
+    "claude-opus-4-5-20251101",
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5",
+    "claude-sonnet-4-20250514",
+    "claude-sonnet-4-5-20250929",
+    "claude-sonnet-4-6",
+    "claude-sonnet-5",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-image",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-pro",
+    "gemini-3-flash-preview",
+    "gemini-3-pro-image",
+    "gemini-3.1-flash-image",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-pro-preview",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.7-flash",
+    "gemini-3.8-flash",
+    "glm-3-turbo",
+    "glm-4.5",
+    "glm-4.6",
+    "glm-4.7",
+    "glm-5",
+    "glm-5-turbo",
+    "glm-5.1",
+    "glm-5.2",
+    "glm-5.3",
+    "gpt-4",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
+    "gpt-4.1:free",
+    "gpt-4o",
+    "gpt-4o-2024-05-13",
+    "gpt-4o-all",
+    "gpt-4o-image",
+    "gpt-4o-mini",
+    "gpt-4o-mini:free",
+    "gpt-4o:free",
+    "gpt-5",
+    "gpt-5-all",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "gpt-5-pro",
+    "gpt-5.1",
+    "gpt-5.1-all",
+    "gpt-5.2",
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
+    "gpt-5.4-pro",
+    "gpt-5.5",
+    "gpt-5.5-pro",
+    "gpt-5.5:free",
+    "gpt-5.6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5:free",
+    "gpt-6-astra",
+    "gpt-6-luna",
+    "gpt-6-sol",
+    "gpt-image-1",
+    "gpt-oss:free",
+    "gpt-realtime",
+    "gpt-realtime-2",
+    "gpt-realtime-2.1",
+    "gpt-realtime-2.1-mini",
+    "gpt-realtime-mini",
+    "grok-3",
+    "grok-4",
+    "grok-4.5",
+    "grok-4.7",
+    "kimi-k2-thinking",
+    "kimi-k2-thinking-turbo",
+    "kimi-k2.5",
+    "kimi-k2.6",
+    "kimi-k3",
+    "o1",
+    "o1-mini",
+    "o1-pro",
+    "o3",
+    "o3-mini",
+    "o3-pro",
+    "o4-mini"
+  ],
+  "schema_version": 1,
+  "services": [
+    "claude",
+    "gemini",
+    "glm",
+    "grok",
+    "kimi",
+    "openai"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}
