@@ -286,7 +286,17 @@ def main() -> None:
     args = build_parser().parse_args()
 
     if args.cmd == "status":
-        _json(request("GET", "/api/status"))
+        status = request("GET", "/api/status")
+        logged_in = status.get("logged_in") is True
+        ready = status.get("status") == "ready" or status.get("ready") is True
+        if not logged_in or not ready:
+            status["scheduled_outcome"] = {
+                "version": 1,
+                "status": "skipped",
+                "code": "WECHAT_NOT_LOGGED_IN",
+                "side_effect_performed": False,
+            }
+        _json(status)
     elif args.cmd == "account":
         _json(request("GET", "/api/account"))
     elif args.cmd == "contacts":
