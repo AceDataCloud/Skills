@@ -45,6 +45,7 @@ jobs:
           repository: AceDataCloud/PlatformBackend
           ref: ${{ steps.source.outputs.sha }}
           path: PlatformBackend
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
 
       - name: Compile, verify, and generate Skill sidecars
         run: |
