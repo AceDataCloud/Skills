@@ -1,0 +1,79 @@
+{
+  "apis": [
+    {
+      "id": "d656e357-50cb-4390-b8c9-67464bc2a2f2",
+      "method": "POST",
+      "name": "HappyHorse Videos API",
+      "path": "/happyhorse/videos",
+      "stage": "Beta",
+      "tags": [
+        "happyhorse",
+        "video",
+        "aivideo"
+      ],
+      "title": "HappyHorse Videos API"
+    },
+    {
+      "id": "4fedc9b2-45d7-4e8f-8ce4-8f00ae31c78a",
+      "method": "POST",
+      "name": "HappyHorse Tasks API",
+      "path": "/happyhorse/tasks",
+      "stage": "Production",
+      "tags": [
+        "happyhorse",
+        "video",
+        "tasks"
+      ],
+      "title": "HappyHorse Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Happyhorse.Happyhorse-Mcp.Description",
+      "examples": [
+        "Agent.Service.Happyhorse.Happyhorse-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "happyhorse-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://happyhorse.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-happyhorse",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "HappyHorse MCP",
+      "source_url": "https://pypi.org/project/mcp-happyhorse/",
+      "status": "stable",
+      "summary": "Agent.Service.Happyhorse.Happyhorse-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "happyhorse"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

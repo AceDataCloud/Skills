@@ -1,0 +1,61 @@
+{
+  "apis": [
+    {
+      "id": "7753ed09-1046-46d3-ad80-cd7ff19676b5",
+      "method": "POST",
+      "name": "Google SERP API",
+      "path": "/serp/google",
+      "stage": "Production",
+      "title": "Google SERP API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Serp.Serp-Mcp.Description",
+      "examples": [
+        "Agent.Service.Serp.Serp-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "serp-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://serp.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-serp",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Serp MCP",
+      "source_url": "https://github.com/AceDataCloud/SerpMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Serp.Serp-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "serp"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

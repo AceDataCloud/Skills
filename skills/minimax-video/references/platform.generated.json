@@ -1,0 +1,79 @@
+{
+  "apis": [
+    {
+      "id": "64f22fd9-0efd-445e-b0b1-135682fd66d7",
+      "method": "POST",
+      "name": "MiniMax H3 Videos API",
+      "path": "/minimax/videos",
+      "stage": "Beta",
+      "tags": [
+        "minimax",
+        "video",
+        "aivideo"
+      ],
+      "title": "MiniMax H3 Videos API"
+    },
+    {
+      "id": "d6cf922e-378b-4f83-8841-e911b597134a",
+      "method": "POST",
+      "name": "MiniMax H3 Tasks API",
+      "path": "/minimax/tasks",
+      "stage": "Production",
+      "tags": [
+        "minimax",
+        "video",
+        "tasks"
+      ],
+      "title": "MiniMax H3 Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Minimax.Minimax-Mcp.Description",
+      "examples": [
+        "Agent.Service.Minimax.Minimax-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "minimax-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://minimax.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-minimax",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "MiniMax MCP",
+      "source_url": "https://github.com/AceDataCloud/MCPs/tree/main/minimax",
+      "status": "stable",
+      "summary": "Agent.Service.Minimax.Minimax-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "minimax"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

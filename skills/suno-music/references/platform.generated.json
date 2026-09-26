@@ -1,0 +1,171 @@
+{
+  "apis": [
+    {
+      "id": "09a26295-5972-4392-9318-dcd9b218f90d",
+      "method": "POST",
+      "name": "Suno Audios Generation API",
+      "path": "/suno/audios",
+      "stage": "Production",
+      "title": "Suno Audios Generation API"
+    },
+    {
+      "id": "c578b8de-f9fe-4220-8d5f-5da7384705fd",
+      "method": "POST",
+      "name": "Suno Persona API",
+      "path": "/suno/persona",
+      "stage": "Production",
+      "title": "Suno Persona API"
+    },
+    {
+      "id": "2e4c9e30-a793-4f43-9322-d682120ffff2",
+      "method": "POST",
+      "name": "Suno MP4 API",
+      "path": "/suno/mp4",
+      "stage": "Production",
+      "title": "Suno MP4 API"
+    },
+    {
+      "id": "1aece23f-07b3-4c21-8b2b-d93ce9bf0e84",
+      "method": "POST",
+      "name": "Suno Voices API",
+      "path": "/suno/voices",
+      "stage": "Alpha",
+      "title": "Suno Voices API"
+    },
+    {
+      "id": "da474a4e-f32a-41dc-b2fe-59cc5cea5c32",
+      "method": "POST",
+      "name": "Suno Timing API",
+      "path": "/suno/timing",
+      "stage": "Production",
+      "title": "Suno Timing API"
+    },
+    {
+      "id": "a8d46e2d-a042-4321-ab97-a5ab1d7fed5e",
+      "method": "POST",
+      "name": "Suno Vox API",
+      "path": "/suno/vox",
+      "stage": "Production",
+      "title": "Suno Vox API"
+    },
+    {
+      "id": "d4004774-4d0b-4aac-a8ea-be99627880e6",
+      "method": "POST",
+      "name": "Suno Wav API",
+      "path": "/suno/wav",
+      "stage": "Production",
+      "title": "Suno Wav API"
+    },
+    {
+      "id": "be1de4f0-b5f5-43dc-bc7a-d2f90b2efe9c",
+      "method": "POST",
+      "name": "Suno MIDI Generation API",
+      "path": "/suno/midi",
+      "stage": "Beta",
+      "title": "Suno MIDI Generation API"
+    },
+    {
+      "id": "32141b95-043f-5845-b832-77c32ddd6fa6",
+      "method": "POST",
+      "name": "Suno MP3 URL API",
+      "path": "/suno/mp3",
+      "stage": "Production",
+      "tags": [
+        "suno",
+        "mp3",
+        "audio-url",
+        "aiaudio"
+      ],
+      "title": "Suno MP3 URL API"
+    },
+    {
+      "id": "e5ff24c0-ae4e-46bb-93db-2d678610a8d3",
+      "method": "POST",
+      "name": "Suno Style API",
+      "path": "/suno/style",
+      "stage": "Production",
+      "title": "Suno Style API"
+    },
+    {
+      "id": "c98fe4e5-73c0-462d-ad24-5080ee1fa01a",
+      "method": "POST",
+      "name": "Suno Lyrics Generation API",
+      "path": "/suno/lyrics",
+      "stage": "Production",
+      "title": "Suno Lyrics Generation API"
+    },
+    {
+      "id": "e0ffe8d7-c6dd-4b46-93d9-5fa6c744310c",
+      "method": "POST",
+      "name": "Suno MashupLyrics Generation API",
+      "path": "/suno/mashup-lyrics",
+      "stage": "Production",
+      "title": "Suno MashupLyrics Generation API"
+    },
+    {
+      "id": "f1143f0b-8146-4fc0-b02c-ac8db969392d",
+      "method": "POST",
+      "name": "Suno Tasks API",
+      "path": "/suno/tasks",
+      "stage": "Production",
+      "title": "Suno Tasks API"
+    },
+    {
+      "id": "8823cd83-54f6-4ea8-979a-7fa448577186",
+      "method": "POST",
+      "name": "Suno Upload API",
+      "path": "/suno/upload",
+      "stage": "Production",
+      "title": "Suno Upload API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Suno.Suno-Mcp.Description",
+      "examples": [
+        "Agent.Service.Suno.Suno-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "suno-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://suno.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-suno",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Suno MCP",
+      "source_url": "https://github.com/AceDataCloud/SunoMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Suno.Suno-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "suno"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "apis": [
+    {
+      "id": "2c26cb33-46ac-4bd7-82f9-0ec63e688172",
+      "method": "POST",
+      "name": "Kling Motion Generation API",
+      "path": "/kling/motion",
+      "stage": "Production",
+      "title": "Kling Motion Generation API"
+    },
+    {
+      "id": "f11ce529-5303-4913-8b9a-7146aa5d7016",
+      "method": "POST",
+      "name": "Kling Tasks API",
+      "path": "/kling/tasks",
+      "stage": "Production",
+      "title": "Kling Tasks API"
+    },
+    {
+      "id": "29187cb2-1acb-43b8-baf5-3f3f709292eb",
+      "method": "POST",
+      "name": "Kling Videos Generation API",
+      "path": "/kling/videos",
+      "stage": "Production",
+      "title": "Kling Videos Generation API"
+    },
+    {
+      "id": "a8b06673-3565-4989-b6be-bd638f72eadb",
+      "method": "POST",
+      "name": "Kling Lip Sync API",
+      "path": "/kling/lip-sync",
+      "stage": "Production",
+      "title": "Kling Lip Sync API"
+    },
+    {
+      "id": "1daf8204-7306-4c54-8014-a00c5996cbfe",
+      "method": "POST",
+      "name": "Kling Talking Photo API",
+      "path": "/kling/talking-photo",
+      "stage": "Production",
+      "title": "Kling Talking Photo API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Kling.Kling-Mcp.Description",
+      "examples": [
+        "Agent.Service.Kling.Kling-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "kling-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://kling.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-kling",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Kling MCP",
+      "source_url": "https://github.com/AceDataCloud/KlingMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Kling.Kling-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "kling"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}
