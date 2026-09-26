@@ -1,0 +1,69 @@
+{
+  "apis": [
+    {
+      "id": "25e349c9-a490-4ae5-9a96-e5952d2dbcf7",
+      "method": "POST",
+      "name": "Wan Task Retrieval API",
+      "path": "/wan/tasks",
+      "stage": "Production",
+      "title": "Wan Task Retrieval API"
+    },
+    {
+      "id": "6a4ecdbf-b219-4505-8277-5ec4b1ac14f8",
+      "method": "POST",
+      "name": "Wan Video Generation API",
+      "path": "/wan/videos",
+      "stage": "Production",
+      "title": "Wan Video Generation API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Wan.Wan-Mcp.Description",
+      "examples": [
+        "Agent.Service.Wan.Wan-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "wan-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://wan.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-wan",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Wan MCP",
+      "source_url": "https://github.com/AceDataCloud/WanMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Wan.Wan-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "wan"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

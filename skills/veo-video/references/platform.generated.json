@@ -1,0 +1,69 @@
+{
+  "apis": [
+    {
+      "id": "52a0fa83-3c78-4793-b45a-c1a5c869ae46",
+      "method": "POST",
+      "name": "Veo Videos Generation API",
+      "path": "/veo/videos",
+      "stage": "Beta",
+      "title": "Veo Videos Generation API"
+    },
+    {
+      "id": "437a7558-7c5b-4341-9088-4a54443a78a4",
+      "method": "POST",
+      "name": "Veo Tasks API",
+      "path": "/veo/tasks",
+      "stage": "Production",
+      "title": "Veo Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Veo.Veo-Mcp.Description",
+      "examples": [
+        "Agent.Service.Veo.Veo-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "veo-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://veo.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-veo",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Veo MCP",
+      "source_url": "https://github.com/AceDataCloud/VeoMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Veo.Veo-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "veo"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

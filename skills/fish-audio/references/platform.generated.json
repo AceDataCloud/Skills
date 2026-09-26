@@ -1,0 +1,113 @@
+{
+  "apis": [
+    {
+      "id": "77adcb84-d59f-5ef9-b8a0-8b35eb42a71d",
+      "method": "POST",
+      "name": "Fish TTS API",
+      "path": "/fish/tts",
+      "stage": "Beta",
+      "tags": [
+        "fish",
+        "tts",
+        "aiaudio"
+      ],
+      "title": "Fish TTS API"
+    },
+    {
+      "id": "82dcabe9-b1a3-541f-80f1-decb183b920c",
+      "method": "POST",
+      "name": "Fish Model Create API",
+      "path": "/fish/model",
+      "stage": "Beta",
+      "tags": [
+        "fish",
+        "model",
+        "aiaudio"
+      ],
+      "title": "Fish Model Create API"
+    },
+    {
+      "id": "0a2c983b-e20f-5926-a45f-07b61373617d",
+      "method": "GET",
+      "name": "Fish Model Query API",
+      "path": "/fish/model",
+      "stage": "Beta",
+      "tags": [
+        "fish",
+        "model",
+        "aiaudio"
+      ],
+      "title": "Fish Model Query API"
+    },
+    {
+      "id": "70f84537-7c48-57d3-9a21-b2a4f55e8f31",
+      "method": "GET",
+      "name": "Fish Model Get API",
+      "path": "/fish/model/{id}",
+      "stage": "Production",
+      "tags": [
+        "fish",
+        "model",
+        "aiaudio"
+      ],
+      "title": "Fish Model Get API"
+    },
+    {
+      "id": "fc541fac-a941-47fd-b6f7-48d6cb9da523",
+      "method": "POST",
+      "name": "Fish Tasks API",
+      "path": "/fish/tasks",
+      "stage": "Production",
+      "title": "Fish Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Fish.Fish-Mcp.Description",
+      "examples": [
+        "Agent.Service.Fish.Fish-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "fish-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://fish.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-fish",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Fish Audio MCP",
+      "source_url": "https://github.com/AceDataCloud/FishMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Fish.Fish-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "fish"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

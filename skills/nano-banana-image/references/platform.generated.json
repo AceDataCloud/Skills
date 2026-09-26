@@ -1,0 +1,70 @@
+{
+  "apis": [
+    {
+      "id": "9d8a117e-31ca-4322-a0fd-1771296ec610",
+      "method": "POST",
+      "name": "Nano Banana Generation API",
+      "path": "/nano-banana/images",
+      "path2": "/gemini/images",
+      "stage": "Beta",
+      "title": "Nano Banana Images API"
+    },
+    {
+      "id": "72e9188b-99df-4e3a-85e4-8e3dbf389790",
+      "method": "POST",
+      "name": "Nano Banana Tasks API",
+      "path": "/nano-banana/tasks",
+      "stage": "Production",
+      "title": "Nano Banana Tasks API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Nano-Banana.Nanobanana-Mcp.Description",
+      "examples": [
+        "Agent.Service.Nano-Banana.Nanobanana-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "nanobanana-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://nanobanana.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-nanobanana-pro",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "NanoBanana MCP",
+      "source_url": "https://github.com/AceDataCloud/NanoBananaMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Nano-Banana.Nanobanana-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "nano-banana"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}

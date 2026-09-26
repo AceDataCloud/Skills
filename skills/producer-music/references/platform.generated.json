@@ -1,0 +1,101 @@
+{
+  "apis": [
+    {
+      "id": "91fcbb81-8bc9-4ed4-bdfa-0f296b2fec9d",
+      "method": "POST",
+      "name": "Producer Upload API",
+      "path": "/producer/upload",
+      "stage": "Production",
+      "title": "Producer Upload API"
+    },
+    {
+      "id": "5e06cbdd-ba7d-456d-a211-e3f242adec82",
+      "method": "POST",
+      "name": "Producer Videos API",
+      "path": "/producer/videos",
+      "stage": "Production",
+      "title": "Producer Videos API"
+    },
+    {
+      "id": "e7cad274-9c48-494c-b7e3-fc1556eea827",
+      "method": "POST",
+      "name": "Producer Wav API",
+      "path": "/producer/wav",
+      "stage": "Production",
+      "title": "Producer Wav API"
+    },
+    {
+      "id": "01d96900-9f8c-41d7-814c-95c7a885ba61",
+      "method": "POST",
+      "name": "Producer Audios Generation API",
+      "path": "/producer/audios",
+      "stage": "Production",
+      "title": "Producer Audios Generation API"
+    },
+    {
+      "id": "e706d672-d7c9-4232-8652-0cf53219e7bf",
+      "method": "POST",
+      "name": "Producer Tasks API",
+      "path": "/producer/tasks",
+      "stage": "Production",
+      "title": "Producer Tasks API"
+    },
+    {
+      "id": "2f636fdb-faa4-4308-8cef-9258dd14fd90",
+      "method": "POST",
+      "name": "Producer Lyrics Generation API",
+      "path": "/producer/lyrics",
+      "stage": "Production",
+      "title": "Producer Lyrics Generation API"
+    }
+  ],
+  "companions": [
+    {
+      "description": "Agent.Service.Producer.Producer-Mcp.Description",
+      "examples": [
+        "Agent.Service.Producer.Producer-Mcp.Example.1"
+      ],
+      "guide_refs": [
+        "mcp.claude-code",
+        "mcp.codex",
+        "mcp.openclaw",
+        "mcp.vscode",
+        "mcp.gemini-cli",
+        "mcp.opencode",
+        "mcp.qwen-code",
+        "mcp.cline",
+        "mcp.amp"
+      ],
+      "id": "producer-mcp",
+      "kind": "mcp",
+      "mcp": {
+        "auth": [
+          {
+            "env": "ACEDATACLOUD_API_TOKEN",
+            "type": "bearer"
+          }
+        ],
+        "endpoint": "https://producer.mcp.acedata.cloud/mcp",
+        "package": {
+          "ecosystem": "pypi",
+          "name": "mcp-producer",
+          "runner": "uvx"
+        },
+        "transport": "streamable-http"
+      },
+      "name": "Producer MCP",
+      "source_url": "https://github.com/AceDataCloud/ProducerMCP",
+      "status": "stable",
+      "summary": "Agent.Service.Producer.Producer-Mcp.Summary"
+    }
+  ],
+  "models": [],
+  "schema_version": 1,
+  "services": [
+    "producer"
+  ],
+  "source": {
+    "repository": "AceDataCloud/PlatformBackend",
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+  }
+}
