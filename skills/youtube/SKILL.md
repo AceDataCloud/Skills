@@ -64,19 +64,13 @@ YouTube has no "list my videos" call directly — read the channel's
 **uploads playlist**, then page its items.
 
 ```bash
-# 1. Get the uploads playlist id (UU... ) — same as channels call above.
-UPLOADS=$(curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
-  "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true" \
-  | jq -r '.items[0].contentDetails.relatedPlaylists.uploads')
-
-# 2. List recent uploads (50/page; follow .nextPageToken for more).
-curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
-  -G "https://www.googleapis.com/youtube/v3/playlistItems" \
-  --data-urlencode "part=snippet,contentDetails" \
-  --data-urlencode "playlistId=$UPLOADS" \
-  --data-urlencode "maxResults=50" \
-  | jq '.items[] | {videoId: .contentDetails.videoId, title: .snippet.title, published: .snippet.publishedAt}'
+python3 skills/youtube/scripts/list_uploads.py --max-pages 20
 ```
+
+The helper follows every `nextPageToken` until the upload history is complete
+(or the explicit safety limit is reached). Its compact JSON keeps `videoId`,
+`title`, and `published` for each item, plus `complete`, `pages_fetched`, and
+`next_page_token`. Do not claim a video is absent when `complete` is false.
 
 Paginate by passing `--data-urlencode "pageToken=$PAGE_TOKEN"` with the
 `.nextPageToken` from the previous response.
@@ -175,7 +169,20 @@ RESULT=$(curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
   -X PUT --upload-file "$FILE" "$UPLOAD_URL")
 echo "$RESULT" | jq -e .id >/dev/null 2>&1 \
   || { echo "upload failed: $(echo "$RESULT" | jq -r '.error.message' 2>/dev/null || echo "$RESULT")"; exit 1; }
-echo "$RESULT" | jq '{id: .id, url: ("https://www.youtube.com/watch?v=" + .id), privacy: .status.privacyStatus}'
+VIDEO_ID=$(echo "$RESULT" | jq -r '.id')
+VERIFY=$(curl -sS -H "Authorization: Bearer $GOOGLE_YOUTUBE_TOKEN" \
+  -G "https://www.googleapis.com/youtube/v3/videos" \
+  --data-urlencode "part=snippet,status,processingDetails" \
+  --data-urlencode "id=$VIDEO_ID")
+echo "$VERIFY" | jq -e '.items[0].id == "'"$VIDEO_ID"'"' >/dev/null \
+  || { echo "upload readback failed for $VIDEO_ID"; exit 1; }
+echo "$VERIFY" | jq '.items[0] | {
+  video_id: .id,
+  canonical_url: ("https://www.youtube.com/watch?v=" + .id),
+  privacy: .status.privacyStatus,
+  upload_status: .status.uploadStatus,
+  processing_status: .processingDetails.processingStatus
+}'
 ```
 
 Delete a downloaded temp file only **after** you've confirmed an id came back

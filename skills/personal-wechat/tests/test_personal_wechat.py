@@ -198,3 +198,14 @@ def test_unattended_confirm_allows_a_preauthorized_skill(monkeypatch) -> None:
     calls, _ = run(["send", "Alice", "hi", "--unattended-confirm"], task_result={"sent": True})
 
     assert calls[0]["path"] == "/api/messages/send"
+
+
+def test_status_reports_not_logged_in_as_structured_skip() -> None:
+    _, stdout = run(["status"], responses={"/api/status": {"status": "ready", "logged_in": False}})
+
+    assert stdout[0]["scheduled_outcome"] == {
+        "version": 1,
+        "status": "skipped",
+        "code": "WECHAT_NOT_LOGGED_IN",
+        "side_effect_performed": False,
+    }
