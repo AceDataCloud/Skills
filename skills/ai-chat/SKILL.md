@@ -58,7 +58,7 @@ models include:
 |--------|------------------|
 | OpenAI / reasoning | `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
 | OpenAI free-tier chat-completions | `gpt-5.5:free`, `gpt-5:free`, `gpt-4.1:free`, `gpt-4o:free`, `gpt-4o-mini:free`, `gpt-oss:free` |
-| Claude | `claude-opus-5-5` (Messages only), `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
+| Claude | `claude-opus-5-5` and `claude-sonnet-5-5` (Messages only), `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
 | Gemini | `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
 | Grok | `grok-4.7`, `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
@@ -67,7 +67,7 @@ models include:
 
 `gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.
 
-`claude-opus-5-5` is available only through the dedicated Claude Messages API; do not send it to `/openai/chat/completions` or `/aichat2/conversations`.
+`claude-opus-5-5` and `claude-sonnet-5-5` are available only through the dedicated Claude Messages API; do not send it to `/openai/chat/completions` or `/aichat2/conversations`.
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
