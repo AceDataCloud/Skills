@@ -134,3 +134,11 @@ Continue polling about every five seconds until the task reaches a terminal stat
 - Use `first_frame`, `last_frame`, and reference roles explicitly; do not rely on item order to determine an image's role.
 - Use public URLs that the generation service can download for every media item.
 - Returned videos are served from AceDataCloud CDN.
+
+## H3 Max, prompt enhancement and regeneration
+
+H3 Max uses public model `MiniMax-H3-Max` through `/minimax/videos`. Select 480P or 768P and an integer duration 5–15 seconds. H3 retains 768P/2K and 4–15 seconds. Keep model-specific resolution and duration settings.
+
+`POST /minimax/prompt-enhancement` accepts H3 content, duration and ratio and returns structured prompt guidance. `POST /minimax/regenerate` outputs 2K from an owned completed H3 768P source_task_id, or exact original content plus exactly one base_video. Missing/truncated original inputs are rejected. Use platform task IDs.
+
+Companion MCP tools: minimax_generate_max_video, minimax_enhance_prompt, minimax_regenerate_video. CLI commands: max-video, enhance-prompt, regenerate with --request-file. Poll through /minimax/tasks. Generation/regeneration billing includes output duration, input video duration and extra reference images according to the selected operation.
