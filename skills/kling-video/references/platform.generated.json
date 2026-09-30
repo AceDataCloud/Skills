@@ -71,6 +71,24 @@
       "path": "/kling/virtual-try-on",
       "stage": "Beta",
       "title": "虚拟试衣"
+    },
+    {
+      "id": "bfc78ffd-b786-5325-8803-311d70fe8ddf",
+      "introduction": "$t(kling_elements_introduction)",
+      "method": "POST",
+      "name": "Kling Elements",
+      "path": "/kling/elements",
+      "rank": 90,
+      "title": "Kling Elements"
+    },
+    {
+      "id": "94be993f-e70a-5499-a458-bb4853ccc292",
+      "introduction": "$t(kling_voices_introduction)",
+      "method": "POST",
+      "name": "Kling Voices",
+      "path": "/kling/voices",
+      "rank": 90,
+      "title": "Kling Voices"
     }
   ],
   "companions": [
@@ -120,6 +138,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "b8a6d6c57c0c9f5b5ef32a6b5c01cc789769058c"
+    "sha": "794aed287ffd48c22e8b4fc66eab4e18af46731d"
   }
 }

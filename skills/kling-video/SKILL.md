@@ -221,3 +221,9 @@ Turbo accepts text or a first frame. Omit `generate_audio` or set it to true; fa
 V3/V3 Omni accept `multi_shot=true`. Automatic `shot_type="intelligence"` uses the global prompt. Customized shots use `multi_prompt` (1–6 entries) with consecutive index values, prompts of at most 512 characters and integer durations summing to the total. Companion tools: `kling_generate_storyboard` / `kling storyboard`.
 
 Commercial capabilities use `/kling/apparel`, `/kling/goods-studio`, `/kling/video-commerce` and `/kling/virtual-try-on`. Pass structured contents/settings; use the corresponding typed companion tools. Product studio requires reference images and a product title with duration 15/30/60. Try-on requires product_image and person_image URLs. Poll all platform task IDs through `/kling/tasks`. Pricing follows resolution/content tier and actual seconds or delivered image count.
+
+## Owned elements and voices
+
+Manage platform IDs through `/kling/elements` and `/kling/voices` with list/presets/retrieve/delete actions. Presets are read-only. Custom element creation is currently unavailable until pricing is confirmed. Voice creation accepts a clean single 5–30 second recording and costs 0.07 Credits.
+
+Use `element_list` on V3/V3 Omni/O1 or `voice_list` on V2.6 pro with generate_audio=true. The service verifies user/application ownership. Selected voice prompts use `<<<voice_1>>>`/`<<<voice_2>>>`; specified-voice videos cost 1.68 Credits/second. Companion tools are `kling_manage_elements`, `kling_manage_voices` and `kling_generate_with_assets`; CLI commands are `elements`, `voices` and `asset-video`. Poll platform task IDs for voice creation and video results.
