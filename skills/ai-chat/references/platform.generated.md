@@ -1,7 +1,7 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@92a3426774282880f59b72c83c7e368ddadea99c`
+Source: `AceDataCloud/PlatformBackend@9ceee14efb863ca3d0889edccc45e6b014ece681`
 
 ## Services
 
@@ -117,6 +117,7 @@ Source: `AceDataCloud/PlatformBackend@92a3426774282880f59b72c83c7e368ddadea99c`
 - `gpt-6-astra`
 - `gpt-6-luna`
 - `gpt-6-sol`
+- `gpt-6.1-sol`
 - `gpt-image-1`
 - `gpt-oss:free`
 - `gpt-realtime`
