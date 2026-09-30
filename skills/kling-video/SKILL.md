@@ -28,6 +28,7 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 
 | Model | Quality | Best For |
 |-------|---------|----------|
+| `kling-v3-turbo` | Fast | 720p/1080p, integer 3–15 seconds, included native audio with no off switch |
 | `kling-v3` | Latest | Best quality, flexible 3–15s duration, optional audio generation |
 | `kling-v3-omni` | Latest | V3 Omni model with audio plus image/video references, flexible 3–15s duration |
 | `kling-v2-6` | High | High-quality output with optional audio (pro mode) |
@@ -212,3 +213,11 @@ POST /kling/talking-photo
 - `pro` mode costs roughly 2x `std` mode but generates faster with better quality
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
+
+## Turbo, multishot and commerce
+
+Turbo accepts text or a first frame. Omit `generate_audio` or set it to true; false is unsupported. It omits tail frames, camera_control, cfg_scale, separate negative_prompt and Omni references. Use `kling_generate_turbo_video` in the companion MCP or `kling turbo --request-file request.json` in the CLI.
+
+V3/V3 Omni accept `multi_shot=true`. Automatic `shot_type="intelligence"` uses the global prompt. Customized shots use `multi_prompt` (1–6 entries) with consecutive index values, prompts of at most 512 characters and integer durations summing to the total. Companion tools: `kling_generate_storyboard` / `kling storyboard`.
+
+Commercial capabilities use `/kling/apparel`, `/kling/goods-studio`, `/kling/video-commerce` and `/kling/virtual-try-on`. Pass structured contents/settings; use the corresponding typed companion tools. Product studio requires reference images and a product title with duration 15/30/60. Try-on requires product_image and person_image URLs. Poll all platform task IDs through `/kling/tasks`. Pricing follows resolution/content tier and actual seconds or delivered image count.
