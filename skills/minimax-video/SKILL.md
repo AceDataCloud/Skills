@@ -1,6 +1,6 @@
 ---
 name: minimax-video
-description: Generate MiniMax H3 videos from text and optional image, video, or audio references through AceDataCloud. Use for text-to-video, first/last-frame video, multimodal reference video, and MiniMax H3 task polling.
+description: Generate MiniMax H3 and H3 Max videos, enhance prompts, or regenerate owned source videos through AceDataCloud. Use for text/image/video/audio references, model-specific output settings, structured prompt guidance and asynchronous task polling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
