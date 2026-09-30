@@ -18,7 +18,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [suno-music](skills/suno-music/) | Generate AI music, lyrics, covers, and vocal extraction with Suno |
+| [suno-music](skills/suno-music/) | Generate Suno music with optional personalization, lyrics, covers and vocal extraction |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Text-to-speech and voice synthesis with Fish Audio |
 
