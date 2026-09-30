@@ -256,3 +256,9 @@ Ending lyrics
 - Upload external audio via `/suno/upload` before using it with extend/cover
 
 > **MCP:** `pip install mcp-suno` | Hosted: `https://suno.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+
+## Optional music personalization
+
+For new `action="generate"` requests, optional `personalization` applies account music preferences. Omit the field to retain the service default; preserve explicit true/false. It is unavailable for extend/cover and other non-generation actions. Existing V6 compatibility mappings and default models stay unchanged.
+
+Companion MCP generation tools accept personalization; CLI generate/custom commands provide --personalization / --no-personalization. The Studio advanced panel offers automatic/on/off. Do not send private provider field names.
