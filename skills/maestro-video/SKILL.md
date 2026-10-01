@@ -92,6 +92,26 @@ Every request uses the complete production capability: all actions and scenarios
 
 ### Styles
 
+`apple-launch` produces a restrained product launch from real logo/product/UI assets with
+purposeful whitespace, clear typography and smooth motion. Use `scenario: auto` or `narrated`.
+It is distinct from `glass`, which applies Liquid Glass styling. A single image does not support
+a real 360-degree product view; use suitable original images or footage.
+
+For product media, prefer role-labeled `assets` entries with a unique `id`, `role`, public `url`
+and optional `name`. Roles: `logo`, `product_image`, `ui_screenshot`, `product_video`,
+`style_reference`, `music`, `reference`. Together with legacy `file_urls`, at most 20 inputs.
+A style reference guides the look and is not evidence of the user's product.
+
+`website_url` optionally supplies public website screenshots and brand context without passing
+browser cookies. `brand` supplies explicit name, #RRGGBB colors (background/foreground/accent),
+`font_set: "inter-noto-sc"`, and CTA text/URL. These overrides take precedence over automatic
+website extraction and style defaults. Do not claim capture succeeded when the site is blocked.
+
+`audio_mode` accepts `auto`, `narration`, `music`, `silent`; music-only must have no narration.
+Do not pin `voice` for music/silent; silent is incompatible with avatar/drama. On iterations,
+omit inputs to inherit: `assets: []` clears labeled media, `file_urls: []` clears legacy inputs,
+`brand: null` clears overrides, and `website_url: null` clears the website source. An explicit brand object replaces prior overrides; copy the original object for a one-field edit. Reuse archived website/product inputs for local edits.
+
 Named presets include `cinematic`, `glass`, `luxury`, `swiss`, `modern`, `editorial`, `warm`, `vibrant`, `neon`, `mono`, `pastel`, `bold`, `industrial`, `futuristic`, and `retro`. The API also accepts a freeform style hint.
 
 ### Voices
