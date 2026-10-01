@@ -1,6 +1,6 @@
 ---
 name: flux-image
-description: Generate and edit images with Flux (Black Forest Labs) via AceDataCloud API. Use when creating images from text prompts, editing existing images with text instructions, or when high-quality image generation is needed. Supports multiple Flux models including dev, pro, Flux 2 variants, and kontext for editing.
+description: Generate and edit Flux images and FLUX 3 videos via AceDataCloud API. Use when creating images from text prompts, editing existing images with text instructions, or when high-quality image generation is needed. Supports image models plus text/image/video generation, video editing, upscaling and temporary owned video drafts.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -83,3 +83,13 @@ POST /flux/images
 - All generation is async — always set `"callback_url"` to get a task id immediately, then poll `/flux/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
 
 > **MCP:** `pip install mcp-flux-pro` | Hosted: `https://flux.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+
+## FLUX 3 video tools
+
+`POST /flux/videos` handles all video operations with `action=generate/edit/upscale`. Omitted action defaults to generate. For generation, use `mode=t2v/i2v/v2v/draft_enhance`. T2V needs prompt; I2V also needs keyframes; V2V also needs start_video. Normal video requests support hd/fhd/qhd/uhd, integer duration 5–20 seconds (V2V up to 15) or auto, draft and generate_audio flags. Preserve explicit false.
+
+Draft enhancement uses an owned platform draft_task_id and requires its temporary cache to remain available. It does not promise indefinite retention.
+
+For `action=edit`, send video and prompt to `/flux/videos`; for `action=upscale`, send input_video, optional upscale_factor 1.5–3 and creativity 0/1 to the same endpoint. Do not mix generation fields into editing or upscaling requests. Upscale billing uses actual output MP-seconds (1048576 pixels per MP) with FPS/24 scaling. Do not substitute requested duration for measured final usage.
+
+Companion MCP tools: flux_generate_video, flux_edit_video, flux_upscale_video. CLI commands: flux video, video-edit, video-upscale with --request-file. MCP/CLI requests submit asynchronously by default and are polled through the existing /flux/tasks endpoint. For raw HTTP requests, set async=true to receive a task ID immediately. The unified `flux video --request-file` command accepts all three actions; utility commands/tools supply their matching action automatically.

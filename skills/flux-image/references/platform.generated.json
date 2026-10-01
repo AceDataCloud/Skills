@@ -15,6 +15,14 @@
       "path": "/flux/tasks",
       "stage": "Production",
       "title": "Flux Tasks API"
+    },
+    {
+      "id": "79bc5b19-5ae8-5931-8b9e-643165c02c64",
+      "method": "POST",
+      "name": "FLUX 3 Video",
+      "path": "/flux/videos",
+      "stage": "Beta",
+      "title": "FLUX 3 Video"
     }
   ],
   "companions": [
@@ -64,6 +72,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "7fff04a54f1c84c998467d820807fad4151d3bac"
   }
 }
