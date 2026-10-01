@@ -25,6 +25,22 @@
         "tasks"
       ],
       "title": "MiniMax H3 Tasks API"
+    },
+    {
+      "id": "8b5f8ebb-4137-5b1b-b58c-832414a8d0be",
+      "method": "POST",
+      "name": "Minimax Prompt Enhancement",
+      "path": "/minimax/prompt-enhancement",
+      "stage": "Beta",
+      "title": "提示词增强"
+    },
+    {
+      "id": "dcccdf41-b57e-55fe-801e-de416167d729",
+      "method": "POST",
+      "name": "Minimax Video Regeneration",
+      "path": "/minimax/regenerate",
+      "stage": "Beta",
+      "title": "视频重生成"
     }
   ],
   "companions": [
@@ -74,6 +90,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "9d4400ba4bffebbba12469d4248d19d89b0616f9"
   }
 }
