@@ -23,22 +23,6 @@
       "path": "/flux/videos",
       "stage": "Beta",
       "title": "FLUX 3 Video"
-    },
-    {
-      "id": "43c65613-0732-555b-880e-df16ba9e9c75",
-      "method": "POST",
-      "name": "FLUX Video Edit",
-      "path": "/flux/video-edit",
-      "stage": "Beta",
-      "title": "FLUX Video Edit"
-    },
-    {
-      "id": "1cf5d52a-0071-5d1d-a3ed-1516fb9fe591",
-      "method": "POST",
-      "name": "FLUX Video Upscale",
-      "path": "/flux/video-upscale",
-      "stage": "Beta",
-      "title": "FLUX Video Upscale"
     }
   ],
   "companions": [
@@ -88,6 +72,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "3893921f0db222ef6740534da452035fa990437c"
+    "sha": "ef0698c5fea3f9529726572ae924de4a9341dce0"
   }
 }
