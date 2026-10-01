@@ -9,11 +9,16 @@ on:
       - "index.js"
       - "package.json"
       - ".claude-plugin/marketplace.json"
+      - ".github/workflows/npm-publish.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
   id-token: write
+
+concurrency:
+  group: skills-npm-publish
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -47,25 +52,11 @@ jobs:
           MMDD=$(date +'%-m%d')
           DATE_PREFIX="${YEAR}.${MMDD}"
 
-          LATEST_BUILD=$(node -e "
-            const https = require('https');
-            https.get('https://registry.npmjs.org/@acedatacloud/skills', res => {
-              let data = '';
-              res.on('data', d => data += d);
-              res.on('end', () => {
-                try {
-                  const versions = Object.keys(JSON.parse(data).versions || {});
-                  const todayPrefix = '${DATE_PREFIX}.';
-                  const todayVersions = versions.filter(v => v.startsWith(todayPrefix));
-                  if (todayVersions.length === 0) { console.log(0); return; }
-                  const builds = todayVersions.map(v => parseInt(v.split('.')[2] || 0));
-                  console.log(Math.max(...builds) + 1);
-                } catch(e) { console.log(0); }
-              });
-            }).on('error', () => console.log(0));
-          ")
-
-          VERSION="${DATE_PREFIX}.${LATEST_BUILD}"
+          # Registry metadata can lag a staged publish. Use workflow identity so
+          # successive merges and retries never select the same staged version.
+          test "$GITHUB_RUN_ATTEMPT" -lt 1000
+          BUILD=$((GITHUB_RUN_NUMBER * 1000 + GITHUB_RUN_ATTEMPT))
+          VERSION="${DATE_PREFIX}.${BUILD}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: $VERSION"
 

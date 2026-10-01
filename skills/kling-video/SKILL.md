@@ -206,7 +206,7 @@ POST /kling/talking-photo
 - Omni references are supported only by `kling-o1` and `kling-v3-omni`; cite them as `<<<image_N>>>` / `<<<video_1>>>`
 - Omni reference requests do not support `negative_prompt`, `cfg_scale`, `camera_control`, or `mode=4k`
 - With `video_list`, `generate_audio` must be `false`; a base video cannot be combined with first/end frames
-- `element_list` is intentionally unavailable because upstream Element IDs are not tenant-scoped; use `image_list` for subject references
+- `element_list` accepts platform-owned or verified preset IDs from `/kling/elements`; raw external IDs are rejected. Custom element creation is currently unavailable.
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
