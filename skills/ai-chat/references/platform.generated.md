@@ -1,7 +1,7 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@9ceee14efb863ca3d0889edccc45e6b014ece681`
+Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 
 ## Services
 
@@ -60,6 +60,7 @@ Source: `AceDataCloud/PlatformBackend@9ceee14efb863ca3d0889edccc45e6b014ece681`
 - `claude-sonnet-4-5-20250929`
 - `claude-sonnet-4-6`
 - `claude-sonnet-5`
+- `claude-sonnet-5-5`
 - `gemini-2.5-flash`
 - `gemini-2.5-flash-image`
 - `gemini-2.5-flash-lite`
