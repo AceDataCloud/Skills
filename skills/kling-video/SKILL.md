@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Generate AI videos with Kuaishou Kling via AceDataCloud API. Use when creating videos from text or images, extending existing videos, applying motion control, animating a talking photo from image+audio, or lip-syncing audio/text to video. Supports text-to-video, image-to-video, extend, motion generation, talking-photo, and lip-sync with multiple models and quality modes.
+description: Create Kling videos and commercial media through AceDataCloud. Use for text/image video generation, Turbo, storyboards, motion control, talking photos, lip sync, product/apparel/virtual try-on, commercial voiceovers, and platform-owned voice or element references.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -167,11 +167,11 @@ POST /kling/talking-photo
 | `model` | See models table | Model to use |
 | `prompt` | string | Required generation or continuation instructions |
 | `mode` | `"std"`, `"pro"`, `"4k"` | Quality mode (`4k` only for `kling-v3` / `kling-v3-omni`, incompatible with `camera_control`) |
-| `duration` | O1: `5`; v3/v3-omni: `3`–`15`; others: `5`, `10` | Duration in seconds |
+| `duration` | O1: `5`; v3/v3-omni/v3-turbo: integer `3`–`15`; others: `5`, `10` | Duration in seconds |
 | `start_image_url` | URL | Required first frame for `action=image2video` |
 | `end_image_url` | URL | Optional end frame for `image2video`; requires `start_image_url` |
 | `video_id` | string | Existing Kling video ID required by `action=extend` |
-| `generate_audio` | `true`, `false` | Generate audio with video (v3, v3-omni, v2-6 pro only) |
+| `generate_audio` | `true`, `false` | Optional audio for v3, v3-omni and v2-6 pro. Turbo always includes audio: omit this field or use `true` |
 | `aspect_ratio` | `"16:9"`, `"9:16"`, `"1:1"` | Video aspect ratio |
 | `cfg_scale` | 0–1 | Prompt relevance strength |
 | `negative_prompt` | string | What to avoid in the video |
@@ -201,7 +201,7 @@ POST /kling/talking-photo
 
 - `kling-o1` supports `duration=5` only; `kling-v3` and `kling-v3-omni` support flexible `3`–`15` seconds; most other models support `5` or `10`
 - `mode=4k` is only available for `kling-v3` and `kling-v3-omni` and is incompatible with `camera_control`
-- `generate_audio` enables synchronized audio generation (supported by `kling-v3`, `kling-v3-omni`, and `kling-v2-6` in pro mode)
+- `generate_audio` enables optional synchronized audio for `kling-v3`, `kling-v3-omni`, and `kling-v2-6` pro. Turbo includes audio and rejects `false`.
 - `end_image_url` is only for `image2video` action — it defines the last frame
 - Omni references are supported only by `kling-o1` and `kling-v3-omni`; cite them as `<<<image_N>>>` / `<<<video_1>>>`
 - Omni reference requests do not support `negative_prompt`, `cfg_scale`, `camera_control`, or `mode=4k`
@@ -210,7 +210,7 @@ POST /kling/talking-photo
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
-- `pro` mode costs roughly 2x `std` mode but generates faster with better quality
+- Read the current platform price for the selected model and quality mode. Their price ratios vary; Turbo standard/pro rates are 1.12/1.4 Credits per actual delivered second.
 - Task states use `"succeed"` (not "succeeded") — check for this value when polling
 - `negative_prompt` helps avoid unwanted elements (e.g., "blurry, low quality, text")
 
