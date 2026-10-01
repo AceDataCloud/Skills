@@ -39,6 +39,38 @@
       "path": "/kling/talking-photo",
       "stage": "Production",
       "title": "Kling Talking Photo API"
+    },
+    {
+      "id": "25004129-94a5-5084-ace2-48cfbf14aa95",
+      "method": "POST",
+      "name": "Kling AI Apparel Replicator",
+      "path": "/kling/apparel",
+      "stage": "Beta",
+      "title": "服装视频复刻"
+    },
+    {
+      "id": "f60184f9-3174-5d54-8b97-5b2e6d3753a5",
+      "method": "POST",
+      "name": "Kling Goods Studio",
+      "path": "/kling/goods-studio",
+      "stage": "Beta",
+      "title": "商品视频"
+    },
+    {
+      "id": "ad648b8c-ae07-5852-a9c5-c0fcda578908",
+      "method": "POST",
+      "name": "Kling Video Commerce",
+      "path": "/kling/video-commerce",
+      "stage": "Beta",
+      "title": "电商口播"
+    },
+    {
+      "id": "2a6262b2-aa0a-57b1-91ae-636b1a8322e6",
+      "method": "POST",
+      "name": "Kling Virtual Try-On",
+      "path": "/kling/virtual-try-on",
+      "stage": "Beta",
+      "title": "虚拟试衣"
     }
   ],
   "companions": [
@@ -88,6 +120,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "30bd80d1dd432a305688f6c7da87efda7279a73b"
   }
 }
