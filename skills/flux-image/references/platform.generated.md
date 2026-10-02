@@ -1,7 +1,7 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@7fff04a54f1c84c998467d820807fad4151d3bac`
+Source: `AceDataCloud/PlatformBackend@8ed8add97b262914e4af2e1397b52046eadc147b`
 
 ## Services
 
@@ -11,4 +11,4 @@ Source: `AceDataCloud/PlatformBackend@7fff04a54f1c84c998467d820807fad4151d3bac`
 
 - `POST` `/flux/images` — Flux Images Generation API
 - `POST` `/flux/tasks` — Flux Tasks API
-- `POST` `/flux/videos` — FLUX 3 Video
+- `POST` `/flux/videos` — Flux Videos API
