@@ -41,14 +41,6 @@
       "title": "Kling Talking Photo API"
     },
     {
-      "id": "25004129-94a5-5084-ace2-48cfbf14aa95",
-      "method": "POST",
-      "name": "Kling AI Apparel Replicator",
-      "path": "/kling/apparel",
-      "stage": "Beta",
-      "title": "服装视频复刻"
-    },
-    {
       "id": "f60184f9-3174-5d54-8b97-5b2e6d3753a5",
       "method": "POST",
       "name": "Kling Goods Studio",
@@ -63,32 +55,6 @@
       "path": "/kling/video-commerce",
       "stage": "Beta",
       "title": "电商口播"
-    },
-    {
-      "id": "2a6262b2-aa0a-57b1-91ae-636b1a8322e6",
-      "method": "POST",
-      "name": "Kling Virtual Try-On",
-      "path": "/kling/virtual-try-on",
-      "stage": "Beta",
-      "title": "虚拟试衣"
-    },
-    {
-      "id": "bfc78ffd-b786-5325-8803-311d70fe8ddf",
-      "introduction": "$t(kling_elements_introduction)",
-      "method": "POST",
-      "name": "Kling Elements",
-      "path": "/kling/elements",
-      "rank": 90,
-      "title": "Kling Elements"
-    },
-    {
-      "id": "94be993f-e70a-5499-a458-bb4853ccc292",
-      "introduction": "$t(kling_voices_introduction)",
-      "method": "POST",
-      "name": "Kling Voices",
-      "path": "/kling/voices",
-      "rank": 90,
-      "title": "Kling Voices"
     }
   ],
   "companions": [
@@ -138,6 +104,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "794aed287ffd48c22e8b4fc66eab4e18af46731d"
+    "sha": "a2b4f8c2ba652a9d66196c13cfad6a6a6efad4ee"
   }
 }
