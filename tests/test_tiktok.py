@@ -202,7 +202,16 @@ class TikTokScriptTests(unittest.TestCase):
             "is_aigc": True,
         }
         info = Response(
-            {"data": {"privacy_level_options": ["SELF_ONLY"], "max_video_post_duration_sec": 600}, "error": {"code": "ok"}}
+            {
+                "data": {
+                    "privacy_level_options": ["SELF_ONLY"],
+                    "max_video_post_duration_sec": 600,
+                    "comment_disabled": False,
+                    "duet_disabled": False,
+                    "stitch_disabled": False,
+                },
+                "error": {"code": "ok"},
+            }
         )
         with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
             io.StringIO()
@@ -223,7 +232,16 @@ class TikTokScriptTests(unittest.TestCase):
             "is_aigc": True,
         }
         info = Response(
-            {"data": {"privacy_level_options": ["SELF_ONLY"], "max_video_post_duration_sec": 600}, "error": {"code": "ok"}}
+            {
+                "data": {
+                    "privacy_level_options": ["SELF_ONLY"],
+                    "max_video_post_duration_sec": 600,
+                    "comment_disabled": False,
+                    "duet_disabled": False,
+                    "stitch_disabled": False,
+                },
+                "error": {"code": "ok"},
+            }
         )
         media = Response(status=200, url="https://other.example/video.mp4", content_type="video/mp4")
         with patch("urllib.request.urlopen", side_effect=[info, media]) as mocked, self.assertRaises(SystemExit), redirect_stdout(

@@ -160,10 +160,13 @@ def review_post_url(url: str, duration_sec: float, values: dict) -> dict:
     if not isinstance(options, list) or privacy not in options:
         fail("SELF_ONLY is not in the creator's current TikTok privacy options")
     maximum = info.get("max_video_post_duration_sec")
-    if not isinstance(maximum, (int, float)) or duration_sec > maximum:
+    if type(maximum) not in (int, float) or not math.isfinite(maximum) or duration_sec > maximum:
         fail("review video exceeds the creator's current TikTok duration limit")
     for interaction in ("comment", "duet", "stitch"):
-        if info.get(f"{interaction}_disabled") is True and values[f"disable_{interaction}"] is False:
+        restriction = info.get(f"{interaction}_disabled")
+        if type(restriction) is not bool:
+            fail(f"creator info did not include the current {interaction} restriction")
+        if restriction and values[f"disable_{interaction}"] is False:
             fail(f"the creator's TikTok account disables {interaction}")
     check_media_url(url)
     post_info = {"title": title, "privacy_level": privacy}
