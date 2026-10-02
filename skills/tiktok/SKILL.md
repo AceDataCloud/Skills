@@ -49,11 +49,14 @@ drafts**; they open the TikTok app to add caption, sound and privacy, then post.
 
 Required order:
 
-1. Download the exact video locally, but do not upload it yet.
+1. Identify the exact video and its source: a creator's device-local file or a
+   server-hosted URL under the verified `acedata.cloud` domain. Preview it.
 2. Call `request_action_confirmation` with `kind: "generic"`, the real video
    preview, and a summary that says this uploads to drafts rather than publishing.
-3. If cancelled, stop. If confirmed, run exactly one upload:
-   `python3 skills/tiktok/scripts/tiktok.py upload video.mp4`.
+3. If cancelled, stop. If confirmed, run exactly one upload. For a device-local
+   file use `python3 skills/tiktok/scripts/tiktok.py upload video.mp4`. For a
+   server-hosted video use
+   `python3 skills/tiktok/scripts/tiktok.py upload-url "$VIDEO_URL"`.
 4. Poll with `python3 skills/tiktok/scripts/tiktok.py status PUBLISH_ID` until
    terminal. Never call `upload` again while polling.
 
@@ -62,9 +65,9 @@ on 2026-10-03, covering its subdomains. Server-hosted videos on that domain
 must use `PULL_FROM_URL`; use `FILE_UPLOAD` only for a creator's device-local
 file. Verify that the exact URL is public HTTPS and does not redirect.
 
-### FILE_UPLOAD (default)
+### FILE_UPLOAD (creator device-local file)
 
-Download the video locally first, then init with its exact byte size. Files
+Use this only for a file the creator selected from their own device. Files
 under 64 MB go up as a single chunk.
 
 ```bash
@@ -90,13 +93,11 @@ chunks). `upload_url` expires in **1 hour**.
 ### PULL_FROM_URL (only from a verified domain)
 
 ```bash
-curl -sS -X POST -H "$AUTH" -H "Content-Type: application/json" \
-  -d "$(jq -n --arg u "$VIDEO_URL" '{source_info:{source:"PULL_FROM_URL", video_url:$u}}')" \
-  "$T/post/publish/inbox/video/init/" | jq '{publish_id:.data.publish_id, error}'
+python3 skills/tiktok/scripts/tiktok.py upload-url "$VIDEO_URL"
 ```
 
-Needs HTTPS and **no redirects** (any 3xx fails). Domain verification covers
-subdomains downward only.
+The helper requires public HTTPS under the verified `acedata.cloud` domain,
+`video/mp4`, and no redirects. Domain verification covers subdomains downward.
 
 ## Poll status
 
@@ -166,4 +167,3 @@ posting controls, user confirmation, and actual TikTok outcome.
 - `SEND_TO_USER_INBOX` is success for this flow, not an intermediate state.
   Don't wait for `PUBLISH_COMPLETE` — that only happens once the user posts
   from the app.
-

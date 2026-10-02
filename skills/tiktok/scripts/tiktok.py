@@ -123,6 +123,15 @@ def check_media_url(url: str) -> None:
         fail(f"network error checking video URL: {error.reason}")
 
 
+def upload_url(url: str) -> dict:
+    check_media_url(url)
+    init = api("/post/publish/inbox/video/init/", {"source_info": {"source": "PULL_FROM_URL", "video_url": url}})
+    publish_id = init.get("publish_id")
+    if not isinstance(publish_id, str) or not publish_id:
+        fail("TikTok inbox init did not return a publish_id; check account status before retrying")
+    return {"publish_id": publish_id, "status": "PROCESSING_DOWNLOAD"}
+
+
 def review_post_url(url: str, duration_sec: float, values: dict) -> dict:
     if not isinstance(duration_sec, (int, float)) or not math.isfinite(duration_sec) or duration_sec <= 0:
         fail("review video duration must be positive")
@@ -175,6 +184,8 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     upload = sub.add_parser("upload")
     upload.add_argument("file")
+    inbox_url = sub.add_parser("upload-url")
+    inbox_url.add_argument("url")
     status = sub.add_parser("status")
     status.add_argument("publish_id")
     sub.add_parser("creator-info")
@@ -186,6 +197,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "upload":
         data = upload_file(args.file)
+    elif args.command == "upload-url":
+        data = upload_url(args.url)
     elif args.command == "status":
         data = api("/post/publish/status/fetch/", {"publish_id": args.publish_id})
     elif args.command == "creator-info":

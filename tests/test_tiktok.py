@@ -79,6 +79,21 @@ class TikTokScriptTests(unittest.TestCase):
             tiktok.main()
         self.assertEqual(json.loads(mocked.call_args.args[0].data), {"publish_id": "pub_1"})
 
+    def test_server_hosted_inbox_upload_uses_verified_url_pull(self):
+        url = "https://platform2.cdn.acedata.cloud/maestro/original.mp4"
+        media = Response(status=200, url=url, content_type="video/mp4")
+        init = Response({"data": {"publish_id": "pub_inbox"}, "error": {"code": "ok"}})
+        with patch("urllib.request.urlopen", side_effect=[media, init]) as mocked:
+            result = tiktok.upload_url(url)
+        self.assertEqual(result, {"publish_id": "pub_inbox", "status": "PROCESSING_DOWNLOAD"})
+        media_request, init_request = [call.args[0] for call in mocked.call_args_list]
+        self.assertEqual(media_request.method, "HEAD")
+        self.assertTrue(init_request.full_url.endswith("/post/publish/inbox/video/init/"))
+        self.assertEqual(
+            json.loads(init_request.data),
+            {"source_info": {"source": "PULL_FROM_URL", "video_url": url}},
+        )
+
     def test_api_error_is_structured(self):
         stdout = io.StringIO()
         with patch(
