@@ -1,7 +1,7 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
+Source: `AceDataCloud/PlatformBackend@e9cd3daf23f90e3ea885ec96b69bea3d0e54daa1`
 
 ## Services
 
