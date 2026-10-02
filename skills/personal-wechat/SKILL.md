@@ -1,6 +1,6 @@
 ---
 name: personal-wechat
-description: Operate the user's personal WeChat account through their self-hosted Wisdom service (BYOC) — check status, list contacts/conversations, read messages, poll for new ones, search contacts, browse Moments, and (after explicit confirmation) send messages with real @-mentions, post or delete Moments, and manage group chats. Use when the user mentions 个人微信, 我的微信, WeChat personal chat, 微信聊天记录, 微信联系人, 微信群, 朋友圈, reading/summarizing WeChat messages, or sending a WeChat message.
+description: Operate the user's personal WeChat account through their self-hosted Wisdom service (BYOC) — check status, list contacts/conversations, read messages, poll for new ones, search contacts, browse Moments, and (after explicit confirmation) send messages with real @-mentions and manage group chats. Check runtime capabilities before attempting Moments writes. Use when the user mentions 个人微信, 我的微信, WeChat personal chat, 微信聊天记录, 微信联系人, 微信群, 朋友圈, reading/summarizing WeChat messages, or sending a WeChat message.
 when_to_use: |
   Trigger for the user's personal WeChat account via their own Wisdom server:
   check status/account, list contacts, list conversations, read or summarize a
@@ -19,8 +19,8 @@ metadata:
 # Personal WeChat via Wisdom
 
 Use the user's self-hosted **Wisdom** service to operate their personal WeChat
-account. Wisdom runs on a Windows host with WeChat Desktop logged in and exposes
-an HTTP API.
+account. Current deployments run native Linux WeChat in a container with an
+HTTP API and a VNC desktop for login and diagnostics.
 
 Credentials are injected by the `personalwechat` BYOC connector:
 
@@ -67,11 +67,17 @@ Expected healthy shape:
 | Symptom | Meaning |
 |---|---|
 | `status: "ready"`, `logged_in: true` | Healthy — proceed. |
-| `status: "qr_scan"` / `logged_in: false` | Ask the user to open the Wisdom web UI / RDP and scan the WeChat QR code. |
+| `status: "qr_scan"` / `logged_in: false` | Ask the user to open the Wisdom web UI / VNC and scan the WeChat QR code with their phone. |
 | `status: "preparing"` | The decrypted DB snapshot is still being built. Wait and retry; reads may fail until it finishes. |
 | `status: "error"` | Report `error.code` / `error.message` to the user. |
 | HTTP 401 | Ask the user to reconnect the Personal WeChat connector with the current Wisdom API token. |
-| Connection refused / timeout | Ask the user to check the Windows host, security group, and port 8000. |
+| Connection refused / timeout | Check the connected Wisdom instance URL and deployment status. |
+
+On native Linux, read `weixin_client.capabilities` from status before assuming
+a write mode is available. `ready` confirms login and data preparation, not
+every legacy Windows API. In particular, current native deployments expose
+`moments.read` but reject Moments publish/delete with HTTP 409 while WeChat's
+new-device security restriction remains unresolved.
 
 Never infer "WeChat is offline" from a 404 on some other path — a 404 means that
 route does not exist on this Wisdom version, not that the account is logged out.
@@ -193,7 +199,7 @@ python3 $WX send "Alice" "这个我来跟" --quote-text "这个 bug 谁跟一下
 `--quote-text` takes precedence over mentions, and falls back to a plain send if
 no matching message is found.
 
-**Media.** Wisdom downloads the URL on the Windows host and sends the file:
+**Media.** Wisdom downloads the URL in its container and sends the file:
 
 ```bash
 python3 $WX send "Alice" --type image --image-url https://example.com/a.png --confirm
@@ -210,6 +216,10 @@ python3 $WX send "Alice" "hi" --idempotency-key daily-2026-08-04 --confirm
 ```
 
 ### Moments (朋友圈)
+
+Check status capabilities first. If `moments.write` or `moments.delete` is
+absent, report the limitation and do not claim publication/deletion. Current
+native Linux deployments return HTTP 409 for these writes.
 
 ```bash
 python3 $WX moment-post "今天上线了新功能"
