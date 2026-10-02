@@ -4,6 +4,7 @@ import json
 import os
 import tempfile
 import unittest
+from email.message import Message
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
@@ -16,9 +17,13 @@ spec.loader.exec_module(tiktok)
 
 
 class Response:
-    def __init__(self, payload=None, status=200):
+    def __init__(self, payload=None, status=200, url=None, content_type=None):
         self.payload = payload
         self.status = status
+        self.url = url
+        self.headers = Message()
+        if content_type:
+            self.headers["Content-Type"] = content_type
 
     def __enter__(self):
         return self
@@ -28,6 +33,9 @@ class Response:
 
     def read(self):
         return json.dumps(self.payload or {}).encode()
+
+    def geturl(self):
+        return self.url
 
 
 class TikTokScriptTests(unittest.TestCase):
@@ -86,6 +94,128 @@ class TikTokScriptTests(unittest.TestCase):
         ), redirect_stdout(io.StringIO()):
             tiktok.upload_file(video.name)
         mocked.assert_not_called()
+
+    def test_confirmed_review_post_uses_creator_settings_and_url_pull(self):
+        url = "https://platform2.cdn.acedata.cloud/maestro/original.mp4"
+        values = {
+            "title": "Ace Data Cloud #AI",
+            "privacy_level": "SELF_ONLY",
+            "disable_comment": True,
+            "disable_duet": True,
+            "disable_stitch": True,
+            "brand_organic_toggle": True,
+            "brand_content_toggle": False,
+            "is_aigc": True,
+        }
+        info = Response(
+            {
+                "data": {
+                    "privacy_level_options": ["SELF_ONLY", "PUBLIC_TO_EVERYONE"],
+                    "max_video_post_duration_sec": 600,
+                    "comment_disabled": True,
+                    "duet_disabled": True,
+                    "stitch_disabled": True,
+                },
+                "error": {"code": "ok"},
+            }
+        )
+        media = Response(status=200, url=url, content_type="video/mp4")
+        init = Response({"data": {"publish_id": "pub_2"}, "error": {"code": "ok"}})
+        with patch("urllib.request.urlopen", side_effect=[info, media, init]) as mocked:
+            result = tiktok.review_post_url(url, 30, values)
+
+        self.assertEqual(result, {"publish_id": "pub_2", "status": "PROCESSING_DOWNLOAD"})
+        info_request, media_request, init_request = [call.args[0] for call in mocked.call_args_list]
+        self.assertTrue(info_request.full_url.endswith("/post/publish/creator_info/query/"))
+        self.assertEqual(media_request.method, "HEAD")
+        self.assertTrue(init_request.full_url.endswith("/post/publish/video/init/"))
+        self.assertEqual(
+            json.loads(init_request.data),
+            {"post_info": values, "source_info": {"source": "PULL_FROM_URL", "video_url": url}},
+        )
+
+    def test_review_post_rejects_public_visibility_before_network(self):
+        with patch("urllib.request.urlopen") as mocked, self.assertRaises(SystemExit), redirect_stdout(io.StringIO()):
+            tiktok.review_post_url(
+                "https://platform2.cdn.acedata.cloud/maestro/original.mp4",
+                30,
+                {
+                    "title": "Film",
+                    "privacy_level": "PUBLIC_TO_EVERYONE",
+                },
+            )
+        mocked.assert_not_called()
+
+    def test_review_post_rejects_creator_restriction_before_init(self):
+        values = {
+            "title": "Film",
+            "privacy_level": "SELF_ONLY",
+            "disable_comment": False,
+            "disable_duet": True,
+            "disable_stitch": True,
+            "brand_organic_toggle": True,
+            "brand_content_toggle": False,
+            "is_aigc": True,
+        }
+        info = Response(
+            {
+                "data": {
+                    "privacy_level_options": ["SELF_ONLY"],
+                    "max_video_post_duration_sec": 600,
+                    "comment_disabled": True,
+                    "duet_disabled": True,
+                    "stitch_disabled": True,
+                },
+                "error": {"code": "ok"},
+            }
+        )
+        with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
+            io.StringIO()
+        ):
+            tiktok.review_post_url("https://platform2.cdn.acedata.cloud/maestro/original.mp4", 30, values)
+        self.assertEqual(mocked.call_count, 1)
+
+    def test_review_post_rejects_unverified_media_domain_before_init(self):
+        values = {
+            "title": "Film",
+            "privacy_level": "SELF_ONLY",
+            "disable_comment": True,
+            "disable_duet": True,
+            "disable_stitch": True,
+            "brand_organic_toggle": True,
+            "brand_content_toggle": False,
+            "is_aigc": True,
+        }
+        info = Response(
+            {"data": {"privacy_level_options": ["SELF_ONLY"], "max_video_post_duration_sec": 600}, "error": {"code": "ok"}}
+        )
+        with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
+            io.StringIO()
+        ):
+            tiktok.review_post_url("https://notacedata.cloud/video.mp4", 30, values)
+        self.assertEqual(mocked.call_count, 1)
+
+    def test_review_post_rejects_redirected_media_before_init(self):
+        url = "https://platform2.cdn.acedata.cloud/maestro/original.mp4"
+        values = {
+            "title": "Film",
+            "privacy_level": "SELF_ONLY",
+            "disable_comment": True,
+            "disable_duet": True,
+            "disable_stitch": True,
+            "brand_organic_toggle": True,
+            "brand_content_toggle": False,
+            "is_aigc": True,
+        }
+        info = Response(
+            {"data": {"privacy_level_options": ["SELF_ONLY"], "max_video_post_duration_sec": 600}, "error": {"code": "ok"}}
+        )
+        media = Response(status=200, url="https://other.example/video.mp4", content_type="video/mp4")
+        with patch("urllib.request.urlopen", side_effect=[info, media]) as mocked, self.assertRaises(SystemExit), redirect_stdout(
+            io.StringIO()
+        ):
+            tiktok.review_post_url(url, 30, values)
+        self.assertEqual(mocked.call_count, 2)
 
 
 if __name__ == "__main__":
