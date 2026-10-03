@@ -5,14 +5,14 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-maestro for tool-use.
+compatibility: Direct API scripts require ACEDATACLOUD_API_TOKEN (see _shared/authentication.md). Use an already-authorized paired MCP without asking for a copied token. Pair with mcp-maestro for tool-use.
 ---
 
 # Maestro End-to-End Video Production
 
 Use Maestro when the user wants a **finished video**, not only a generated clip. A headless AI director turns one natural-language brief into a script, visual assets, voiceover, music, edit, captions, quality checks, and rendered video variants.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
 ## Choose Maestro When
 
@@ -24,7 +24,7 @@ Use Maestro when the user wants a **finished video**, not only a generated clip.
 
 Use a model-specific video API such as Seedance, Kling, or Veo when the user only needs a short generated shot and wants direct model controls. Maestro may use multiple media services internally and is optimized for the finished production.
 
-## Quick Start
+## Direct API Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/maestro/videos \

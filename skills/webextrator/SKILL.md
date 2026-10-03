@@ -5,16 +5,16 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-webextrator for tool-use.
+compatibility: Direct API scripts require ACEDATACLOUD_API_TOKEN (see _shared/authentication.md). Use an already-authorized paired MCP without asking for a copied token. Pair with mcp-webextrator for tool-use.
 ---
 
 # WebExtrator Web Render & Extract
 
 Render and extract web content through AceDataCloud's WebExtrator API — real headless Chromium plus a three-tier extraction pipeline (schema.org JSON-LD mapper → LLM typed extractor → Readability/markdown fallback).
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
-## Quick Start
+## Direct API Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/webextrator/extract \

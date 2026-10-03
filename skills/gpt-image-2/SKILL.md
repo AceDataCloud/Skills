@@ -12,7 +12,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 OpenAI `gpt-image-2` through AceDataCloud. Two endpoints, both **synchronous** (return image url(s) directly). Its standout is **editing**: feed real images (logos, QR codes, product shots, screenshots) and it composites/restyles them faithfully — great for on-brand video assets and character consistency.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
 ## 1. Generate (text → image)
 
