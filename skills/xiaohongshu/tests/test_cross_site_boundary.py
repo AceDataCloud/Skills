@@ -23,7 +23,7 @@ def test_browser_core_has_no_xiaohongshu_or_tiktok_semantics() -> None:
 def test_tiktok_remains_an_api_skill_until_browser_canary_is_approved() -> None:
     skill = TIKTOK_SKILL.read_text(encoding="utf-8")
 
-    assert "allowed_tools: [Bash]" in skill
+    assert "allowed_tools: [Bash, request_action_confirmation]" in skill
     assert "https://open.tiktokapis.com/v2" in skill
     assert "execution:\n  browser:" not in skill
     assert "browser." not in skill
