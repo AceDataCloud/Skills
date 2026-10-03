@@ -132,7 +132,9 @@ Required sequence:
    again before posting. Do not turn a server-hosted asset into `FILE_UPLOAD`
    to avoid domain verification.
 2. Query the connected test creator with
-   `python3 skills/tiktok/scripts/tiktok.py creator-info`. Copy the returned
+   `python3 skills/tiktok/scripts/tiktok.py creator-info`. Confirm its
+   `creator_username` is the owner-approved private test account, not another
+   account selected as the connector default. Copy the returned
    `creator_nickname`, `creator_avatar_url`, `privacy_level_options`, account
    interaction restrictions, and `max_video_post_duration_sec` into
    `request_action_confirmation` with `kind: "tiktok.publish"` and the actual
@@ -144,8 +146,9 @@ Required sequence:
    promotion, the creator must select the own-brand promotional disclosure.
    Store these values in a temporary JSON file, not in the public repository.
 4. Only after that confirmation, initialize exactly once:
-   `python3 skills/tiktok/scripts/tiktok.py review-post-url "$VIDEO_URL" --duration-sec "$DURATION" --values-file "$VALUES_JSON" --confirmed`.
-   The helper re-queries creator info, validates the card values, and uses
+   `python3 skills/tiktok/scripts/tiktok.py review-post-url "$VIDEO_URL" --duration-sec "$DURATION" --expected-creator-username "$CONFIRMED_CREATOR_USERNAME" --values-file "$VALUES_JSON" --confirmed`.
+   The helper re-queries creator info, refuses a different destination account,
+   validates the card values, and uses
    `PULL_FROM_URL` with TikTok's Direct Post endpoint. Never substitute
    fields after the creator confirmed them.
 5. Poll the returned `publish_id` with `status`. Do not initialize again

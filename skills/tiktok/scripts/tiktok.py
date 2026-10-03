@@ -132,7 +132,7 @@ def upload_url(url: str) -> dict:
     return {"publish_id": publish_id, "status": "PROCESSING_DOWNLOAD"}
 
 
-def review_post_url(url: str, duration_sec: float, values: dict) -> dict:
+def review_post_url(url: str, duration_sec: float, values: dict, expected_creator_username: str) -> dict:
     if not isinstance(duration_sec, (int, float)) or not math.isfinite(duration_sec) or duration_sec <= 0:
         fail("review video duration must be positive")
     if not isinstance(values, dict):
@@ -156,6 +156,10 @@ def review_post_url(url: str, duration_sec: float, values: dict) -> dict:
     if values["brand_content_toggle"]:
         fail("branded content cannot use SELF_ONLY privacy")
     info = creator_info()
+    actual_creator_username = info.get("creator_username")
+    expected_username = expected_creator_username.removeprefix("@").strip()
+    if not expected_username or not isinstance(actual_creator_username, str) or actual_creator_username.casefold() != expected_username.casefold():
+        fail("connected TikTok creator does not match the confirmed destination account")
     options = info.get("privacy_level_options")
     if not isinstance(options, list) or privacy not in options:
         fail("SELF_ONLY is not in the creator's current TikTok privacy options")
@@ -195,6 +199,7 @@ def main() -> None:
     review = sub.add_parser("review-post-url")
     review.add_argument("url")
     review.add_argument("--duration-sec", type=float, required=True)
+    review.add_argument("--expected-creator-username", required=True)
     review.add_argument("--values-file", required=True)
     review.add_argument("--confirmed", action="store_true", required=True)
     args = parser.parse_args()
@@ -212,7 +217,7 @@ def main() -> None:
         else:
             with open(args.values_file, encoding="utf-8") as confirmed_values:
                 values = json.load(confirmed_values)
-        data = review_post_url(args.url, args.duration_sec, values)
+        data = review_post_url(args.url, args.duration_sec, values, args.expected_creator_username)
     output({"ok": True, "data": data})
 
 

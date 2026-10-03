@@ -125,6 +125,7 @@ class TikTokScriptTests(unittest.TestCase):
         info = Response(
             {
                 "data": {
+                    "creator_username": "private_creator",
                     "privacy_level_options": ["SELF_ONLY", "PUBLIC_TO_EVERYONE"],
                     "max_video_post_duration_sec": 600,
                     "comment_disabled": True,
@@ -137,7 +138,7 @@ class TikTokScriptTests(unittest.TestCase):
         media = Response(status=200, url=url, content_type="video/mp4")
         init = Response({"data": {"publish_id": "pub_2"}, "error": {"code": "ok"}})
         with patch("urllib.request.urlopen", side_effect=[info, media, init]) as mocked:
-            result = tiktok.review_post_url(url, 30, values)
+            result = tiktok.review_post_url(url, 30, values, "@private_creator")
 
         self.assertEqual(result, {"publish_id": "pub_2", "status": "PROCESSING_DOWNLOAD"})
         info_request, media_request, init_request = [call.args[0] for call in mocked.call_args_list]
@@ -158,6 +159,7 @@ class TikTokScriptTests(unittest.TestCase):
                     "title": "Film",
                     "privacy_level": "PUBLIC_TO_EVERYONE",
                 },
+                "@private_creator",
             )
         mocked.assert_not_called()
 
@@ -175,6 +177,7 @@ class TikTokScriptTests(unittest.TestCase):
         info = Response(
             {
                 "data": {
+                    "creator_username": "private_creator",
                     "privacy_level_options": ["SELF_ONLY"],
                     "max_video_post_duration_sec": 600,
                     "comment_disabled": True,
@@ -187,7 +190,25 @@ class TikTokScriptTests(unittest.TestCase):
         with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
             io.StringIO()
         ):
-            tiktok.review_post_url("https://platform2.cdn.acedata.cloud/maestro/original.mp4", 30, values)
+            tiktok.review_post_url("https://platform2.cdn.acedata.cloud/maestro/original.mp4", 30, values, "@private_creator")
+        self.assertEqual(mocked.call_count, 1)
+
+    def test_review_post_rejects_different_connected_creator_before_init(self):
+        values = {
+            "title": "Film",
+            "privacy_level": "SELF_ONLY",
+            "disable_comment": True,
+            "disable_duet": True,
+            "disable_stitch": True,
+            "brand_organic_toggle": True,
+            "brand_content_toggle": False,
+            "is_aigc": True,
+        }
+        info = Response({"data": {"creator_username": "brand_account"}, "error": {"code": "ok"}})
+        with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
+            io.StringIO()
+        ):
+            tiktok.review_post_url("https://platform2.cdn.acedata.cloud/maestro/original.mp4", 30, values, "@private_creator")
         self.assertEqual(mocked.call_count, 1)
 
     def test_review_post_rejects_unverified_media_domain_before_init(self):
@@ -204,6 +225,7 @@ class TikTokScriptTests(unittest.TestCase):
         info = Response(
             {
                 "data": {
+                    "creator_username": "private_creator",
                     "privacy_level_options": ["SELF_ONLY"],
                     "max_video_post_duration_sec": 600,
                     "comment_disabled": False,
@@ -216,7 +238,7 @@ class TikTokScriptTests(unittest.TestCase):
         with patch("urllib.request.urlopen", return_value=info) as mocked, self.assertRaises(SystemExit), redirect_stdout(
             io.StringIO()
         ):
-            tiktok.review_post_url("https://notacedata.cloud/video.mp4", 30, values)
+            tiktok.review_post_url("https://notacedata.cloud/video.mp4", 30, values, "@private_creator")
         self.assertEqual(mocked.call_count, 1)
 
     def test_review_post_rejects_redirected_media_before_init(self):
@@ -234,6 +256,7 @@ class TikTokScriptTests(unittest.TestCase):
         info = Response(
             {
                 "data": {
+                    "creator_username": "private_creator",
                     "privacy_level_options": ["SELF_ONLY"],
                     "max_video_post_duration_sec": 600,
                     "comment_disabled": False,
@@ -247,7 +270,7 @@ class TikTokScriptTests(unittest.TestCase):
         with patch("urllib.request.urlopen", side_effect=[info, media]) as mocked, self.assertRaises(SystemExit), redirect_stdout(
             io.StringIO()
         ):
-            tiktok.review_post_url(url, 30, values)
+            tiktok.review_post_url(url, 30, values, "@private_creator")
         self.assertEqual(mocked.call_count, 2)
 
 
