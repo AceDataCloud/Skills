@@ -1,11 +1,17 @@
 # Authentication
 
-All AceDataCloud APIs use Bearer token authentication.
+For a paired hosted MCP in an OAuth-capable client, add the server URL, sign in, and authorize.
+Do not ask the user to copy an API token for an already-authorized MCP tool. DCR registers the
+client; user authorization and metered service usage still apply.
+
+Direct HTTP API calls and local scripts use Bearer token authentication. A hosted MCP login
+does not inject an API token into your shell. Local-only skills need no API token; third-party
+connectors follow their declared connection requirements.
 
 ## Get Your Token
 
-1. Register at [platform.acedata.cloud](https://platform.acedata.cloud)
-2. Subscribe to a service (most include free quota)
+1. Register at [platform.acedata.cloud](https://platform.acedata.cloud/api/v1/marketing-attribution/entry/skills/?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=api_token)
+2. Choose the service and check its current pricing and your account balance
 3. Go to your service's **Credentials** page and create an API token
 
 ## Setup
@@ -22,7 +28,7 @@ Then load it before making API calls:
 source .env
 ```
 
-> **Agent usage:** If you're running skills through Claude Code or another AI agent, the agent will automatically `source .env` from the project root before calling any API.
+> Use the environment configured by the user. Never assume a client automatically loads `.env`, and never print a token.
 
 > **Important:** Add `.env` to your `.gitignore` — never commit tokens to version control.
 

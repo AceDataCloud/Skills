@@ -82,17 +82,26 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 | [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
 | [tgstat](skills/tgstat/) | Public Telegram source discovery, rankings, and audience research | `tgstat` (BYOC username) |
 
-## Prerequisites
+## Start with one useful result
 
-Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
+Install the `suno-music` skill using the command below, then ask for an instrumental lo-fi track.
+Use [setup and current pricing](https://platform.acedata.cloud/api/v1/marketing-attribution/entry/skills/?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=quick_start) to choose an execution path:
 
-1. Register an account
-2. Browse and subscribe to a service (most have free quota)
-3. Create an API credential (token)
+- **Paired hosted MCP:** add `https://suno.mcp.acedata.cloud/mcp` in a remote OAuth-capable client,
+  sign in, review permissions, and authorize. No manually copied API token is needed for MCP calls.
+- **Direct API / local scripts:** create an API credential and provide `ACEDATACLOUD_API_TOKEN`
+  through your agent's secret or environment settings. MCP OAuth does not export a token to Bash.
+- **Local-only skills:** follow their prerequisites; they do not require an AceDataCloud API token.
+  Third-party connectors use their own declared connection requirements.
 
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+A skill install supplies instructions, not authentication or a completed generation. Check that
+Suno returns terminal success and a final playable audio URL. Keep polling an existing task;
+do not resubmit while it is pending. See [shared authentication](skills/_shared/authentication.md)
+and [MCP setup](skills/_shared/mcp-servers.md) for the matching path.
+
+AI API use is metered; installation does not promise free credit, latency, or commercial rights.
+For 401, check authentication and scope; for insufficient balance, inspect billing; for a final
+failure, read the error before deciding whether to start another billable generation.
 
 ## Quick Install
 
@@ -223,20 +232,12 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
 
-**Using hosted MCP endpoints** (no local install needed):
-
-```json
-{
-  "mcpServers": {
-    "suno": {
-      "url": "https://suno.mcp.acedata.cloud/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_TOKEN"
-      }
-    }
-  }
-}
-```
+**Hosted MCP with OAuth:** add the bare endpoint from the table in a client that supports
+remote HTTP MCP, DCR, and PKCE, then sign in and authorize. DCR registers the client; it does
+not replace user consent or payment. Claude remote connectors and native VS Code MCP use
+this flow when supported by the installed version/plan. Other clients must follow their own
+configuration documentation. Local stdio and clients without OAuth can use an API Token;
+there is no universal HTTP JSON configuration across these clients.
 
 ## Quick Example
 
