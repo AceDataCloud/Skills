@@ -8,7 +8,7 @@ when_to_use: |
   Post (publishing immediately with caption + privacy) is restricted until
   audit. Use it only for an explicit private-account audit demonstration.
 connections: [tiktok]
-allowed_tools: [Bash]
+allowed_tools: [Bash, request_action_confirmation]
 license: Apache-2.0
 metadata:
   author: acedatacloud
