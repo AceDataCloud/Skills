@@ -10,6 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 MODULE_PATH = Path(__file__).parents[1] / "skills" / "tiktok" / "scripts" / "tiktok.py"
+SKILL_PATH = MODULE_PATH.parents[1] / "SKILL.md"
 spec = importlib.util.spec_from_file_location("tiktok_script", MODULE_PATH)
 tiktok = importlib.util.module_from_spec(spec)
 assert spec.loader
@@ -45,6 +46,12 @@ class TikTokScriptTests(unittest.TestCase):
 
     def tearDown(self):
         self.token_patch.stop()
+
+    def test_skill_keeps_confirmation_tool_after_load(self):
+        skill = SKILL_PATH.read_text(encoding="utf-8")
+        frontmatter = skill.split("---", 2)[1]
+        self.assertIn("allowed_tools: [Bash, request_action_confirmation]", frontmatter)
+        self.assertIn('kind: "tiktok.publish"', skill)
 
     def test_file_upload_initializes_and_puts_one_chunk(self):
         init = Response({"data": {"publish_id": "pub_1", "upload_url": "https://upload.test/one"}, "error": {"code": "ok"}})
