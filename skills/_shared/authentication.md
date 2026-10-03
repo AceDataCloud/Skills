@@ -10,7 +10,7 @@ connectors follow their declared connection requirements.
 
 ## Get Your Token
 
-1. Register at [platform.acedata.cloud](https://platform.acedata.cloud/api/v1/marketing-attribution/entry/skills/?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=api_token)
+1. Register at [platform.acedata.cloud](https://platform.acedata.cloud/?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=api_token)
 2. Choose the service and check its current pricing and your account balance
 3. Go to your service's **Credentials** page and create an API token
 

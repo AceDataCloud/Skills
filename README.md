@@ -85,7 +85,7 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 ## Start with one useful result
 
 Install the `suno-music` skill using the command below, then ask for an instrumental lo-fi track.
-Use [setup and current pricing](https://platform.acedata.cloud/api/v1/marketing-attribution/entry/skills/?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=quick_start) to choose an execution path:
+Use [setup and current pricing](https://platform.acedata.cloud/documents/suno-mcp?utm_source=skills&utm_medium=readme&utm_campaign=opensource_activation&utm_content=quick_start) to choose an execution path:
 
 - **Paired hosted MCP:** add `https://suno.mcp.acedata.cloud/mcp` in a remote OAuth-capable client,
   sign in, review permissions, and authorize. No manually copied API token is needed for MCP calls.
