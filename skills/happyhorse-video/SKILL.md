@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-happyhorse for tool-use.
+compatibility: Direct API scripts require ACEDATACLOUD_API_TOKEN (see _shared/authentication.md). Use an already-authorized paired MCP without asking for a copied token. Pair with mcp-happyhorse for tool-use.
 ---
 
 # Happy Horse Video Generation and Editing
@@ -13,7 +13,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 Use Happy Horse through AceDataCloud for text-to-video, first-frame animation, reference-guided
 generation, and video editing.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
 ## Choose an Action
 
@@ -26,7 +26,7 @@ generation, and video editing.
 
 The 1.1 model is the default where available. Video editing currently has only a 1.0 model.
 
-## Quick Start
+## Direct API Quick Start
 
 Submit text-to-video asynchronously:
 

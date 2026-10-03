@@ -12,9 +12,9 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 Solve Cloudflare Turnstile CAPTCHA challenges through AceDataCloud's captcha API. Submit the site key and target URL to receive a valid `cf-turnstile-response` token.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
-## Quick Start
+## Direct API Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/captcha/token/turnstile \

@@ -12,9 +12,9 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 Generate AI videos through AceDataCloud's Kuaishou Kling API.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+> **Setup:** Prefer an already-authorized paired MCP and use its tools without requesting a copied API token. For direct API scripts, follow [authentication](../_shared/authentication.md); MCP authorization does not inject a token into Bash.
 
-## Quick Start
+## Direct API Quick Start
 
 ```bash
 curl -X POST https://api.acedata.cloud/kling/videos \

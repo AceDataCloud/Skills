@@ -24,15 +24,7 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 
 ## Configuration Example
 
-```json
-{
-  "mcpServers": {
-    "suno": {
-      "url": "https://suno.mcp.acedata.cloud/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_TOKEN"
-      }
-    }
-  }
-}
-```
+For remote OAuth-capable clients, add the endpoint, sign in, review permissions, and authorize.
+No manual API token is required. DCR registers the client; authorization and billing still apply.
+Client version and plan may affect support. Use the client’s own HTTP configuration UI/documentation.
+For local stdio or clients without OAuth, use the API Token instructions in [authentication](authentication.md).
