@@ -214,6 +214,13 @@ def build_parser() -> argparse.ArgumentParser:
     send.add_argument("--idempotency-key", default=None)
     add_write_flags(send)
 
+    share = sub.add_parser("share", help="Share a web page as a native WeChat link card")
+    share.add_argument("url", help="Public HTTP(S) page to open in WeChat")
+    share.add_argument("targets", nargs="+", help="One or more contacts or groups (up to 50)")
+    share.add_argument("--text", default=None, help="Optional message attached to the link card")
+    share.add_argument("--key", default=None, help="Optional task key for safe resubmission")
+    add_write_flags(share)
+
     moments = sub.add_parser("moments")
     moments.add_argument("--limit", type=int, default=30)
     moments.add_argument("--self-only", action="store_true")
@@ -331,6 +338,17 @@ def main() -> None:
         if not gate(args, action="send", preview={"target": args.target, "payload": body}):
             return
         _json(request_task("POST", "/api/messages/send", body=body))
+    elif args.cmd == "share":
+        if len(args.targets) > 50:
+            _die("share accepts at most 50 targets")
+        body = {"url": args.url, "targets": args.targets}
+        if args.text is not None:
+            body["text"] = args.text
+        if args.key is not None:
+            body["key"] = args.key
+        if not gate(args, action="share", preview={"payload": body}):
+            return
+        _json(request_task("POST", "/api/share", body=body))
     elif args.cmd == "moments":
         params = {"limit": clamp(args.limit, MAX_LIMIT["moments"]), "self_only": "true" if args.self_only else "false"}
         data = request("GET", "/api/moments", params=params)
