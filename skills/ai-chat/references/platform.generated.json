@@ -371,7 +371,7 @@
         "endpoint": "https://openai.mcp.acedata.cloud/mcp",
         "package": {
           "ecosystem": "pypi",
-          "name": "mcp-openai",
+          "name": "mcp-openai-acedatacloud",
           "runner": "uvx"
         },
         "transport": "streamable-http"
@@ -489,6 +489,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "945664eca88d16d21159d3739f874c830c046005"
+    "sha": "4eaa39e7af9a873238eae82180cb7069f4514ffd"
   }
 }
