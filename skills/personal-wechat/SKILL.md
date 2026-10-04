@@ -1,11 +1,12 @@
 ---
 name: personal-wechat
-description: Operate the user's personal WeChat account through their self-hosted Wisdom service (BYOC) — check status, list contacts/conversations, read messages, poll for new ones, search contacts, browse Moments, and (after explicit confirmation) send messages with real @-mentions and manage group chats. Check runtime capabilities before attempting Moments writes. Use when the user mentions 个人微信, 我的微信, WeChat personal chat, 微信聊天记录, 微信联系人, 微信群, 朋友圈, reading/summarizing WeChat messages, or sending a WeChat message.
+description: Operate the user's personal WeChat account through their self-hosted Wisdom service (BYOC) — check status, read chats, search contacts, browse Moments, and (after explicit confirmation) send messages, share web links as native cards, or manage group chats. Use for personal WeChat messages, contacts, groups, Moments, or sharing a page to a chat.
 when_to_use: |
   Trigger for the user's personal WeChat account via their own Wisdom server:
   check status/account, list contacts, list conversations, read or summarize a
   chat, poll for new messages, search contacts, browse Moments, send a message
-  (with real @-mentions, quote-replies, or media), publish/delete a Moment, or
+  (with real @-mentions, quote-replies, or media), share a page as a native link
+  card with optional text, publish/delete a Moment, or
   create/invite/remove/rename a group. This acts on the user's real desktop
   WeChat, so every write is gated behind explicit confirmation.
 connections: [personalwechat]
@@ -13,7 +14,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Personal WeChat via Wisdom
@@ -33,7 +34,7 @@ groups) with `202` + a task ID; the helper polls `/api/tasks/{id}` for you and
 prints only the final result.
 
 This is the user's **real personal WeChat account**. Read operations run
-directly. Every write — send, Moment, group change — dry-runs first and only
+directly. Every write — send, share, Moment, group change — dry-runs first and only
 executes after the user explicitly approves that exact payload.
 
 ## CLI
@@ -215,6 +216,27 @@ task instead of sending twice:
 python3 $WX send "Alice" "hi" --idempotency-key daily-2026-08-04 --confirm
 ```
 
+### Share a Web Page
+
+`share` opens a public HTTP(S) page in WeChat's browser and sends its native
+link card to one or more contacts or groups. `--text` adds a message to the
+card. First check `status` for `ready` and `logged_in: true`, then dry-run the
+exact URL, text, and targets before confirmation:
+
+```bash
+python3 $WX share "https://example.com/article" "Alice" "项目群" --text "供参考"
+python3 $WX share "https://example.com/article" "Alice" "项目群" --text "供参考" --key article-20261004 --confirm
+```
+
+The command calls only `POST /api/share` and waits for its task result. Inspect
+each target's `succeeded`, `failed`, or `not_attempted` result and `shared_url`;
+task success alone does not prove the recipient received or read the card. The
+actual URL may change after the page redirects in WeChat's browser. Sharing
+first leaves a URL message in the account's own File Transfer Assistant.
+Use `--key` only to deduplicate while the same Wisdom process retains the task;
+after an uncertain outcome or restart, inspect task and chat history before
+resubmitting to avoid duplicate sends.
+
 ### Moments (朋友圈)
 
 Check status capabilities first. If `moments.write` or `moments.delete` is
@@ -296,6 +318,7 @@ The helper wraps these Wisdom endpoints:
 | `tasks` / `task` | `GET /api/tasks`, `GET /api/tasks/{id}` |
 | `search` | `POST /api/search` |
 | `send` | `POST /api/messages/send` |
+| `share` | `POST /api/share` |
 | `moment-post` / `moment-delete` | `POST /api/moments`, `DELETE /api/moments` |
 | `group-create` / `-invite` / `-remove` / `-rename` | `POST /api/groups`, `/invite`, `/remove`, `/rename` |
 

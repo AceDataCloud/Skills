@@ -109,6 +109,38 @@ def test_send_with_confirm_posts_the_payload() -> None:
     assert calls[0]["body"] == {"target": "Alice", "type": "text", "text": "hi"}
 
 
+def test_share_dry_run_then_posts_only_api_share() -> None:
+    argv = ["share", "https://example.com/article", "Alice", "项目群", "--text", "供参考", "--key", "article-1"]
+    calls, stdout = run(argv)
+    assert calls == []
+    assert stdout[0]["dry_run"] is True
+    assert stdout[0]["payload"] == {
+        "url": "https://example.com/article",
+        "targets": ["Alice", "项目群"],
+        "text": "供参考",
+        "key": "article-1",
+    }
+
+    calls, stdout = run([*argv, "--confirm"], task_result={"results": [{"target": "Alice", "status": "succeeded"}]})
+    assert calls[0]["method"] == "POST"
+    assert calls[0]["path"] == "/api/share"
+    assert calls[0]["body"] == {
+        "url": "https://example.com/article",
+        "targets": ["Alice", "项目群"],
+        "text": "供参考",
+        "key": "article-1",
+    }
+    assert calls[1]["path"] == "/api/tasks/task-1"
+    assert stdout == [{"results": [{"target": "Alice", "status": "succeeded"}]}]
+
+
+def test_share_without_optional_fields_and_target_limit() -> None:
+    calls, _ = run(["share", "https://example.com", "Alice", "--confirm"], task_result={})
+    assert calls[0]["body"] == {"url": "https://example.com", "targets": ["Alice"]}
+    with pytest.raises(SystemExit):
+        run(["share", "https://example.com", *[f"target-{i}" for i in range(51)], "--confirm"])
+
+
 def test_mentions_go_to_the_api_not_into_the_text() -> None:
     """A pasted '@Name' notifies nobody; only the mentions field is a real @-mention."""
     calls, _ = run(
