@@ -1,7 +1,7 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@794aed287ffd48c22e8b4fc66eab4e18af46731d`
+Source: `AceDataCloud/PlatformBackend@e5cb92acd928e710ea9f9b237f3e7f462960098e`
 
 ## Services
 
@@ -14,9 +14,5 @@ Source: `AceDataCloud/PlatformBackend@794aed287ffd48c22e8b4fc66eab4e18af46731d`
 - `POST` `/kling/videos` — Kling Videos Generation API
 - `POST` `/kling/lip-sync` — Kling Lip Sync API
 - `POST` `/kling/talking-photo` — Kling Talking Photo API
-- `POST` `/kling/apparel` — 服装视频复刻
 - `POST` `/kling/goods-studio` — 商品视频
 - `POST` `/kling/video-commerce` — 电商口播
-- `POST` `/kling/virtual-try-on` — 虚拟试衣
-- `POST` `/kling/elements` — Kling Elements
-- `POST` `/kling/voices` — Kling Voices
