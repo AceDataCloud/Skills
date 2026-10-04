@@ -1,0 +1,895 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Search Engine",
+    "version": "1.0.0",
+    "description": "API reference for Search Engine on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/serp/google": {
+      "post": {
+        "summary": "Get Google search results",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Openapi.7753Ed09104646D3Ad80Cd7Ff19676B5.Schema.199C6D9C838B",
+                  "properties": {
+                    "organic": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "news": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "videos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "places": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "maps": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "people_also_ask": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "snippet": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "related_searches": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "query": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "answer_box": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "knowledge_graph": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "cost": {
+                      "type": "object",
+                      "properties": {
+                        "amount": {
+                          "type": "number"
+                        },
+                        "currency": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "amount",
+                        "currency"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": true,
+                  "example": {
+                    "organic": [
+                      {
+                        "title": "x402 protocol documentation",
+                        "link": "https://www.x402.org/",
+                        "snippet": "Documentation and resources for the x402 payment protocol.",
+                        "position": 1
+                      }
+                    ],
+                    "cost": {
+                      "amount": 0.01,
+                      "currency": "credit"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Serp Google Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Serp Google Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Serp Google Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Serp Google Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Serp Google Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Serp Google Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Serp Google Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Serp Google Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Serp Google Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Serp Google Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Serp Google Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Serp Google Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Serp Google Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Serp Google Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Serp Google Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Serp Google Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Serp Google Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Serp Google Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Serp Google Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Serp Google Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Serp Google Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 404"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Serp Google Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Serp Google Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Serp Google Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Serp Google Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Serp Google Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Serp Google Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Serp Google Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "description": "Serp Google Page",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 1
+                  },
+                  "type": {
+                    "enum": [
+                      "search",
+                      "images",
+                      "news",
+                      "maps",
+                      "places",
+                      "videos"
+                    ],
+                    "type": "string",
+                    "default": "search",
+                    "description": "Serp Google Type"
+                  },
+                  "query": {
+                    "type": "string",
+                    "example": "apple inc",
+                    "description": "Serp Google Query",
+                    "minLength": 1,
+                    "maxLength": 2048,
+                    "pattern": ".*\\S.*"
+                  },
+                  "range": {
+                    "type": "string",
+                    "description": "Serp Google Range",
+                    "enum": [
+                      "h",
+                      "d",
+                      "w",
+                      "m",
+                      "y",
+                      "qdr:h",
+                      "qdr:d",
+                      "qdr:w",
+                      "qdr:m",
+                      "qdr:y"
+                    ]
+                  },
+                  "number": {
+                    "type": "integer",
+                    "description": "Serp Google Number",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 10
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "Serp Google Country",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Serp Google Language",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "image_size": {
+                    "type": "string",
+                    "enum": [
+                      "large",
+                      "medium",
+                      "icon",
+                      "2mp",
+                      "4mp",
+                      "6mp",
+                      "8mp",
+                      "10mp",
+                      "12mp",
+                      "15mp",
+                      "20mp",
+                      "40mp",
+                      "70mp"
+                    ],
+                    "description": "Openapi.7753Ed09104646D3Ad80Cd7Ff19676B5.Image Size.0Ce42Eb53724"
+                  }
+                },
+                "additionalProperties": false,
+                "oneOf": [
+                  {
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "images"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "search",
+                          "news",
+                          "maps",
+                          "places",
+                          "videos"
+                        ]
+                      }
+                    },
+                    "not": {
+                      "required": [
+                        "image_size"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Openapi.7753Ed09104646D3Ad80Cd7Ff19676B5.Post.D8Ac2Ddd86Ae",
+        "operationId": "SerpcreateSerpGoogle"
+      }
+    }
+  }
+}

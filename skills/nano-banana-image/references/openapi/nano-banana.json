@@ -1,0 +1,1090 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Nano Banana Image Generation",
+    "version": "1.0.0",
+    "description": "API reference for Nano Banana Image Generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "NanoBananaTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Nanobananataskrequestpayload.40716E538Ae7"
+      },
+      "NanoBananaTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Nanobananataskresultpayload.8Dc195D8666A"
+      },
+      "NanoBananaTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Id.A60Bd59B5961"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Type.4542A64593Da"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Trace Id.F8D537F072C9"
+          },
+          "request": {
+            "$ref": "#/components/schemas/NanoBananaTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/NanoBananaTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Created At.D9F7F7A54C4A"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Started At.596B0Ce887Ad"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Finished At.2A11646Ccd59"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Elapsed.D0303Ab97D5B"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.User Id.98E8Dc463B5B"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Actor User Id.79C828E1303B"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Api Id.7A91Ec323933"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Application Id.62C9676Ff3B3"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Credential Id.6Fb4328Fdef0"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Authorization Id.Affc05F7Edd8"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/nano-banana/images": {
+      "post": {
+        "summary": "Nano Banana Images",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "task_id",
+                    "trace_id",
+                    "data"
+                  ],
+                  "example": {
+                    "success": true,
+                    "task_id": "93f11baf-347b-4bb4-9520-8653cb46d6a3",
+                    "trace_id": "a9063166-26ed-4451-85b5-54e896817c69",
+                    "data": [
+                      {
+                        "prompt": "let this man wear on this T-shirt",
+                        "image_url": "https://cdn.acedata.cloud/v8073y.png"
+                      }
+                    ]
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Nano Banana Images Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Nano Banana Images Response 200 Task Id"
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "Nano Banana Images Response 200 Trace Id"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Nano Banana Images Response 200 Data",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "prompt",
+                          "image_url"
+                        ],
+                        "properties": {
+                          "prompt": {
+                            "type": "string",
+                            "description": "Nano Banana Images Response 200 Data Prompt"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "description": "Nano Banana Images Response 200 Data Image Url"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Nano Banana Images Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Nano Banana Images Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Nano Banana Images Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Nano Banana Images Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Nano Banana Images Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Nano Banana Images Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Nano Banana Images Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Nano Banana Images Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Nano Banana Images Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Nano Banana Images Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Nano Banana Images Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Nano Banana Images Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Nano Banana Images Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Nano Banana Images Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Nano Banana Images Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Nano Banana Images Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 401"
+          },
+          "403": {
+            "description": "Nano Banana Images Response 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error"
+                  ],
+                  "example": {
+                    "success": false,
+                    "error": {
+                      "code": "forbidden",
+                      "message": "The request was blocked by content safety checks."
+                    }
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false,
+                      "description": "Nano Banana Images Response 403 Success"
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "forbidden",
+                          "description": "Nano Banana Images Response 403 Error Code"
+                        },
+                        "message": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 403 Error Message"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Nano Banana Images Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Nano Banana Images Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 404"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "request_too_large",
+                          "message": "Request body is too large."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "request_too_large",
+                              "description": "Nano Banana Images Response 413 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Request body is too large.",
+                              "description": "Nano Banana Images Response 413 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 413 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 413"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Nano Banana Images Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Nano Banana Images Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Nano Banana Images Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Nano Banana Images Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Images Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Images Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Nano Banana Images Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action",
+                  "prompt"
+                ],
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "generate",
+                      "edit"
+                    ],
+                    "type": "string",
+                    "example": "generate",
+                    "description": "Nano Banana Images Action"
+                  },
+                  "model": {
+                    "type": "string",
+                    "enum": [
+                      "nano-banana",
+                      "nano-banana-2-lite",
+                      "nano-banana-2",
+                      "nano-banana-pro",
+                      "nano-banana:official",
+                      "nano-banana-2-lite:official",
+                      "nano-banana-2:official",
+                      "nano-banana-pro:official"
+                    ],
+                    "description": "Nano Banana Images Model"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "a white siamese cat",
+                    "description": "Nano Banana Images Prompt"
+                  },
+                  "image_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Nano Banana Images Image Urls"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4,
+                    "default": 1,
+                    "description": "Nano Banana Images Count"
+                  },
+                  "aspect_ratio": {
+                    "type": "string",
+                    "enum": [
+                      "1:1",
+                      "3:2",
+                      "2:3",
+                      "16:9",
+                      "9:16",
+                      "4:3",
+                      "3:4"
+                    ],
+                    "example": "1:1",
+                    "description": "Nano Banana Images Aspect Ratio"
+                  },
+                  "resolution": {
+                    "type": "string",
+                    "enum": [
+                      "1K",
+                      "2K",
+                      "4K"
+                    ],
+                    "description": "Nano Banana Images Resolution"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Nano Banana Images Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Nano Banana Images Async"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "createNanoBananaImages"
+      }
+    },
+    "/nano-banana/tasks": {
+      "post": {
+        "summary": "Nanobanana Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/NanoBananaTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/NanoBananaTaskRecord"
+                          },
+                          "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Items.C3A8189C907B"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.Count.855624Eb0781"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.72E9188B99Df4E3A85E48E3Dbf389790.2.Ef870121Ec06"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Nano Banana Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Nano Banana Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Nano Banana Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Nano Banana Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Nano Banana Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Nano Banana Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Nano Banana Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Nano Banana Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Nano Banana Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Nano Banana Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Nano Banana Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Nano Banana Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Nano Banana Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Nano Banana Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Nano Banana Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Nano Banana Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Nano Banana Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "queryNanoBananaTasks"
+      }
+    }
+  }
+}

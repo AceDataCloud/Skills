@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_upload.md",
       "id": "91fcbb81-8bc9-4ed4-bdfa-0f296b2fec9d",
       "method": "POST",
       "name": "Producer Upload API",
@@ -9,6 +11,8 @@
       "title": "Producer Upload API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_videos.md",
       "id": "5e06cbdd-ba7d-456d-a211-e3f242adec82",
       "method": "POST",
       "name": "Producer Videos API",
@@ -17,6 +21,8 @@
       "title": "Producer Videos API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_wav.md",
       "id": "e7cad274-9c48-494c-b7e3-fc1556eea827",
       "method": "POST",
       "name": "Producer Wav API",
@@ -25,6 +31,8 @@
       "title": "Producer Wav API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_audios.md",
       "id": "01d96900-9f8c-41d7-814c-95c7a885ba61",
       "method": "POST",
       "name": "Producer Audios Generation API",
@@ -33,6 +41,8 @@
       "title": "Producer Audios Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_tasks.md",
       "id": "e706d672-d7c9-4232-8652-0cf53219e7bf",
       "method": "POST",
       "name": "Producer Tasks API",
@@ -41,6 +51,8 @@
       "title": "Producer Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_producer_lyrics.md",
       "id": "2f636fdb-faa4-4308-8cef-9258dd14fd90",
       "method": "POST",
       "name": "Producer Lyrics Generation API",
@@ -96,6 +108,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

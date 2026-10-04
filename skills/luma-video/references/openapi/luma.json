@@ -1,0 +1,909 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Luma Video Generation",
+    "version": "1.0.0",
+    "description": "API reference for Luma Video Generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "LumaTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Lumataskrequestpayload.Bb1Cc5994B0A"
+      },
+      "LumaTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Lumataskresultpayload.8Fef12C05B02"
+      },
+      "LumaTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Id.6D8D53668C47"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Type.8A1A2Ea639E9"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Trace Id.D4269Edcb885"
+          },
+          "request": {
+            "$ref": "#/components/schemas/LumaTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/LumaTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Created At.82Ad4A805Cc2"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Started At.Be265409C999"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Finished At.81A793Cd609F"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Elapsed.Cdc335F1Cdbc"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.User Id.C5Ae44Eb9Fb9"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Actor User Id.B17Dad70Ef5C"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Api Id.5Fc3475778A2"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Application Id.057A782A8A6D"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Credential Id.D2Ac9C6D2C48"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Authorization Id.67Cc21Ef2F84"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/luma/tasks": {
+      "post": {
+        "summary": "Operate the tasks on the luma.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/LumaTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/LumaTaskRecord"
+                          },
+                          "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Items.74A051D0F247"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.Count.20995B7Dec7F"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.909282Be6F0344Ac8D262E28080C0Dfc.2.A5C04C059845"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Luma Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Luma Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Luma Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Luma Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Luma Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Luma Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Luma Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Luma Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Luma Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Luma Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Luma Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Luma Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Luma Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Luma Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Luma Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "queryLumaTasks"
+      }
+    },
+    "/luma/videos": {
+      "post": {
+        "summary": "Generate videos based on prompt and image frames",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "state": "completed",
+                    "prompt": "Astronauts shuttle from space to volcano",
+                    "success": true,
+                    "task_id": "5636d6ba-957f-475e-a98a-718a07ee89a6",
+                    "video_id": "b4ef4c5e-9680-41c8-a678-0ce2ce6194de",
+                    "video_url": "https://cdn.acedata.cloud/43a57990c0.mp4",
+                    "video_width": 1552,
+                    "video_height": 656,
+                    "thumbnail_url": "https://cdn.acedata.cloud/4hfydw.jpg",
+                    "thumbnail_width": 1552,
+                    "thumbnail_height": 656
+                  },
+                  "properties": {
+                    "state": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 State"
+                    },
+                    "prompt": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 Prompt"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Luma Videos Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 Task Id"
+                    },
+                    "video_id": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 Video Id"
+                    },
+                    "video_url": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 Video Url"
+                    },
+                    "video_width": {
+                      "type": "number",
+                      "description": "Luma Videos Response 200 Video Width"
+                    },
+                    "video_height": {
+                      "type": "number",
+                      "description": "Luma Videos Response 200 Video Height"
+                    },
+                    "thumbnail_url": {
+                      "type": "string",
+                      "description": "Luma Videos Response 200 Thumbnail Url"
+                    },
+                    "thumbnail_width": {
+                      "type": "number",
+                      "description": "Luma Videos Response 200 Thumbnail Width"
+                    },
+                    "thumbnail_height": {
+                      "type": "number",
+                      "description": "Luma Videos Response 200 Thumbnail Height"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Luma Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "The json payload is not valid to request the API"
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Luma Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "prompt is required",
+                              "description": "Luma Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Luma Videos Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Luma Videos Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Luma Videos Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Luma Videos Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 400 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Luma Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Luma Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "forbidden",
+                          "message": "Sorry! Our Al moderators feel your prompt might be against our community standards."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "forbidden",
+                              "description": "Luma Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Sorry! Our Al moderators feel your prompt might be against our community standards.",
+                              "description": "Luma Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 403"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Luma Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Luma Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Luma Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Luma Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 500"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "timeout",
+                          "message": "Timeout to generate the image."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "timeout",
+                              "description": "Luma Videos Response 504 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Timeout to generate the image.",
+                              "description": "Luma Videos Response 504 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Luma Videos Response 504 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Luma Videos Response 504"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Luma Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "loop": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Luma Videos Loop"
+                  },
+                  "action": {
+                    "enum": [
+                      "generate",
+                      "extend"
+                    ],
+                    "type": "string",
+                    "default": "generate",
+                    "description": "Luma Videos Action"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "Astronauts shuttle from space to volcano",
+                    "description": "Luma Videos Prompt"
+                  },
+                  "timeout": {
+                    "type": "number",
+                    "default": 300,
+                    "description": "Luma Videos Timeout"
+                  },
+                  "video_id": {
+                    "type": "string",
+                    "description": "Luma Videos Video Id"
+                  },
+                  "aspect_ratio": {
+                    "type": "string",
+                    "description": "Luma Videos Aspect Ratio"
+                  },
+                  "video_url": {
+                    "type": "string",
+                    "description": "Luma Videos Video Url"
+                  },
+                  "enhancement": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Luma Videos Enhancement"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Luma Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Luma Videos Async"
+                  },
+                  "end_image_url": {
+                    "type": "string",
+                    "example": "https://cdn.acedata.cloud/0iad3k.png",
+                    "description": "Luma Videos End Image Url"
+                  },
+                  "start_image_url": {
+                    "type": "string",
+                    "example": "https://cdn.acedata.cloud/r9vsv9.png",
+                    "description": "Luma Videos Start Image Url"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "createLumaVideos"
+      }
+    }
+  }
+}

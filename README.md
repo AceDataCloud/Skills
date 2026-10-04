@@ -37,7 +37,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [luma-video](skills/luma-video/) | Generate videos with Luma Dream Machine |
-| [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
+| [sora-video](skills/sora-video/) | Retired integration guidance; not currently published |
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
 | [kling-video](skills/kling-video/) | Generate Kling videos, Turbo, multishot, commerce and owned asset references |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |

@@ -10,6 +10,10 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN (see ../_shared/authentication.md
 
 # Seedream Image
 
+<!-- platform-reference:start -->
+Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
+<!-- platform-reference:end -->
+
 Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authorization: Bearer $ACEDATACLOUD_API_TOKEN` and JSON request bodies.
 
 ## Pick the model from the requested capability

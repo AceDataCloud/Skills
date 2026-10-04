@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_veo_videos.md",
       "id": "52a0fa83-3c78-4793-b45a-c1a5c869ae46",
       "method": "POST",
       "name": "Veo Videos Generation API",
@@ -9,6 +11,8 @@
       "title": "Veo Videos Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_veo_tasks.md",
       "id": "437a7558-7c5b-4341-9088-4a54443a78a4",
       "method": "POST",
       "name": "Veo Tasks API",
@@ -64,6 +68,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

@@ -1,0 +1,17 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "945664eca88d16d21159d3739f874c830c046005",
+  "sha256": "5fd4f7cf63b65beee5fe3648b1f98d9087c200bd7fdffe2c8e664eb1b660ab28",
+  "services": [
+    "kling"
+  ],
+  "guides": [
+    "development_kling_goods_studio.md",
+    "development_kling_lip_sync.md",
+    "development_kling_motion.md",
+    "development_kling_talking_photo.md",
+    "development_kling_tasks.md",
+    "development_kling_video_commerce.md",
+    "development_kling_videos.md"
+  ]
+}

@@ -1,0 +1,1436 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ByteDance Seedream Image Generation",
+    "version": "1.0.0",
+    "description": "API reference for ByteDance Seedream Image Generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "SeedreamTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Seedreamtaskrequestpayload.5334Dd369C04"
+      },
+      "SeedreamTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Seedreamtaskresultpayload.B88896Cecfa1"
+      },
+      "SeedreamTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Id.6F925061E43D"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Type.73781F331B53"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Trace Id.055C226Ffc6C"
+          },
+          "request": {
+            "$ref": "#/components/schemas/SeedreamTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/SeedreamTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Created At.24Bf9D7B4B97"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Started At.5700Ea78D20D"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Finished At.6675Efce519E"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Elapsed.Eb412F44B98B"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.User Id.E19D0Bb0F420"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Actor User Id.E5A2D75C2Ddc"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Api Id.87B6Dd5794D8"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Application Id.D2036E3D7C3B"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Credential Id.290D4Dc24C43"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Authorization Id.273Bccc216Ff"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/seedream/images": {
+      "post": {
+        "summary": "Seedream Images",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "93f11baf-347b-4bb4-9520-8653cb46d6a3",
+                    "trace_id": "a9063166-26ed-4451-85b5-54e896817c69",
+                    "data": [
+                      {
+                        "prompt": "a cute cat running",
+                        "image_url": "https://cdn.acedata.cloud/8c5b69a6e0.png"
+                      }
+                    ]
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Seedream Images Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Seedream Images Response 200 Task Id"
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "Seedream Images Response 200 Trace Id"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Seedream Images Response 200 Data",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "prompt": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data Prompt"
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data Image Url"
+                          },
+                          "b64_json": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data B64 Json"
+                          },
+                          "size": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data Size"
+                          },
+                          "output_format": {
+                            "type": "string",
+                            "enum": [
+                              "jpeg",
+                              "png"
+                            ],
+                            "description": "Seedream Images Response 200 Data Output Format"
+                          },
+                          "error": {
+                            "type": "object",
+                            "description": "Seedream Images Response 200 Data Error",
+                            "properties": {
+                              "code": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "z_index": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Seedream Images Response 200 Data Z Index"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data Name"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Seedream Images Response 200 Data Description"
+                          },
+                          "bounding_box": {
+                            "type": "object",
+                            "description": "Seedream Images Response 200 Data Bounding Box",
+                            "properties": {
+                              "absolute": {
+                                "type": "array",
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "items": {
+                                  "type": "integer"
+                                }
+                              },
+                              "normalized": {
+                                "type": "array",
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "items": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 1000
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "usage": {
+                      "type": "object",
+                      "description": "Seedream Images Response 200 Usage",
+                      "properties": {
+                        "generated_images": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "input_images": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "output_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_tokens": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "tool_usage": {
+                          "type": "object",
+                          "properties": {
+                            "web_search": {
+                              "type": "integer",
+                              "minimum": 0
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tools": {
+                      "type": "array",
+                      "description": "Seedream Images Response 200 Tools",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "web_search"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\"type\":\"image_generation.partial_succeeded\",\"data\":[{\"image_url\":\"https://...\",\"size\":\"2048x2048\"}]}\\n"
+              }
+            },
+            "description": "Seedream Images Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedream Images Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Seedream Images Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Seedream Images Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Seedream Images Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Seedream Images Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Seedream Images Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Seedream Images Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Seedream Images Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Seedream Images Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Seedream Images Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Seedream Images Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Seedream Images Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Seedream Images Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Seedream Images Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedream Images Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Seedream Images Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Seedream Images Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Seedream Images Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Seedream Images Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Seedream Images Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 404"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "request_too_large",
+                          "message": "Request body is too large."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "request_too_large",
+                              "description": "Seedream Images Response 413 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Request body is too large.",
+                              "description": "Seedream Images Response 413 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 413 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 413"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Seedream Images Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Seedream Images Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Seedream Images Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Seedream Images Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Images Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Images Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json",
+                "application/x-ndjson"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Seedream Images Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model"
+                ],
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "enum": [
+                      "doubao-seedream-5-0-pro-260628",
+                      "doubao-seedream-5-0-lite-260128",
+                      "doubao-seedream-4-0-250828",
+                      "doubao-seedream-4-5-251128"
+                    ],
+                    "description": "Seedream Images Model"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "a white siamese cat",
+                    "description": "Seedream Images Prompt"
+                  },
+                  "image": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 14
+                      }
+                    ],
+                    "description": "Seedream Images Image"
+                  },
+                  "size": {
+                    "type": "string",
+                    "example": "2K",
+                    "description": "Seedream Images Size",
+                    "pattern": "^(1K|1\\.5K|2K|3K|4K|auto|[0-9]+x[0-9]+)$"
+                  },
+                  "sequential_image_generation": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "disabled"
+                    ],
+                    "description": "Seedream Images Sequential Image Generation"
+                  },
+                  "sequential_image_generation_options": {
+                    "type": "object",
+                    "properties": {
+                      "max_images": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 15,
+                        "description": "Seedream Images Sequential Image Generation Options Max Images"
+                      }
+                    },
+                    "description": "Seedream Images Sequential Image Generation Options"
+                  },
+                  "stream": {
+                    "type": "boolean",
+                    "description": "Seedream Images Stream"
+                  },
+                  "response_format": {
+                    "type": "string",
+                    "description": "Seedream Images Response Format",
+                    "enum": [
+                      "url",
+                      "b64_json"
+                    ]
+                  },
+                  "watermark": {
+                    "type": "boolean",
+                    "description": "Seedream Images Watermark"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "enum": [
+                      "jpeg",
+                      "png"
+                    ],
+                    "description": "Seedream Images Output Format"
+                  },
+                  "tools": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "web_search"
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Seedream Images Tools"
+                  },
+                  "optimize_prompt_options": {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "standard",
+                          "fast"
+                        ],
+                        "description": "Seedream Images Optimize Prompt Options Mode"
+                      }
+                    },
+                    "description": "Seedream Images Optimize Prompt Options"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Seedream Images Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Seedream Images Async"
+                  },
+                  "layer_decomposition": {
+                    "type": "boolean",
+                    "description": "Seedream Images Layer Decomposition"
+                  },
+                  "background": {
+                    "type": "string",
+                    "enum": [
+                      "transparent",
+                      "opaque"
+                    ],
+                    "description": "Seedream Images Background"
+                  }
+                },
+                "allOf": [
+                  {
+                    "oneOf": [
+                      {
+                        "title": "Seedream 5.0 Pro layer decomposition",
+                        "required": [
+                          "image",
+                          "layer_decomposition"
+                        ],
+                        "properties": {
+                          "model": {
+                            "enum": [
+                              "doubao-seedream-5-0-pro-260628"
+                            ]
+                          },
+                          "layer_decomposition": {
+                            "enum": [
+                              true
+                            ]
+                          },
+                          "size": {
+                            "type": "string",
+                            "pattern": "^(auto|1K|1\\.5K|2K)$"
+                          }
+                        },
+                        "not": {
+                          "anyOf": [
+                            {
+                              "required": [
+                                "sequential_image_generation"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "stream"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "tools"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "background"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Seedream 5.0 Pro image generation and editing",
+                        "required": [
+                          "prompt"
+                        ],
+                        "properties": {
+                          "model": {
+                            "enum": [
+                              "doubao-seedream-5-0-pro-260628"
+                            ]
+                          },
+                          "size": {
+                            "type": "string",
+                            "pattern": "^(1K|1\\.5K|2K|[0-9]+x[0-9]+)$"
+                          },
+                          "image": {
+                            "oneOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 10
+                              }
+                            ]
+                          }
+                        },
+                        "not": {
+                          "anyOf": [
+                            {
+                              "required": [
+                                "sequential_image_generation"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "stream"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "tools"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Seedream 5.0 Lite",
+                        "required": [
+                          "prompt"
+                        ],
+                        "properties": {
+                          "model": {
+                            "enum": [
+                              "doubao-seedream-5-0-lite-260128"
+                            ]
+                          },
+                          "size": {
+                            "type": "string",
+                            "pattern": "^(2K|3K|4K|[0-9]+x[0-9]+)$"
+                          },
+                          "optimize_prompt_options": {
+                            "type": "object",
+                            "properties": {
+                              "mode": {
+                                "enum": [
+                                  "standard"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "not": {
+                          "anyOf": [
+                            {
+                              "required": [
+                                "layer_decomposition"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "background"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Seedream 4.x",
+                        "required": [
+                          "prompt"
+                        ],
+                        "properties": {
+                          "model": {
+                            "enum": [
+                              "doubao-seedream-4-0-250828",
+                              "doubao-seedream-4-5-251128"
+                            ]
+                          }
+                        },
+                        "not": {
+                          "anyOf": [
+                            {
+                              "required": [
+                                "layer_decomposition"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "background"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "output_format"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "tools"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "example": {
+                "model": "doubao-seedream-5-0-lite-260128",
+                "prompt": "a white siamese cat",
+                "size": "2K"
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "createSeedreamImages"
+      }
+    },
+    "/seedream/tasks": {
+      "post": {
+        "summary": "Seedream Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SeedreamTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SeedreamTaskRecord"
+                          },
+                          "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Items.2C7A49F19Abd"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.Count.78536B37239D"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.A89Ab5C9F95642B5A867Abb3D00D2F75.2.1Cf6De1B7969"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Seedream Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedream Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Seedream Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Seedream Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Seedream Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Seedream Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Seedream Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Seedream Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Seedream Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Seedream Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Seedream Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedream Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedream Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Seedream Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Seedream Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Seedream Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Seedream Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "querySeedreamTasks"
+      }
+    }
+  }
+}

@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_nanobanana_images.md",
       "id": "9d8a117e-31ca-4322-a0fd-1771296ec610",
       "method": "POST",
       "name": "Nano Banana Generation API",
@@ -10,6 +12,8 @@
       "title": "Nano Banana Images API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_nanobanana_tasks.md",
       "id": "72e9188b-99df-4e3a-85e4-8e3dbf389790",
       "method": "POST",
       "name": "Nano Banana Tasks API",
@@ -65,6 +69,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

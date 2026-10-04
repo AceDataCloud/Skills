@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_flux_images.md",
       "id": "deefc5d7-7f22-43e9-929e-f2b6afee60b7",
       "method": "POST",
       "name": "Flux Images Generation API",
@@ -9,6 +11,8 @@
       "title": "Flux Images Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_flux_tasks.md",
       "id": "4f36fc31-5a95-42ac-abfc-34670c40238c",
       "method": "POST",
       "name": "Flux Tasks API",
@@ -17,6 +21,8 @@
       "title": "Flux Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_flux_generate_video.md",
       "id": "79bc5b19-5ae8-5931-8b9e-643165c02c64",
       "method": "POST",
       "name": "Flux Videos API",
@@ -72,6 +78,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "e2b494bd25f27a785124fc59b27c7014c934cb12"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

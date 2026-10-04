@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_motion.md",
       "id": "2c26cb33-46ac-4bd7-82f9-0ec63e688172",
       "method": "POST",
       "name": "Kling Motion Generation API",
@@ -9,6 +11,8 @@
       "title": "Kling Motion Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_tasks.md",
       "id": "f11ce529-5303-4913-8b9a-7146aa5d7016",
       "method": "POST",
       "name": "Kling Tasks API",
@@ -17,6 +21,8 @@
       "title": "Kling Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_videos.md",
       "id": "29187cb2-1acb-43b8-baf5-3f3f709292eb",
       "method": "POST",
       "name": "Kling Videos Generation API",
@@ -25,6 +31,8 @@
       "title": "Kling Videos Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_lip_sync.md",
       "id": "a8b06673-3565-4989-b6be-bd638f72eadb",
       "method": "POST",
       "name": "Kling Lip Sync API",
@@ -33,6 +41,8 @@
       "title": "Kling Lip Sync API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_talking_photo.md",
       "id": "1daf8204-7306-4c54-8014-a00c5996cbfe",
       "method": "POST",
       "name": "Kling Talking Photo API",
@@ -41,14 +51,8 @@
       "title": "Kling Talking Photo API"
     },
     {
-      "id": "25004129-94a5-5084-ace2-48cfbf14aa95",
-      "method": "POST",
-      "name": "Kling AI Apparel Replicator",
-      "path": "/kling/apparel",
-      "stage": "Beta",
-      "title": "服装视频复刻"
-    },
-    {
+      "documented": true,
+      "guide_source": "docs/development_kling_goods_studio.md",
       "id": "f60184f9-3174-5d54-8b97-5b2e6d3753a5",
       "method": "POST",
       "name": "Kling Goods Studio",
@@ -57,38 +61,14 @@
       "title": "商品视频"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kling_video_commerce.md",
       "id": "ad648b8c-ae07-5852-a9c5-c0fcda578908",
       "method": "POST",
       "name": "Kling Video Commerce",
       "path": "/kling/video-commerce",
       "stage": "Beta",
       "title": "电商口播"
-    },
-    {
-      "id": "2a6262b2-aa0a-57b1-91ae-636b1a8322e6",
-      "method": "POST",
-      "name": "Kling Virtual Try-On",
-      "path": "/kling/virtual-try-on",
-      "stage": "Beta",
-      "title": "虚拟试衣"
-    },
-    {
-      "id": "bfc78ffd-b786-5325-8803-311d70fe8ddf",
-      "introduction": "$t(kling_elements_introduction)",
-      "method": "POST",
-      "name": "Kling Elements",
-      "path": "/kling/elements",
-      "rank": 90,
-      "title": "Kling Elements"
-    },
-    {
-      "id": "94be993f-e70a-5499-a458-bb4853ccc292",
-      "introduction": "$t(kling_voices_introduction)",
-      "method": "POST",
-      "name": "Kling Voices",
-      "path": "/kling/voices",
-      "rank": 90,
-      "title": "Kling Voices"
     }
   ],
   "companions": [
@@ -138,6 +118,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "794aed287ffd48c22e8b4fc66eab4e18af46731d"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

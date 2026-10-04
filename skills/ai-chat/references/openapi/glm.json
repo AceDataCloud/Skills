@@ -1,0 +1,1203 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GLM",
+    "version": "1.0.0",
+    "description": "API reference for GLM on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/glm/chat/completions": {
+      "post": {
+        "summary": "Glm Chat Completions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "choices",
+                    "created",
+                    "id",
+                    "model",
+                    "object"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Glm Chat Completions Response 200 Id"
+                    },
+                    "model": {
+                      "type": "string",
+                      "description": "Glm Chat Completions Response 200 Model"
+                    },
+                    "object": {
+                      "enum": [
+                        "chat.completion"
+                      ],
+                      "type": "string",
+                      "description": "Glm Chat Completions Response 200 Object"
+                    },
+                    "choices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "finish_reason",
+                          "index",
+                          "message"
+                        ],
+                        "properties": {
+                          "index": {
+                            "type": "number",
+                            "description": "Glm Chat Completions Response 200 Choices Index"
+                          },
+                          "message": {
+                            "type": "object",
+                            "required": [
+                              "role"
+                            ],
+                            "properties": {
+                              "role": {
+                                "enum": [
+                                  "assistant"
+                                ],
+                                "type": "string",
+                                "description": "Glm Chat Completions Response 200 Choices Message Role"
+                              },
+                              "content": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "Glm Chat Completions Response 200 Choices Message"
+                              },
+                              "tool_calls": {
+                                "type": "array",
+                                "nullable": true,
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "id",
+                                    "type",
+                                    "function"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Glm Chat Completions Response 200 Choices Message Tool Calls Id"
+                                    },
+                                    "type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "function"
+                                      ],
+                                      "description": "Glm Chat Completions Response 200 Choices Message Tool Calls Type"
+                                    },
+                                    "function": {
+                                      "type": "object",
+                                      "required": [
+                                        "name",
+                                        "arguments"
+                                      ],
+                                      "properties": {
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Glm Chat Completions Response 200 Choices Message Tool Calls Function Name"
+                                        },
+                                        "arguments": {
+                                          "type": "string",
+                                          "description": "Glm Chat Completions Response 200 Choices Message Tool Calls Function Arguments"
+                                        }
+                                      },
+                                      "description": "Glm Chat Completions Response 200 Choices Message Tool Calls Function"
+                                    }
+                                  }
+                                },
+                                "description": "Glm Chat Completions Response 200 Choices Message Tool Calls"
+                              },
+                              "refusal": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "Glm Chat Completions Response 200 Choices Message Refusal"
+                              },
+                              "audio": {
+                                "type": "object",
+                                "nullable": true,
+                                "required": [
+                                  "id",
+                                  "data",
+                                  "expires_at"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Glm Chat Completions Response 200 Choices Message Audio Id"
+                                  },
+                                  "expires_at": {
+                                    "type": "integer",
+                                    "description": "Glm Chat Completions Response 200 Choices Message Audio Expires At"
+                                  },
+                                  "data": {
+                                    "type": "string",
+                                    "description": "Glm Chat Completions Response 200 Choices Message Audio Data"
+                                  },
+                                  "transcript": {
+                                    "type": "string",
+                                    "description": "Glm Chat Completions Response 200 Choices Message Audio Transcript"
+                                  }
+                                },
+                                "description": "Glm Chat Completions Response 200 Choices Message Audio"
+                              }
+                            },
+                            "description": "Glm Chat Completions Response 200 Choices Message 2"
+                          },
+                          "finish_reason": {
+                            "enum": [
+                              "stop",
+                              "length",
+                              "tool_calls",
+                              "content_filter",
+                              "function_call"
+                            ],
+                            "type": "string",
+                            "description": "Glm Chat Completions Response 200 Choices Finish Reason"
+                          },
+                          "logprobs": {
+                            "type": "object",
+                            "nullable": true,
+                            "description": "Glm Chat Completions Response 200 Choices Logprobs",
+                            "additionalProperties": true
+                          }
+                        }
+                      },
+                      "description": "Glm Chat Completions Response 200 Choices"
+                    },
+                    "created": {
+                      "type": "number",
+                      "description": "Glm Chat Completions Response 200 Created"
+                    },
+                    "system_fingerprint": {
+                      "type": "string",
+                      "description": "Glm Chat Completions Response 200 System Fingerprint"
+                    },
+                    "usage": {
+                      "type": "object",
+                      "required": [
+                        "prompt_tokens",
+                        "completion_tokens",
+                        "total_tokens"
+                      ],
+                      "properties": {
+                        "prompt_tokens": {
+                          "type": "integer",
+                          "description": "Glm Chat Completions Response 200 Usage Prompt Tokens"
+                        },
+                        "completion_tokens": {
+                          "type": "integer",
+                          "description": "Glm Chat Completions Response 200 Usage Completion Tokens"
+                        },
+                        "total_tokens": {
+                          "type": "integer",
+                          "description": "Glm Chat Completions Response 200 Usage Total Tokens"
+                        },
+                        "prompt_tokens_details": {
+                          "type": "object",
+                          "properties": {
+                            "cached_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Prompt Tokens Details Cached Tokens"
+                            },
+                            "audio_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Prompt Tokens Details Audio Tokens"
+                            }
+                          },
+                          "description": "Glm Chat Completions Response 200 Usage Prompt Tokens Details"
+                        },
+                        "completion_tokens_details": {
+                          "type": "object",
+                          "properties": {
+                            "reasoning_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Completion Tokens Details Reasoning Tokens"
+                            },
+                            "audio_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Completion Tokens Details Audio Tokens"
+                            },
+                            "accepted_prediction_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Completion Tokens Details Accepted Prediction Tokens"
+                            },
+                            "rejected_prediction_tokens": {
+                              "type": "integer",
+                              "description": "Glm Chat Completions Response 200 Usage Completion Tokens Details Rejected Prediction Tokens"
+                            }
+                          },
+                          "description": "Glm Chat Completions Response 200 Usage Completion Tokens Details"
+                        }
+                      },
+                      "description": "Glm Chat Completions Response 200 Usage"
+                    }
+                  },
+                  "description": "Glm Chat Completions Response 200"
+                }
+              }
+            },
+            "description": "Glm Chat Completions Response 200 2"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Glm Chat Completions Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Glm Chat Completions Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Glm Chat Completions Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Glm Chat Completions Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Glm Chat Completions Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Glm Chat Completions Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Glm Chat Completions Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Glm Chat Completions Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Glm Chat Completions Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Glm Chat Completions Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Glm Chat Completions Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Glm Chat Completions Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Glm Chat Completions Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Glm Chat Completions Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Glm Chat Completions Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model",
+                  "messages"
+                ],
+                "properties": {
+                  "n": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 128,
+                    "minimum": 1,
+                    "nullable": true,
+                    "description": "Glm Chat Completions N"
+                  },
+                  "model": {
+                    "enum": [
+                      "glm-5.3",
+                      "glm-5.2",
+                      "glm-5",
+                      "glm-5-turbo",
+                      "glm-5.1",
+                      "glm-4.7",
+                      "glm-4.6",
+                      "glm-3-turbo"
+                    ],
+                    "type": "string",
+                    "example": "glm-4.7",
+                    "description": "Glm Chat Completions Model"
+                  },
+                  "stream": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Stream"
+                  },
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "role"
+                      ],
+                      "properties": {
+                        "role": {
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system",
+                            "developer",
+                            "tool"
+                          ],
+                          "type": "string",
+                          "description": "Glm Chat Completions Messages Role"
+                        },
+                        "content": {
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "description": "Glm Chat Completions Messages"
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "text"
+                                        ],
+                                        "description": "Glm Chat Completions Messages Type"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "description": "Glm Chat Completions Messages Text"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "image_url"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "image_url"
+                                        ],
+                                        "description": "Glm Chat Completions Messages Type 2"
+                                      },
+                                      "image_url": {
+                                        "type": "object",
+                                        "required": [
+                                          "url"
+                                        ],
+                                        "properties": {
+                                          "url": {
+                                            "type": "string",
+                                            "description": "Glm Chat Completions Messages Image Url Url"
+                                          },
+                                          "detail": {
+                                            "type": "string",
+                                            "enum": [
+                                              "auto",
+                                              "low",
+                                              "high"
+                                            ],
+                                            "default": "auto",
+                                            "description": "Glm Chat Completions Messages Image Url Detail"
+                                          }
+                                        },
+                                        "description": "Glm Chat Completions Messages Image Url"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "file"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "file"
+                                        ],
+                                        "description": "Glm Chat Completions Messages Type 3"
+                                      },
+                                      "file": {
+                                        "type": "object",
+                                        "properties": {
+                                          "filename": {
+                                            "type": "string",
+                                            "description": "Glm Chat Completions Messages File Filename"
+                                          },
+                                          "file_data": {
+                                            "type": "string",
+                                            "description": "Glm Chat Completions Messages File File Data"
+                                          },
+                                          "file_id": {
+                                            "type": "string",
+                                            "description": "Glm Chat Completions Messages File File Id"
+                                          }
+                                        },
+                                        "description": "Glm Chat Completions Messages File"
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "minItems": 1,
+                              "description": "Glm Chat Completions Messages 2"
+                            }
+                          ],
+                          "description": "Glm Chat Completions Messages 3"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Messages Name"
+                        },
+                        "tool_calls": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type",
+                              "function"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Glm Chat Completions Messages Tool Calls Id"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "function"
+                                ],
+                                "description": "Glm Chat Completions Messages Tool Calls Type"
+                              },
+                              "function": {
+                                "type": "object",
+                                "required": [
+                                  "name",
+                                  "arguments"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Glm Chat Completions Messages Tool Calls Function Name"
+                                  },
+                                  "arguments": {
+                                    "type": "string",
+                                    "description": "Glm Chat Completions Messages Tool Calls Function Arguments"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "description": "Glm Chat Completions Messages Tool Calls"
+                        },
+                        "refusal": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Glm Chat Completions Messages Refusal"
+                        },
+                        "tool_call_id": {
+                          "type": "string",
+                          "description": "Glm Chat Completions Messages Tool Call Id"
+                        }
+                      }
+                    },
+                    "minItems": 1,
+                    "description": "Glm Chat Completions Messages 4"
+                  },
+                  "max_tokens": {
+                    "type": "number",
+                    "nullable": true,
+                    "description": "Glm Chat Completions Max Tokens"
+                  },
+                  "temperature": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 2,
+                    "minimum": 0,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Temperature"
+                  },
+                  "response_format": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "text"
+                            ],
+                            "type": "string",
+                            "description": "Glm Chat Completions Response Format Type"
+                          }
+                        },
+                        "description": "Glm Chat Completions Response Format"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "json_object"
+                            ],
+                            "type": "string",
+                            "description": "Glm Chat Completions Response Format Type 2"
+                          }
+                        },
+                        "description": "Glm Chat Completions Response Format 2"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ],
+                        "properties": {
+                          "type": {
+                            "enum": [
+                              "json_schema"
+                            ],
+                            "type": "string",
+                            "description": "Glm Chat Completions Response Format Type 3"
+                          },
+                          "json_schema": {
+                            "type": "object",
+                            "required": [
+                              "name"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Glm Chat Completions Response Format Json Schema Name"
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Glm Chat Completions Response Format Json Schema Description"
+                              },
+                              "schema": {
+                                "type": "object",
+                                "description": "Glm Chat Completions Response Format Json Schema",
+                                "additionalProperties": true
+                              },
+                              "strict": {
+                                "type": "boolean",
+                                "default": false,
+                                "nullable": true,
+                                "description": "Glm Chat Completions Response Format Json Schema Strict"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Glm Chat Completions Response Format 3"
+                      }
+                    ],
+                    "description": "Glm Chat Completions Response Format 4"
+                  },
+                  "top_p": {
+                    "type": "number",
+                    "default": 1,
+                    "example": 1,
+                    "maximum": 1,
+                    "minimum": 0,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Top P"
+                  },
+                  "frequency_penalty": {
+                    "type": "number",
+                    "default": 0,
+                    "example": 0,
+                    "maximum": 2,
+                    "minimum": -2,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Frequency Penalty"
+                  },
+                  "presence_penalty": {
+                    "type": "number",
+                    "default": 0,
+                    "example": 0,
+                    "maximum": 2,
+                    "minimum": -2,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Presence Penalty"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Glm Chat Completions Seed"
+                  },
+                  "stop": {
+                    "nullable": true,
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "description": "Glm Chat Completions Stop"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4,
+                        "description": "Glm Chat Completions Stop 2"
+                      }
+                    ],
+                    "description": "Glm Chat Completions Stop 3"
+                  },
+                  "max_completion_tokens": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Glm Chat Completions Max Completion Tokens"
+                  },
+                  "logprobs": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Logprobs"
+                  },
+                  "top_logprobs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Top Logprobs"
+                  },
+                  "stream_options": {
+                    "type": "object",
+                    "nullable": true,
+                    "properties": {
+                      "include_usage": {
+                        "type": "boolean",
+                        "description": "Glm Chat Completions Stream Options Include Usage"
+                      }
+                    },
+                    "description": "Glm Chat Completions Stream Options"
+                  },
+                  "parallel_tool_calls": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Glm Chat Completions Parallel Tool Calls"
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "Glm Chat Completions User"
+                  },
+                  "reasoning_effort": {
+                    "type": "string",
+                    "enum": [
+                      "minimal",
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "default": "medium",
+                    "nullable": true,
+                    "description": "Glm Chat Completions Reasoning Effort"
+                  },
+                  "service_tier": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "default",
+                      "flex",
+                      "scale",
+                      "priority"
+                    ],
+                    "default": "auto",
+                    "nullable": true,
+                    "description": "Glm Chat Completions Service Tier"
+                  },
+                  "store": {
+                    "type": "boolean",
+                    "default": false,
+                    "nullable": true,
+                    "description": "Glm Chat Completions Store"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "nullable": true,
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Glm Chat Completions Metadata"
+                  },
+                  "logit_bias": {
+                    "type": "object",
+                    "nullable": true,
+                    "additionalProperties": {
+                      "type": "integer"
+                    },
+                    "description": "Glm Chat Completions Logit Bias"
+                  },
+                  "modalities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "text",
+                        "audio"
+                      ]
+                    },
+                    "nullable": true,
+                    "description": "Glm Chat Completions Modalities"
+                  },
+                  "audio": {
+                    "type": "object",
+                    "nullable": true,
+                    "required": [
+                      "voice",
+                      "format"
+                    ],
+                    "properties": {
+                      "voice": {
+                        "type": "string",
+                        "enum": [
+                          "alloy",
+                          "ash",
+                          "ballad",
+                          "coral",
+                          "echo",
+                          "fable",
+                          "nova",
+                          "onyx",
+                          "sage",
+                          "shimmer"
+                        ],
+                        "description": "Glm Chat Completions Audio Voice"
+                      },
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "wav",
+                          "aac",
+                          "mp3",
+                          "flac",
+                          "opus",
+                          "pcm16"
+                        ],
+                        "description": "Glm Chat Completions Audio Format"
+                      }
+                    },
+                    "description": "Glm Chat Completions Audio"
+                  },
+                  "prediction": {
+                    "type": "object",
+                    "nullable": true,
+                    "required": [
+                      "type",
+                      "content"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "content"
+                        ],
+                        "description": "Glm Chat Completions Prediction Type"
+                      },
+                      "content": {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "Glm Chat Completions Prediction"
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "type",
+                                "text"
+                              ],
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "text"
+                                  ]
+                                },
+                                "text": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "description": "Glm Chat Completions Prediction 2"
+                      }
+                    },
+                    "description": "Glm Chat Completions Prediction 3"
+                  },
+                  "web_search_options": {
+                    "type": "object",
+                    "properties": {
+                      "search_context_size": {
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ],
+                        "default": "medium",
+                        "description": "Glm Chat Completions Web Search Options Search Context Size"
+                      },
+                      "user_location": {
+                        "type": "object",
+                        "nullable": true,
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "approximate"
+                            ]
+                          },
+                          "approximate": {
+                            "type": "object",
+                            "properties": {
+                              "country": {
+                                "type": "string"
+                              },
+                              "region": {
+                                "type": "string"
+                              },
+                              "city": {
+                                "type": "string"
+                              },
+                              "timezone": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Glm Chat Completions Web Search Options User Location"
+                      }
+                    },
+                    "description": "Glm Chat Completions Web Search Options"
+                  },
+                  "tools": {
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "function"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "function"
+                          ],
+                          "description": "Glm Chat Completions Tools Type"
+                        },
+                        "function": {
+                          "type": "object",
+                          "required": [
+                            "name"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Glm Chat Completions Tools Function Name"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Glm Chat Completions Tools Function Description"
+                            },
+                            "parameters": {
+                              "type": "object",
+                              "description": "Glm Chat Completions Tools Function",
+                              "additionalProperties": true
+                            }
+                          },
+                          "description": "Glm Chat Completions Tools Function 2"
+                        }
+                      }
+                    },
+                    "description": "Glm Chat Completions Tools"
+                  },
+                  "tool_choice": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "auto",
+                          "required"
+                        ],
+                        "description": "Glm Chat Completions Tool Choice"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "function"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "function"
+                            ],
+                            "description": "Glm Chat Completions Tool Choice Type"
+                          },
+                          "function": {
+                            "type": "object",
+                            "required": [
+                              "name"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Glm Chat Completions Tool Choice Function Name"
+                              }
+                            }
+                          }
+                        },
+                        "description": "Glm Chat Completions Tool Choice 2"
+                      }
+                    ],
+                    "description": "Glm Chat Completions Tool Choice 3"
+                  }
+                }
+              },
+              "example": {
+                "n": 1,
+                "model": "glm-4.7",
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Hello!"
+                  }
+                ],
+                "temperature": 1,
+                "top_p": 1,
+                "frequency_penalty": 0,
+                "presence_penalty": 0
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "GlmcreateGlmChatCompletions"
+      }
+    }
+  }
+}

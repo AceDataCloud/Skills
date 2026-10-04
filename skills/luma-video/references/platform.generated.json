@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_luma_tasks.md",
       "id": "909282be-6f03-44ac-8d26-2e28080c0dfc",
       "method": "POST",
       "name": "Luma Tasks API",
@@ -9,6 +11,8 @@
       "title": "Luma Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_luma_videos.md",
       "id": "94fc9028-5a9f-4875-aae4-38463bd30ac5",
       "method": "POST",
       "name": "Luma Videos Generation API",
@@ -64,6 +68,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

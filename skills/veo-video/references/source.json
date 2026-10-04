@@ -1,0 +1,12 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "bdae773e02f3f51d2896eef497b569748577b753",
+  "sha256": "b7069e6b460be764ec75d424185eaae22c9dc0821914d7ff01ca3716bba9fb16",
+  "services": [
+    "veo"
+  ],
+  "guides": [
+    "development_veo_tasks.md",
+    "development_veo_videos.md"
+  ]
+}

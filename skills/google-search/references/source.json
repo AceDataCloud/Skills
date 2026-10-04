@@ -1,0 +1,11 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "945664eca88d16d21159d3739f874c830c046005",
+  "sha256": "a7a664cfdf3f117e1dac864e274ab7e0d2efaa93d8c038ba6eb7b54d02cbc2af",
+  "services": [
+    "serp"
+  ],
+  "guides": [
+    "development_serp_google.md"
+  ]
+}

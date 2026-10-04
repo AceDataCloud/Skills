@@ -1,0 +1,37 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "bdae773e02f3f51d2896eef497b569748577b753",
+  "sha256": "ac6dd7098fc5b0208a137934b3c45d556a58f8828258bc09f067c4f048467b9f",
+  "services": [
+    "gemini",
+    "glm",
+    "openai",
+    "claude",
+    "grok",
+    "kimi",
+    "aichat"
+  ],
+  "guides": [
+    "development_aichat2_conversations.md",
+    "development_aichat_conversations.md",
+    "development_claude_messages.md",
+    "development_claude_messages_count_tokens.md",
+    "development_gemini_chat_completions.md",
+    "development_gemini_generate_content.md",
+    "development_gemini_tasks.md",
+    "development_gemini_videos.md",
+    "development_glm_chat_completions.md",
+    "development_grok_chat_completions.md",
+    "development_grok_tasks.md",
+    "development_grok_videos.md",
+    "development_kimi_chat_completions.md",
+    "development_openai_audio_speech.md",
+    "development_openai_audio_transcriptions.md",
+    "development_openai_chat_completions.md",
+    "development_openai_embeddings.md",
+    "development_openai_images_edits.md",
+    "development_openai_images_generations.md",
+    "development_openai_responses.md",
+    "development_openai_tasks.md"
+  ]
+}

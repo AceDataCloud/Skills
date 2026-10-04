@@ -1,0 +1,586 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Maestro AI Video Studio",
+    "version": "1.0.0",
+    "description": "API reference for Maestro AI Video Studio on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "GatewayError": {
+        "type": "object",
+        "required": [
+          "error",
+          "trace_id"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Code.310E38D5A61D"
+              },
+              "message": {
+                "type": "string",
+                "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Message.529Fdc2D584D"
+              }
+            }
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Trace Id.3F20205A3Aa1"
+          }
+        }
+      },
+      "DetailError": {
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Detail.0048F8Dc3Ba0"
+          }
+        }
+      },
+      "MaestroTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Maestrotaskrequestpayload.D2E1E8D423D8"
+      },
+      "MaestroTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Maestrotaskresultpayload.8E52Bc418991"
+      },
+      "MaestroTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Id.D4Effd96C97D"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Type.4B8A7874E60A"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Trace Id.7323A169549F"
+          },
+          "request": {
+            "$ref": "#/components/schemas/MaestroTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/MaestroTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Created At.E72Ebc239E22"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Started At.Fbdc27C135Ee"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Finished At.57A3240Efa08"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Elapsed.8Fe17354Fbd7"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.User Id.73408317F366"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Actor User Id.Bba1Fd6B457C"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Api Id.9Ff8C9155D45"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Application Id.5E7Be9265Bea"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Credential Id.4D904Ed5B1A1"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Authorization Id.732Ad35696Ca"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/maestro/videos": {
+      "post": {
+        "summary": "Maestro Videos",
+        "description": "Maestro is an agent-native video producer: describe the video you want in `prompt` (optionally attaching reference images/videos/audio via `file_urls`) and a headless creative director plans, generates the assets (images, voiceover, music, clips), composes and renders a finished, captioned video. This is an async job — it returns a `task_id` immediately; poll `POST /maestro/tasks` for the result, or supply `callback_url`. Use `action: remix` / `edit` / `extend` with `ref_task_id` to iterate on a previous video.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Natural-language brief describing the video to produce (the topic, what to show, tone, audience). The agent decides the script, visuals, voiceover and edit.",
+                    "example": "用 20 秒讲清楚什么是向量数据库,适合零基础观众,结尾给一句记忆点"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "generate",
+                      "remix",
+                      "edit",
+                      "extend"
+                    ],
+                    "default": "generate",
+                    "description": "Production action. generate creates a new video; remix/edit/extend require ref_task_id."
+                  },
+                  "ref_task_id": {
+                    "type": "string",
+                    "description": "Required when `action` is remix / edit / extend: the task_id of the previous video to start from."
+                  },
+                  "file_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Optional reference media (image / video / audio URLs) the agent can use — e.g. a product shot or logo to feature, footage to caption.",
+                    "maxItems": 20
+                  },
+                  "langs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "default": [
+                      "zh-cn"
+                    ],
+                    "description": "Output languages, up to 4. The first is primary; each additional delivered language is billed +6 credits.",
+                    "maxItems": 4
+                  },
+                  "aspect": {
+                    "type": "string",
+                    "enum": [
+                      "9:16",
+                      "16:9",
+                      "1:1"
+                    ],
+                    "default": "9:16",
+                    "description": "Required output aspect ratio. All videos render at 1080p/30fps."
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "default": 30,
+                    "minimum": 5,
+                    "maximum": 300,
+                    "description": "Target video length in seconds, from 5 to 300. Successful jobs are billed by actual delivered duration, never above the requested duration."
+                  },
+                  "scenario": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "narrated",
+                      "captions",
+                      "avatar",
+                      "drama"
+                    ],
+                    "default": "auto",
+                    "description": "Production route: auto, narrated, captions, avatar, or drama. captions requires source video in file_urls; avatar requires a portrait. avatar bills at 1.15× and drama at 1.35×."
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "cinematic",
+                      "glass",
+                      "luxury",
+                      "swiss",
+                      "modern",
+                      "editorial",
+                      "warm",
+                      "vibrant",
+                      "neon",
+                      "mono",
+                      "pastel",
+                      "bold",
+                      "industrial",
+                      "futuristic",
+                      "retro"
+                    ],
+                    "default": "auto",
+                    "description": "Optional visual-style preset — expressed through typography, palette, motion, image treatment and pacing. Orthogonal to `scenario` (it does NOT change routing). `auto` (default) lets the director pick; every other value adopts a real named look: `cinematic` = dark film-noir (black + blood-red, Oswald); `glass` = Apple / iOS-26 frosted liquid glass; `luxury` = timeless near-black + indigo, huge whitespace; `swiss` = precise grid + electric blue + oversized numerals; `modern` = clean light SaaS; `editorial` = cream magazine + serif; `warm` = intimate cream + amber; `vibrant` = festive folk colour; `neon` = electric neon glow; `mono` = grayscale, type-led; `pastel` = soft candy pastels; `bold` = huge poster type; `industrial` = raw glitch + rust; `futuristic` = particle glow. A freeform string is also accepted as a soft hint."
+                  },
+                  "voice": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "warm-female",
+                      "bright-female",
+                      "anchor-female",
+                      "clean-female",
+                      "calm-male",
+                      "deep-male",
+                      "documentary-male",
+                      "energetic-male",
+                      "storyteller-male"
+                    ],
+                    "default": "auto",
+                    "description": "Optional narration voice — the **timbre** of the voiceover, independent of language. `auto` (default) lets the director pick a fitting voice. Every preset is cross-lingual: the same voice speaks whatever language(s) you set in `langs`, so choose purely by character — `warm-female`, `bright-female`, `anchor-female`, `clean-female`, `calm-male`, `deep-male`, `documentary-male`, `energetic-male`, `storyteller-male`. Advanced: a raw 32-character Fish `reference_id` is also accepted. For `drama` / `avatar` this sets the primary / narrator timbre; distinct characters may still get their own."
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Optional. Fired with the result when the task reaches a terminal state (succeeded / failed)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Job created; poll POST /maestro/tasks with the task_id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Use this with POST /maestro/tasks."
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "task_id",
+                    "trace_id"
+                  ],
+                  "example": {
+                    "success": true,
+                    "task_id": "35c6159f-f94e-4b39-82b8-a3d77009bc1d",
+                    "trace_id": "trace_7f8c2b1a"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (missing prompt or invalid fields).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailError"
+                },
+                "example": {
+                  "detail": "missing field: prompt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (missing or invalid token).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "code": "invalid_token",
+                    "message": "The token is invalid."
+                  },
+                  "trace_id": "trace_7f8c2b1a"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (insufficient balance, restricted access, or private option).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GatewayError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DetailError"
+                    }
+                  ]
+                },
+                "example": {
+                  "error": {
+                    "code": "used_up",
+                    "message": "The available balance is insufficient for this request."
+                  },
+                  "trace_id": "trace_7f8c2b1a"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "code": "too_many_requests",
+                    "message": "Too many requests. Try again later."
+                  },
+                  "trace_id": "trace_7f8c2b1a"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "code": "api_error",
+                    "message": "The service is temporarily unavailable."
+                  },
+                  "trace_id": "trace_7f8c2b1a"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "createMaestroVideos"
+      }
+    },
+    "/maestro/tasks": {
+      "post": {
+        "summary": "Maestro Tasks",
+        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Post.B9875022B927",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "title": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Request.Single.Title",
+                    "type": "object",
+                    "required": [
+                      "id"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Id.854824Aec23D"
+                      },
+                      "action": {
+                        "type": "string",
+                        "enum": [
+                          "retrieve"
+                        ],
+                        "default": "retrieve",
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Action.Single"
+                      }
+                    },
+                    "example": {
+                      "action": "retrieve",
+                      "id": "task-id"
+                    }
+                  },
+                  {
+                    "title": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Request.Batch.Title",
+                    "type": "object",
+                    "required": [
+                      "action"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "enum": [
+                          "retrieve_batch"
+                        ],
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Action.Batch"
+                      },
+                      "limit": {
+                        "type": "integer",
+                        "default": 20,
+                        "minimum": 1,
+                        "maximum": 100,
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Limit.Batch"
+                      },
+                      "created_at_min": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Created At Min.Batch"
+                      },
+                      "created_at_max": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Created At Max.Batch"
+                      }
+                    },
+                    "example": {
+                      "action": "retrieve_batch",
+                      "limit": 20
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.200.C026Ceed87D4",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/MaestroTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MaestroTaskRecord"
+                          },
+                          "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Items.5F4984Ed2295"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.Count.530A37B46C33"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.2.5919228B6B13"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.401.5C4A3740Cf88",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "error": {
+                    "code": "invalid_token",
+                    "message": "The token is invalid."
+                  },
+                  "trace_id": "trace_7f8c2b1a"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Openapi.553A0038Eef74E7987C79D4E7321Ca9B.404.C6865Cf3Fd4A",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailError"
+                },
+                "example": {
+                  "detail": "task not found"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "queryMaestroTasks"
+      }
+    }
+  }
+}

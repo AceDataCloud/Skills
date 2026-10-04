@@ -1,0 +1,791 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HappyHorse Video",
+    "version": "1.0.0",
+    "description": "API reference for HappyHorse Video on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "HappyhorseTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Happyhorsetaskrequestpayload.C71Ef108691F"
+      },
+      "HappyhorseTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Happyhorsetaskresultpayload.34102628A912"
+      },
+      "HappyhorseTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Id.C1848F578D59"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Type.6Ae88A040627"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Trace Id.53Cb87B09C66"
+          },
+          "request": {
+            "$ref": "#/components/schemas/HappyhorseTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/HappyhorseTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Created At.De4F80Edf4Cb"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Started At.335Cb54356Cf"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Finished At.5250A4E12245"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Elapsed.9C4B81Bb2E4B"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.User Id.Ccfc2E4F340D"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Actor User Id.8C6Fe4519Af4"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Api Id.1F6A309B5Ef1"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Application Id.27756B2B02C4"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Credential Id.F9C712C41492"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Authorization Id.1800Cb356A32"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/happyhorse/videos": {
+      "post": {
+        "summary": "Happyhorse Videos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "27837f92-d1c1-4db4-ad9a-4e6e81d9f6c1",
+                    "trace_id": "6071ab5e-2f37-46f0-9e07-f1e378112e69",
+                    "data": [
+                      {
+                        "id": "9650580f-6d9e-4bc1-823a-29011790c5cb",
+                        "video_url": "https://cdn.acedata.cloud/assets/examples/happyhorse/27837f92-d1c1-4db4-ad9a-4e6e81d9f6c1-2c108ce23554.mp4",
+                        "state": "succeeded",
+                        "duration": 5,
+                        "resolution": "720P",
+                        "ratio": null
+                      }
+                    ]
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Happyhorse Videos Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Happyhorse Videos Response 200 Task Id"
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "Happyhorse Videos Response 200 Trace Id"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Happyhorse Videos Response 200 Data",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Happyhorse Videos Response 200 Data Id"
+                          },
+                          "video_url": {
+                            "type": "string",
+                            "description": "Happyhorse Videos Response 200 Data Video Url"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "succeeded",
+                              "error"
+                            ],
+                            "description": "Happyhorse Videos Response 200 Data State"
+                          },
+                          "duration": {
+                            "type": "number",
+                            "description": "Happyhorse Videos Response 200 Data Duration"
+                          },
+                          "resolution": {
+                            "type": "string",
+                            "description": "Happyhorse Videos Response 200 Data Resolution"
+                          },
+                          "ratio": {
+                            "type": "string",
+                            "description": "Happyhorse Videos Response 200 Data Ratio",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "prompt is required for text-to-video."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Happyhorse Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "prompt is required for text-to-video.",
+                              "description": "Happyhorse Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Videos Response 400 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Happyhorse Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Happyhorse Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Videos Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Happyhorse Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Happyhorse Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 403"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "Too many requests, please try again later."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Happyhorse Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Too many requests, please try again later.",
+                              "description": "Happyhorse Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Happyhorse Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Happyhorse Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Videos Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json",
+                "application/x-ndjson"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Happyhorse Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "generate",
+                      "image_to_video",
+                      "reference_to_video",
+                      "video_edit"
+                    ],
+                    "type": "string",
+                    "default": "generate",
+                    "example": "generate",
+                    "description": "Happyhorse Videos Action"
+                  },
+                  "model": {
+                    "enum": [
+                      "happyhorse-1.0-t2v",
+                      "happyhorse-1.1-t2v",
+                      "happyhorse-1.0-i2v",
+                      "happyhorse-1.1-i2v",
+                      "happyhorse-1.0-r2v",
+                      "happyhorse-1.1-r2v",
+                      "happyhorse-1.0-video-edit"
+                    ],
+                    "type": "string",
+                    "default": "happyhorse-1.1-t2v",
+                    "example": "happyhorse-1.1-t2v",
+                    "description": "Happyhorse Videos Model"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "A cinematic white horse lifts its head, the mane moves gently in the sunrise wind, slow camera push in, warm film lighting",
+                    "description": "Happyhorse Videos Prompt"
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "example": "https://cdn.acedata.cloud/b1c82e4937.png",
+                    "description": "Happyhorse Videos Image Url"
+                  },
+                  "image_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Happyhorse Videos Image Urls"
+                  },
+                  "video_url": {
+                    "type": "string",
+                    "example": "https://cdn.acedata.cloud/assets/examples/happyhorse/27837f92-d1c1-4db4-ad9a-4e6e81d9f6c1-2c108ce23554.mp4",
+                    "description": "Happyhorse Videos Video Url"
+                  },
+                  "resolution": {
+                    "enum": [
+                      "720P",
+                      "1080P"
+                    ],
+                    "type": "string",
+                    "default": "1080P",
+                    "example": "720P",
+                    "description": "Happyhorse Videos Resolution"
+                  },
+                  "ratio": {
+                    "enum": [
+                      "16:9",
+                      "9:16",
+                      "1:1",
+                      "4:3",
+                      "3:4"
+                    ],
+                    "type": "string",
+                    "default": "16:9",
+                    "example": "16:9",
+                    "description": "Happyhorse Videos Ratio"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "default": 5,
+                    "minimum": 3,
+                    "maximum": 15,
+                    "example": 5,
+                    "description": "Happyhorse Videos Duration"
+                  },
+                  "watermark": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Happyhorse Videos Watermark"
+                  },
+                  "audio_setting": {
+                    "enum": [
+                      "auto",
+                      "origin"
+                    ],
+                    "type": "string",
+                    "default": "auto",
+                    "description": "Happyhorse Videos Audio Setting"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647,
+                    "description": "Happyhorse Videos Seed"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Happyhorse Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Happyhorse Videos Async"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "createHappyhorseVideos"
+      }
+    },
+    "/happyhorse/tasks": {
+      "post": {
+        "summary": "Happyhorse Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/HappyhorseTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/HappyhorseTaskRecord"
+                          },
+                          "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Items.9117F6E78Adc"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.Count.C57C0De18D5B"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.4Fedc9B245D74E8F8Ce48F00Ae31C78A.2.E254A1A01A8D"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Happyhorse Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Happyhorse Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Happyhorse Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Tasks Response 400 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Happyhorse Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Happyhorse Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Tasks Response 401"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Happyhorse Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Happyhorse Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Happyhorse Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Happyhorse Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Happyhorse Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Happyhorse Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Happyhorse Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Happyhorse Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "queryHappyhorseTasks"
+      }
+    }
+  }
+}

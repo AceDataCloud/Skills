@@ -1,0 +1,11 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "bdae773e02f3f51d2896eef497b569748577b753",
+  "sha256": "b80790605e11869e75cdee2a3dcc84c5f94bd8f376ccf2295e97f9ff9aebb454",
+  "services": [
+    "shorturl"
+  ],
+  "guides": [
+    "development_short_url.md"
+  ]
+}

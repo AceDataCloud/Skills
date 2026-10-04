@@ -37,6 +37,21 @@ class SyncFromPlatformBackendTests(unittest.TestCase):
             assert sync.generate(bundle, skills, check=True) == []
     
 
+    def test_source_only_change_does_not_create_reference_churn(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            bundle = root / "bundle"
+            skills = root / "skills"
+            (skills / "suno-music").mkdir(parents=True)
+            (skills / "suno-music/SKILL.md").write_text("# Suno\n")
+            manifest = {"source_sha": "a" * 40, "services": ["suno"]}
+            write_json(bundle / "manifest.json", manifest)
+            write_json(bundle / "services/suno.json", {"service": {"alias": "suno"}, "targets": {"skill": "suno-music"}})
+            sync.generate(bundle, skills)
+            manifest["source_sha"] = "b" * 40
+            write_json(bundle / "manifest.json", manifest)
+            self.assertEqual(sync.generate(bundle, skills), [])
+
     def test_missing_skill_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)

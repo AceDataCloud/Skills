@@ -1,0 +1,1353 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ByteDance Seedance Video Generation",
+    "version": "1.0.0",
+    "description": "API reference for ByteDance Seedance Video Generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "SeedanceTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Seedancetaskrequestpayload.3E45520B5Ff5"
+      },
+      "SeedanceTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Seedancetaskresultpayload.D8929461045C"
+      },
+      "SeedanceTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Id.4B42086Dc976"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Type.A5A8899C403B"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Trace Id.54F7Bfcfb6Ea"
+          },
+          "request": {
+            "$ref": "#/components/schemas/SeedanceTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/SeedanceTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Created At.2035269D7979"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Started At.237970Cc396A"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Finished At.46250C7C9842"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Elapsed.7F36954B436F"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.User Id.8Ab03E52596A"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Actor User Id.F11B44869E66"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Api Id.D4B067C81Edd"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Application Id.903Bd9Cbc409"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Credential Id.Bd15Fcc44D7C"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Authorization Id.C988C842C54E"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/seedance/videos": {
+      "post": {
+        "summary": "Seedance Videos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "93f11baf-347b-4bb4-9520-8653cb46d6a3",
+                    "trace_id": "a9063166-26ed-4451-85b5-54e896817c69",
+                    "data": {
+                      "id": "cgt-2025******-***",
+                      "model": "doubao-seedance-1-0-pro-250528",
+                      "status": "succeeded",
+                      "content": {
+                        "video_url": "https://cdn.acedata.cloud/assets/examples/gemini/04a043bd-6b23-4b4e-945c-ce48158c3eee-3a89912507c7.mp4"
+                      },
+                      "seed": 10,
+                      "resolution": "720p",
+                      "ratio": "16:9",
+                      "duration": 5,
+                      "framespersecond": 24,
+                      "execution_expires_after": 172800,
+                      "usage": {
+                        "completion_tokens": 108900,
+                        "total_tokens": 108900
+                      },
+                      "created_at": 1743414619,
+                      "updated_at": 1743414673
+                    }
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Seedance Videos Response 200 Success"
+                    },
+                    "task_id": {
+                      "type": "string",
+                      "description": "Seedance Videos Response 200 Task Id"
+                    },
+                    "trace_id": {
+                      "type": "string",
+                      "description": "Seedance Videos Response 200 Trace Id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Seedance Videos Response 200 Data",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Seedance Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedance Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Seedance Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Seedance Videos Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Seedance Videos Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Seedance Videos Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Seedance Videos Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Seedance Videos Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Seedance Videos Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Seedance Videos Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Seedance Videos Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Seedance Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Seedance Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Seedance Videos Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Seedance Videos Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedance Videos Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Seedance Videos Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Seedance Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Seedance Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Seedance Videos Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Seedance Videos Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 404"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "request_too_large",
+                          "message": "Request body is too large."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "request_too_large",
+                              "description": "Seedance Videos Response 413 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Request body is too large.",
+                              "description": "Seedance Videos Response 413 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 413 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 413"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Seedance Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Seedance Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Seedance Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Seedance Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Videos Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Seedance Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model",
+                  "content"
+                ],
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "enum": [
+                      "doubao-seedance-1-0-pro-250528",
+                      "doubao-seedance-1-0-pro-fast-251015",
+                      "doubao-seedance-1-5-pro-251215",
+                      "doubao-seedance-1-0-lite-t2v-250428",
+                      "doubao-seedance-1-0-lite-i2v-250428",
+                      "doubao-seedance-2-0-260128",
+                      "doubao-seedance-2-0-fast-260128",
+                      "doubao-seedance-2-0-mini-260615",
+                      "doubao-seedance-2-5-260628"
+                    ],
+                    "example": "doubao-seedance-1-0-pro-250528",
+                    "description": "Seedance Videos Model"
+                  },
+                  "content": {
+                    "type": "array",
+                    "description": "Seedance Videos",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "text"
+                              ],
+                              "description": "Seedance Videos Type"
+                            },
+                            "text": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "example": "A kitten yawning at the camera. --rs 720p --rt 16:9 --dur 5 --fps 24 --wm true --seed 11 --cf false",
+                              "description": "Seedance Videos Text"
+                            }
+                          },
+                          "additionalProperties": false,
+                          "example": {
+                            "type": "text",
+                            "text": "A kitten yawning at the camera. --rs 720p --rt 16:9 --dur 5 --fps 24 --wm true --seed 11 --cf false"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "image_url"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "image_url"
+                              ],
+                              "description": "Seedance Videos Type 2"
+                            },
+                            "image_url": {
+                              "type": "object",
+                              "required": [
+                                "url"
+                              ],
+                              "properties": {
+                                "url": {
+                                  "type": "string",
+                                  "example": "https://cdn.acedata.cloud/v8073y.png",
+                                  "description": "Seedance Videos Image Url Url"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "description": "Seedance Videos Image Url"
+                            },
+                            "role": {
+                              "type": "string",
+                              "enum": [
+                                "first_frame",
+                                "last_frame",
+                                "reference_image"
+                              ],
+                              "description": "Seedance Videos Role"
+                            }
+                          },
+                          "additionalProperties": false,
+                          "example": {
+                            "type": "image_url",
+                            "role": "first_frame",
+                            "image_url": {
+                              "url": "https://cdn.acedata.cloud/v8073y.png"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "audio_url",
+                            "role"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "audio_url"
+                              ],
+                              "description": "Seedance Videos Type 3"
+                            },
+                            "audio_url": {
+                              "type": "object",
+                              "required": [
+                                "url"
+                              ],
+                              "properties": {
+                                "url": {
+                                  "type": "string",
+                                  "example": "https://cdn.acedata.cloud/suno_demo.mp3",
+                                  "description": "Seedance Videos Audio Url Url"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "description": "Seedance Videos Audio Url"
+                            },
+                            "role": {
+                              "type": "string",
+                              "enum": [
+                                "reference_audio"
+                              ],
+                              "description": "Seedance Videos Audio Role"
+                            }
+                          },
+                          "additionalProperties": false,
+                          "example": {
+                            "type": "audio_url",
+                            "role": "reference_audio",
+                            "audio_url": {
+                              "url": "https://cdn.acedata.cloud/suno_demo.mp3"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "video_url",
+                            "role"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "video_url"
+                              ],
+                              "description": "Seedance Videos Type 4"
+                            },
+                            "video_url": {
+                              "type": "object",
+                              "required": [
+                                "url"
+                              ],
+                              "properties": {
+                                "url": {
+                                  "type": "string",
+                                  "example": "https://cdn.acedata.cloud/43a57990c0.mp4",
+                                  "description": "Seedance Videos Video Url Url"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "description": "Seedance Videos Video Url"
+                            },
+                            "role": {
+                              "type": "string",
+                              "enum": [
+                                "reference_video"
+                              ],
+                              "description": "Seedance Videos Video Role"
+                            }
+                          },
+                          "additionalProperties": false,
+                          "example": {
+                            "type": "video_url",
+                            "role": "reference_video",
+                            "video_url": {
+                              "url": "https://cdn.acedata.cloud/43a57990c0.mp4"
+                            }
+                          }
+                        }
+                      ],
+                      "discriminator": {
+                        "propertyName": "type"
+                      }
+                    }
+                  },
+                  "resolution": {
+                    "type": "string",
+                    "enum": [
+                      "480p",
+                      "720p",
+                      "1080p",
+                      "4k"
+                    ],
+                    "description": "Seedance Videos Resolution"
+                  },
+                  "ratio": {
+                    "type": "string",
+                    "enum": [
+                      "16:9",
+                      "4:3",
+                      "1:1",
+                      "3:4",
+                      "9:16",
+                      "21:9",
+                      "adaptive"
+                    ],
+                    "default": "16:9",
+                    "description": "Seedance Videos Ratio"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 30,
+                    "description": "Seedance Videos Duration"
+                  },
+                  "frames": {
+                    "type": "integer",
+                    "minimum": 29,
+                    "maximum": 289,
+                    "description": "Seedance Videos Frames"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 4294967295,
+                    "description": "Seedance Videos Seed"
+                  },
+                  "camerafixed": {
+                    "type": "boolean",
+                    "description": "Seedance Videos Camerafixed"
+                  },
+                  "watermark": {
+                    "type": "boolean",
+                    "description": "Seedance Videos Watermark"
+                  },
+                  "generate_audio": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Seedance Videos Generate Audio"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Seedance Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Seedance Videos Async"
+                  },
+                  "return_last_frame": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Seedance Videos Return Last Frame"
+                  },
+                  "execution_expires_after": {
+                    "type": "integer",
+                    "minimum": 3600,
+                    "maximum": 259200,
+                    "default": 172800,
+                    "description": "Seedance Videos Execution Expires After"
+                  },
+                  "omni_reference_task_type": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "reference",
+                      "edit",
+                      "extend"
+                    ],
+                    "description": "Seedance Videos Omni Reference Task Type"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "enum": [
+                      "mp4",
+                      "mov"
+                    ],
+                    "description": "Seedance Videos Output Format"
+                  },
+                  "tools": {
+                    "type": "array",
+                    "maxItems": 1,
+                    "description": "Seedance Videos Tools",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "web_search"
+                          ],
+                          "description": "Seedance Videos Tools Type"
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 50,
+                          "default": 10,
+                          "description": "Seedance Videos Tools Limit"
+                        },
+                        "max_keyword": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 50,
+                          "description": "Seedance Videos Tools Max Keyword"
+                        },
+                        "sources": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "toutiao",
+                              "douyin",
+                              "moji",
+                              "search_engine"
+                            ]
+                          },
+                          "description": "Seedance Videos Tools Sources"
+                        }
+                      }
+                    }
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9,
+                    "default": 0,
+                    "description": "Seedance Videos Priority"
+                  },
+                  "safety_identifier": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "description": "Seedance Videos Safety Identifier"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "createSeedanceVideos"
+      }
+    },
+    "/seedance/tasks": {
+      "post": {
+        "summary": "Seedance Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SeedanceTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SeedanceTaskRecord"
+                          },
+                          "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Items.E52Ea1Fe25Da"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.Count.178C535D8892"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.C09D6A1B3Cca4F7Cadd38C14Be60Da3C.2.578D80A9C1A0"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Seedance Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Seedance Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Seedance Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Seedance Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Seedance Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Seedance Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Seedance Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Seedance Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Seedance Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Seedance Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Seedance Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Seedance Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Seedance Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Seedance Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Seedance Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Seedance Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Seedance Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "querySeedanceTasks"
+      }
+    }
+  }
+}

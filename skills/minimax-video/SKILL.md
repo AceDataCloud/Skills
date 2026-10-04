@@ -10,6 +10,10 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authenticati
 
 # MiniMax H3 Video Generation
 
+<!-- platform-reference:start -->
+Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
+<!-- platform-reference:end -->
+
 Generate 4–15 second videos through `POST https://api.acedata.cloud/minimax/videos`. Use the V2 multimodal `content` array to supply the prompt and optional reference media.
 
 > **Setup:** See [authentication](../_shared/authentication.md). The HTTP API waits for the final result by default. Agents and MCP clients should send `"async": true`, save the returned `task_id`, then use [async task polling](../_shared/async-tasks.md) with `POST /minimax/tasks`. MiniMax MCP generation tools expose `async` and default it to `true`.

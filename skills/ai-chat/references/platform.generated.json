@@ -1,6 +1,27 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_aichat2_conversations.md",
+      "id": "3769e83e-88f8-4e2c-8f38-6bf20391b094",
+      "method": "POST",
+      "name": "AI Chat V2 API",
+      "path": "/aichat2/conversations",
+      "stage": "Alpha",
+      "title": "$t(api_title_aichat2_conversations)"
+    },
+    {
+      "documented": true,
+      "guide_source": "docs/development_aichat_conversations.md",
+      "id": "1d58971c-e3cd-4713-a3ce-854a731adb14",
+      "method": "POST",
+      "name": "AI Chat API",
+      "path": "/aichat/conversations",
+      "stage": "Production",
+      "title": "AI Chat API"
+    },
+    {
+      "documented": true,
       "id": "6b2b437b-b6d5-466c-8750-b16650072593",
       "method": "POST",
       "name": "Claude Chat Completion API",
@@ -10,6 +31,8 @@
       "title": "Claude Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_claude_messages.md",
       "id": "a43a98fc-f833-4cfb-8596-8066faad2c42",
       "method": "POST",
       "name": "Claude Messages API",
@@ -19,6 +42,8 @@
       "title": "Claude Messages API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_claude_messages_count_tokens.md",
       "id": "01011450-70f7-430f-a8a3-97b0903b0a24",
       "method": "POST",
       "name": "Claude Messages Count Tokens API",
@@ -28,6 +53,8 @@
       "title": "Claude Messages Count Tokens API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_gemini_chat_completions.md",
       "id": "94b49b55-2ea8-4d46-a93c-eb308e1a52d5",
       "method": "POST",
       "name": "Gemini Chat Completion API",
@@ -37,6 +64,8 @@
       "title": "Gemini Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_gemini_generate_content.md",
       "id": "7a632630-eb9f-4776-b11c-8cc86ae250d7",
       "method": "POST",
       "name": "Gemini Generate Content API",
@@ -46,6 +75,8 @@
       "title": "Gemini Generate Content API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_gemini_videos.md",
       "id": "d9d2fd18-5b1e-4218-b572-a75cf46f5451",
       "method": "POST",
       "name": "Gemini Videos API",
@@ -59,6 +90,8 @@
       "title": "Gemini Videos API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_gemini_tasks.md",
       "id": "e6bd925d-0c49-47be-a5c5-d087604a8e75",
       "method": "POST",
       "name": "Gemini Tasks API",
@@ -72,6 +105,8 @@
       "title": "Gemini Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_glm_chat_completions.md",
       "id": "f0392e69-ad58-40b9-b28b-e1feee258603",
       "method": "POST",
       "name": "GLM Chat Completion API",
@@ -81,6 +116,8 @@
       "title": "GLM Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_grok_chat_completions.md",
       "id": "aff80c74-b190-445b-9124-6422ed763c50",
       "method": "POST",
       "name": "Grok Chat Completion API",
@@ -90,6 +127,8 @@
       "title": "Grok Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_grok_videos.md",
       "id": "c1c460c7-adc7-42c2-b7b0-d4bdfaa66222",
       "method": "POST",
       "name": "Grok Videos Generation API",
@@ -103,6 +142,8 @@
       "title": "Grok Videos Generation API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_grok_tasks.md",
       "id": "e517b391-fdc6-4a30-a05f-eb88cb4b0a63",
       "method": "POST",
       "name": "Grok Tasks API",
@@ -116,6 +157,8 @@
       "title": "Grok Tasks API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_kimi_chat_completions.md",
       "id": "5c4649ee-22c6-44ea-84d6-6ecc3674f998",
       "method": "POST",
       "name": "Kimi Chat Completion API",
@@ -125,6 +168,8 @@
       "title": "Kimi Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_chat_completions.md",
       "id": "c9969b66-effb-4753-b504-a82c4d16f83f",
       "method": "POST",
       "name": "OpenAI Chat Completion API",
@@ -134,6 +179,8 @@
       "title": "OpenAI Chat Completion API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_embeddings.md",
       "id": "a0840c8a-2b9a-4407-8aaf-0057f0e1f65c",
       "method": "POST",
       "name": "OpenAI Embeddings API",
@@ -143,6 +190,8 @@
       "title": "OpenAI Embeddings API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_images_generations.md",
       "id": "8f01fe72-8a3e-4872-8d8d-330cde179b3a",
       "method": "POST",
       "name": "OpenAI Images Generations API",
@@ -152,15 +201,8 @@
       "title": "OpenAI Images Generations API"
     },
     {
-      "id": "df57157e-2a4f-43f6-870b-fd3c530827e6",
-      "method": "GET",
-      "name": "OpenAI Models API",
-      "path": "/openai/models",
-      "path2": "/v1/models",
-      "stage": "Production",
-      "title": "OpenAI Models API"
-    },
-    {
+      "documented": true,
+      "guide_source": "docs/development_openai_responses.md",
       "id": "ed972a38-ecef-4fcb-af33-750de42d25dc",
       "method": "POST",
       "name": "OpenAI Responses API",
@@ -170,6 +212,8 @@
       "title": "OpenAI Responses API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_images_edits.md",
       "id": "fb74083e-bb68-48d5-8ba6-b5a224400cd3",
       "method": "POST",
       "name": "OpenAI Images Edits API",
@@ -179,6 +223,8 @@
       "title": "OpenAI Images Edits API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_audio_speech.md",
       "id": "078d0146-f820-4617-b98e-47ba15a93d60",
       "name": "OpenAI Audio Speech API",
       "path": "/v1/audio/speech",
@@ -194,6 +240,8 @@
       "title": "OpenAI Audio Speech API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_openai_audio_transcriptions.md",
       "id": "60f037ff-7d2f-4ea4-ae42-feba542c8cb2",
       "name": "OpenAI Audio Transcriptions API",
       "path": "/v1/audio/transcriptions",
@@ -208,20 +256,8 @@
       "title": "OpenAI Audio Transcriptions API"
     },
     {
-      "id": "a5292a2e-d6a7-4215-a56c-e470ee2028db",
-      "name": "OpenAI Realtime API",
-      "path": "/v1/realtime",
-      "path2": "/openai/realtime",
-      "stage": "Alpha",
-      "tags": [
-        "openai",
-        "realtime",
-        "voice",
-        "audio"
-      ],
-      "title": "OpenAI Realtime API"
-    },
-    {
+      "documented": true,
+      "guide_source": "docs/development_openai_tasks.md",
       "id": "8ff29e12-b814-4484-ab50-d39773a7a563",
       "method": "POST",
       "name": "OpenAI Tasks API",
@@ -370,12 +406,9 @@
     "claude-sonnet-5",
     "claude-sonnet-5-5",
     "gemini-2.5-flash",
-    "gemini-2.5-flash-image",
     "gemini-2.5-flash-lite",
     "gemini-2.5-pro",
     "gemini-3-flash-preview",
-    "gemini-3-pro-image",
-    "gemini-3.1-flash-image",
     "gemini-3.1-flash-lite",
     "gemini-3.1-pro-preview",
     "gemini-3.5-flash",
@@ -384,7 +417,6 @@
     "gemini-3.7-flash",
     "gemini-3.8-flash",
     "glm-3-turbo",
-    "glm-4.5",
     "glm-4.6",
     "glm-4.7",
     "glm-5",
@@ -405,7 +437,6 @@
     "gpt-4o-mini:free",
     "gpt-4o:free",
     "gpt-5",
-    "gpt-5-all",
     "gpt-5-mini",
     "gpt-5-nano",
     "gpt-5-pro",
@@ -429,11 +460,6 @@
     "gpt-6.1-sol",
     "gpt-image-1",
     "gpt-oss:free",
-    "gpt-realtime",
-    "gpt-realtime-2",
-    "gpt-realtime-2.1",
-    "gpt-realtime-2.1-mini",
-    "gpt-realtime-mini",
     "grok-3",
     "grok-4",
     "grok-4.5",
@@ -453,6 +479,7 @@
   ],
   "schema_version": 1,
   "services": [
+    "aichat",
     "claude",
     "gemini",
     "glm",
@@ -462,6 +489,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "a773f0a81148b6fc3f574c8bd45d2279836751ff"
+    "sha": "945664eca88d16d21159d3739f874c830c046005"
   }
 }

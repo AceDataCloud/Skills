@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_wan_tasks.md",
       "id": "25e349c9-a490-4ae5-9a96-e5952d2dbcf7",
       "method": "POST",
       "name": "Wan Task Retrieval API",
@@ -9,6 +11,8 @@
       "title": "Wan Task Retrieval API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_wan_videos.md",
       "id": "6a4ecdbf-b219-4505-8277-5ec4b1ac14f8",
       "method": "POST",
       "name": "Wan Video Generation API",
@@ -64,6 +68,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

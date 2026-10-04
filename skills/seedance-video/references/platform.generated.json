@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_seedance_videos.md",
       "id": "0083b874-4da6-40df-87e3-835b1300c1e8",
       "method": "POST",
       "name": "ByteDance Seedance Videos API",
@@ -9,6 +11,8 @@
       "title": "ByteDance Seedance Videos API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_seedance_tasks.md",
       "id": "c09d6a1b-3cca-4f7c-add3-8c14be60da3c",
       "method": "POST",
       "name": "ByteDance Seedance Tasks API",
@@ -64,6 +68,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

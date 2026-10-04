@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_fish_tts.md",
       "id": "77adcb84-d59f-5ef9-b8a0-8b35eb42a71d",
       "method": "POST",
       "name": "Fish TTS API",
@@ -14,6 +16,8 @@
       "title": "Fish TTS API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_fish_model.md",
       "id": "82dcabe9-b1a3-541f-80f1-decb183b920c",
       "method": "POST",
       "name": "Fish Model Create API",
@@ -27,6 +31,8 @@
       "title": "Fish Model Create API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_fish_model_query.md",
       "id": "0a2c983b-e20f-5926-a45f-07b61373617d",
       "method": "GET",
       "name": "Fish Model Query API",
@@ -40,6 +46,8 @@
       "title": "Fish Model Query API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_fish_model_get.md",
       "id": "70f84537-7c48-57d3-9a21-b2a4f55e8f31",
       "method": "GET",
       "name": "Fish Model Get API",
@@ -53,6 +61,8 @@
       "title": "Fish Model Get API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_fish_tasks.md",
       "id": "fc541fac-a941-47fd-b6f7-48d6cb9da523",
       "method": "POST",
       "name": "Fish Tasks API",
@@ -108,6 +118,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "bfcfed76a3f2617332dade2f631ee146610a3948"
   }
 }

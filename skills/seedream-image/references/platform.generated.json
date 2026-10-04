@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_seedream_images.md",
       "id": "86ad30f3-0bc8-4b9b-b019-b9fa5b05672e",
       "method": "POST",
       "name": "ByteDance Seedream Images API",
@@ -9,6 +11,8 @@
       "title": "ByteDance Seedream Images API"
     },
     {
+      "documented": true,
+      "guide_source": "docs/development_seedream_tasks.md",
       "id": "a89ab5c9-f956-42b5-a867-abb3d00d2f75",
       "method": "POST",
       "name": "ByteDance Seedream Tasks API",
@@ -64,6 +68,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }

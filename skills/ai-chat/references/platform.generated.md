@@ -1,10 +1,11 @@
 <!-- Generated from PlatformBackend. Do not edit manually. -->
 # Platform contract
 
-Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
+Source: `AceDataCloud/PlatformBackend@945664eca88d16d21159d3739f874c830c046005`
 
 ## Services
 
+- `aichat`
 - `claude`
 - `gemini`
 - `glm`
@@ -14,6 +15,8 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 
 ## Endpoints
 
+- `POST` `/aichat2/conversations` — $t(api_title_aichat2_conversations)
+- `POST` `/aichat/conversations` — AI Chat API
 - `POST` `/v1/chat/completions` — Claude Chat Completion API
 - `POST` `/v1/messages` — Claude Messages API
 - `POST` `/v1/messages/count_tokens` — Claude Messages Count Tokens API
@@ -29,12 +32,10 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 - `POST` `/openai/chat/completions` — OpenAI Chat Completion API
 - `POST` `/openai/embeddings` — OpenAI Embeddings API
 - `POST` `/openai/images/generations` — OpenAI Images Generations API
-- `GET` `/openai/models` — OpenAI Models API
 - `POST` `/openai/responses` — OpenAI Responses API
 - `POST` `/openai/images/edits` — OpenAI Images Edits API
 - `POST` `/v1/audio/speech` — OpenAI Audio Speech API
 - `POST` `/v1/audio/transcriptions` — OpenAI Audio Transcriptions API
-- `POST` `/v1/realtime` — OpenAI Realtime API
 - `POST` `/openai/tasks` — OpenAI Tasks API
 
 ## Models
@@ -62,12 +63,9 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 - `claude-sonnet-5`
 - `claude-sonnet-5-5`
 - `gemini-2.5-flash`
-- `gemini-2.5-flash-image`
 - `gemini-2.5-flash-lite`
 - `gemini-2.5-pro`
 - `gemini-3-flash-preview`
-- `gemini-3-pro-image`
-- `gemini-3.1-flash-image`
 - `gemini-3.1-flash-lite`
 - `gemini-3.1-pro-preview`
 - `gemini-3.5-flash`
@@ -76,7 +74,6 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 - `gemini-3.7-flash`
 - `gemini-3.8-flash`
 - `glm-3-turbo`
-- `glm-4.5`
 - `glm-4.6`
 - `glm-4.7`
 - `glm-5`
@@ -97,7 +94,6 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 - `gpt-4o-mini:free`
 - `gpt-4o:free`
 - `gpt-5`
-- `gpt-5-all`
 - `gpt-5-mini`
 - `gpt-5-nano`
 - `gpt-5-pro`
@@ -121,11 +117,6 @@ Source: `AceDataCloud/PlatformBackend@a773f0a81148b6fc3f574c8bd45d2279836751ff`
 - `gpt-6.1-sol`
 - `gpt-image-1`
 - `gpt-oss:free`
-- `gpt-realtime`
-- `gpt-realtime-2`
-- `gpt-realtime-2.1`
-- `gpt-realtime-2.1-mini`
-- `gpt-realtime-mini`
 - `grok-3`
 - `grok-4`
 - `grok-4.5`

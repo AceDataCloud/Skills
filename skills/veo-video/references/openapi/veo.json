@@ -1,0 +1,1241 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Veo Video Generation",
+    "version": "1.0.0",
+    "description": "API reference for Veo Video Generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "VeoVideo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Id.Ade49Eda72Fe"
+          },
+          "video_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Video Url.471967B2C6Aa"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Created At.Bbb0A8A41F9C"
+          },
+          "complete_at": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Complete At.4Aae39029A7B"
+          },
+          "state": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.State.2E8F2C0Defdd"
+          },
+          "is_extend_result": {
+            "type": "boolean",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Is Extend Result.94Ad1302A1F8"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Aspect Ratio.45Fe8217D194"
+          }
+        }
+      },
+      "VeoAsyncAccepted": {
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Task Id.391D5E1B15B6"
+          }
+        }
+      },
+      "VeoCompletedResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "task_id",
+          "trace_id",
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ],
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Success.0818D2Bf11Ac"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Task Id.23E4E266A368"
+          },
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Trace Id.673Ca8F602C3"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Started At.18334713443C"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Finished At.4Bdcff45Dcc5"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Elapsed.082F85B230Fc"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VeoVideo"
+            },
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Data.0948185Eb2D4"
+          },
+          "cost": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Cost.91Aedf4C6722"
+          }
+        }
+      },
+      "VeoTask": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Id.8347D56Eeb38"
+          },
+          "request": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Request.685B7Dff95C6"
+          },
+          "response": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/VeoCompletedResponse"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "success",
+                  "error"
+                ],
+                "properties": {
+                  "success": {
+                    "type": "boolean",
+                    "enum": [
+                      false
+                    ],
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Success.4Cdbdf9D6Ee5"
+                  },
+                  "error": {
+                    "type": "object",
+                    "required": [
+                      "code",
+                      "message"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "description": "Openapi.437A75587C5B434190884A54443A78A4.Code.Bc08604B4A73"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Openapi.437A75587C5B434190884A54443A78A4.Message.50A279F585F7"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Response.D1A0D63384Dd"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Created At.9B5E2249D398"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Started At.Eeb299782A5F"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Finished At.C74Ae365A363",
+            "nullable": true
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Elapsed.42Ae63D3D3Ce",
+            "nullable": true
+          },
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Trace Id.12941C1C0D49"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Type.Fe62C6D5676E"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.User Id.7D429A8Ad6Cd"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Actor User Id.940229755316"
+          },
+          "api_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Api Id.24B2A5E8D99E"
+          },
+          "application_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Application Id.2Cd33Fb1E64E"
+          },
+          "credential_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Credential Id.0C3206323470"
+          },
+          "authorization_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Openapi.437A75587C5B434190884A54443A78A4.Authorization Id.19A2876Beae5"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/veo/videos": {
+      "post": {
+        "summary": "Veo Videos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/VeoAsyncAccepted"
+                    },
+                    {
+                      "$ref": "#/components/schemas/VeoCompletedResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "accepted": {
+                    "value": {
+                      "task_id": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                  },
+                  "completed": {
+                    "value": {
+                      "success": true,
+                      "task_id": "550e8400-e29b-41d4-a716-446655440000",
+                      "trace_id": "550e8400-e29b-41d4-a716-446655440001",
+                      "started_at": 1786281000.123,
+                      "finished_at": 1786281045.456,
+                      "elapsed": 45.333,
+                      "data": [
+                        {
+                          "id": "veo-video-01",
+                          "video_url": "https://cdn.acedata.cloud/veo/veo-video-01.mp4",
+                          "created_at": "2026-08-09T14:30:00Z",
+                          "complete_at": "2026-08-09T14:30:45Z",
+                          "state": "succeeded"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Veo Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Veo Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Veo Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Veo Videos Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Veo Videos Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Veo Videos Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Veo Videos Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Veo Videos Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Veo Videos Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Veo Videos Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Veo Videos Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Veo Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Veo Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Veo Videos Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Veo Videos Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Veo Videos Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Veo Videos Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Veo Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Veo Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Veo Videos Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Veo Videos Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 404"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Veo Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Veo Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Veo Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Veo Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Videos Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Veo Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "model": {
+                    "enum": [
+                      "veo3",
+                      "veo3-fast",
+                      "veo31-fast",
+                      "veo31",
+                      "veo31-fast-ingredients"
+                    ],
+                    "type": "string",
+                    "description": "Veo Videos Model"
+                  },
+                  "resolution": {
+                    "enum": [
+                      "4k",
+                      "1080p",
+                      "gif"
+                    ],
+                    "type": "string",
+                    "description": "Veo Videos Resolution"
+                  },
+                  "action": {
+                    "enum": [
+                      "text2video",
+                      "image2video",
+                      "ingredients2video",
+                      "get1080p"
+                    ],
+                    "type": "string",
+                    "description": "Veo Videos Action"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "White ceramic coffee mug on glossy marble counter, top with morning window light. Camera slowly rotates 360 degrees around the mug, pausing briefly at the handle.",
+                    "description": "Veo Videos Prompt"
+                  },
+                  "video_id": {
+                    "type": "string",
+                    "description": "Veo Videos Video Id"
+                  },
+                  "translation": {
+                    "type": "boolean",
+                    "description": "Veo Videos Translation"
+                  },
+                  "aspect_ratio": {
+                    "enum": [
+                      "16:9",
+                      "9:16"
+                    ],
+                    "type": "string",
+                    "description": "Veo Videos Aspect Ratio"
+                  },
+                  "image_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Veo Videos Image Urls"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Veo Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Veo Videos Async"
+                  }
+                }
+              },
+              "example": {
+                "action": "text2video",
+                "prompt": "White ceramic coffee mug on glossy marble counter, top with morning window light. Camera slowly rotates 360 degrees around the mug, pausing briefly at the handle."
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "generateVeoVideo"
+      }
+    },
+    "/veo/tasks": {
+      "post": {
+        "summary": "Veo Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/VeoTask"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/VeoTask"
+                          },
+                          "description": "Openapi.437A75587C5B434190884A54443A78A4.Items.8832D342Da6F"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.437A75587C5B434190884A54443A78A4.Count.42A34Cc2662A"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.437A75587C5B434190884A54443A78A4.2.4Ad04B358Ced"
+                    }
+                  ]
+                },
+                "examples": {
+                  "single": {
+                    "value": {
+                      "id": "550e8400-e29b-41d4-a716-446655440000",
+                      "type": "videos",
+                      "created_at": 1786281000.1,
+                      "started_at": 1786281000.2,
+                      "finished_at": 1786281045.5,
+                      "elapsed": 45.3,
+                      "trace_id": "550e8400-e29b-41d4-a716-446655440001",
+                      "request": {
+                        "action": "text2video",
+                        "prompt": "A ceramic mug"
+                      },
+                      "response": {
+                        "success": true,
+                        "task_id": "550e8400-e29b-41d4-a716-446655440000",
+                        "trace_id": "550e8400-e29b-41d4-a716-446655440001",
+                        "started_at": 1786281000.123,
+                        "finished_at": 1786281045.456,
+                        "elapsed": 45.333,
+                        "data": [
+                          {
+                            "id": "veo-video-01",
+                            "video_url": "https://cdn.acedata.cloud/veo/veo-video-01.mp4",
+                            "created_at": "2026-08-09T14:30:00Z",
+                            "complete_at": "2026-08-09T14:30:45Z",
+                            "state": "succeeded"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "batch": {
+                    "value": {
+                      "items": [],
+                      "count": 0
+                    }
+                  },
+                  "notFound": {
+                    "value": {}
+                  }
+                }
+              }
+            },
+            "description": "Veo Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Veo Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Veo Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Veo Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Veo Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Veo Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Veo Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Veo Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Veo Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Veo Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Veo Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Veo Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Veo Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Veo Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Veo Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Veo Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Veo Tasks Action"
+                  },
+                  "trace_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Trace Id.F2511C2143D6"
+                  },
+                  "trace_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Trace Ids.A1184C34Ca24"
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0,
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Offset.Fb40Df0A070D"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 12,
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Limit.762D5D639132"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Type.C641Ca284Fd6"
+                  },
+                  "created_at_min": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Created At Min.648C652B4Ff3"
+                  },
+                  "created_at_max": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Openapi.437A75587C5B434190884A54443A78A4.Created At Max.C17A7A7194B9"
+                  }
+                },
+                "required": [
+                  "action"
+                ],
+                "example": {
+                  "action": "retrieve",
+                  "id": "550e8400-e29b-41d4-a716-446655440000"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "queryVeoTasks"
+      }
+    }
+  }
+}

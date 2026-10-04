@@ -1,0 +1,3258 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kling video generation",
+    "version": "1.0.0",
+    "description": "API reference for Kling video generation on Ace Data Cloud."
+  },
+  "servers": [
+    {
+      "url": "https://api.acedata.cloud",
+      "description": "Ace Data Cloud API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token from https://platform.acedata.cloud"
+      }
+    },
+    "schemas": {
+      "KlingTaskRequestPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Klingtaskrequestpayload.A26702Cd9Be8"
+      },
+      "KlingTaskResultPayload": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Klingtaskresultpayload.B1Ad0E77A237"
+      },
+      "KlingTaskRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "trace_id",
+          "request"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Id.6D5027B4Cc1B"
+          },
+          "type": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Type.6E1C463Ee39A"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Trace Id.3E71624D9469"
+          },
+          "request": {
+            "$ref": "#/components/schemas/KlingTaskRequestPayload"
+          },
+          "response": {
+            "$ref": "#/components/schemas/KlingTaskResultPayload"
+          },
+          "created_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Created At.C555D4842A03"
+          },
+          "started_at": {
+            "type": "number",
+            "format": "double",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Started At.642895252156"
+          },
+          "finished_at": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Finished At.Bc8834Da99Bd"
+          },
+          "elapsed": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "nullable": true,
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Elapsed.35236A04Ae08"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.User Id.73Ab38C4975D"
+          },
+          "actor_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Actor User Id.57420430866E"
+          },
+          "api_id": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Api Id.Af16Ed174B8C"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Application Id.A676F977Ac57"
+          },
+          "credential_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Credential Id.74845D35E81E"
+          },
+          "authorization_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Authorization Id.12776Ff848Ac"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/kling/motion": {
+      "post": {
+        "summary": "Kling Motion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "video_id": "842566592663294013",
+                    "video_url": "https://cdn.acedata.cloud/assets/examples/kling/6c68c267-065b-4423-b66b-a0e4c59ee0d5-6a664a591a53.mp4",
+                    "duration": "5.066",
+                    "state": "succeed",
+                    "task_id": "307c3359-f68a-44e1-bd3b-c5d5a2a2ca0a"
+                  },
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "description": "Kling Motion Response 200 Data",
+                      "additionalProperties": true
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Kling Motion Response 200 Success"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Kling Motion Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Kling Motion Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Kling Motion Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Kling Motion Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Kling Motion Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Kling Motion Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Kling Motion Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Kling Motion Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Kling Motion Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Kling Motion Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Kling Motion Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Kling Motion Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Kling Motion Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Kling Motion Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Kling Motion Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Kling Motion Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Kling Motion Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Kling Motion Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Kling Motion Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Kling Motion Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Kling Motion Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 404"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Kling Motion Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Kling Motion Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Kling Motion Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Kling Motion Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Motion Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Motion Response 500"
+          },
+          "502": {
+            "description": "Kling Motion Response 502",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "bad_gateway"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务依赖返回了无法解析的响应。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Kling Motion Response 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "service_unavailable"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务暂时不可用，请稍后重试。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Kling Motion Response 504",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "timeout"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "任务处理超时。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Kling Motion Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image_url",
+                  "video_url",
+                  "character_orientation",
+                  "mode"
+                ],
+                "properties": {
+                  "model_name": {
+                    "enum": [
+                      "kling-v2-6",
+                      "kling-v3"
+                    ],
+                    "type": "string",
+                    "description": "Kling Motion Model Name"
+                  },
+                  "mode": {
+                    "enum": [
+                      "std",
+                      "pro"
+                    ],
+                    "type": "string",
+                    "description": "Kling Motion Mode"
+                  },
+                  "keep_original_sound": {
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "type": "string",
+                    "description": "Kling Motion Keep Original Sound"
+                  },
+                  "watermark_info": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      }
+                    },
+                    "description": "Kling Motion Watermark Info"
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "description": "Kling Motion Image Url",
+                    "format": "uri"
+                  },
+                  "video_url": {
+                    "type": "string",
+                    "description": "Kling Motion Video Url",
+                    "format": "uri"
+                  },
+                  "character_orientation": {
+                    "enum": [
+                      "image",
+                      "video"
+                    ],
+                    "type": "string",
+                    "description": "Kling Motion Character Orientation"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "White ceramic coffee mug on glossy marble countertop with morning window light. Camera slowly rotates 360 degrees around the mug, pausing briefly at the handle.",
+                    "description": "Kling Motion Prompt"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Kling Motion Callback Url",
+                    "format": "uri"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Kling Motion Async"
+                  }
+                }
+              },
+              "example": {
+                "image_url": "https://cdn.acedata.cloud/4hfydw.jpg",
+                "video_url": "https://cdn.acedata.cloud/634d760216.mp4",
+                "character_orientation": "image",
+                "mode": "std"
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "KlingcreateKlingMotion"
+      }
+    },
+    "/kling/tasks": {
+      "post": {
+        "summary": "Kling Tasks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/KlingTaskRecord"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "count"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/KlingTaskRecord"
+                          },
+                          "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Items.5265Da38F431"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.Count.780468D1Dfbb"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Openapi.F11Ce529530349138B9A7146Aa5D7016.2.D87Deeb9F22E"
+                    }
+                  ]
+                },
+                "example": {
+                  "items": [],
+                  "count": 0
+                }
+              }
+            },
+            "description": "Kling Tasks Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Kling Tasks Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Kling Tasks Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Tasks Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Kling Tasks Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Kling Tasks Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Tasks Response 400 Trace Id 2"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Tasks Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Kling Tasks Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Kling Tasks Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Tasks Response 401 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Tasks Response 401"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Kling Tasks Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Kling Tasks Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Tasks Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Tasks Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Kling Tasks Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Kling Tasks Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Tasks Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Tasks Response 500"
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Kling Tasks Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Kling Tasks Id"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Kling Tasks Ids"
+                  },
+                  "action": {
+                    "enum": [
+                      "retrieve",
+                      "retrieve_batch"
+                    ],
+                    "type": "string",
+                    "default": "retrieve",
+                    "description": "Kling Tasks Action"
+                  }
+                },
+                "example": {
+                  "action": "retrieve",
+                  "id": "task-id"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "queryKlingTasks"
+      }
+    },
+    "/kling/videos": {
+      "post": {
+        "summary": "Kling Videos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "video_id": "900798310464749610",
+                    "video_url": "https://cdn.acedata.cloud/assets/examples/kling/6c68c267-065b-4423-b66b-a0e4c59ee0d5-6a664a591a53.mp4",
+                    "duration": "5.041",
+                    "state": "succeed",
+                    "task_id": "6c68c267-065b-4423-b66b-a0e4c59ee0d5"
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Kling Videos Response 200 Success"
+                    },
+                    "video_id": {
+                      "type": "string"
+                    },
+                    "video_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "duration": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "usage": {
+                      "type": "object",
+                      "description": "Kling Videos Response 200 Usage",
+                      "properties": {
+                        "duration": {
+                          "type": "number",
+                          "exclusiveMinimum": true,
+                          "description": "Kling Videos Response 200 Usage Duration",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "duration"
+                      ]
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "video_id": "900798310464749610",
+                  "video_url": "https://cdn.acedata.cloud/assets/examples/kling/6c68c267-065b-4423-b66b-a0e4c59ee0d5-6a664a591a53.mp4",
+                  "duration": "5.041",
+                  "state": "succeed",
+                  "task_id": "6c68c267-065b-4423-b66b-a0e4c59ee0d5"
+                }
+              }
+            },
+            "description": "Kling Videos Response 200"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "The specified token is not matched with API."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Kling Videos Response 400 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is not matched with API.",
+                              "description": "Kling Videos Response 400 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 400 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_not_implemented",
+                          "message": "The API is not implemented."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_not_implemented",
+                              "description": "Kling Videos Response 400 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The API is not implemented.",
+                              "description": "Kling Videos Response 400 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 400 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "disabled",
+                          "message": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "disabled",
+                              "description": "Kling Videos Response 400 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your application has been disabled by Ace Data Cloud due to abnormal usage behavior, please contact our support to get more information.",
+                              "description": "Kling Videos Response 400 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 400 Trace Id 3"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "bad_request",
+                          "message": "model is invalid."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "bad_request",
+                              "description": "Kling Videos Response 400 Error Code 4"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "model is invalid.",
+                              "description": "Kling Videos Response 400 Error Message 4"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 400 Trace Id 4"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_token",
+                          "message": "No token specified for the request."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_token",
+                              "description": "Kling Videos Response 400 Error Code 5"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "No token specified for the request.",
+                              "description": "Kling Videos Response 400 Error Message 5"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 400 Trace Id 5"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "invalid_token",
+                          "message": "The specified token is invalid or wrong."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "invalid_token",
+                              "description": "Kling Videos Response 401 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "The specified token is invalid or wrong.",
+                              "description": "Kling Videos Response 401 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 401 Trace Id"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_expired",
+                          "message": "token expired."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_expired",
+                              "description": "Kling Videos Response 401 Error Code 2"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token expired.",
+                              "description": "Kling Videos Response 401 Error Message 2"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 401 Trace Id 2"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "token_mismatched",
+                          "message": "token and api does not match."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "token_mismatched",
+                              "description": "Kling Videos Response 401 Error Code 3"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "token and api does not match.",
+                              "description": "Kling Videos Response 401 Error Message 3"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 401 Trace Id 3"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "used_up",
+                          "message": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "used_up",
+                              "description": "Kling Videos Response 403 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Your balance is not sufficient for current request, please buy more in Ace Data Cloud.",
+                              "description": "Kling Videos Response 403 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 403 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "no_api",
+                          "message": "API does not exist, please make sure url is correct."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "no_api",
+                              "description": "Kling Videos Response 404 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "API does not exist, please make sure url is correct.",
+                              "description": "Kling Videos Response 404 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 404 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 404"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "too_many_requests",
+                          "message": "You have exceeded the rate limit."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "too_many_requests",
+                              "description": "Kling Videos Response 429 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "You have exceeded the rate limit.",
+                              "description": "Kling Videos Response 429 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 429 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "example": {
+                        "error": {
+                          "code": "api_error",
+                          "message": "Internal server error."
+                        },
+                        "trace_id": "2efa9340-b21b-4e26-9e14-4aac95f343ab"
+                      },
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "api_error",
+                              "description": "Kling Videos Response 500 Error Code"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "Internal server error.",
+                              "description": "Kling Videos Response 500 Error Message"
+                            }
+                          }
+                        },
+                        "trace_id": {
+                          "type": "string",
+                          "description": "Kling Videos Response 500 Trace Id"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Kling Videos Response 500"
+          },
+          "502": {
+            "description": "Kling Videos Response 502",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "bad_gateway"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务依赖返回了无法解析的响应。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Kling Videos Response 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "service_unavailable"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务暂时不可用，请稍后重试。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Kling Videos Response 504",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "timeout"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "任务处理超时。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept",
+            "schema": {
+              "enum": [
+                "application/json"
+              ],
+              "type": "string"
+            },
+            "required": false,
+            "description": "Kling Videos Param Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "std",
+                      "pro",
+                      "4k"
+                    ],
+                    "default": "std",
+                    "type": "string",
+                    "description": "Kling Videos Mode"
+                  },
+                  "model": {
+                    "enum": [
+                      "kling-v3-turbo",
+                      "kling-v1",
+                      "kling-v1-6",
+                      "kling-v2-master",
+                      "kling-v2-1-master",
+                      "kling-v2-5-turbo",
+                      "kling-v2-6",
+                      "kling-v3",
+                      "kling-v3-omni",
+                      "kling-o1"
+                    ],
+                    "default": "kling-v1",
+                    "type": "string",
+                    "description": "Kling Videos Model"
+                  },
+                  "action": {
+                    "enum": [
+                      "text2video",
+                      "image2video",
+                      "extend"
+                    ],
+                    "type": "string",
+                    "description": "Kling Videos Action"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "White ceramic coffee mug on glossy marble countertop with morning window light. Camera slowly rotates 360 degrees around the mug, pausing briefly at the handle.",
+                    "description": "Kling Videos Prompt"
+                  },
+                  "duration": {
+                    "default": 5,
+                    "type": "number",
+                    "description": "Kling Videos Duration"
+                  },
+                  "generate_audio": {
+                    "type": "boolean",
+                    "description": "Kling Videos Generate Audio"
+                  },
+                  "video_id": {
+                    "type": "string",
+                    "description": "Kling Videos Video Id"
+                  },
+                  "cfg_scale": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Kling Videos Cfg Scale"
+                  },
+                  "aspect_ratio": {
+                    "enum": [
+                      "16:9",
+                      "9:16",
+                      "1:1"
+                    ],
+                    "type": "string",
+                    "description": "Kling Videos Aspect Ratio"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "Kling Videos Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "description": "Kling Videos Async"
+                  },
+                  "end_image_url": {
+                    "type": "string",
+                    "description": "Kling Videos End Image Url"
+                  },
+                  "camera_control": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "simple",
+                          "down_back",
+                          "forward_up",
+                          "left_turn_forward",
+                          "right_turn_forward"
+                        ]
+                      },
+                      "config": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": -1,
+                          "maximum": 1
+                        },
+                        "properties": {}
+                      }
+                    },
+                    "description": "Kling Videos Camera Control"
+                  },
+                  "image_list": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 7,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "image_url"
+                      ],
+                      "properties": {
+                        "image_url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "first_frame",
+                            "end_frame"
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Kling Videos Image List"
+                  },
+                  "video_list": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "video_url"
+                      ],
+                      "properties": {
+                        "video_url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "refer_type": {
+                          "type": "string",
+                          "enum": [
+                            "base",
+                            "feature"
+                          ]
+                        },
+                        "keep_original_sound": {
+                          "type": "string",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Kling Videos Video List"
+                  },
+                  "negative_prompt": {
+                    "type": "string",
+                    "description": "Kling Videos Negative Prompt"
+                  },
+                  "start_image_url": {
+                    "type": "string",
+                    "description": "Kling Videos Start Image Url"
+                  },
+                  "multi_shot": {
+                    "type": "boolean",
+                    "description": "Kling Videos Multi Shot"
+                  },
+                  "shot_type": {
+                    "type": "string",
+                    "enum": [
+                      "customize",
+                      "intelligence"
+                    ],
+                    "description": "Kling Videos Shot Type"
+                  },
+                  "multi_prompt": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 6,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "index",
+                        "prompt",
+                        "duration"
+                      ],
+                      "properties": {
+                        "index": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 6
+                        },
+                        "prompt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 15
+                        }
+                      }
+                    },
+                    "description": "Kling Videos Multi Prompt"
+                  },
+                  "element_list": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "element_id"
+                      ],
+                      "properties": {
+                        "element_id": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "description": "Kling Videos Element List"
+                  },
+                  "voice_list": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "voice_id"
+                      ],
+                      "properties": {
+                        "voice_id": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "description": "Kling Videos Voice List"
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "prompt"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "multi_shot",
+                      "shot_type",
+                      "multi_prompt"
+                    ],
+                    "properties": {
+                      "multi_shot": {
+                        "enum": [
+                          true
+                        ]
+                      },
+                      "shot_type": {
+                        "enum": [
+                          "customize"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "example": {
+                "action": "text2video",
+                "prompt": "White ceramic coffee mug on glossy marble countertop with morning window light. Camera slowly rotates 360 degrees around the mug, pausing briefly at the handle."
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "createKlingVideos"
+      }
+    },
+    "/kling/lip-sync": {
+      "post": {
+        "summary": "Kling Lip Sync",
+        "description": "Kling Lip Sync",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "mode"
+                ],
+                "properties": {
+                  "video_id": {
+                    "type": "string",
+                    "description": "Kling Lip Sync Video Id"
+                  },
+                  "video_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Lip Sync Video Url"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "audio2video",
+                      "text2video"
+                    ],
+                    "description": "Kling Lip Sync Mode"
+                  },
+                  "audio_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Lip Sync Audio Url"
+                  },
+                  "audio_type": {
+                    "type": "string",
+                    "enum": [
+                      "url",
+                      "file"
+                    ],
+                    "default": "url",
+                    "description": "Kling Lip Sync Audio Type"
+                  },
+                  "audio_file": {
+                    "type": "string",
+                    "description": "Kling Lip Sync Audio File"
+                  },
+                  "text": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Kling Lip Sync Text"
+                  },
+                  "voice_id": {
+                    "type": "string",
+                    "description": "Kling Lip Sync Voice Id"
+                  },
+                  "voice_language": {
+                    "type": "string",
+                    "enum": [
+                      "zh",
+                      "en"
+                    ],
+                    "default": "zh",
+                    "description": "Kling Lip Sync Voice Language"
+                  },
+                  "voice_speed": {
+                    "type": "number",
+                    "minimum": 0.8,
+                    "maximum": 2.0,
+                    "default": 1.0,
+                    "description": "Kling Lip Sync Voice Speed"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Lip Sync Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Kling Lip Sync Async"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kling Lip Sync Response 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "0c0b4d3a-2f1e-4a6b-9c2d-2b3c4d5e6f70",
+                    "video_id": "895047463190134880",
+                    "video_url": "https://cdn.acedata.cloud/bafb400e8a.mp4",
+                    "duration": 5,
+                    "state": "succeed"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Kling Lip Sync Response 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "code": "bad_request",
+                    "detail": "one of video_id or video_url is required"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Kling Lip Sync Response 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "code": "authorization_missing"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kling Lip Sync Response 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "code": "api_error"
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Kling Lip Sync Response 502",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "bad_gateway"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务依赖返回了无法解析的响应。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Kling Lip Sync Response 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "service_unavailable"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "服务暂时不可用，请稍后重试。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Kling Lip Sync Response 504",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "timeout"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "任务处理超时。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Kling Lip Sync Response 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "forbidden"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "请求被策略或权限规则拒绝。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Kling Lip Sync Response 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success",
+                    "error",
+                    "trace_id"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "too_many_requests"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "请求频率或并发超过限制。"
+                        }
+                      }
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "started_at": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "KlingcreateKlingLipSync"
+      }
+    },
+    "/kling/talking-photo": {
+      "post": {
+        "summary": "Kling Talking Photo",
+        "description": "Kling Talking Photo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image_url",
+                  "audio_url"
+                ],
+                "properties": {
+                  "image_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Talking Photo Image Url"
+                  },
+                  "audio_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Talking Photo Audio Url"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Kling Talking Photo Prompt"
+                  },
+                  "model": {
+                    "type": "string",
+                    "enum": [
+                      "kling-v1",
+                      "kling-v1-6",
+                      "kling-v2-master",
+                      "kling-v2-1-master",
+                      "kling-v2-5-turbo",
+                      "kling-v2-6"
+                    ],
+                    "default": "kling-v2-1-master",
+                    "description": "Kling Talking Photo Model"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "enum": [
+                      5,
+                      10
+                    ],
+                    "default": 5,
+                    "description": "Kling Talking Photo Duration"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "std",
+                      "pro"
+                    ],
+                    "default": "pro",
+                    "description": "Kling Talking Photo Mode"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Talking Photo Callback Url"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Kling Talking Photo Async"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kling Talking Photo Response 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "task_id": "0c0b4d3a-2f1e-4a6b-9c2d-2b3c4d5e6f70",
+                    "video_id": "895055968777281546",
+                    "video_url": "https://cdn.acedata.cloud/assets/examples/kling/6c68c267-065b-4423-b66b-a0e4c59ee0d5-6a664a591a53.mp4",
+                    "source_video_url": "https://cdn.acedata.cloud/assets/examples/gemini/04a043bd-6b23-4b4e-945c-ce48158c3eee-3a89912507c7.mp4",
+                    "duration": 5,
+                    "state": "succeed"
+                  },
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "video_id": {
+                      "type": "string"
+                    },
+                    "video_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "source_video_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "duration": {
+                      "type": "number"
+                    },
+                    "state": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Kling Talking Photo Response 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": {
+                      "code": "bad_request",
+                      "message": "image_url is required"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Kling Talking Photo Response 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "code": "authorization_missing"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kling Talking Photo Response 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "code": "api_error"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
+        "operationId": "KlingcreateKlingTalkingPhoto"
+      }
+    },
+    "/kling/goods-studio": {
+      "post": {
+        "summary": "Kling Goods Summary",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "contents",
+                  "settings"
+                ],
+                "properties": {
+                  "contents": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "url"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "ref_image"
+                              ]
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_title"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_description"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Kling Goods Contents"
+                  },
+                  "settings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "resolution": {
+                        "type": "string",
+                        "enum": [
+                          "720p",
+                          "1080p"
+                        ],
+                        "default": "720p"
+                      },
+                      "aspect_ratio": {
+                        "type": "string",
+                        "enum": [
+                          "9:16",
+                          "1:1",
+                          "16:9"
+                        ]
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          15,
+                          30,
+                          60
+                        ]
+                      }
+                    },
+                    "required": [
+                      "aspect_ratio",
+                      "duration"
+                    ]
+                  },
+                  "watermark": {
+                    "type": "boolean",
+                    "description": "Kling Goods Watermark"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Kling Goods Async"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Goods Callback"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kling Goods Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "image",
+                              "video"
+                            ]
+                          },
+                          "image_url": {
+                            "type": "string"
+                          },
+                          "video_url": {
+                            "type": "string"
+                          },
+                          "watermark_url": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "usage": {
+                      "type": "object",
+                      "properties": {
+                        "seconds": {
+                          "type": "number",
+                          "readOnly": true
+                        },
+                        "image_count": {
+                          "type": "integer",
+                          "readOnly": true
+                        },
+                        "pricing_tier": {
+                          "type": "string",
+                          "readOnly": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "kling_create_goods_studio"
+      }
+    },
+    "/kling/video-commerce": {
+      "post": {
+        "summary": "Kling Commerce Summary",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "contents"
+                ],
+                "properties": {
+                  "contents": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "url"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "avatar_image"
+                              ]
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "avatar_id"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "url"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "ref_image"
+                              ]
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_title"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_price"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 256
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_target_audience"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "goods_selling_point"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "type",
+                            "text"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "speech_script"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Kling Commerce Contents"
+                  },
+                  "settings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "resolution": {
+                        "type": "string",
+                        "enum": [
+                          "720p",
+                          "1080p"
+                        ],
+                        "default": "720p"
+                      },
+                      "aspect_ratio": {
+                        "type": "string",
+                        "enum": [
+                          "9:16",
+                          "16:9"
+                        ],
+                        "default": "9:16"
+                      },
+                      "allow_polish": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "voice_id": {
+                        "type": "string"
+                      },
+                      "speech_rate": {
+                        "type": "number",
+                        "enum": [
+                          0.8,
+                          1,
+                          1.2
+                        ]
+                      },
+                      "action_prompt": {
+                        "type": "string",
+                        "maxLength": 2500
+                      },
+                      "bgm_enabled": {
+                        "type": "boolean",
+                        "default": false
+                      }
+                    }
+                  },
+                  "watermark": {
+                    "type": "boolean",
+                    "description": "Kling Commerce Watermark"
+                  },
+                  "async": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Kling Commerce Async"
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Kling Commerce Callback"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kling Commerce Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "trace_id": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "image",
+                              "video"
+                            ]
+                          },
+                          "image_url": {
+                            "type": "string"
+                          },
+                          "video_url": {
+                            "type": "string"
+                          },
+                          "watermark_url": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "usage": {
+                      "type": "object",
+                      "properties": {
+                        "seconds": {
+                          "type": "number",
+                          "readOnly": true
+                        },
+                        "image_count": {
+                          "type": "integer",
+                          "readOnly": true
+                        },
+                        "pricing_tier": {
+                          "type": "string",
+                          "readOnly": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "kling_create_video_commerce"
+      }
+    }
+  }
+}

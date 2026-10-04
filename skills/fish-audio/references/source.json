@@ -1,0 +1,15 @@
+{
+  "repository": "AceDataCloud/PlatformBackend",
+  "sha": "bdae773e02f3f51d2896eef497b569748577b753",
+  "sha256": "5b0048a5dde7ce67a507d83c682277e8ec7b0e6f3f81199e9c408c0b7e9800ca",
+  "services": [
+    "fish"
+  ],
+  "guides": [
+    "development_fish_model.md",
+    "development_fish_model_get.md",
+    "development_fish_model_query.md",
+    "development_fish_tasks.md",
+    "development_fish_tts.md"
+  ]
+}

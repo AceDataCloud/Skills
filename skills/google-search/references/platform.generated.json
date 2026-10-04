@@ -1,6 +1,8 @@
 {
   "apis": [
     {
+      "documented": true,
+      "guide_source": "docs/development_serp_google.md",
       "id": "7753ed09-1046-46d3-ad80-cd7ff19676b5",
       "method": "POST",
       "name": "Google SERP API",
@@ -56,6 +58,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
+    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
   }
 }
