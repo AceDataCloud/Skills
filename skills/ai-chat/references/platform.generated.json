@@ -335,7 +335,7 @@
         "endpoint": "https://openai.mcp.acedata.cloud/mcp",
         "package": {
           "ecosystem": "pypi",
-          "name": "mcp-openai",
+          "name": "mcp-openai-pro",
           "runner": "uvx"
         },
         "transport": "streamable-http"

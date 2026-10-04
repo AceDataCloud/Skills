@@ -1,6 +1,6 @@
 ---
 name: kling-video
-description: Create Kling videos and commercial media through AceDataCloud. Use for text/image video generation, Turbo, storyboards, motion control, talking photos, lip sync, product/apparel/virtual try-on, commercial voiceovers, and platform-owned voice or element references.
+description: Create Kling videos and commercial media through AceDataCloud. Use for text/image video generation, Turbo, storyboards, motion control, talking photos, lip sync, product studio, commercial voiceovers, and supported reference inputs.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -206,7 +206,7 @@ POST /kling/talking-photo
 - Omni references are supported only by `kling-o1` and `kling-v3-omni`; cite them as `<<<image_N>>>` / `<<<video_1>>>`
 - Omni reference requests do not support `negative_prompt`, `cfg_scale`, `camera_control`, or `mode=4k`
 - With `video_list`, `generate_audio` must be `false`; a base video cannot be combined with first/end frames
-- `element_list` accepts platform-owned or verified preset IDs from `/kling/elements`; raw external IDs are rejected. Custom element creation is currently unavailable.
+- `element_list` accepts existing platform-owned or verified preset IDs; raw external IDs are rejected. Standalone management is not published.
 - Motion control (`/kling/motion`) is a separate endpoint from video generation
 - Lip-sync is a separate endpoint (`/kling/lip-sync`) and requires `mode`; use `audio_url` for `audio2video` or `text` + voice fields for `text2video`
 - Talking-photo is a separate endpoint (`/kling/talking-photo`) and requires both `image_url` and `audio_url`
@@ -220,10 +220,8 @@ Turbo accepts text or a first frame. Omit `generate_audio` or set it to true; fa
 
 V3/V3 Omni accept `multi_shot=true`. Automatic `shot_type="intelligence"` uses the global prompt. Customized shots use `multi_prompt` (1–6 entries) with consecutive index values, prompts of at most 512 characters and integer durations summing to the total. Companion tools: `kling_generate_storyboard` / `kling storyboard`.
 
-Commercial capabilities use `/kling/apparel`, `/kling/goods-studio`, `/kling/video-commerce` and `/kling/virtual-try-on`. Pass structured contents/settings; use the corresponding typed companion tools. Product studio requires reference images and a product title with duration 15/30/60. Try-on requires product_image and person_image URLs. Poll all platform task IDs through `/kling/tasks`. Pricing follows resolution/content tier and actual seconds or delivered image count.
+Commercial capabilities use `/kling/goods-studio` and `/kling/video-commerce`. Pass structured contents/settings and poll task IDs through `/kling/tasks`. Apparel, virtual try-on and standalone asset management are not currently published.
 
-## Owned elements and voices
+## Reference inputs
 
-Manage platform IDs through `/kling/elements` and `/kling/voices` with list/presets/retrieve/delete actions. Presets are read-only. Custom element creation is currently unavailable until pricing is confirmed. Voice creation accepts a clean single 5–30 second recording and costs 0.07 Credits.
-
-Use `element_list` on V3/V3 Omni/O1 or `voice_list` on V2.6 pro with generate_audio=true. The service verifies user/application ownership. Selected voice prompts use `<<<voice_1>>>`/`<<<voice_2>>>`; specified-voice videos cost 1.68 Credits/second. Companion tools are `kling_manage_elements`, `kling_manage_voices` and `kling_generate_with_assets`; CLI commands are `elements`, `voices` and `asset-video`. Poll platform task IDs for voice creation and video results.
+Use `element_list` and `voice_list` only with already valid platform references and the supported model combinations in the current backend guide. Standalone asset creation and management are not published.
