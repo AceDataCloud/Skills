@@ -1,8 +1,6 @@
 {
   "apis": [
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_audios.md",
       "id": "09a26295-5972-4392-9318-dcd9b218f90d",
       "method": "POST",
       "name": "Suno Audios Generation API",
@@ -11,8 +9,6 @@
       "title": "Suno Audios Generation API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_persona.md",
       "id": "c578b8de-f9fe-4220-8d5f-5da7384705fd",
       "method": "POST",
       "name": "Suno Persona API",
@@ -21,8 +17,6 @@
       "title": "Suno Persona API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_mp4.md",
       "id": "2e4c9e30-a793-4f43-9322-d682120ffff2",
       "method": "POST",
       "name": "Suno MP4 API",
@@ -31,8 +25,6 @@
       "title": "Suno MP4 API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_voices.md",
       "id": "1aece23f-07b3-4c21-8b2b-d93ce9bf0e84",
       "method": "POST",
       "name": "Suno Voices API",
@@ -41,8 +33,6 @@
       "title": "Suno Voices API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_timing.md",
       "id": "da474a4e-f32a-41dc-b2fe-59cc5cea5c32",
       "method": "POST",
       "name": "Suno Timing API",
@@ -51,8 +41,6 @@
       "title": "Suno Timing API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_vox.md",
       "id": "a8d46e2d-a042-4321-ab97-a5ab1d7fed5e",
       "method": "POST",
       "name": "Suno Vox API",
@@ -61,8 +49,6 @@
       "title": "Suno Vox API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_wav.md",
       "id": "d4004774-4d0b-4aac-a8ea-be99627880e6",
       "method": "POST",
       "name": "Suno Wav API",
@@ -71,8 +57,6 @@
       "title": "Suno Wav API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_midi.md",
       "id": "be1de4f0-b5f5-43dc-bc7a-d2f90b2efe9c",
       "method": "POST",
       "name": "Suno MIDI Generation API",
@@ -81,8 +65,6 @@
       "title": "Suno MIDI Generation API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_mp3.md",
       "id": "32141b95-043f-5845-b832-77c32ddd6fa6",
       "method": "POST",
       "name": "Suno MP3 URL API",
@@ -97,8 +79,6 @@
       "title": "Suno MP3 URL API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_style.md",
       "id": "e5ff24c0-ae4e-46bb-93db-2d678610a8d3",
       "method": "POST",
       "name": "Suno Style API",
@@ -107,8 +87,6 @@
       "title": "Suno Style API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_lyrics.md",
       "id": "c98fe4e5-73c0-462d-ad24-5080ee1fa01a",
       "method": "POST",
       "name": "Suno Lyrics Generation API",
@@ -117,8 +95,6 @@
       "title": "Suno Lyrics Generation API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_mashup_lyrics.md",
       "id": "e0ffe8d7-c6dd-4b46-93d9-5fa6c744310c",
       "method": "POST",
       "name": "Suno MashupLyrics Generation API",
@@ -127,8 +103,6 @@
       "title": "Suno MashupLyrics Generation API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_tasks.md",
       "id": "f1143f0b-8146-4fc0-b02c-ac8db969392d",
       "method": "POST",
       "name": "Suno Tasks API",
@@ -137,8 +111,6 @@
       "title": "Suno Tasks API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_suno_upload.md",
       "id": "8823cd83-54f6-4ea8-979a-7fa448577186",
       "method": "POST",
       "name": "Suno Upload API",
@@ -194,6 +166,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
   }
 }

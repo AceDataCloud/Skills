@@ -1,8 +1,6 @@
 {
   "apis": [
     {
-      "documented": true,
-      "guide_source": "docs/development_hailuo_tasks.md",
       "id": "51dca1fb-cc12-4a4a-b31a-01b62043abcd",
       "method": "POST",
       "name": "Hailuo Tasks API",
@@ -11,8 +9,6 @@
       "title": "Hailuo Tasks API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_hailuo_videos.md",
       "id": "d5af91f6-a7ec-4015-b0a5-d25051158470",
       "method": "POST",
       "name": "Hailuo Videos Generation API",
@@ -68,6 +64,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
   }
 }

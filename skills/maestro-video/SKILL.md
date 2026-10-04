@@ -10,10 +10,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Maestro End-to-End Video Production
 
-<!-- platform-reference:start -->
-Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
-<!-- platform-reference:end -->
-
 Use Maestro when the user wants a **finished video**, not only a generated clip. A headless AI director turns one natural-language brief into a script, visual assets, voiceover, music, edit, captions, quality checks, and rendered video variants.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.

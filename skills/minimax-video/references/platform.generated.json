@@ -1,8 +1,6 @@
 {
   "apis": [
     {
-      "documented": true,
-      "guide_source": "docs/development_minimax_videos.md",
       "id": "64f22fd9-0efd-445e-b0b1-135682fd66d7",
       "method": "POST",
       "name": "MiniMax H3 Videos API",
@@ -16,8 +14,6 @@
       "title": "MiniMax H3 Videos API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_minimax_tasks.md",
       "id": "d6cf922e-378b-4f83-8841-e911b597134a",
       "method": "POST",
       "name": "MiniMax H3 Tasks API",
@@ -78,6 +74,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
   }
 }

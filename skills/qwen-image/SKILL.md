@@ -10,10 +10,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN. Optionally pair with mcp-qwen-im
 
 # Qwen Image 3
 
-<!-- platform-reference:start -->
-Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
-<!-- platform-reference:end -->
-
 Use `POST https://api.acedata.cloud/qwen-image/images` for generation and editing.
 
 ## Models

@@ -10,10 +10,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Google Search (SERP)
 
-<!-- platform-reference:start -->
-Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
-<!-- platform-reference:end -->
-
 Search the web through AceDataCloud's Google SERP API.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.

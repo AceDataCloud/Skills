@@ -10,10 +10,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Fish Audio — Text-to-Speech
 
-<!-- platform-reference:start -->
-Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
-<!-- platform-reference:end -->
-
 Generate narration / voiceover through AceDataCloud's Fish Audio API.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.

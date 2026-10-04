@@ -10,10 +10,6 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Happy Horse Video Generation and Editing
 
-<!-- platform-reference:start -->
-Read the [current API reference](references/README.md) for endpoints, request fields and the backend integration guides before using optional or recently added capabilities.
-<!-- platform-reference:end -->
-
 Use Happy Horse through AceDataCloud for text-to-video, first-frame animation, reference-guided
 generation, and video editing.
 

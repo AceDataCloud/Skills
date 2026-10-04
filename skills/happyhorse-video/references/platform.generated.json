@@ -1,8 +1,6 @@
 {
   "apis": [
     {
-      "documented": true,
-      "guide_source": "docs/development_happyhorse_videos.md",
       "id": "d656e357-50cb-4390-b8c9-67464bc2a2f2",
       "method": "POST",
       "name": "HappyHorse Videos API",
@@ -16,8 +14,6 @@
       "title": "HappyHorse Videos API"
     },
     {
-      "documented": true,
-      "guide_source": "docs/development_happyhorse_tasks.md",
       "id": "4fedc9b2-45d7-4e8f-8ce4-8f00ae31c78a",
       "method": "POST",
       "name": "HappyHorse Tasks API",
@@ -78,6 +74,6 @@
   ],
   "source": {
     "repository": "AceDataCloud/PlatformBackend",
-    "sha": "8eae33b05b8d25d556abec687f6b7abd088f2f75"
+    "sha": "92a3426774282880f59b72c83c7e368ddadea99c"
   }
 }

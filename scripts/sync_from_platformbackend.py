@@ -73,11 +73,6 @@ def generate(bundle: Path, skills_dir: Path, check: bool = False) -> list[str]:
         if not (skill_dir / "SKILL.md").is_file():
             raise ValueError(f"PlatformBackend maps to missing skill: {slug}")
         value = render_json(manifest["source_sha"], contracts)
-        previous_path = skill_dir / "references/platform.generated.json"
-        if previous_path.exists():
-            previous = load_json(previous_path)
-            if {k: v for k, v in previous.items() if k != "source"} == {k: v for k, v in value.items() if k != "source"}:
-                value["source"] = previous["source"]
         outputs = {
             skill_dir / "references/platform.generated.json": json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
             skill_dir / "references/platform.generated.md": render_markdown(value),
