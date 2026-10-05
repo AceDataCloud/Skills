@@ -82,6 +82,16 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 | [wecom](skills/wecom/) | WeCom (企业微信) self-built app — contacts, app messages, WeDoc, schedules, meetings | `wecom` (BYOC) |
 | [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
 | [tgstat](skills/tgstat/) | Public Telegram source discovery, rankings, and audience research | `tgstat` (BYOC username) |
+| [linkedin-company-page](skills/linkedin-company-page/) | Publish and verify company Page posts using approved LinkedIn organization permissions | `linkedin/company-page` (OAuth; approval gated) |
+| [yandex-webmaster](skills/yandex-webmaster/) | Read Yandex verified sites and popular search queries | `yandexwebmaster` (BYOC) |
+| [yandex-metrica](skills/yandex-metrica/) | Read Yandex traffic by country, source, and UTM | `yandexmetrica` (BYOC) |
+| [postman-publisher](skills/postman-publisher/) | Sync reviewed API collections to an owned public Postman workspace | `postmanpublisher` (BYOC) |
+| [whatsapp-business](skills/whatsapp-business/) | Inspect approved templates and send a single opted-in Cloud API message | `whatsappbusiness` (BYOC; gated) |
+
+The [content-fanout](skills/content-fanout/) playbook prepares channel-specific
+drafts from a canonical source and uses only explicitly selected, connected
+publishing skills. It requires human review and does not provide unattended
+bulk posting.
 
 ## Prerequisites
 
