@@ -24,7 +24,7 @@ concurrency:
 jobs:
   trigger-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - name: Set Kubectl
         uses: Azure/k8s-set-context@v5
@@ -40,12 +40,12 @@ jobs:
             "$JOB_NAME" \
             --from=cronjob/auth-backend-skill-catalog-sync
 
-          echo "Waiting for Job to complete (up to 8 minutes)…"
+          echo "Waiting for Job to complete (up to 20 minutes)…"
           kubectl -n acedatacloud wait \
             --for=condition=complete \
-            --timeout=8m \
+            --timeout=20m \
             "job/$JOB_NAME" || {
-              echo "::warning::Job did not complete within 8 minutes; logs follow"
+              echo "::warning::Job did not complete within 20 minutes; logs follow"
               kubectl -n acedatacloud logs "job/$JOB_NAME" --tail=200 || true
               exit 1
             }
