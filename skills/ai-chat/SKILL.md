@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -112,6 +112,20 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
+## OpenAI Embeddings
+
+Use `POST /openai/embeddings` (public alias `/v1/embeddings`) with the same AceDataCloud Bearer token for semantic search or RAG, not chat generation. Choose `text-embedding-3-small` or `text-embedding-3-large`; `model` and `input` are required.
+
+```json
+POST /openai/embeddings
+{
+  "model": "text-embedding-3-small",
+  "input": "Hello!"
+}
+```
+
+`text-embedding-ada-002` is retired; do not send new requests with that model. Rebuild existing indexes with the selected supported model before querying them; do not mix vectors from different models in one index or silently switch models for an existing index.
+
 ## Native Claude Messages
 
 Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including Messages-only models. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
@@ -122,6 +136,7 @@ curl -X POST https://api.acedata.cloud/v1/messages \
   -H "Content-Type: application/json" \
   -d '{
     "model":"claude-sonnet-5-5",
+    "metadata":{"user_id":"example-user-001"},
     "messages":[{"role":"user","content":"Review this implementation plan."}],
     "max_tokens":8192,
     "thinking":{"type":"adaptive"},
@@ -129,6 +144,7 @@ curl -X POST https://api.acedata.cloud/v1/messages \
   }'
 ```
 
+- Use the optional top-level `metadata` object for caller-supplied request metadata. `metadata.user_id` must be a string; choose a stable identifier without personal information. Keep it outside `messages`; it does not replace Bearer authentication.
 - Send `thinking`, `output_config`, effort, sampling parameters, and extension fields unchanged. The platform does not enforce a frozen per-model enum or rewrite thinking modes; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Pass-through is not a promise of feature support across models or protocols.
 - Common `thinking.type` values are `adaptive`, `enabled`, and `disabled`; newer modes such as `between_tools`, fixed `budget_tokens`, and whether thinking can be disabled depend on the model. Common effort values include `low`, `medium`, `high`, `xhigh`, and `max`, but are not a closed enum.
 - `thinking.display="summarized"` returns a readable summary, not raw reasoning. `omitted` hides the thinking text while retaining its opaque `signature`. Beta `updates` requests short progress updates between tool calls with hidden reasoning; send `anthropic-beta: thinking-display-updates-2026-08-18` and `thinking.display="updates"`. The value and beta header are forwarded, not rewritten to `summarized`; actual support and output depend on the selected model.

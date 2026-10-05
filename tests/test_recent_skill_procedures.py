@@ -102,6 +102,21 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
 
+    def test_metadata_is_top_level_and_not_authentication(self):
+        text = read_skill("ai-chat")
+        native = text.split("## Native Claude Messages\n", 1)[1].split("## Stateful / Agentic Conversations\n", 1)[0]
+        payload = json.loads(re.search(r"-d '(\{.*?\})'", native, re.DOTALL).group(1))
+        self.assertEqual(payload["metadata"], {"user_id": "example-user-001"})
+        self.assertNotIn("metadata", payload["messages"][0])
+        for requirement in (
+            "optional top-level `metadata` object",
+            "`metadata.user_id` must be a string",
+            "stable identifier without personal information",
+            "does not replace Bearer authentication",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, native)
+
     def test_beta_display_and_signature_preservation(self):
         text = read_skill("ai-chat")
         self.assertIn("anthropic-beta: thinking-display-updates-2026-08-18", text)
@@ -109,6 +124,67 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
         self.assertIn("not rewritten to `summarized`", text)
         self.assertIn("return complete assistant thinking blocks and signatures unchanged", text)
         self.assertIn("Display settings do not disable thinking", text)
+
+
+class EmbeddingsProcedureTests(unittest.TestCase):
+    def test_example_uses_current_model_and_preserves_migration_boundary(self):
+        text = read_skill("ai-chat")
+        embeddings = text.split("## OpenAI Embeddings\n", 1)[1].split("## Native Claude Messages\n", 1)[0]
+        example, = json_examples(embeddings)
+        self.assertEqual(example["model"], "text-embedding-3-small")
+        self.assertEqual(example["input"], "Hello!")
+        self.assertIn("text-embedding-3-large", embeddings)
+        for requirement in (
+            "POST /openai/embeddings",
+            "public alias `/v1/embeddings`",
+            "`text-embedding-ada-002` is retired",
+            "Rebuild existing indexes",
+            "do not mix vectors from different models",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, embeddings)
+
+
+class BlogReviewProcedureTests(unittest.TestCase):
+    def test_peer_review_and_write_safety(self):
+        text = read_skill("acedatacloud")
+        blog = text.split("### Blog drafts, peer approval and publication (MCP)\n", 1)[1].split("## Write-operation safety\n", 1)[0]
+        for tool in (
+            "acedatacloud_create_blog_draft",
+            "acedatacloud_get_blog_draft",
+            "acedatacloud_approve_blog_post",
+            "acedatacloud_withdraw_blog_approval",
+            "acedatacloud_publish_blog_post",
+            "acedatacloud_unpublish_blog_post",
+        ):
+            with self.subTest(tool=tool):
+                self.assertIn(tool, blog)
+        for requirement in (
+            "`blog:read` + `blog:publish`",
+            "`blog:write` + `blog:publish`",
+            "creator cannot approve their own draft",
+            "publisher must not be the reviewer",
+            "current `review_version`",
+            "409",
+            "reread the full draft",
+            "invalidate approval",
+            "Unpublish before editing",
+            "`confirm=true`",
+            "does not implement blog commands",
+            "timezone-aware `publish_at`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, blog)
+
+    def test_current_editorial_categories_and_catalog(self):
+        text = read_skill("acedatacloud")
+        for category in (
+            "product-updates", "tech-sharing", "product-recommendations", "industry-insights",
+        ):
+            self.assertIn(f"`{category}`", text)
+        readme = (ROOT / "README.md").read_text()
+        self.assertIn("peer-reviewed blog publishing", readme)
+        self.assertIn("embeddings", readme)
 
 
 class MiniMaxPollingProcedureTests(unittest.TestCase):
