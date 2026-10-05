@@ -102,20 +102,20 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
 
-    def test_metadata_is_top_level_and_not_authentication(self):
+    def test_native_example_uses_bearer_auth_without_metadata_guidance(self):
         text = read_skill("ai-chat")
         native = text.split("## Native Claude Messages\n", 1)[1].split("## Stateful / Agentic Conversations\n", 1)[0]
         payload = json.loads(re.search(r"-d '(\{.*?\})'", native, re.DOTALL).group(1))
-        self.assertEqual(payload["metadata"], {"user_id": "example-user-001"})
+        self.assertNotIn("metadata", payload)
         self.assertNotIn("metadata", payload["messages"][0])
-        for requirement in (
-            "optional top-level `metadata` object",
-            "`metadata.user_id` must be a string",
-            "stable identifier without personal information",
-            "does not replace Bearer authentication",
-        ):
-            with self.subTest(requirement=requirement):
-                self.assertIn(requirement, native)
+        self.assertNotIn("`metadata`", native)
+        self.assertNotIn("metadata.user_id", native)
+        self.assertNotIn("example-user-001", native)
+        self.assertIn('Authorization: Bearer $ACEDATACLOUD_API_TOKEN', native)
+        self.assertTrue({"model", "messages", "max_tokens"}.issubset(payload))
+        self.assertEqual(payload["model"], "claude-sonnet-5-5")
+        self.assertEqual(payload["thinking"], {"type": "adaptive"})
+        self.assertEqual(payload["output_config"], {"effort": "high"})
 
     def test_beta_display_and_signature_preservation(self):
         text = read_skill("ai-chat")

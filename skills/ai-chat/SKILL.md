@@ -136,7 +136,6 @@ curl -X POST https://api.acedata.cloud/v1/messages \
   -H "Content-Type: application/json" \
   -d '{
     "model":"claude-sonnet-5-5",
-    "metadata":{"user_id":"example-user-001"},
     "messages":[{"role":"user","content":"Review this implementation plan."}],
     "max_tokens":8192,
     "thinking":{"type":"adaptive"},
@@ -144,7 +143,6 @@ curl -X POST https://api.acedata.cloud/v1/messages \
   }'
 ```
 
-- Use the optional top-level `metadata` object for caller-supplied request metadata. `metadata.user_id` must be a string; choose a stable identifier without personal information. Keep it outside `messages`; it does not replace Bearer authentication.
 - Send `thinking`, `output_config`, effort, sampling parameters, and extension fields unchanged. The platform does not enforce a frozen per-model enum or rewrite thinking modes; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Pass-through is not a promise of feature support across models or protocols.
 - Common `thinking.type` values are `adaptive`, `enabled`, and `disabled`; newer modes such as `between_tools`, fixed `budget_tokens`, and whether thinking can be disabled depend on the model. Common effort values include `low`, `medium`, `high`, `xhigh`, and `max`, but are not a closed enum.
 - `thinking.display="summarized"` returns a readable summary, not raw reasoning. `omitted` hides the thinking text while retaining its opaque `signature`. Beta `updates` requests short progress updates between tool calls with hidden reasoning; send `anthropic-beta: thinking-display-updates-2026-08-18` and `thinking.display="updates"`. The value and beta header are forwarded, not rewritten to `summarized`; actual support and output depend on the selected model.
