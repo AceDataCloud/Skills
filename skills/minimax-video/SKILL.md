@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authentication.md).
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env (see _shared/authentication.md). Optionally pair with mcp-minimax for tool-use.
 ---
 
 # MiniMax H3 Video Generation
@@ -124,7 +124,11 @@ curl -X POST https://api.acedata.cloud/minimax/tasks \
   -d '{"action":"retrieve","id":"TASK_ID"}'
 ```
 
-Continue polling about every five seconds until the task reaches a terminal state. Use `retrieve_batch` with `ids` to check several tasks, or `delete` with `id` to remove a task. Batch listing also accepts `limit`, `offset`, `created_at_min`, and `created_at_max`.
+Continue polling about every five seconds while `task.status` is `queued` or `running`. Only `task.status="succeeded"` is success; then read the final video URL from `task.content.url`. If the task is `failed` or `cancelled`, stop polling and report `task.error.code` / `task.error.message` when present. A returned `task_id` or HTTP 200 means acceptance, not a finished video; never report a URL as final before success.
+
+Use `retrieve_batch` with `ids` to check several tasks; inspect each item in `items` independently. Use `delete` with `id` to remove a task record, not to cancel generation. Batch listing also accepts `limit`, `offset`, `created_at_min`, and `created_at_max`.
+
+> **MCP:** `pip install mcp-minimax` | Hosted: `https://minimax.mcp.acedata.cloud/mcp` | See [MCP setup](../_shared/mcp-servers.md). Current generation supports `MiniMax-H3` with `768P` or `2K`; keep querying the returned task ID until terminal success or failure.
 
 ## Gotchas
 

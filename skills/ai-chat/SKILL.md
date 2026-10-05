@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need OpenAI-compatible chat/responses calls or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes the following documented chat surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
@@ -18,6 +18,8 @@ AceDataCloud exposes two documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
+| `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -109,6 +111,31 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Native Claude Messages
+
+Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including Messages-only models. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/messages \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model":"claude-sonnet-5-5",
+    "messages":[{"role":"user","content":"Review this implementation plan."}],
+    "max_tokens":8192,
+    "thinking":{"type":"adaptive"},
+    "output_config":{"effort":"high"}
+  }'
+```
+
+- Send `thinking`, `output_config`, effort, sampling parameters, and extension fields unchanged. The platform does not enforce a frozen per-model enum or rewrite thinking modes; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Pass-through is not a promise of feature support across models or protocols.
+- Common `thinking.type` values are `adaptive`, `enabled`, and `disabled`; newer modes such as `between_tools`, fixed `budget_tokens`, and whether thinking can be disabled depend on the model. Common effort values include `low`, `medium`, `high`, `xhigh`, and `max`, but are not a closed enum.
+- `thinking.display="summarized"` returns a readable summary, not raw reasoning. `omitted` hides the thinking text while retaining its opaque `signature`. Beta `updates` requests short progress updates between tool calls with hidden reasoning; send `anthropic-beta: thinking-display-updates-2026-08-18` and `thinking.display="updates"`. The value and beta header are forwarded, not rewritten to `summarized`; actual support and output depend on the selected model.
+- Thinking shares the `max_tokens` budget with final text. Display settings do not disable thinking or reduce its token billing. Increase the budget or lower supported effort if the final answer is empty or truncated.
+- In multi-turn/tool-use conversations, return complete assistant thinking blocks and signatures unchanged. Never invent or edit a signature. Cross-protocol handling of `redacted_thinking` depends on the model service; surface errors instead of dropping blocks or silently changing the request.
+
+To estimate input size, send the native input to `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) with the same model, messages, and applicable system/tools/thinking fields. Read `input_tokens`; this endpoint generates no model output and consumes no quota. Its thinking configuration is extensible too; do not substitute a locally hard-coded model validator.
 
 ## Stateful / Agentic Conversations
 

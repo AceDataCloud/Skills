@@ -21,18 +21,47 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | short-url | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
+| minimax-video | `pip install mcp-minimax` | `https://minimax.mcp.acedata.cloud/mcp` |
 
-## Configuration Example
+## Hosted MCP setup
+
+Merge the service entry into the client's existing configuration; do not replace other services or settings. Never commit tokens. For the environment-variable examples below, set `ACEDATACLOUD_API_TOKEN` privately and start the client from that same terminal; a new terminal or desktop-launched client must also receive the variable.
+
+### Claude Code
+
+Merge into the project's `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "suno": {
+      "type": "http",
       "url": "https://suno.mcp.acedata.cloud/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_TOKEN"
+        "Authorization": "Bearer ${ACEDATACLOUD_API_TOKEN}"
       }
     }
   }
 }
 ```
+
+Review and approve the project service when prompted. In the Claude Code session, run `/mcp` and verify both connection and loaded tools; saving configuration alone is not proof of connectivity.
+
+### Amp
+
+Merge into `.amp/settings.json` for the project or `~/.config/amp/settings.json` for the current user. Amp uses `amp.mcpServers`, not `mcpServers`:
+
+```json
+{
+  "amp.mcpServers": {
+    "suno": {
+      "url": "https://suno.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ACEDATACLOUD_API_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+Run `amp mcp doctor` to check connection and tools. If the reviewed project service shows `awaiting approval`, run `amp mcp approve suno`, then check again. Replace `suno` with the configured service ID when using a different service.

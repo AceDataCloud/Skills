@@ -18,7 +18,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [suno-music](skills/suno-music/) | Generate AI music, lyrics, covers, and vocal extraction with Suno |
+| [suno-music](skills/suno-music/) | Generate Suno music, lyrics, covers, vocals, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Text-to-speech and voice synthesis with Fish Audio |
 
@@ -41,6 +41,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
 | [kling-video](skills/kling-video/) | Generate Kling videos, Turbo, multishot, commerce and owned asset references |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
+| [minimax-video](skills/minimax-video/) | Generate MiniMax-H3 videos (768P/2K) and poll tasks to confirmed success |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 | [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
@@ -50,7 +51,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models) |
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages, OpenAI-compatible chat, and stateful conversations (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
@@ -222,16 +223,20 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
+| minimax-video | `mcp-minimax` | `pip install mcp-minimax` | `https://minimax.mcp.acedata.cloud/mcp` |
 
-**Using hosted MCP endpoints** (no local install needed):
+**Using hosted MCP endpoints in Claude Code** (no local install needed):
+
+Merge into the project's `.mcp.json`, preserve existing services, and start Claude Code from a terminal with `ACEDATACLOUD_API_TOKEN` set. Review the service approval prompt, then run `/mcp` to verify connection and loaded tools. See [shared MCP setup](skills/_shared/mcp-servers.md) for Amp's configuration and approval checks.
 
 ```json
 {
   "mcpServers": {
     "suno": {
+      "type": "http",
       "url": "https://suno.mcp.acedata.cloud/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_TOKEN"
+        "Authorization": "Bearer ${ACEDATACLOUD_API_TOKEN}"
       }
     }
   }
