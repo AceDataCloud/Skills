@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, editing and rendering multitrack Studio projects, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -194,6 +194,85 @@ POST /suno/custom-models
 
 `delete` archives the platform resource and prevents further use. `capacity_released: false` means it does not promise that model capacity was released.
 
+## Studio Projects (Beta)
+
+Use `POST /suno/projects` for versioned multitrack editing, not `/suno/audios`. Only process audio the user has rights to use. Send an `Idempotency-Key` header (1–128 characters) for every action except `retrieve`; keep the same key and payload when recovering an uncertain request.
+
+### Create, retrieve, and save
+
+```json
+POST /suno/projects
+{"action":"create","title":"My Studio Project"}
+```
+
+Save `data.id`, then `retrieve` with that project `id` before editing. The returned `state` is authoritative; modify it rather than inventing track/clip structures. An empty project starts with `{"tracks":[],"timing":{"bps":2}}`.
+
+```json
+POST /suno/projects
+{"action":"retrieve","id":"PROJECT_ID"}
+```
+
+```json
+POST /suno/projects
+{"action":"save","id":"PROJECT_ID","state":{"tracks":[],"timing":{"bps":2}}}
+```
+
+Only the first save of a new, unversioned project may omit `version_id`. Afterwards, include the latest `version_id` in every modification and render. After `save`, `add_track`, `commit_candidate`, or `remove_track`, retain the new version from the result. On HTTP 409, retrieve the current project, reconcile changes, and submit with a new key; do not blindly replay stale edits.
+
+`timing.bps` is beats per second, must be positive, and defaults to 2 (120 BPM). Clip `startBeats`, `endBeats`, and `readStartBeats` are project beats, not audio-analysis bar positions. Request placement fields `start_beats` / `end_beats` are nonnegative project beats; `start_seconds` / `end_seconds` select source-audio seconds.
+
+### Upload and add audio
+
+```json
+POST /suno/projects
+{"action":"upload","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","audio_url":"https://cdn.example.com/reference.mp3","async":true}
+```
+
+Poll the upload task to success, then read `response.data.candidate.audio_id` and use it in `add_track`:
+
+```json
+POST /suno/projects
+{"action":"add_track","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","audio_id":"AUDIO_ID","name":"Backing Vocals"}
+```
+
+Default placement preserves playback speed and converts audio duration to beats using `timing.bps`.
+
+### Generate, choose, and commit candidates
+
+Projects accept only these public model names: `chirp-v3-5`, `chirp-v4`, `chirp-v4-5`, `chirp-v4-5-plus`, `chirp-v5`, `chirp-v5-5`, `chirp-v6`, `chirp-v6-wild`, `chirp-v6-mini`. An unsupported name returns 400 before submission; an accepted name does not guarantee the selected operation succeeds. Never silently switch models.
+
+```json
+POST /suno/projects
+{"action":"replace_section","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","source_audio_id":"AUDIO_ID","start_seconds":35.12,"end_seconds":48.76,"model":"chirp-v6","replacement_lyrics":"New section lyrics","async":true}
+```
+
+`replace_section` returns two candidates without selecting one. If `fixed=true`, the range must be shorter than 26 seconds. For `generate_track`, also supply `render_audio_id` from a completed project render and `stem_control_tags`, alongside `source_audio_id`, `model`, and the source-second range. `batch_size` is 1–4 (default 2).
+
+Poll to success and let the user choose a candidate before committing:
+
+```json
+POST /suno/projects
+{"action":"commit_candidate","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","operation_id":"OPERATION_ID","candidate_id":"CANDIDATE_ID","track_id":"TRACK_ID","async":true}
+```
+
+- Candidates are bound to the version used to generate them. Save an empty destination track **before** generating a new-track candidate; creating it afterwards makes the candidate stale.
+- Replacement candidates must go back to the original track containing the unique source clip. A full take preserves its placement; an interval replacement preserves the surrounding clips. Do not supply `start_beats` / `end_beats` for these replacements. If duration cannot be matched reliably, the request returns 400 and leaves the project unchanged.
+- New-track candidates use the saved empty track and default to the source clip's start, or an explicit non-overlapping range. Overlap on the destination track returns 400.
+- To remove a track, send `remove_track` with project `id`, current `version_id`, and `track_id`.
+
+### Render and recover
+
+```json
+POST /suno/projects
+{"action":"render","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","title":"Final Mix","async":true}
+```
+
+Omit `start_beats` / `end_beats` to render from the earliest audible clip start to the latest audible end. Muted tracks/clips are excluded; when solo tracks exist, only those tracks participate. An empty or inaudible project, negative bounds, or an end not greater than the start returns 400. On terminal success, persist the returned `render_id`, `audio_id`, `audio_url`, and duration.
+
+For every asynchronous Projects operation, poll `POST /suno/tasks` with `{"action":"retrieve","id":"TASK_ID"}` every 3–5 seconds. Success requires `finished_at` and `response.success=true`; `response.success=false` indicates failure. HTTP 200 or a `task_id` is acceptance, not completed audio. This Projects rule is distinct from the `/suno/audios` clip-state rule below.
+
+An identical key and payload replay the original result, including failure, without generating again. To explicitly retry, first confirm the original task failed, then use a new key. Never resubmit while the original is processing or uncertain. Keep `trace_id` for troubleshooting; report `studio_state_invalid` (400), `studio_model_unsupported` (400), `studio_unavailable` / `studio_model_unavailable` (503), `too_many_requests` (429), and `studio_audio_unavailable` / `content_rejected` (403) rather than changing models or discarding edits.
+
 ## Auxiliary Endpoints
 
 | Endpoint | Method | Purpose |
@@ -213,6 +292,7 @@ POST /suno/custom-models
 | `/suno/upload` | POST | Upload external audio for extend/cover |
 | `/suno/tasks` | POST | Query task status and results |
 | `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
+| `/suno/projects` | POST | Create, retrieve, edit, generate candidates, and render versioned Studio projects (Beta) |
 
 ## Advanced Parameters
 
@@ -244,8 +324,8 @@ Ending lyrics
 
 ## Gotchas
 
-- All generation is **async** — always set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
-- **CRITICAL:** Check the `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
+- `/suno/audios` generation is **async** — set `"callback_url"` to get a task id immediately, then poll `/suno/tasks` using `{"id":"<task_id>"}` or `{"ids":[...],"action":"retrieve_batch"}`
+- **CRITICAL for `/suno/audios`:** Check the clip `state` field — only `state: "complete"` with `success: true` means done. During `pending`, the API may return intermediate `audio_url` values (streaming previews). Do NOT stop polling just because `audio_url` is non-empty
 - Lyrics max ~3000 characters. For longer songs, use the **extend** workflow
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
