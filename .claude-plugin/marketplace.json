@@ -56,7 +56,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/xiaohongshu"
+        "./skills/xiaohongshu",
+        "./skills/content-fanout"
       ]
     }
   ]
