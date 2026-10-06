@@ -126,6 +126,42 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
         self.assertIn("Display settings do not disable thinking", text)
 
 
+class ChatGatewayProcedureTests(unittest.TestCase):
+    def test_public_model_selection_and_pricing_boundary(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "`gpt-5.6-sol-fast`",
+            "exact public model ID on Chat Completions, Responses, Messages",
+            "either conversation endpoint",
+            "no public model introduction",
+            "catalog visibility does not guarantee access",
+            "`prompt_tokens` exceeds 272,000 (not at exactly 272,000)",
+            "Do not silently substitute `gpt-5.6-sol`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_aliases_and_dify_append_only_the_endpoint_suffix(self):
+        text = read_skill("ai-chat")
+        for route in ("/v1/chat/completions", "/v1/responses", "/v1/embeddings"):
+            with self.subTest(route=route):
+                self.assertIn(f"public alias `{route}`", text)
+        dify = text.split("### Dify: OpenAI-API-compatible provider\n", 1)[1].split("## Currently Documented Model Families\n", 1)[0]
+        for requirement in (
+            "**Base URL** to `https://api.acedata.cloud/v1`",
+            "**model** to `gpt-5.5`",
+            "**conversation type** Chat",
+            "**API type** Chat Completions",
+            "Dify appends `/chat/completions` itself",
+            "do not use `/openai/v1`",
+            "Test the connection",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, dify)
+        self.assertIn('base_url="https://api.acedata.cloud/openai"', text)
+        self.assertNotIn("not `/v1/*`", text)
+
+
 class EmbeddingsProcedureTests(unittest.TestCase):
     def test_example_uses_current_model_and_preserves_migration_boundary(self):
         text = read_skill("ai-chat")
@@ -148,7 +184,7 @@ class EmbeddingsProcedureTests(unittest.TestCase):
 class BlogReviewProcedureTests(unittest.TestCase):
     def test_peer_review_and_write_safety(self):
         text = read_skill("acedatacloud")
-        blog = text.split("### Blog drafts, peer approval and publication (MCP)\n", 1)[1].split("## Write-operation safety\n", 1)[0]
+        blog = text.split("### Blog drafts, review submission and publication (MCP / REST)\n", 1)[1].split("## Write-operation safety\n", 1)[0]
         for tool in (
             "acedatacloud_create_blog_draft",
             "acedatacloud_get_blog_draft",
@@ -176,6 +212,33 @@ class BlogReviewProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, blog)
 
+    def test_submission_rejection_and_pending_edit_boundaries(self):
+        text = read_skill("acedatacloud")
+        for requirement in (
+            "current `review_version` and `review_status`",
+            "Submit a `draft` or `rejected` article",
+            "POST /api/v1/blogs/admin/{id}/submit/",
+            '{"expected_version": CURRENT_REVIEW_VERSION}',
+            'verify `review_status="pending"`',
+            "Pending articles cannot be edited",
+            "`DELETE` to the same `/submit/` route",
+            "Withdrawal of a pending review is distinct",
+            "POST /api/v1/blogs/admin/{id}/approval/",
+            "POST /api/v1/blogs/admin/{id}/reject/",
+            "nonblank `comment` (at most 2,000 characters)",
+            'verify `review_status="rejected"`',
+            "Read `review_comment`, revise and resubmit",
+            'Only after `review_status="approved"`',
+            "409 on submission, withdrawal, approval or rejection",
+            "REST review routes above execute immediately and have no dry-run flag",
+            "obtain confirmation before sending",
+            "do not invent submission/rejection tool names or CLI flags",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("acedatacloud_submit_blog", text)
+        self.assertNotIn("acedatacloud_reject_blog", text)
+
     def test_current_editorial_categories_and_catalog(self):
         text = read_skill("acedatacloud")
         for category in (
@@ -183,7 +246,7 @@ class BlogReviewProcedureTests(unittest.TestCase):
         ):
             self.assertIn(f"`{category}`", text)
         readme = (ROOT / "README.md").read_text()
-        self.assertIn("peer-reviewed blog publishing", readme)
+        self.assertIn("submitted, peer-reviewed blog publishing via MCP / REST", readme)
         self.assertIn("embeddings", readme)
 
 
