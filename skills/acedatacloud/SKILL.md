@@ -6,7 +6,7 @@ description: |
   remaining credits, look up API call (usage) records and spend, list or create
   or delete API keys (credentials), list subscribed services, list/create/pay
   recharge orders, manage platform tokens, view referral/affiliate earnings,
-  manage blog drafts and peer-reviewed publication via MCP, or (admins) publish
+  manage blog drafts, review submission and peer-reviewed publication via MCP / REST, or (admins) publish
   an announcement. Also covers the PUBLIC catalog & docs (no
   token needed): service detail & pricing, API list & OpenAPI specs, datasets,
   integrations, full-text documentation search, and the model catalog with
@@ -24,7 +24,7 @@ compatibility: Requires ACEDATACLOUD_PLATFORM_TOKEN (a platform or user token). 
 
 Programmatically manage your AceDataCloud account: balances, usage records, API
 keys, services, orders, platform tokens, models, announcements and referral
-earnings, and manage peer-reviewed blog publication through MCP — plus browse
+earnings, and manage submitted, peer-reviewed blog publication through MCP / REST — plus browse
 the public catalog & docs (service pricing, API specs, datasets, integrations,
 documentation search, model catalog) without a token.
 
@@ -259,24 +259,25 @@ Public read: `{ "count": 20, "items": [ { "id", "title", "content",
 - **AI polish** — `POST /announcements/admin/polish/` `{ "title", "content" }`
 - **AI translate** — `POST /announcements/admin/translate/` `{ "translation_key" }`
 
-### Blog drafts, peer approval and publication (MCP)
+### Blog drafts, review submission and publication (MCP / REST)
 
 Use `mcp-acedatacloud` with a platform token or the Studio OAuth connection. The bundled CLI does not implement blog commands; use the MCP tools and inspect their current input schemas rather than inventing CLI flags. Blog permissions can be delegated to non-admin accounts; check the available tools and scopes before writing.
 
 | Permissions | Operations |
 |-------------|------------|
 | `blog:read` | List drafts and read full editing-source content |
-| `blog:write` | Create, edit and delete unpublished drafts |
-| `blog:read` + `blog:publish` | Approve the current draft version or withdraw approval before publication |
+| `blog:write` | Create, edit and delete unpublished drafts; submit or withdraw a pending review |
+| `blog:read` + `blog:publish` | Approve or reject a submitted version, or withdraw approval before publication |
 | `blog:write` + `blog:publish` | Publish or schedule an approved draft, unpublish, or delete a published post |
 
 1. Confirm the intended article and source language (`zh-cn` or `en`). Use the current editorial categories: `product-updates`, `tech-sharing`, `product-recommendations`, or `industry-insights` (default `tech-sharing`). Read the current category list if a custom category is needed; do not guess a slug.
-2. Save an unpublished draft with `acedatacloud_create_blog_draft`, or edit it with `acedatacloud_update_blog_post`. Read the full source with `acedatacloud_get_blog_draft`, including title, summary, body, category and cover, and retain its current `review_version`.
-3. A different authorized account must read the full draft and approve that exact version with `acedatacloud_approve_blog_post`. The creator cannot approve their own draft. For REST approval, `expected_version` must equal the `review_version` just read; a 409 means the draft changed, so refresh and reread the full draft before seeking approval again. Do not impersonate a reviewer or switch credentials to bypass this separation.
-4. After approval, use `acedatacloud_publish_blog_post` from an authorized account: the publisher must not be the reviewer (the creator may publish after peer approval). For scheduling, provide a timezone-aware `publish_at`; omit it to publish now. Verify the returned state and time before reporting the post as publicly live.
-5. Changes to reviewed public content (including title, body, category, tags, slug or cover) invalidate approval and advance `review_version`. Unpublish before editing a published post with `acedatacloud_unpublish_blog_post`, then obtain fresh peer approval before republishing. Use `acedatacloud_withdraw_blog_approval` to revoke approval while unpublished. Legacy drafts without a creator must be saved by an editor before approval.
+2. Save an unpublished draft with `acedatacloud_create_blog_draft`, or edit it with `acedatacloud_update_blog_post`. Read the full source with `acedatacloud_get_blog_draft`, including title, summary, body, category and cover, and retain its current `review_version` and `review_status`.
+3. Submit a `draft` or `rejected` article for review before seeking approval. With `blog:write`, send `POST /api/v1/blogs/admin/{id}/submit/` on the management host with `{"expected_version": CURRENT_REVIEW_VERSION}`; verify `review_status="pending"`. Legacy drafts without a creator must first be saved by an editor. Pending articles cannot be edited: withdraw the review request with `DELETE` to the same `/submit/` route and the current `expected_version`, verify `draft`, then edit and resubmit. Withdrawal of a pending review is distinct from withdrawal of approval.
+4. A different authorized account must read the full pending draft and approve that exact version with `acedatacloud_approve_blog_post`. The creator cannot approve their own draft. For REST approval, `POST /api/v1/blogs/admin/{id}/approval/` requires `expected_version` equal to the `review_version` just read. The reviewer may instead send `POST /api/v1/blogs/admin/{id}/reject/` with that `expected_version` and a nonblank `comment` (at most 2,000 characters); verify `review_status="rejected"`. Read `review_comment`, revise and resubmit before another review. A 409 on submission, withdrawal, approval or rejection means the draft changed: refresh and reread the full draft before retrying. Do not impersonate a reviewer or switch credentials to bypass this separation.
+5. Only after `review_status="approved"`, use `acedatacloud_publish_blog_post` from an authorized account: the publisher must not be the reviewer (the creator may publish after peer approval). For scheduling, provide a timezone-aware `publish_at`; omit it to publish now. Verify the returned state and time before reporting the post as publicly live.
+6. Changes to reviewed public content (including title, body, category, tags, slug or cover) invalidate approval and advance `review_version`. Unpublish before editing a published post with `acedatacloud_unpublish_blog_post`, then submit and obtain fresh peer approval before republishing. Use `acedatacloud_withdraw_blog_approval` to revoke approval while unpublished; an approved article returns to `draft`.
 
-All blog writes require a preview and explicit user confirmation: without `confirm=true`, MCP tools only return a dry-run preview. Confirm the article, version and publication time before executing; a successful preview is not evidence of a saved, approved or published post. If a required tool or permission is absent, stop and request the appropriate authorization.
+All blog writes require a preview and explicit user confirmation: without `confirm=true`, MCP tools only return a dry-run preview. The REST review routes above execute immediately and have no dry-run flag: preview the method, article ID and body locally and obtain confirmation before sending them with the platform Bearer token. Prefer a matching MCP tool if its discovered schema supports the operation; do not invent submission/rejection tool names or CLI flags. Confirm the article, version and publication time before executing; a successful preview is not evidence of a saved, submitted, approved or published post. If the required operation or permission is unavailable, stop and request the appropriate authorization.
 
 ## Write-operation safety
 

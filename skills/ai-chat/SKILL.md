@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes and public `/v1/*` aliases.
 ---
 
 # AI Chat — Unified LLM Gateway
@@ -16,8 +16,8 @@ AceDataCloud exposes the following documented chat surfaces:
 |----------|---------|
 | `POST /aichat2/conversations` | Recommended stateful / multimodal / agentic conversations |
 | `POST /aichat/conversations` | Legacy conversation endpoint |
-| `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
-| `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /openai/chat/completions` (public alias `/v1/chat/completions`) | OpenAI-compatible stateless chat completions |
+| `POST /openai/responses` (public alias `/v1/responses`) | OpenAI-compatible responses API |
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
 
@@ -51,6 +51,10 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+### Dify: OpenAI-API-compatible provider
+
+Set **Base URL** to `https://api.acedata.cloud/v1`, **API Key** to your AceDataCloud service token, **model** to `gpt-5.5` (or another supported chat model), and **model type** to LLM. Select **conversation type** Chat and **API type** Chat Completions. Dify appends `/chat/completions` itself; do not use `/openai/v1` or include the full endpoint in Base URL. Test the connection before selecting the model in a Workflow / Chatflow LLM node.
+
 ## Currently Documented Model Families
 
 The OpenAPI specs expose a broad, fast-moving model catalog. Representative current
@@ -58,7 +62,7 @@ models include:
 
 | Family | Current examples |
 |--------|------------------|
-| OpenAI / reasoning | `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
+| OpenAI / reasoning | `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol-fast`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
 | OpenAI free-tier chat-completions | `gpt-5.5:free`, `gpt-5:free`, `gpt-4.1:free`, `gpt-4o:free`, `gpt-4o-mini:free`, `gpt-oss:free` |
 | Claude | `claude-opus-5-5` and `claude-sonnet-5-5` (Messages only), `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
 | Gemini | `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
@@ -66,6 +70,8 @@ models include:
 | DeepSeek | `deepseek-v4.1-flash`, `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
 | Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
 | GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
+
+To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completions, Responses, Messages, or either conversation endpoint above. It is listed in the public model/pricing catalog with vision capability, but has no public model introduction. Check account eligibility and current pricing before requesting it; catalog visibility does not guarantee access. Its pricing rules use a higher tier when recorded `prompt_tokens` exceeds 272,000 (not at exactly 272,000). Do not silently substitute `gpt-5.6-sol` after an access or parameter error; protocol-specific features remain model-dependent.
 
 `gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.
 
@@ -192,7 +198,7 @@ Useful parameters:
 
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- OpenAI-compatible routes under `/openai/*` retain public aliases `/v1/chat/completions`, `/v1/responses`, and `/v1/embeddings`. For clients that append `/chat/completions`, use Base URL `https://api.acedata.cloud/v1` (not `/openai/v1`); the SDK example above keeps the existing `/openai` base.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.
