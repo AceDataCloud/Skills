@@ -162,6 +162,62 @@ class ChatGatewayProcedureTests(unittest.TestCase):
         self.assertNotIn("not `/v1/*`", text)
 
 
+class AgentTaskProcedureTests(unittest.TestCase):
+    def test_turn_limit_is_per_request_not_history(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "Agent iterations per request: 1–500, default 500",
+            "not retained history",
+            "Each iteration is a model call",
+            "`max_turns: 1` requests a single answer without tool calls",
+            "not a guarantee that all will run",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("Trim retained turn history", text)
+
+    def test_scheduled_examples_use_action_payloads_and_bounded_template(self):
+        text = read_skill("ai-chat").split("## Scheduled Agent Tasks\n", 1)[1].split("## Gotchas\n", 1)[0]
+        examples = {example["action"]: example for example in json_examples(text)}
+        self.assertEqual(set(examples), {"create", "retrieve_runs", "update"})
+        create = examples["create"]
+        self.assertEqual(create["schedule"], {"type": "cron", "cron": "0 9 * * *", "tz": "UTC"})
+        self.assertGreaterEqual(create["template"]["max_turns"], 1)
+        self.assertLessEqual(create["template"]["max_turns"], 500)
+        self.assertNotIn("max_turns", create)
+        self.assertIn("Do not publish or send messages", create["template"]["question"])
+        self.assertEqual(examples["retrieve_runs"]["id"], "TASK_ID")
+        self.assertEqual(examples["update"], {"action": "update", "id": "TASK_ID", "state": "disabled"})
+        for requirement in (
+            "same service Bearer token",
+            "not a platform-management-token endpoint",
+            "`template.max_turns` is 1–500, default 500",
+            "not schedule frequency",
+            "preview locally and obtain confirmation",
+            "scheduling is not blanket permission",
+            "three months after creation",
+            "at most 15 minutes",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_run_failure_and_handoff_failure_are_distinct(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "not evidence of a successful run",
+            "AI execution failures **do not auto-pause**",
+            "five consecutive handoff failures",
+            "not five failed AI runs",
+            "`status`, `error_code` and `conversation_id`",
+            "`awaiting_user_input`",
+            "explicitly pause recurring failures",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("/internal/scheduled-task", text)
+        self.assertIn("scheduled agent tasks", (ROOT / "README.md").read_text())
+
+
 class EmbeddingsProcedureTests(unittest.TestCase):
     def test_example_uses_current_model_and_preserves_migration_boundary(self):
         text = read_skill("ai-chat")
@@ -238,6 +294,62 @@ class BlogReviewProcedureTests(unittest.TestCase):
                 self.assertIn(requirement, text)
         self.assertNotIn("acedatacloud_submit_blog", text)
         self.assertNotIn("acedatacloud_reject_blog", text)
+
+    def test_video_drafts_keep_validation_and_review_boundaries(self):
+        text = read_skill("acedatacloud")
+        for requirement in (
+            'Default `content_type="article"` requires a nonblank body and clears `video_url`',
+            'For `content_type="video"`',
+            "actual HTTPS `video_url`",
+            "body may be blank, but title and summary remain required",
+            "Never fabricate a media URL",
+            "nonblank `cover_alt`",
+            "MCP schema lacks video fields",
+            "POST /api/v1/blogs/admin/",
+            "PATCH /api/v1/blogs/admin/{id}/",
+            "watch the actual video",
+            "`content_type` or `video_url`) invalidate approval",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertIn("article/video drafts and review threads", (ROOT / "README.md").read_text())
+
+    def test_private_threads_use_saved_utf16_anchors_and_root_ids(self):
+        text = read_skill("acedatacloud")
+        threads = text.split("#### Review threads (authenticated REST)\n", 1)[1].split("All blog writes", 1)[0]
+        for requirement in (
+            "private editorial feedback, not public blog comments",
+            "platform Bearer token",
+            "`blog:read` plus either `blog:write` or `blog:publish`",
+            "GET /api/v1/blogs/admin/{id}/comments/",
+            "POST /api/v1/blogs/admin/{id}/comments/",
+            "current `expected_version`",
+            'field="overall"` with no offsets or quote',
+            'field="title"`, `"summary"` or `"content"`',
+            "**UTF-16 code units**",
+            "not Python characters or UTF-8 bytes",
+            "start is inclusive, end exclusive",
+            "at most 2,000 code units",
+            "Never anchor to unsaved text",
+            "On 409, refresh the draft and recompute",
+            "POST /api/v1/blogs/admin/{id}/comments/{comment_id}/replies/",
+            "root ID, not a reply ID",
+            "replying to a resolved thread reopens it",
+            "PATCH /api/v1/blogs/admin/{id}/comments/{comment_id}/",
+            '{"resolved":true}',
+            '{"resolved":false}',
+            "resolution do not require `expected_version`",
+            "does not approve or publish",
+            "After preview and confirmation",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, threads)
+
+    def test_rejection_can_use_only_current_unresolved_root_feedback(self):
+        text = read_skill("acedatacloud")
+        self.assertIn("omit `comment` if an unresolved root review thread already exists on the current version", text)
+        self.assertIn("Read `review_comment`, revise and resubmit", text)
+        self.assertIn("historical feedback does not prove a selection still matches", text)
 
     def test_current_editorial_categories_and_catalog(self):
         text = read_skill("acedatacloud")
