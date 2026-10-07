@@ -51,14 +51,14 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages, OpenAI-compatible chat with public `/v1` aliases, embeddings, and stateful conversations (50+ models) |
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages, OpenAI-compatible chat with public `/v1` aliases, embeddings, stateful conversations and scheduled agent tasks (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
-| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST |
+| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST (article/video drafts and review threads) |
 
 ### Connectors
 

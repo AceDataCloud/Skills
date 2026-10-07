@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or stateful conversations and scheduled agent tasks across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -188,13 +188,52 @@ Useful parameters:
 | `stateful` | boolean | Keep conversation history server-side |
 | `references` | array | Extra context documents |
 | `preset` | string | Preset/system prompt |
-| `max_turns` | integer | Trim retained turn history |
+| `max_turns` | integer | Agent iterations per request: 1–500, default 500; not retained history |
 | `allowed_skills` / `allowed_mcp_servers` | array | Restrict tool-use scope |
 | `unattended_policy` | object | Tool-use permission policy |
 | `tool_results` | array | Return results for previously requested tool calls |
 | `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek`) |
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
+
+Set `max_turns` deliberately for the expected tool chain. Each iteration is a model call, not a history-retention setting; `max_turns: 1` requests a single answer without tool calls. Omitting it allows up to 500 iterations, not a guarantee that all will run.
+
+## Scheduled Agent Tasks
+
+Use `POST /aichat2/scheduled-tasks` on `https://api.acedata.cloud` with the same service Bearer token and aichat API access. All operations use POST with an `action`; this is not a platform-management-token endpoint.
+
+1. Confirm the prompt, model, accounts, permitted tools, schedule, IANA timezone and spending scope before creating or enabling a task. Runs are billable and unattended: finish third-party authorization interactively first and remove ambiguities that would require a follow-up question. Use the [unattended confirmation guard](../_shared/unattended.md) for supported write helpers; scheduling is not blanket permission to publish or send.
+2. Choose `schedule.type`: `cron` requires a five-field `cron` expression and `tz`; `interval` requires `interval_seconds` and `tz`; `once` requires a Unix-seconds `at` and `tz`. Use an IANA zone such as `UTC`, not `UTC+8`. The saved timezone governs Cron wall-clock time even if the device timezone changes.
+3. Put the conversation prompt/model in `template`. Optional `template.max_turns` is 1–500, default 500, and caps iterations **per run**, not schedule frequency. Each model call is billed by actual usage; a run can end earlier due to timeout, authorization or other execution conditions. A run lasts at most 15 minutes. Set an explicit Unix-seconds `ends_at` when needed; otherwise tasks stop three months after creation.
+4. After creation, retain the returned task `id`. List with `action="retrieve_batch"`; inspect executions with `action="retrieve_runs"` and that `id`, or `action="retrieve_runs_batch"` for all tasks (optional `status`, `offset`, `limit`). Read each run's `status`, `error_code` and `conversation_id`; retrieve the conversation through `/aichat2/conversations` for the full result. Task `state="enabled"` (shown as “running” in the list) is not evidence of a successful run.
+5. Consecutive AI execution failures **do not auto-pause** the task: the next scheduled run still attempts execution. Auto-pause occurs after **five consecutive handoff failures** to the execution service, not five failed AI runs. Insufficient balance fails a run; a request for user input/consent fails with `awaiting_user_input`. Diagnose the run history, fix balance/authorization/prompt issues, and explicitly pause recurring failures to prevent further attempts.
+6. Pause with `action="update"`, the task `id` and `state="disabled"`; resume with `state="enabled"` only after confirmation. Delete with `action="delete"` and `id` only after confirming permanent removal.
+
+Creation payload (preview locally and obtain confirmation before sending):
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "create",
+  "name": "Daily AI news summary",
+  "schedule": {"type": "cron", "cron": "0 9 * * *", "tz": "UTC"},
+  "template": {
+    "model": "gpt-4o-mini",
+    "question": "Today is {{date}}. Search and summarize the three most important AI news items. Do not publish or send messages.",
+    "max_turns": 5
+  }
+}
+```
+
+```json
+POST /aichat2/scheduled-tasks
+{"action": "retrieve_runs", "id": "TASK_ID"}
+```
+
+```json
+POST /aichat2/scheduled-tasks
+{"action": "update", "id": "TASK_ID", "state": "disabled"}
+```
 
 ## Gotchas
 
