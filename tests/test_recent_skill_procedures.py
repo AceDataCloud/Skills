@@ -1,7 +1,11 @@
+import importlib.util
+import io
 import json
 import re
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).parents[1]
@@ -235,6 +239,91 @@ class EmbeddingsProcedureTests(unittest.TestCase):
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, embeddings)
+
+
+class DatasetReferencePricingTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        script = ROOT / "skills" / "acedatacloud" / "scripts" / "acedatacloud.py"
+        spec = importlib.util.spec_from_file_location("acedatacloud_skill", script)
+        cls.cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.cli)
+
+    def pricing(self, service, json_output=True):
+        argv = ["acedatacloud.py", "pricing", "--service", service["id"]]
+        if json_output:
+            argv.append("--json")
+        output = io.StringIO()
+        with patch.object(self.cli.sys, "argv", argv), patch.object(
+            self.cli, "_request", return_value=(200, {"count": 1, "items": [service]})
+        ) as request, redirect_stdout(output):
+            self.cli.main()
+        request.assert_called_once()
+        self.assertEqual(request.call_args.args[1:], ("GET", "/services/", {"id": service["id"]}))
+        self.assertEqual(request.call_args.kwargs, {"auth_required": False})
+        return json.loads(output.getvalue())
+
+    def test_reference_quote_keeps_currency_range_unit_and_status(self):
+        for service_id, alias, minimum, maximum, unit in (
+            ("b673f806-cf79-544f-8ab9-544445d11252", "hacker-news", 8800, 8800, "full_package"),
+            ("30d64398-9368-46f2-8377-1416c9fc0cbc", "youtube-video", 249, 329, "tb"),
+        ):
+            quote = {"currency": "CNY", "min_amount": minimum, "max_amount": maximum,
+                     "unit": unit, "status": "reference"}
+            service = {"id": service_id, "alias": alias, "type": "Dataset",
+                       "metadata": {"pricing_mode": "contact_only", "reference_quote": quote},
+                       "packages": []}
+            for json_output in (False, True):
+                with self.subTest(alias=alias, json_output=json_output):
+                    result = self.pricing(service, json_output)
+                    self.assertEqual(result["pricing_mode"], "contact_only")
+                    self.assertEqual(result["reference_quote"], quote)
+                    self.assertIsNone(result["cost"])
+                    self.assertNotIn("packages", result)
+
+    def test_missing_quote_does_not_invent_a_price(self):
+        for metadata in (None, {}, {"pricing_mode": "contact_only"},
+                         {"pricing_mode": "contact_only", "reference_quote": None}):
+            with self.subTest(metadata=metadata):
+                result = self.pricing({"id": "b673f806-cf79-544f-8ab9-544445d11252",
+                                       "type": "Dataset", "metadata": metadata})
+                self.assertNotIn("reference_quote", result)
+                self.assertIsNone(result["cost"])
+                if metadata and "pricing_mode" in metadata:
+                    self.assertEqual(result["pricing_mode"], "contact_only")
+
+    def test_pricing_omits_unrelated_metadata(self):
+        quote = {"currency": "CNY", "min_amount": 8800, "max_amount": 8800,
+                 "unit": "full_package", "status": "reference"}
+        result = self.pricing({
+            "id": "b673f806-cf79-544f-8ab9-544445d11252", "type": "Dataset",
+            "metadata": {"pricing_mode": "contact_only", "procurement_cost": 1,
+                         "reference_quote": {**quote, "internal_note": "not public pricing"}},
+        })
+        self.assertEqual(result["reference_quote"], quote)
+        self.assertNotIn("procurement_cost", result)
+        self.assertNotIn("metadata", result)
+
+    def test_api_pricing_output_is_unchanged(self):
+        service = {"id": "b673f806-cf79-544f-8ab9-544445d11252", "alias": "test-api",
+                   "title": "Test API", "type": "Api", "unit": "Credit", "free_amount": 10,
+                   "cost": {"amount": 1}, "metadata": {"reference_quote": {"currency": "CNY"}}}
+        self.assertEqual(self.pricing(service), {key: service[key] for key in (
+            "alias", "title", "type", "unit", "free_amount", "cost"
+        )} | {"service_id": service["id"]})
+
+    def test_skill_explains_reference_only_purchase_boundary(self):
+        text = read_skill("acedatacloud").split("### Dataset reference pricing\n", 1)[1]
+        text = text.split("### Announcements", 1)[0]
+        for requirement in (
+            "pricing --service <alias-or-uuid> --json",
+            "metadata.reference_quote", 'pricing_mode="contact_only"', 'status="reference"',
+            "yuan, not Credits or USD", "per TB", "full package", "Equal bounds",
+            "invent a quote", "does not create a purchase Package",
+            "license and final price with support", "do not call `create-order` or `pay-order`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
 
 
 class BlogReviewProcedureTests(unittest.TestCase):

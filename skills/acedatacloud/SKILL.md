@@ -82,7 +82,7 @@ python3 $ADC distributions                    # referral status + commission his
 
 # Catalog & docs (PUBLIC — work without a token)
 python3 $ADC get-service --service suno       # one service's detail
-python3 $ADC pricing --service suno           # unit, free_amount and cost
+python3 $ADC pricing --service suno           # unit, free_amount and cost (dataset reference quotes when present)
 python3 $ADC apis --service suno              # API endpoints for a service
 python3 $ADC spec --path /suno/audios         # one API's OpenAPI definition + cost
 python3 $ADC datasets                         # downloadable datasets
@@ -245,6 +245,13 @@ These work without auth (send the token if you have one; not required):
 - **Doc content** — `GET /documents/?id=<uuid>` → `items[0].content`. `documents/{id}/` (id or slug) is broken (404).
 - **Model catalog** — `GET /models/catalog/` → `{ rates, modalities, count, items:[{ id, name, provider,
   modality, unit, capabilities, pricing:{ input_credits, output_credits, official_* } }] }`. Filter client-side.
+
+### Dataset reference pricing
+
+1. Resolve the requested dataset's public service with `get-service --service <alias-or-uuid>` and read its current metadata. Contact-only datasets are catalog entries, not automatically downloadable purchases; a missing price does not mean free data.
+2. Run `pricing --service <alias-or-uuid> --json`. For a Dataset, the CLI includes `pricing_mode` and `reference_quote` when present. The source fields are `metadata.pricing_mode` and `metadata.reference_quote` on the Service, not the Dataset's `price` or an API's `cost`.
+3. If `pricing_mode="contact_only"` and the quote has `status="reference"`, present `min_amount`–`max_amount` with the supplied `currency` and quote `unit`. `CNY` amounts are yuan, not Credits or USD; `full_package` means the full package and `tb` means per TB. Equal bounds indicate a single reference amount. Do not apply the Credits-to-USD conversion or invent a quote when none is returned.
+4. Treat a reference quote as indicative only: it does not create a purchase Package, guarantee delivery, or grant download or usage rights. Confirm the required version, scope, format, license and final price with support before proceeding; do not call `create-order` or `pay-order` based on a reference quote.
 
 ### Announcements — `GET /announcements/`
 
