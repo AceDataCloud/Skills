@@ -196,7 +196,7 @@ POST /suno/custom-models
 
 ## Studio Projects (Beta)
 
-Use `POST /suno/projects` for versioned multitrack editing, not `/suno/audios`. Only process audio the user has rights to use. Send an `Idempotency-Key` header (1–128 characters) for every action except `retrieve`; keep the same key and payload when recovering an uncertain request.
+Use `POST /suno/projects` for versioned multitrack editing, not `/suno/audios`. Only process audio the user has rights to use. Send an `Idempotency-Key` header (1–128 characters) for every action except `retrieve`; keep the same key and payload when recovering an uncertain request. A new operation needs a new key; reusing a key with a different payload returns 409.
 
 ### Create, retrieve, and save
 
@@ -217,7 +217,7 @@ POST /suno/projects
 {"action":"save","id":"PROJECT_ID","state":{"tracks":[],"timing":{"bps":2}}}
 ```
 
-Only the first save of a new, unversioned project may omit `version_id`. Afterwards, include the latest `version_id` in every modification and render. After `save`, `add_track`, `commit_candidate`, or `remove_track`, retain the new version from the result. On HTTP 409, retrieve the current project, reconcile changes, and submit with a new key; do not blindly replay stale edits.
+`save` replaces the complete state, not a patch: preserve unknown fields from `retrieve.data.state`. It completes synchronously even if its result includes `task_id`. Only the first save of a new, unversioned project may omit `version_id`. Afterwards, include the latest `version_id` in every modification, candidate generation, and render. After `save`, `add_track`, `commit_candidate`, or `remove_track`, retain the new version from the result. `upload`, `render`, `generate_track`, and `replace_section` do not change the project version. On HTTP 409, retrieve the current project, reconcile changes, and submit with a new key; do not blindly replay stale edits.
 
 `timing.bps` is beats per second, must be positive, and defaults to 2 (120 BPM). Clip `startBeats`, `endBeats`, and `readStartBeats` are project beats, not audio-analysis bar positions. Request placement fields `start_beats` / `end_beats` are nonnegative project beats; `start_seconds` / `end_seconds` select source-audio seconds.
 
@@ -246,9 +246,18 @@ POST /suno/projects
 {"action":"replace_section","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","source_audio_id":"AUDIO_ID","start_seconds":35.12,"end_seconds":48.76,"model":"chirp-v6","replacement_lyrics":"New section lyrics","async":true}
 ```
 
-`replace_section` returns two candidates without selecting one. If `fixed=true`, the range must be shorter than 26 seconds. For `generate_track`, also supply `render_audio_id` from a completed project render and `stem_control_tags`, alongside `source_audio_id`, `model`, and the source-second range. `batch_size` is 1–4 (default 2).
+`replace_section` returns two candidates without selecting one. The end must not exceed the actual source duration. `prompt` supplies source lyrics/context; `replacement_lyrics` supplies the new interval lyrics. If `fixed=true`, the range must be shorter than 26 seconds; support is model-dependent and this mode is not verified by the documented Backend run.
 
-Poll to success and let the user choose a candidate before committing:
+For a new track, first add the source audio to the project, then retrieve the complete state and append an empty audio track with a fresh unique `id`, `type:"audio"`, `clips:[]`, `takeLanes:[]`, `mute:false`, `solo:false`, `amplitude:1`, `instrument:{"type":"song"}`, and `color:"#7251F7"`. Save the complete state before generating, retaining its new version and the destination track ID. Render that version to success and use `response.data.audio_id` as the mix reference:
+
+```json
+POST /suno/projects
+{"action":"generate_track","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","source_audio_id":"AUDIO_ID","render_audio_id":"RENDER_AUDIO_ID","model":"chirp-v5","start_seconds":12,"end_seconds":20,"stem_control_tags":"add Piano","tags":"gentle piano, instrumental","batch_size":2,"instrumental":true,"vocal_gender":"unspecified","async":true}
+```
+
+`stem_control_tags` is descriptive text, not an enum. `batch_size` is 1–4 (default 2). `instrumental` defaults to true; use `prompt` for new-track text/lyrics and `vocal_gender` (`f`, `m`, `unspecified`, default `unspecified`) for a preference, not a guaranteed result. Both generation actions accept `tags` and `negative_tags` (default empty strings). Source-second ranges are not output-duration guarantees; inspect each candidate's actual duration. Generation does not add candidates to the project.
+
+Poll to success, read `response.data.operation_id` and the chosen `response.data.candidates[].id` (do not substitute project IDs or the commit task ID), and let the user choose a candidate before committing:
 
 ```json
 POST /suno/projects
@@ -258,7 +267,12 @@ POST /suno/projects
 - Candidates are bound to the version used to generate them. Save an empty destination track **before** generating a new-track candidate; creating it afterwards makes the candidate stale.
 - Replacement candidates must go back to the original track containing the unique source clip. A full take preserves its placement; an interval replacement preserves the surrounding clips. Do not supply `start_beats` / `end_beats` for these replacements. If duration cannot be matched reliably, the request returns 400 and leaves the project unchanged.
 - New-track candidates use the saved empty track and default to the source clip's start, or an explicit non-overlapping range. Overlap on the destination track returns 400.
-- To remove a track, send `remove_track` with project `id`, current `version_id`, and `track_id`.
+- To remove a track, confirm the intended track, then submit the current version and retrieve again to verify the remaining state:
+
+```json
+POST /suno/projects
+{"action":"remove_track","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","track_id":"TRACK_ID"}
+```
 
 ### Render and recover
 
@@ -269,7 +283,9 @@ POST /suno/projects
 
 Omit `start_beats` / `end_beats` to render from the earliest audible clip start to the latest audible end. Muted tracks/clips are excluded; when solo tracks exist, only those tracks participate. An empty or inaudible project, negative bounds, or an end not greater than the start returns 400. On terminal success, persist the returned `render_id`, `audio_id`, `audio_url`, and duration.
 
-For every asynchronous Projects operation, poll `POST /suno/tasks` with `{"action":"retrieve","id":"TASK_ID"}` every 3–5 seconds. Success requires `finished_at` and `response.success=true`; `response.success=false` indicates failure. HTTP 200 or a `task_id` is acceptance, not completed audio. This Projects rule is distinct from the `/suno/audios` clip-state rule below.
+`upload`, `add_track`, `generate_track`, `replace_section`, `commit_candidate`, and `render` always run asynchronously, even with `async:false`. For every asynchronous Projects operation, poll `POST /suno/tasks` with `{"action":"retrieve","id":"TASK_ID"}` every 3–5 seconds. Success requires `finished_at` and `response.success=true`; `response.success=false` indicates failure. Read `response.error` on failure, including after a callback. HTTP 200 or a `task_id` is acceptance, not completed audio. This Projects rule is distinct from the `/suno/audios` clip-state rule below.
+
+A readable candidate URL or successful commit does not prove the project can render. The documented Backend run generated and committed a new track, but rendering with it failed with `studio_audio_unavailable`; a replacement candidate also failed to commit because its duration matched neither the source nor the selected interval. Keep the original project and candidate for inspection; do not guess placement or automatically repeat paid generation. Before removing an unavailable track, confirm the intended edit with the user, retrieve the current state, remove only that track, then retrieve and render the new version to verify recovery. Projects and candidates are bound to their application and execution environment; do not assume cross-application reuse or automatic failover.
 
 An identical key and payload replay the original result, including failure, without generating again. To explicitly retry, first confirm the original task failed, then use a new key. Never resubmit while the original is processing or uncertain. Keep `trace_id` for troubleshooting; report `studio_state_invalid` (400), `studio_model_unsupported` (400), `studio_unavailable` / `studio_model_unavailable` (503), `too_many_requests` (429), and `studio_audio_unavailable` / `content_rejected` (403) rather than changing models or discarding edits.
 

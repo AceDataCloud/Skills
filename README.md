@@ -58,7 +58,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
-| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST (article/video drafts and review threads) |
+| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — scoped OAuth access, balance, usage/spend, API keys, services, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST (article/video drafts and review threads) |
 
 ### Connectors
 

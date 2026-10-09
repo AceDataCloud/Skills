@@ -47,7 +47,7 @@ POST /nano-banana/images
 {
   "action": "generate",
   "prompt": "a photorealistic macro shot of morning dew on a spider web",
-  "model": "nano-banana-pro",
+  "model": "nano-banana-2.1",
   "aspect_ratio": "16:9",
   "resolution": "2K"
 }
@@ -63,7 +63,8 @@ POST /nano-banana/images
   "action": "edit",
   "prompt": "change the background to a starry night sky",
   "image_urls": ["https://example.com/photo.jpg"],
-  "model": "nano-banana"
+  "model": "nano-banana-2.1",
+  "resolution": "2K"
 }
 ```
 
@@ -76,8 +77,12 @@ POST /nano-banana/images
 | `prompt` | string | Image description or editing instruction |
 | `image_urls` | array of strings | Source image URLs (required for edit action) |
 | `aspect_ratio` | `"1:1"`, `"3:2"`, `"2:3"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"` | Output aspect ratio |
-| `resolution` | `"1K"`, `"2K"`, `"4K"` | Output resolution (1K=1024px, 2K=2048px, 4K=4096px) |
+| `resolution` | `"1K"`, `"2K"`, `"4K"` | Default 1K; `nano-banana` and `nano-banana-2-lite` support only 1K; 2, 2.1, and Pro support all three resolutions |
 | `callback_url` | string | Async callback URL; returns a task ID immediately |
+
+To use 2.1, explicitly set `model:"nano-banana-2.1"`; omitting `model` still selects `nano-banana`. For nonblocking requests, set `async:true`, retain `task_id`, and poll `/nano-banana/tasks` to terminal success before returning an image. No `nano-banana-2.1:official` variant is published.
+
+The same 2.1 model is also accepted by `POST /openai/images/generations` (public alias `/v1/images/generations`) and `POST /openai/images/edits` (public alias `/v1/images/edits`). Those use their own OpenAI-compatible schemas (`image` for JSON editing, not `image_urls`; `size` rather than this endpoint's `resolution`/`aspect_ratio`). Check that endpoint's current schema before reusing a request; do not assume identical response fields. Prices depend on the current service/package; consult live pricing rather than hard-coding a per-call USD amount.
 
 ## Gotchas
 
