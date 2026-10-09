@@ -2,7 +2,8 @@
 name: acedatacloud
 description: |
   Manage your AceDataCloud account through the management API
-  (platform.acedata.cloud). Use when the user wants to check their balance /
+  (platform.acedata.cloud). Use when connecting scoped OAuth account access,
+  or when the user wants to check their balance /
   remaining credits, look up API call (usage) records and spend, list or create
   or delete API keys (credentials), list subscribed services, list/create/pay
   recharge orders, manage platform tokens, view referral/affiliate earnings,
@@ -57,6 +58,18 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 
 > A normal token only ever sees **its own** account data. A superuser token sees
 > every user's data and is required for admin operations (announcements).
+
+### OAuth account access
+
+OAuth access tokens authorize account-resource access; they are not model API Keys. OAuth consent does not create a Key, subscribe to a service, or add balance. For a third-party account connection:
+
+1. Register the app at `https://auth.acedata.cloud/user/oauth-apps`. Read `available_scopes` from the authenticated `GET https://auth.acedata.cloud/api/v1/oauth2/applications/`, not the broader Discovery `scopes_supported` list. Request only registered permissions the user has: e.g., `profile:read credentials:read`, adding `credentials:write` only for confirmed Key changes and `offline_access` only if refresh is needed. Old `profile`, `email`, `phone`, and `platform` scopes are not accepted aliases; use explicit current scopes such as `profile:read` and `email:read`. The `account` selector is reserved for the designated official account MCP, not a third-party all-permissions scope.
+2. Open `https://auth.acedata.cloud/oauth2/authorize` with `response_type=code`, `client_id`, the exact registered `redirect_uri`, space-separated `scope`, a fresh random `state`, and S256 PKCE. Public clients must use S256, not `plain`; keep the verifier in the application's own session. Verify callback state before exchanging the single-use code (valid for 10 minutes). Use `POST https://auth.acedata.cloud/oauth2/token` with form fields `grant_type=authorization_code`, `client_id`, `redirect_uri`, `code`, and `code_verifier`. Confidential clients also send server-side `client_secret` (`client_secret_post`, not HTTP Basic); never put a secret in a browser page. Read the actual granted `scope` and `expires_in`; no `id_token` is returned.
+3. With the OAuth Bearer token, read `GET https://auth.acedata.cloud/api/v1/users/me`, then use its real `id` in `GET https://platform.acedata.cloud/api/v1/credentials/?user_id=<id>&limit=100&offset=0` if granted `credentials:read`. Read `items[*].token`, page with `offset`/`limit`, and choose a valid Key for the intended application/service rather than taking the first item. `user_id=me` is invalid. An empty list is not an authorization failure. Never display or log Keys, codes, tokens, or PKCE verifiers.
+4. For a Studio website component using the current Studio account, configure the app ID and callback under Settings → Home → Website. Website and callback must share an HTTPS origin distinct from Studio; never configure a client secret. The page must implement `acedatacloud:oauth:ready`, `acedatacloud:oauth:init`, `acedatacloud:oauth:authorize`, and `acedatacloud:oauth:result`, validating the exact parent origin, parent window, and state; retain the verifier locally and exchange the returned code. This component requests `profile:read credentials:read`, not `offline_access` or blog permissions; each visitor must consent separately. It does not inject Studio's login token or a Key. Standard OAuth redirects do not require this message protocol or `embed=studio`/`embed_origin`; ordinary iframe first-login continuation has a known gap, so verify logged-out/expired sessions or use an independent page instead. On denial or `login_required`, restore a retryable connection state rather than looping authorization.
+5. Refresh only if `offline_access` was granted, using the token endpoint with `grant_type=refresh_token` and the saved refresh token; retain the latest response. Refresh does not guarantee the old refresh token immediately becomes invalid. `POST https://auth.acedata.cloud/oauth2/revoke` with form field `token` currently returns HTTP 200 without immediate invalidation of issued JWTs. Clear your own saved connection state, but do not report that all tokens are revoked. Copied API Keys must be separately revoked or rotated in credential management.
+
+The bundled CLI does not register OAuth apps or perform the browser/PKCE exchange. For `invalid_scope`, check the app's registered scopes, delegation restrictions, and user permissions rather than broadening access. Verify denial, state mismatch, expired/consumed code, missing scopes, no Keys, network failures, token expiry, and iframe account changes before relying on a connection.
 
 ## CLI (preferred)
 

@@ -30,11 +30,11 @@ class SunoProjectsProcedureTests(unittest.TestCase):
         examples = {example["action"]: example for example in json_examples(self.text)}
         self.assertEqual(
             set(examples),
-            {"create", "retrieve", "save", "upload", "add_track", "replace_section", "commit_candidate", "render"},
+            {"create", "retrieve", "save", "upload", "add_track", "generate_track", "replace_section", "commit_candidate", "remove_track", "render"},
         )
         self.assertEqual(examples["save"]["state"], {"tracks": [], "timing": {"bps": 2}})
         self.assertNotIn("version_id", examples["save"])
-        for action in ("upload", "add_track", "replace_section", "commit_candidate", "render"):
+        for action in ("upload", "add_track", "generate_track", "replace_section", "commit_candidate", "remove_track", "render"):
             with self.subTest(action=action):
                 self.assertEqual(examples[action]["version_id"], "CURRENT_VERSION_ID")
         self.assertEqual(examples["replace_section"]["model"], "chirp-v6")
@@ -80,12 +80,122 @@ class SunoProjectsProcedureTests(unittest.TestCase):
             "Success requires `finished_at` and `response.success=true`",
             "`response.success=false` indicates failure",
             "including failure, without generating again",
+            "reusing a key with a different payload returns 409",
             "first confirm the original task failed, then use a new key",
             "Never resubmit while the original is processing or uncertain",
             "`trace_id`",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, self.text)
+
+    def test_new_track_example_has_mix_reference_and_public_options(self):
+        examples = {example["action"]: example for example in json_examples(self.text)}
+        generate = examples["generate_track"]
+        self.assertEqual(generate["source_audio_id"], "AUDIO_ID")
+        self.assertEqual(generate["render_audio_id"], "RENDER_AUDIO_ID")
+        self.assertEqual(generate["stem_control_tags"], "add Piano")
+        self.assertEqual(generate["model"], "chirp-v5")
+        self.assertEqual(generate["batch_size"], 2)
+        self.assertIs(generate["instrumental"], True)
+        self.assertEqual(generate["vocal_gender"], "unspecified")
+        self.assertLess(generate["start_seconds"], generate["end_seconds"])
+        self.assertEqual(examples["remove_track"]["track_id"], "TRACK_ID")
+        for requirement in (
+            'type:"audio"', 'clips:[]', 'takeLanes:[]',
+            "Save the complete state before generating",
+            "response.data.audio_id", "response.data.operation_id",
+            "response.data.candidates[].id", "not output-duration guarantees",
+            "Generation does not add candidates to the project",
+            "`negative_tags`", "`vocal_gender`", "not a guaranteed result",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_state_async_and_render_failure_boundaries(self):
+        for requirement in (
+            "replaces the complete state, not a patch", "preserve unknown fields",
+            "completes synchronously even if its result includes `task_id`",
+            "do not change the project version", "even with `async:false`",
+            "Read `response.error` on failure", "including after a callback",
+            "successful commit does not prove the project can render",
+            "failed with `studio_audio_unavailable`",
+            "duration matched neither the source nor the selected interval",
+            "do not guess placement or automatically repeat paid generation",
+            "remove only that track", "verify recovery",
+            "do not assume cross-application reuse or automatic failover",
+            "end must not exceed the actual source duration",
+            "not verified by the documented Backend run",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+
+class AccountOAuthProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("acedatacloud").split("### OAuth account access\n", 1)[1]
+        cls.text = cls.text.split("## CLI (preferred)\n", 1)[0]
+
+    def test_current_scopes_pkce_and_credential_lookup(self):
+        for requirement in (
+            "not model API Keys", "does not create a Key",
+            "`available_scopes`", "authenticated `GET https://auth.acedata.cloud/api/v1/oauth2/applications/`",
+            "not the broader Discovery `scopes_supported`",
+            "Old `profile`, `email`, `phone`, and `platform` scopes are not accepted aliases",
+            "`account` selector is reserved", "Public clients must use S256, not `plain`",
+            "Verify callback state", "single-use code", "exact registered `redirect_uri`",
+            "`client_secret_post`, not HTTP Basic", "no `id_token` is returned",
+            "GET https://auth.acedata.cloud/api/v1/users/me",
+            "?user_id=<id>&limit=100&offset=0", "`items[*].token`",
+            "rather than taking the first item", "`user_id=me` is invalid",
+            "An empty list is not an authorization failure",
+            "Never display or log Keys, codes, tokens, or PKCE verifiers",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_studio_and_token_lifecycle_do_not_overpromise(self):
+        for requirement in (
+            "acedatacloud:oauth:ready", "acedatacloud:oauth:init",
+            "acedatacloud:oauth:authorize", "acedatacloud:oauth:result",
+            "exact parent origin, parent window, and state",
+            "not `offline_access` or blog permissions", "each visitor must consent separately",
+            "does not inject Studio's login token or a Key",
+            "Standard OAuth redirects do not require this message protocol",
+            "first-login continuation has a known gap",
+            "old refresh token immediately becomes invalid",
+            "HTTP 200 without immediate invalidation of issued JWTs",
+            "do not report that all tokens are revoked",
+            "Copied API Keys must be separately revoked or rotated",
+            "does not register OAuth apps or perform the browser/PKCE exchange",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertIn("scoped OAuth access", (ROOT / "README.md").read_text())
+
+
+class NanoBanana21ProcedureTests(unittest.TestCase):
+    def test_generation_and_editing_use_base_model_with_explicit_resolution(self):
+        text = read_skill("nano-banana-image")
+        examples = list(json_examples(text))
+        self.assertEqual({example["action"] for example in examples}, {"generate", "edit"})
+        for example in examples:
+            self.assertEqual(example["model"], "nano-banana-2.1")
+            self.assertEqual(example["resolution"], "2K")
+        edit = next(example for example in examples if example["action"] == "edit")
+        self.assertIsInstance(edit["image_urls"], list)
+        for requirement in (
+            "omitting `model` still selects `nano-banana`",
+            "No `nano-banana-2.1:official` variant is published",
+            "`nano-banana` and `nano-banana-2-lite` support only 1K",
+            "2, 2.1, and Pro support all three resolutions",
+            "public alias `/v1/images/generations`", "public alias `/v1/images/edits`",
+            "`image` for JSON editing, not `image_urls`",
+            "`size` rather than this endpoint's `resolution`/`aspect_ratio`",
+            "do not assume identical response fields", "consult live pricing",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
 
 
 class ClaudeMessagesProcedureTests(unittest.TestCase):
