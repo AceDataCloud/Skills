@@ -2,7 +2,7 @@
 
 [English guide](README.md) · [WeKnora 技能文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-本指南以 2026-10-11 查询到的最新稳定版 **WeKnora v0.8.2** 为准。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。目前「工具箱」的搜索只过滤本空间已添加的条目，不能直接搜索远端市场。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
+本指南以 2026-10-11 查询到的最新稳定版 **WeKnora v0.8.2** 为准。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
 
 **Lite v0.8.2 注意事项：** 该版 SQLite 迁移缺少 MCP 元数据 schema，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已合入 `main`，但不在 v0.8.2 发行版里。Lite 正常使用应选择包含该迁移的正式版本；不要照本教程手改生产数据库。独立稳定版源码实验仅在一次性 SQLite 测试库补入上游迁移，之后 Agent 成功执行免费的 `suno_list_models`。
 
@@ -79,6 +79,10 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 | Kling | [kling-video](../../skills/kling-video/SKILL.md) |
 | Nano Banana | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
 
+![隔离的 WeKnora v0.8.2 空间中已配置 17 个具名 MCP 服务](assets/seventeen-mcp-cards-v082.jpg)
+
+17 张服务卡片各自经过 WeKnora 后端连接测试和工具目录同步；仅在一次性 SQLite 测试库补入上游迁移。这是本空间**已配置的列表**，并非远端市场。卡片使用 WeKnora 的通用工具图标，没有服务专属 Logo；工具同步成功不表示每项付费生成都得到终态。
+
 当前 v0.8.2 要添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
 
 ![开发构建中 Ace Data Cloud 命名 Provider 和 GPT-4.1 Mini 目录项的英文预览](assets/ace-model-provider-preview.jpg)
@@ -87,7 +91,7 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 
 ## 排障
 
-- **工具箱搜 Suno 没结果**：它只搜索本空间已添加的 Skill/MCP。先添加 MCP URL 或 Skill 来源，之后本地搜索才能找到。
+- **添加前无法搜索 Suno**：v0.8.2 工具箱没有远端市场搜索，实测稳定版界面也没有服务列表搜索框。请直接添加 MCP URL 或 Git Skill 来源。后续开发构建只能过滤本空间已登记条目。
 - **401 / 403**：检查已保存凭据是否按 `Authorization: Bearer` 发送，以及 Suno 权限。403 也可能是内容审核，应读取具体错误消息。
 - **429**：按返回的限速时间等待。**5xx 或连接中断**：保留原 `task_id`，先查询它，不要直接再生成。
 - **工具已同步但 Agent 不调用**：确认 Agent 使用智能推理、已启用 MCP、选中 Suno、相应工具处于启用状态。

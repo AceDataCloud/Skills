@@ -2,7 +2,7 @@
 
 [中文指南](README.zh-CN.md) · [WeKnora's Skills guide](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora's MCP guide](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-11. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. Its Toolbox search currently filters items already added to your workspace; it does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
+This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-11. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. The released v0.8.2 Toolbox has no remote marketplace search or service-list search field. A later development build adds filtering of items already registered in the workspace, which still does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
 
 **Lite v0.8.2 caveat:** its SQLite migrations omit the MCP metadata schema, so adding a service can fail with `table mcp_services has no column named usage_instructions` ([upstream issue #4058](https://github.com/Tencent/WeKnora/issues/4058)). The fix is merged on `main` as [#4060](https://github.com/Tencent/WeKnora/pull/4060), but is absent from the v0.8.2 release. Use a release containing that migration for a normal Lite installation; do not change a production database from this tutorial. Our separate stable-source test applied the upstream migration only to an isolated disposable SQLite database and then completed an Agent `suno_list_models` call.
 
@@ -79,6 +79,10 @@ Use the same Skill source pattern for each service below, replacing `suno-music`
 | Kling | [kling-video](../../skills/kling-video/SKILL.md) |
 | Nano Banana | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
 
+![Seventeen named MCP services configured in an isolated WeKnora v0.8.2 workspace](assets/seventeen-mcp-cards-v082.jpg)
+
+The 17 service cards were each connected and synchronized through the WeKnora backend with the upstream SQLite migration applied to this disposable test database. This is the workspace's configured list, **not** a remote marketplace. Cards use WeKnora's generic tool icon; per-service logos are not shown in this UI. A synchronized tool list is not proof that each paid generation completed.
+
 For chat models in current v0.8.2, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
 
 ![Preview of the named Ace Data Cloud Provider and GPT-4.1 Mini catalog entry in the development build](assets/ace-model-provider-preview.jpg)
@@ -87,7 +91,7 @@ The preview uses the v0.8.2 frontend against the development backend from that P
 
 ## Troubleshooting
 
-- **No result when searching Suno in Toolbox:** Toolbox filters only services/skills already added to this workspace. Add the MCP URL or Skill source first; then the local search will find it.
+- **Cannot search Suno before adding it:** v0.8.2 has no remote marketplace search in the Toolbox and no service-list search field in the observed stable UI. Add the MCP URL or Git Skill source directly. Later development builds filter only already registered workspace items.
 - **401 / 403:** Check that the stored credential has the `Authorization: Bearer` form and Suno permission. A 403 can also be content moderation; inspect the returned message.
 - **429:** Respect the reported rate limit. **5xx or connection interruption:** keep the original `task_id` and query it before any new generation.
 - **Tool exists but is never called:** Check that the Agent uses Smart Reasoning, has MCP enabled, selects Suno, and has the needed tool enabled. A disabled tool or unselected service is not callable.
