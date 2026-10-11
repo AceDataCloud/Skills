@@ -5,12 +5,22 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires an Ace Data Cloud API token with Midjourney access. Optionally use the hosted mcp-midjourney server for tool calls.
+compatibility: Requires an AceDataCloud service API key with Midjourney access; get one at https://platform.acedata.cloud/console/applications. Optionally use the hosted mcp-midjourney server for tool calls.
 ---
 
 # Midjourney via Ace Data Cloud
 
-Use the [Midjourney API](https://platform.acedata.cloud/documents/midjourney-imagine) or the hosted MCP server. Follow the [shared authentication guide](../_shared/authentication.md) for a private `ACEDATACLOUD_API_TOKEN`; never paste the token into a prompt or saved file.
+Use the [Midjourney API](https://platform.acedata.cloud/documents/midjourney-imagine) or the hosted MCP server.
+
+## First-time setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/midjourney`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application** (initialize it if prompted), and check Midjourney access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/midjourney/imagine` and `/midjourney/tasks` for the first image. Other actions below need their own routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Run the **First image** example below. Save the returned task ID and query that same task until it finishes; do not submit another billable imagine request just to check progress.
+
+[Token setup and troubleshooting](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## First image
 
