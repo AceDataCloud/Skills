@@ -10,6 +10,8 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 | producer-music | — | — |
 | google-search | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
+| midjourney-image | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
+| grok-video | `pip install mcp-grok` | `https://grok.mcp.acedata.cloud/mcp` |
 | luma-video | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
 | sora-video | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |

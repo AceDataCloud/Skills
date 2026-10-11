@@ -1,0 +1,71 @@
+# Ace Data Cloud in WeKnora
+
+[中文指南](README.zh-CN.md) · [WeKnora's Skills guide](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora's MCP guide](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
+
+This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-11. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. Its Toolbox search currently filters items already added to your workspace; it does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
+
+## 1. Get an Ace Data Cloud key
+
+1. Sign in to the [Ace Data Cloud console](https://platform.acedata.cloud/console/applications), acquire the **Suno** service, and create a credential with Suno access. If you also add a chat model in WeKnora, that credential needs **AI Chat** access too.
+2. Check the [current Suno pricing](https://platform.acedata.cloud/services/suno?tab=pricing) and available Credits before generation. A generation is billable; task lookups are separate reads.
+3. Keep the key private. Enter it only in WeKnora's credential field. Do not put it in a chat prompt, JSON example, screenshot, or Git commit.
+
+## 2. Import the Suno MCP service
+
+1. In WeKnora, open **Toolbox → MCP Services → Add Service**. Choose **Import from code** and paste [suno.mcp.json](suno.mcp.json), or enter the name `Suno`, URL `https://suno.mcp.acedata.cloud/mcp`, and transport **Streamable HTTP** manually. The sample contains no credential.
+2. In authentication, select **Bearer Token** if that is the label in your version. If the form shows **API Key / Token**, set header name `Authorization` and credential value `Bearer <your Ace key>`. Do not place the key under ordinary custom headers.
+3. Save and run **Test Connection**. Sync tools, then confirm `suno_generate_music`, `suno_get_task`, and `suno_list_models` are present. Keep just the tools you intend the agent to use enabled. Enable call approval for generation if your workspace requires it.
+4. In your Agent editor, enable MCP access and select the Suno service. Save the Agent, then start a new **Smart Reasoning** conversation. A saved service that is not selected by the Agent is not usable in its chat.
+
+The hosted endpoint requires a Bearer credential: an unauthenticated request returns 401. With an authorized Ace key, the MCP `initialize` and `tools/list` calls succeeded on 2026-10-11; `suno_list_models` returned the current model list. These checks establish connection and discovery, not a completed paid song.
+
+## 3. Generate and retrieve one song
+
+In the Agent chat, ask:
+
+> Use the Suno MCP service to create one short instrumental track about a quiet morning. Use a model currently listed by `suno_list_models`. Make one `suno_generate_music` call, save its `task_id`, then call `suno_get_task` with that same ID until `state` is `complete` and `success` is true. Return the final `audio_url` and task ID. Do not submit a second generation while waiting.
+
+The generation tool returns quickly with a task ID. `pending` or an HTTP 200 means the job was accepted, not that the audio is finished. Continue querying the **same** task ID after a timeout or interruption. Open the returned final audio URL to verify the file plays. In the Ace Data Cloud console, compare the one generation with its usage record and charged Credits; use the current package rate if converting Credits to USD.
+
+If you only need a completed older task, ask the Agent to call `suno_get_task` with its saved ID. This checks retrieval without paying for another generation.
+
+## 4. Add a Skill when you need instructions
+
+Workspace Admin/Owner can open **Toolbox → Skills → Add Skill** and paste the public source `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`. Choose a configured sandbox and wait for its install status to become **Ready**. Configure the skill's declared `ACEDATACLOUD_API_TOKEN` privately if it executes shell commands. Then select the skill and sandbox in the Agent editor. Adding a catalog entry alone does not install it; installing a Skill alone does not add MCP tools.
+
+WeKnora also resolves ClawHub/SkillHub pages and slugs, but external listings may lag the current [Ace Skills source](https://github.com/AceDataCloud/Skills). Check the skill contents and version before installing. The current WeKnora release has no remote marketplace search in the Toolbox; pasting the source is a manual install path.
+
+## 5. Other named services
+
+Use the same Skill source pattern for each service below, replacing `suno-music` with its skill ID. Each linked `SKILL.md` gives the service's operation and task-query contract. Where a hosted MCP endpoint is in the [MCP mapping](../../skills/_shared/mcp-servers.md), connect it in **Toolbox → MCP Services** with the same private Bearer credential and select its specific tools. Verify the actual server tool list and a final result before treating a service as working in WeKnora.
+
+| Service users search for | Skill ID |
+| --- | --- |
+| Suno | [suno-music](../../skills/suno-music/SKILL.md) |
+| GPT Image | [gpt-image-2-5](../../skills/gpt-image-2-5/SKILL.md) |
+| Seedance | [seedance-video](../../skills/seedance-video/SKILL.md) |
+| Fish Audio | [fish-audio](../../skills/fish-audio/SKILL.md) |
+| Seedream | [seedream-image](../../skills/seedream-image/SKILL.md) |
+| Happy Horse | [happyhorse-video](../../skills/happyhorse-video/SKILL.md) |
+| Qwen Image | [qwen-image](../../skills/qwen-image/SKILL.md) |
+| Veo | [veo-video](../../skills/veo-video/SKILL.md) |
+| Google Search | [google-search](../../skills/google-search/SKILL.md) |
+| Grok Video | [grok-video](../../skills/grok-video/SKILL.md) |
+| Face Transform | [face-transform](../../skills/face-transform/SKILL.md) |
+| Midjourney | [midjourney-image](../../skills/midjourney-image/SKILL.md) |
+| Flux | [flux-image](../../skills/flux-image/SKILL.md) |
+| MiniMax H3 | [minimax-video](../../skills/minimax-video/SKILL.md) |
+| Wan | [wan-video](../../skills/wan-video/SKILL.md) |
+| Kling | [kling-video](../../skills/kling-video/SKILL.md) |
+| Nano Banana | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
+
+For chat models in current v0.8.2, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
+
+## Troubleshooting
+
+- **No result when searching Suno in Toolbox:** Toolbox filters only services/skills already added to this workspace. Add the MCP URL or Skill source first; then the local search will find it.
+- **401 / 403:** Check that the stored credential has the `Authorization: Bearer` form and Suno permission. A 403 can also be content moderation; inspect the returned message.
+- **429:** Respect the reported rate limit. **5xx or connection interruption:** keep the original `task_id` and query it before any new generation.
+- **Tool exists but is never called:** Check that the Agent uses Smart Reasoning, has MCP enabled, selects Suno, and has the needed tool enabled. A disabled tool or unselected service is not callable.
+- **Task ID with no playable audio:** Continue querying until terminal `state=complete` and `success=true`; inspect the final URL and open it. Do not present the task ID as the artifact.
+- **Skill remains unavailable:** Check its sandbox install status and the Agent's selected sandbox and skill scope. Rebuilding a sandbox can temporarily change availability.

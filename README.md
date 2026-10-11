@@ -27,6 +27,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5 Flare or Sunburst |
+| [midjourney-image](skills/midjourney-image/) | Generate, edit, upscale, and describe Midjourney images or videos |
 | [flux-image](skills/flux-image/) | Generate/edit Flux images and generate FLUX 3 videos |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
@@ -42,6 +43,7 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | [kling-video](skills/kling-video/) | Generate Kling videos, Turbo, multishot, commerce and owned asset references |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
 | [minimax-video](skills/minimax-video/) | Generate MiniMax-H3 videos (768P/2K) and poll tasks to confirmed success |
+| [grok-video](skills/grok-video/) | Generate Grok videos from text or images and query the final task |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
 | [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
@@ -174,6 +176,10 @@ npx skills add acedatacloud/skills --skill '*' -a gemini-cli --yes
 npx skills add acedatacloud/skills --skill '*' -a codex --yes
 ```
 
+### WeKnora
+
+Follow the [English setup guide](platforms/weknora/README.md) or [中文指南](platforms/weknora/README.zh-CN.md) for the current stable version: import a secret-free Suno MCP example, add your Ace key privately, sync tools, build a minimal Agent conversation, and query the same task ID to its final audio URL. The guide maps 17 named services to their reusable Skills.
+
 ### Cursor
 
 ```bash
@@ -225,6 +231,8 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | qwen-image | [mcp-qwen-image](https://pypi.org/project/mcp-qwen-image/) | `pip install mcp-qwen-image` | `https://qwen-image.mcp.acedata.cloud/mcp` |
+| midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
+| grok-video | [mcp-grok](https://pypi.org/project/mcp-grok/) | `pip install mcp-grok` | `https://grok.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | happyhorse-video | [mcp-happyhorse](https://pypi.org/project/mcp-happyhorse/) | `pip install mcp-happyhorse` | `https://happyhorse.mcp.acedata.cloud/mcp` |
