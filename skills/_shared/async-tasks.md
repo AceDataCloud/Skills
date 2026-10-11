@@ -1,19 +1,25 @@
 # Async Task Polling
 
-Most generation APIs (images, video, music) are asynchronous — they return a `task_id` immediately, and you poll for the result.
+Many generation APIs (images, video, music) support asynchronous requests. When
+the endpoint supports `async: true`, it returns a `task_id` immediately without
+requiring a webhook. Check the individual Skill for its exact request and task
+endpoint.
 
 ## Pattern
 
-**Step 1:** Submit with `callback_url` to force async mode and get a `task_id` immediately.
+**Step 1:** Submit once with `async: true` when that endpoint supports it.
 
 ```bash
 curl -X POST https://api.acedata.cloud/<service>/<resource> \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "...", "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"prompt": "...", "async": true}'
 ```
 
-Using `"callback_url": "https://api.acedata.cloud/health"` as a placeholder forces async mode even without a real webhook endpoint.
+Use `callback_url` only when you operate a real public webhook that can receive
+the completed result. Do not send callbacks to a health endpoint as a shortcut.
+Endpoints without `async: true` may return a final result synchronously or
+offer a separate callback workflow; follow their service guide.
 
 **Step 2:** Poll the task endpoint every 3-5 seconds until the status is terminal.
 
@@ -35,7 +41,10 @@ curl -X POST https://api.acedata.cloud/<service>/tasks \
 
 ## Important Notes
 
-- Always use `callback_url` to avoid long-running HTTP connections that time out
+- Save the returned `task_id`. If the response is already terminal, use that
+  result; do not assume every call needs polling.
 - Poll every 3-5 seconds for music, every 5 seconds for images/video
 - Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
 - Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
+- A pending task is not a reason to resubmit the generation request. Re-query
+  the same task ID so you do not create another billable job.

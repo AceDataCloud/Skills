@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes and public `/v1/*` aliases.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (get an API key at https://platform.acedata.cloud/console/applications). Works with OpenAI-compatible SDKs against the `/openai/*` routes and public `/v1/*` aliases.
 ---
 
 # AI Chat — Unified LLM Gateway
@@ -21,7 +21,15 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## First-time setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/ai-chat`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check AI Chat access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/aichat2/conversations` for the first example; other chat routes need their own access. Advanced workflows below may call additional routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Run the **Quick Start** below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.
+
+[Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## Quick Start
 
@@ -37,10 +45,11 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 ### OpenAI-compatible SDK
 
 ```python
+import os
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="your-token-here",
+    api_key=os.environ["ACEDATACLOUD_API_TOKEN"],
     base_url="https://api.acedata.cloud/openai"
 )
 
@@ -202,7 +211,7 @@ Set `max_turns` deliberately for the expected tool chain. Each iteration is a mo
 
 Use `POST /aichat2/scheduled-tasks` on `https://api.acedata.cloud` with the same service Bearer token and aichat API access. All operations use POST with an `action`; this is not a platform-management-token endpoint.
 
-1. Confirm the prompt, model, accounts, permitted tools, schedule, IANA timezone and spending scope before creating or enabling a task. Runs are billable and unattended: finish third-party authorization interactively first and remove ambiguities that would require a follow-up question. Use the [unattended confirmation guard](../_shared/unattended.md) for supported write helpers; scheduling is not blanket permission to publish or send.
+1. Confirm the prompt, model, accounts, permitted tools, schedule, IANA timezone and spending scope before creating or enabling a task. Runs are billable and unattended: finish third-party authorization interactively first and remove ambiguities that would require a follow-up question. Use the [unattended confirmation guard](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/unattended.md) for supported write helpers; scheduling is not blanket permission to publish or send.
 2. Choose `schedule.type`: `cron` requires a five-field `cron` expression and `tz`; `interval` requires `interval_seconds` and `tz`; `once` requires a Unix-seconds `at` and `tz`. Use an IANA zone such as `UTC`, not `UTC+8`. The saved timezone governs Cron wall-clock time even if the device timezone changes.
 3. Put the conversation prompt/model in `template`. Optional `template.max_turns` is 1–500, default 500, and caps iterations **per run**, not schedule frequency. Each model call is billed by actual usage; a run can end earlier due to timeout, authorization or other execution conditions. A run lasts at most 15 minutes. Set an explicit Unix-seconds `ends_at` when needed; otherwise tasks stop three months after creation.
 4. After creation, retain the returned task `id`. List with `action="retrieve_batch"`; inspect executions with `action="retrieve_runs"` and that `id`, or `action="retrieve_runs_batch"` for all tasks (optional `status`, `offset`, `limit`). Read each run's `status`, `error_code` and `conversation_id`; retrieve the conversation through `/aichat2/conversations` for the full result. Task `state="enabled"` (shown as “running” in the list) is not evidence of a successful run.
