@@ -80,6 +80,8 @@ models include:
 | Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
 | GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 
+When the user asks for a recommended model, read the current public `GET https://platform.acedata.cloud/api/v1/models/` response and prefer suitable entries with `recommended=true`. This is an editorial preference, not an access grant or a new API capability; `recommended=false` does not retire a model. Check the selected model's supported route and current pricing before calling it, and do not silently replace a model the user explicitly selected.
+
 To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completions, Responses, Messages, or either conversation endpoint above. It is listed in the public model/pricing catalog with vision capability, but has no public model introduction. Check account eligibility and current pricing before requesting it; catalog visibility does not guarantee access. Its pricing rules use a higher tier when recorded `prompt_tokens` exceeds 272,000 (not at exactly 272,000). Do not silently substitute `gpt-5.6-sol` after an access or parameter error; protocol-specific features remain model-dependent.
 
 `gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.

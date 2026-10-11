@@ -1,6 +1,6 @@
 ---
 name: capability-spotlight-video
-description: Plan and submit a recurring series of diverse, premium Ace Data Cloud sales films. Each run discovers live capabilities, proves a real buyer outcome, assembles a rich provenance-bound material set, chooses a structurally distinct creative genome, and routes a freeform Pro production through Maestro general-video.
+description: Plan and submit a recurring series of diverse, premium Ace Data Cloud sales films. Each run discovers live capabilities, proves a real buyer outcome, assembles a rich provenance-bound material set, chooses a structurally distinct creative genome, and routes a freeform production through Maestro general-video.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -266,7 +266,7 @@ The Maestro production prompt begins with the non-routing line:
 
 `ACE-DATA-CLOUD-BRAND-FILM:v1`
 
-It MUST NOT contain `ADC-SPOTLIGHT:v1`; that marker is reserved for the outer artifact summary. Explicitly submit a structured Maestro request with `quality=pro`, `scenario=auto` or `narrated`, a product-derived `style`, a product-appropriate `voice` preset, the channel `aspect`, a 25–60 second soft-target `duration` unless the campaign needs another Pro-valid duration, `langs`, the complete Production Pack brief, and all verified core-material `file_urls`. Voice is a Maestro JSON field—never attach an arbitrary pre-generated voice preview as a substitute. `duration` is a soft editorial target within Pro's 5–300 second limit, not permission to cut narration or CTA.
+It MUST NOT contain `ADC-SPOTLIGHT:v1`; that marker is reserved for the outer artifact summary. Explicitly submit a structured Maestro request with `scenario=auto` or `narrated`, a product-derived `style`, a product-appropriate `voice` preset, the channel `aspect`, a 25–60 second soft-target `duration` unless the campaign needs another valid duration, `langs` containing exactly one language, the complete Production Pack brief, and all verified core-material `file_urls`. Do not send `quality`: Maestro has no quality tiers. One task delivers one video in one language; confirm separate billable tasks for other language versions. Voice is a Maestro JSON field—never attach an arbitrary pre-generated voice preview as a substitute. `duration` is a soft editorial target within Maestro's 5–300 second limit, not permission to cut narration or CTA.
 
 Explicitly require:
 
@@ -280,9 +280,9 @@ Explicitly require:
 - use Fish narration timing and a product-appropriate real music/SFX world;
 - honor the Blueprint's Creative Genome and material-role map without displaying private provenance.
 
-Formal production uses **Pro**, never Standard as a quality proxy. Choose format from `{{format}}`; `auto-diverse` must also avoid the recent three formats and fit the content/channel.
+Formal production requires the complete professional review contract, not a paid quality-tier proxy. Choose format from `{{format}}`; `auto-diverse` must also avoid the recent three formats and fit the content/channel.
 
-Treat Pro turns as a delivery budget, not an invitation to explore: finish the initial render by turn 140; use only `check` plus a contact sheet and at most six targeted frames for each review; Do not run deprecated `validate` or `inspect`. The visual-review call MUST NOT launch an Agent or recursively inventory evidence—read the manifest, contact sheet, and targeted frames directly. Consolidate all blockers into one repair, run one final `check`, one final render, and one final-byte review. If that review exposes a new release blocker, allow one blocker-only contingency patch followed by one re-render and one confirmation review; do not change story, audio, assets, or already-passing scenes. A second contingency loop is forbidden. Then confirm delivery by turn 240 and stop optional inspection when any milestone is at risk.
+Treat production turns as a delivery budget, not an invitation to explore: finish the initial render by turn 140; use only `check` plus a contact sheet and at most six targeted frames for each review; Do not run deprecated `validate` or `inspect`. The visual-review call MUST NOT launch an Agent or recursively inventory evidence—read the manifest, contact sheet, and targeted frames directly. Consolidate all blockers into one repair, run one final `check`, one final render, and one final-byte review. If that review exposes a new release blocker, allow one blocker-only contingency patch followed by one re-render and one confirmation review; do not change story, audio, assets, or already-passing scenes. A second contingency loop is forbidden. Then confirm delivery by turn 240 and stop optional inspection when any milestone is at risk.
 
 Immediately after Maestro accepts the unique UUID task, call `publish_artifact` before waiting or polling. Exact-ID `task_already_exists` is a successful idempotent replay: do not generate another UUID or resubmit.
 

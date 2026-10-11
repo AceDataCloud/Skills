@@ -120,7 +120,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 | [grok-video](skills/grok-video/) | Generate Grok videos from text or images and query the final task |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
-| [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
+| [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing — one language per task |
 | [capability-spotlight-video](skills/capability-spotlight-video/) | Produce a recurring, evidence-led Ace Data Cloud capability video series with topic/demo/style/layout/voice rotation |
 
 ### AI Chat & Tools

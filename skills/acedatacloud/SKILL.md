@@ -222,11 +222,30 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 ```
 
 - `state` ∈ `Pending` `Paid` `Finished` `Expired` `Failed` `Refunded`
-- `pay_way` ∈ `WechatPay` `AliPay` `Stripe` `X402` `PayPal` `Reward`
+- `pay_way` includes `WechatPay`, `AliPay`, `Stripe`, `X402`, `PayPal`, `Reward`, and `BankTransfer`; availability depends on the order and payment configuration.
 - **Create** — `POST /orders/` `{ "application_id": "<app>", "package_id": "<package>" }`
 - **Pay** — `POST /orders/{id}/pay/` `{ "pay_way": "Stripe" }` → returns the order with a `pay_url` to open
 - **Refresh status** — `POST /orders/{id}/refresh/` (re-checks the PSP and updates `state`)
 - Filters: `state`, `pay_way`, `created_at_from`, `created_at_to`, `user_id` (superuser).
+
+#### Bank transfer
+
+1. Authenticate as the order owner. Personal and business accounts can use `BankTransfer` without enterprise verification; anonymous requests cannot. Domestic CNY and international USD transfers both require an order of at least USD 300, subject to payment-channel configuration and package eligibility.
+2. Read `GET /api/v1/orders/{order_id}/payment-options/` on the management host to check current transfer routes and minimum amounts. The CLI has no payment-options command; use authenticated REST rather than inventing a flag. Do not publish internal route/provider identifiers.
+3. Confirm the order ID, amount and available route with the user before `pay-order --id <order-id> --pay-way BankTransfer --yes`. Use only the payment instructions returned for that order; the displayed CNY amount is authoritative, not a locally estimated conversion. A pay response is not proof that funds arrived: reread the order and verify its final state before reporting completion.
+
+#### Invoice reversal and reapplication
+
+1. Read the current invoice with authenticated `GET /api/v1/orders/{order_id}/invoice/`. The CLI has no invoice command.
+2. An automatic red-invoice reversal submission leaves the invoice `Issued`; inspect `red_state` for progress. Submission is not completion. Do not reapply while confirmation, red-invoice issuance or archiving is pending.
+3. Reapply only after successful red-invoice issuance and archiving change the original invoice to `Voided` and release the order's invoicing restriction. Failed or uncertain reversals require finance review; do not bypass the restriction. The original invoice remains in invoice history. Manually issued invoices must first be voided or reversed in the tax/invoicing system, then confirmed by finance in the platform.
+
+#### X402 failure recovery
+
+1. The initial HTTP 402 without `PAYMENT-SIGNATURE` is a payment challenge, not a failed payment. For signed-payment failures, read `extensions.acedatacloud.paymentError`; do not construct wallet signatures or recipient/asset addresses from guesses.
+2. Reread the authenticated order list (`orders --json`) or `GET /api/v1/orders/{order_id}/`. `metadata.x402.last_error` and `metadata.x402.errors` retain the public `code`, `stage`, `retryable`, `charged` and `params`, with explanation in `reason` and time in `timestamp`. Preserve the specific code: `insufficient_token_balance` means insufficient USDC on the selected network; `invalid_signature` means an invalid payment signature. Do not replace either with generic `payment_failed` after rereading.
+3. Only explicit `charged=false` means a pre-settlement refusal; a missing `charged` means unknown, not uncharged. Check payment evidence before spending again. Even if `retryable=true`, a `Failed` order cannot be retried in place: resolve the wallet problem and obtain confirmation before creating and paying a new order.
+4. Share only the order ID and public error code with support. Never log or share full order metadata, `PAYMENT-SIGNATURE`, wallet signatures, authorization payloads or raw payment/RPC diagnostics.
 
 ### Platform tokens — `GET /platform-tokens/`
 
