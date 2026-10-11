@@ -39,6 +39,8 @@ An isolated local WeKnora Lite build with the Ace model-provider branch connecte
 
 Workspace Admin/Owner can open **Toolbox → Skills → Add Skill** and paste the public source `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`. Choose a configured sandbox and wait for its install status to become **Ready**. Configure the skill's declared `ACEDATACLOUD_API_TOKEN` privately if it executes shell commands. Then select the skill and sandbox in the Agent editor. Adding a catalog entry alone does not install it; installing a Skill alone does not add MCP tools.
 
+You can [search Suno on skills.sh](https://www.skills.sh/search?q=suno) and see the `acedatacloud/skills` listing and install command. In v0.8.2, pasting the **skills.sh page URL** into WeKnora returned `Skill not found` because its resolver requires a ClawHub federated copy ([upstream issue #4167](https://github.com/Tencent/WeKnora/issues/4167)). Paste the GitHub skill-directory URL above instead; it registered as `suno-music` in the isolated stable-source test. That is a manual source import, not in-product marketplace search or a completed sandbox install.
+
 WeKnora also resolves ClawHub/SkillHub pages and slugs, but external listings may lag the current [Ace Skills source](https://github.com/AceDataCloud/Skills). Check the skill contents and version before installing. The current WeKnora release has no remote marketplace search in the Toolbox; pasting the source is a manual install path.
 
 ## 5. Other named services
@@ -75,3 +77,4 @@ For chat models in current v0.8.2, use **Settings → Models → Add Model → C
 - **Tool exists but is never called:** Check that the Agent uses Smart Reasoning, has MCP enabled, selects Suno, and has the needed tool enabled. A disabled tool or unselected service is not callable.
 - **Task ID with no playable audio:** Continue querying until terminal `state=complete` and `success=true`; inspect the final URL and open it. Do not present the task ID as the artifact.
 - **Skill remains unavailable:** Check its sandbox install status and the Agent's selected sandbox and skill scope. Rebuilding a sandbox can temporarily change availability.
+- **skills.sh page returns `Skill not found`:** Use the GitHub skill-directory source shown in step 4. WeKnora's current skills.sh resolver only covers listings federated to ClawHub; [#4167](https://github.com/Tencent/WeKnora/issues/4167) tracks the remaining gap.

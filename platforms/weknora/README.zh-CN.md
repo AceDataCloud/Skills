@@ -39,6 +39,8 @@
 
 空间 Admin/Owner 可以打开 **工具箱 → 技能管理 → 添加技能**，粘贴公开来源 `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`。选定已配置的沙箱，等待安装状态变为**就绪**。如果 Skill 会执行 Shell 命令，私下配置它声明的 `ACEDATACLOUD_API_TOKEN`。然后在 Agent 编辑页选择对应 Skill 和沙箱。添加到目录不等于安装到沙箱；安装 Skill 也不会自动增加 MCP 工具。
 
+可以在 [skills.sh 搜索 Suno](https://www.skills.sh/search?q=suno)，看到 `acedatacloud/skills` 条目和安装命令。但 v0.8.2 将 **skills.sh 页面 URL** 粘贴到 WeKnora 时，会因解析器要求 ClawHub 联合收录副本而报 `Skill not found`（[上游 Issue #4167](https://github.com/Tencent/WeKnora/issues/4167)）。请改用上面的 GitHub Skill 目录 URL；隔离稳定版源码实验已将其登记为 `suno-music`。这是手动来源导入，不等于产品内市场搜索或沙箱安装完成。
+
 WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚于 [Ace Skills 源码](https://github.com/AceDataCloud/Skills)。安装前检查内容与版本。当前稳定版工具箱没有远端市场搜索，粘贴来源仍属手动安装路径。
 
 ## 5. 其他按服务名称查找的入口
@@ -75,3 +77,4 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 - **工具已同步但 Agent 不调用**：确认 Agent 使用智能推理、已启用 MCP、选中 Suno、相应工具处于启用状态。
 - **只有任务 ID，没有可播放音频**：继续查到 `state=complete` 且 `success=true`，检查最终 URL 并打开验证。任务 ID 不能当成交付产物。
 - **Skill 不可用**：检查沙箱安装是否就绪，以及 Agent 选择的沙箱与技能范围。沙箱重建期间可能短暂不可用。
+- **skills.sh 页面报 `Skill not found`**：使用第 4 步的 GitHub Skill 目录地址。当前 WeKnora 的 skills.sh 解析器只覆盖被 ClawHub 联合收录的条目；其余缺口见 [#4167](https://github.com/Tencent/WeKnora/issues/4167)。
