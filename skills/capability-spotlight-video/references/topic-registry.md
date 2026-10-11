@@ -279,7 +279,7 @@ When a topic block has no explicit values, derive them from its promise, hero ca
 - BASIC_INTRO: Maestro turns one production brief into script, assets, narration, composition, independent review, and a delivered video project.
 - HERO_CASES: fragmented script, assets, voice, review, and final film steps collapse into one real delivered production; initial review blockers→one refinement→confirmed final bytes.
 - UNIQUE_ADVANTAGES: complete production pipeline; built-in independent review; editable/reusable project and final deliverables.
-- PRICE_SCENARIOS: quote the exact quality+duration+aspect+language request as qualified USD using the service package; show actual delivered-duration billing and failed-task zero charge only when live rules/docs verify it.
+- PRICE_SCENARIOS: quote the exact duration+aspect+single-language request as qualified USD using the service package; verify the flat 0.7 Credits per actual delivered second with no scenario/language surcharge, requested-duration cap, and failed-task/polling zero charge against live rules/docs. Do not send a quality tier.
 - HOOKS: `A brief is not a video. Five disconnected tools are not a workflow.`; `Script, assets, voice, review, final film—one production brief.`
 - CTA: `CREATE WITH MAESTRO` → `studio.acedata.cloud`.
 - TONE: controlled overwhelm→rapid workflow collapse→emotional final-film payoff→confident offer.

@@ -130,6 +130,124 @@ class SunoProjectsProcedureTests(unittest.TestCase):
                 self.assertIn(requirement, self.text)
 
 
+class MaestroProcedureTests(unittest.TestCase):
+    def test_all_creation_examples_select_one_language(self):
+        text = read_skill("maestro-video")
+        examples = list(json_examples(text))
+        examples += [json.loads(body) for body in re.findall(r"-d '(\{.*?\})'", text, re.DOTALL)]
+        creations = [body for body in examples if "prompt" in body]
+        self.assertGreaterEqual(len(creations), 6)
+        for body in creations:
+            with self.subTest(body=body):
+                self.assertEqual(len(body.get("langs", ["zh-cn"])), 1)
+                self.assertNotIn("quality", body)
+                if body.get("action") in {"remix", "edit", "extend"}:
+                    self.assertIn("ref_task_id", body)
+        for requirement in (
+            'Omitting `langs` defaults to `["zh-cn"]`',
+            "Multiple languages return HTTP 400", "empty or multi-language arrays are invalid",
+            "confirm the additional tasks", "Track each task ID independently",
+            "do not promise shared visuals across tasks",
+        ):
+            self.assertIn(requirement, text)
+
+    def test_flat_billing_and_single_output_replace_old_contract(self):
+        text = read_skill("maestro-video")
+        for requirement in (
+            "0.7 Credits per actual billed second", "no scenario multiplier or language surcharge",
+            "Billing counts integer seconds", "never exceeds the requested duration",
+            "falls back to the requested duration", "30-second billed video costs 21 Credits",
+            "Failed tasks and polling are free", "submission has no separate fee",
+            "no quality tiers", "1080p/30fps",
+            "single delivered video in `response.data.variants`",
+            "Use top-level `status` to determine completion",
+            "empty result", "Return only fields actually present",
+            "Do not resubmit the same brief",
+        ):
+            self.assertIn(requirement, text)
+        for obsolete in ("0.60", "1.15×", "1.35×", "adds 6 Credits", "up to 4 languages", "Pro only"):
+            self.assertNotIn(obsolete, text)
+        self.assertNotIn('"captions_url"', text)
+        self.assertNotIn('"qc_score"', text)
+        self.assertIn("one language per task", (ROOT / "README.md").read_text())
+
+
+class OrderProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("acedatacloud").split("### Orders (recharge)", 1)[1].split("### Platform tokens", 1)[0]
+        script = ROOT / "skills" / "acedatacloud" / "scripts" / "acedatacloud.py"
+        spec = importlib.util.spec_from_file_location("acedatacloud_order_skill", script)
+        cls.cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.cli)
+
+    def test_bank_transfer_requires_owner_options_and_confirmation(self):
+        for requirement in (
+            "Personal and business accounts", "without enterprise verification",
+            "anonymous requests cannot", "at least USD 300",
+            "payment-channel configuration and package eligibility",
+            "GET /api/v1/orders/{order_id}/payment-options/",
+            "CLI has no payment-options command", "Do not publish internal route/provider identifiers",
+            "Confirm the order ID, amount and available route",
+            "--pay-way BankTransfer --yes", "displayed CNY amount is authoritative",
+            "not proof that funds arrived",
+        ):
+            self.assertIn(requirement, self.text)
+
+    def test_invoice_reapplication_waits_for_completed_reversal(self):
+        for requirement in (
+            "GET /api/v1/orders/{order_id}/invoice/", "leaves the invoice `Issued`",
+            "`red_state`", "Submission is not completion",
+            "Do not reapply while confirmation", "issuance and archiving",
+            "`Voided`", "require finance review", "do not bypass the restriction",
+            "Manually issued invoices must first be voided or reversed",
+        ):
+            self.assertIn(requirement, self.text)
+
+    def test_x402_recovery_preserves_codes_and_unknown_charge_state(self):
+        for requirement in (
+            "initial HTTP 402", "payment challenge, not a failed payment",
+            "extensions.acedatacloud.paymentError", "orders --json",
+            "metadata.x402.last_error", "metadata.x402.errors",
+            "`code`, `stage`, `retryable`, `charged` and `params`",
+            "`reason`", "`timestamp`", "insufficient_token_balance", "invalid_signature",
+            "Do not replace either with generic `payment_failed`",
+            "missing `charged` means unknown, not uncharged",
+            "Even if `retryable=true`, a `Failed` order cannot be retried in place",
+            "obtain confirmation before creating and paying a new order",
+            "Share only the order ID and public error code",
+            "Never log or share full order metadata",
+        ):
+            self.assertIn(requirement, self.text)
+
+    def test_existing_bank_transfer_cli_is_dry_run_without_confirmation(self):
+        argv = ["acedatacloud.py", "pay-order", "--id", "ORDER_ID", "--pay-way", "BankTransfer"]
+        with patch.object(self.cli.sys, "argv", argv), patch.object(self.cli, "_request") as request, redirect_stdout(io.StringIO()) as output:
+            self.cli.main()
+        request.assert_not_called()
+        self.assertIn("DRY RUN", output.getvalue())
+        with patch.object(self.cli.sys, "argv", argv + ["--yes"]), patch.object(
+            self.cli, "_request", return_value=(200, {})
+        ) as request, redirect_stdout(io.StringIO()):
+            self.cli.main()
+        self.assertEqual(request.call_args.args[1:], ("POST", "/orders/ORDER_ID/pay/"))
+        self.assertEqual(request.call_args.kwargs, {"body": {"pay_way": "BankTransfer"}})
+
+    def test_existing_json_output_preserves_x402_error_without_inventing_charged(self):
+        for charged in ({}, {"charged": False}, {"charged": True}):
+            with self.subTest(charged=charged):
+                error = {"code": "insufficient_token_balance", "stage": "verify", "retryable": True,
+                         "params": {"network": "eip155:8453"}, "reason": "Insufficient USDC",
+                         "timestamp": "2026-10-11T00:00:00Z", **charged}
+                metadata = {"x402": {"last_error": error, "errors": [error]}}
+                payload = {"count": 1, "items": [{"id": "ORDER_ID", "state": "Failed", "metadata": metadata}]}
+                with patch.object(self.cli.sys, "argv", ["acedatacloud.py", "orders", "--json"]), patch.object(
+                    self.cli, "_request", return_value=(200, payload)
+                ), redirect_stdout(io.StringIO()) as output:
+                    self.cli.main()
+                self.assertEqual(json.loads(output.getvalue())["items"][0]["metadata"], metadata)
+
+
 class AccountOAuthProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -241,6 +359,18 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
 
 
 class ChatGatewayProcedureTests(unittest.TestCase):
+    def test_recommendations_are_live_editorial_preferences_not_access_grants(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "GET https://platform.acedata.cloud/api/v1/models/",
+            "prefer suitable entries with `recommended=true`",
+            "editorial preference, not an access grant or a new API capability",
+            "`recommended=false` does not retire a model",
+            "supported route and current pricing",
+            "do not silently replace a model the user explicitly selected",
+        ):
+            self.assertIn(requirement, text)
+
     def test_public_model_selection_and_pricing_boundary(self):
         text = read_skill("ai-chat")
         for requirement in (

@@ -373,7 +373,7 @@ def test_v8_routes_production_to_general_video_without_spotlight_renderer_marker
     assert 'metadata:\n  author: acedatacloud\n  version: "7.0"' in body
     assert 'ACE-DATA-CLOUD-BRAND-FILM:v1' in body
     assert 'route to `/general-video`' in body
-    assert '`quality=pro`' in body
+    assert 'Do not send `quality`: Maestro has no quality tiers' in body
     assert '`scenario=auto` or `narrated`' in body
     assert 'never use `spotlight_prepare.py`, `spotlight_renderer.py`' in body
     assert 'MUST NOT contain `ADC-SPOTLIGHT:v1`' in body
@@ -431,7 +431,7 @@ def test_v4_general_video_professional_director_contract() -> None:
         'second actual confirmation call',
     ):
         assert phrase in body
-    assert 'Formal production uses **Pro**, never Standard' in body
+    assert 'Formal production requires the complete professional review contract' in body
     assert 'Reviewer receives the Ledger only after its blind assessment' in body
 
 
@@ -535,9 +535,17 @@ def test_v8_separates_product_materials_from_directorial_layers() -> None:
 
 def test_v8_sets_maestro_voice_style_scenario_and_soft_duration_in_json() -> None:
     body = text(SKILL)
-    for field in ('`quality=pro`', '`scenario=auto`', '`style`', '`voice`', '`aspect`', '`duration`', '`langs`', '`file_urls`'):
+    for field in ('`scenario=auto`', '`style`', '`voice`', '`aspect`', '`duration`', '`langs`', '`file_urls`'):
         assert field in body
     assert 'Voice is a Maestro JSON field' in body
     assert 'never attach an arbitrary pre-generated voice preview' in body
-    assert "Pro's 5–300 second limit" in body
+    assert "Maestro's 5–300 second limit" in body
     assert 'soft editorial target' in body
+    assert '`langs` containing exactly one language' in body
+    assert 'confirm separate billable tasks' in body
+    assert 'Do not send `quality`: Maestro has no quality tiers' in body
+    assert '`quality=pro`' not in body
+    registry = text(TOPICS)
+    assert 'flat 0.7 Credits per actual delivered second' in registry
+    assert 'no scenario/language surcharge' in registry
+    assert 'quality+duration' not in registry

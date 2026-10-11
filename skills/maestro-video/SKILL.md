@@ -1,6 +1,6 @@
 ---
 name: maestro-video
-description: "Produce complete AI videos with Maestro via AceDataCloud API. Use when: Maestro, article-to-video, prompt-to-video, turn a brief or reference media into a finished captioned video, generate scripts/visuals/voiceover/music/editing in one workflow, create multilingual video variants, or remix/edit/extend a previous Maestro video. Covers task creation, progress polling, history, and final output retrieval."
+description: "Produce complete AI videos with Maestro via AceDataCloud API. Use when: Maestro, article-to-video, prompt-to-video, turn a brief or reference media into a finished captioned video, generate scripts/visuals/voiceover/music/editing in one workflow, create a video in a selected language, or remix/edit/extend a previous Maestro video. Covers task creation, progress polling, history, and final output retrieval."
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -10,7 +10,7 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authent
 
 # Maestro End-to-End Video Production
 
-Use Maestro when the user wants a **finished video**, not only a generated clip. A headless AI director turns one natural-language brief into a script, visual assets, voiceover, music, edit, captions, quality checks, and rendered video variants.
+Use Maestro when the user wants a **finished video**, not only a generated clip. A headless AI director turns one natural-language brief into a script, visual assets, voiceover, music, edit, captions, quality checks, and one rendered video in one language.
 
 > **Setup:** See [authentication](../_shared/authentication.md) for token setup.
 
@@ -19,7 +19,7 @@ Use Maestro when the user wants a **finished video**, not only a generated clip.
 - The user wants an article, idea, product brief, or campaign turned into a complete video.
 - The workflow needs scripting, visuals, narration, captions, and editing handled together.
 - The user supplies product images, a logo, portrait, source footage, or reference audio.
-- One visual production must be rendered in multiple languages.
+- The user wants a video in a selected language; different languages require separate tasks.
 - A completed Maestro video needs to be remixed, edited, or extended.
 
 Use a model-specific video API such as Seedance, Kling, or Veo when the user only needs a short generated shot and wants direct model controls. Maestro may use multiple media services internally and is optimized for the finished production.
@@ -52,11 +52,11 @@ Do not invent output URLs or report completion while the task is still running.
 
 ## Core Workflow
 
-1. Translate the user's goal into a concrete production brief.
+1. Translate the user's goal into a concrete production brief and choose exactly one output language. Confirm separate billable tasks before producing other language versions.
 2. Call `POST /maestro/videos` and preserve the returned `task_id` and `trace_id`.
 3. Poll `POST /maestro/tasks` at a reasonable interval.
 4. Continue through nonterminal states; stop only at `succeeded` or `failed`.
-5. On success, return every item in `response.data.variants`, including its language and `output_url`.
+5. On success, read the single delivered video in `response.data.variants`, including its language and actual `output_url`. Do not treat an empty result as a delivered video.
 6. If requested, iterate by creating a new task with `action`, `ref_task_id`, and a change-focused prompt.
 
 Polling and history queries are free; the video task is settled after production based on delivered output. Avoid submitting duplicate creation requests while an existing task is still running.
@@ -69,7 +69,7 @@ Polling and history queries are free; the video task is settled after production
 | `action` | string | `generate` | `generate`, `remix`, `edit`, or `extend` |
 | `ref_task_id` | string | - | Required for `remix`, `edit`, and `extend` |
 | `file_urls` | string[] | - | Public image, video, or audio references, up to the limits enforced by the API |
-| `langs` | string[] | `["zh-cn"]` | Output language codes; each creates a localized rendered variant |
+| `langs` | string[] | `["zh-cn"]` | Exactly one output language code, e.g. `["en"]`; empty or multi-language arrays are invalid |
 | `aspect` | string | `9:16` | `9:16`, `16:9`, or `1:1` |
 | `duration` | integer | `30` | Target duration from 5 to 300 seconds |
 | `scenario` | string | `auto` | `auto`, `narrated`, `captions`, `avatar`, or `drama` |
@@ -79,8 +79,7 @@ Polling and history queries are free; the video task is settled after production
 
 ### Production contract
 
-Every request uses the complete production capability: all actions and scenarios, 5–300 seconds, up to 4 languages, and 1080p/30fps output. The base price is 0.60 Credits per delivered second. Avatar uses a 1.15× multiplier, drama uses 1.35×, and each additional delivered language adds 6 Credits. Failed tasks and polling are free.
-
+Every request uses the complete production capability: all actions and scenarios, 5–300 seconds, exactly one language, and 1080p/30fps output. There are no quality tiers. Successful tasks cost **0.7 Credits per actual billed second**, with no scenario multiplier or language surcharge. Billing counts integer seconds, never exceeds the requested duration, and falls back to the requested duration if delivered duration cannot be read. A 30-second billed video costs 21 Credits. Failed tasks and polling are free; submission has no separate fee. Check current service pricing before creating a task.
 
 ### Scenarios
 
@@ -88,7 +87,7 @@ Every request uses the complete production capability: all actions and scenarios
 - `narrated`: multi-scene explainer, documentary, brand, history, or product video with voiceover.
 - `captions`: add kinetic captions to a source video supplied in `file_urls`.
 - `avatar`: talking-head or digital-human video; provide a portrait in `file_urls`.
-- `drama`: acted short drama with characters and dialogue (Pro only).
+- `drama`: acted short drama with characters and dialogue.
 
 ### Styles
 
@@ -124,20 +123,20 @@ Pass public URLs in `file_urls`:
 
 Reference URLs must be reachable by the service. Do not pass local file paths. Upload local assets first, then use their public URLs.
 
-## Multilingual Variants
+## Choose the Output Language
 
-Use one request to reuse the production across languages:
+Keep `langs` as an array containing exactly one language code:
 
 ```json
 {
-  "prompt": "A concise product walkthrough for first-time customers",
-  "langs": ["en", "de", "ja"],
+  "prompt": "A concise English product walkthrough for first-time customers",
+  "langs": ["en"],
   "voice": "warm-female",
   "duration": 45
 }
 ```
 
-The first language is primary. A successful task normally returns one item per delivered language in `response.data.variants`. Do not assume every requested language succeeded; inspect the actual variants.
+Omitting `langs` defaults to `["zh-cn"]`. Multiple languages return HTTP 400. For German or Japanese versions, confirm the additional tasks with the user, then submit separate requests with `["de"]` or `["ja"]` and a language-specific brief. Track each task ID independently; do not promise shared visuals across tasks. Each successful task delivers one video in `response.data.variants` at the same per-second rate.
 
 ## Iterate on a Previous Video
 
@@ -185,46 +184,11 @@ Iteration creates a new task. Continue polling the new `task_id`; do not overwri
 
 ## Task Response
 
-A task response exposes top-level progress for user feedback:
+Use top-level `status` to determine completion, not `progress.stage` or a progress percentage. Display `progress.percent`, `progress.stage`, and `progress.message` when present; a successful task can still show its last production stage.
 
-```json
-{
-  "id": "task-id",
-  "status": "producing",
-  "progress": {
-    "percent": 52,
-    "stage": "visuals",
-    "message": "Generating scene assets",
-    "activity": "Creating scene 4"
-  },
-  "response": null
-}
-```
+On `succeeded`, inspect `response.success` and `response.data.variants`. The array contains one video in the selected language, with fields such as `lang`, `aspect`, `title`, and `output_url`. Return the real delivered URL. `response.data.project` may include `tarball_url` and `outputs`; return a project download only when its URL is present. On `failed`, report the actual error rather than a fabricated video.
 
-On success, inspect the delivered variants:
-
-```json
-{
-  "status": "succeeded",
-  "response": {
-    "success": true,
-    "data": {
-      "variants": [
-        {
-          "lang": "en",
-          "output_url": "https://cdn.example/video.mp4",
-          "captions_url": "https://cdn.example/captions.vtt",
-          "cover_url": "https://cdn.example/cover.jpg",
-          "duration": 31.2,
-          "qc_score": 0.96
-        }
-      ]
-    }
-  }
-}
-```
-
-Treat the fields above as a shape guide. Return fields that are actually present; never fabricate missing captions, covers, durations, or QC scores.
+Return only fields actually present; never fabricate missing captions, covers, durations, or QC scores.
 
 ## Task Retrieval
 
@@ -259,7 +223,7 @@ Prefer a concrete production brief over a list of low-level model instructions. 
 - `file_urls` must be public URLs, not local paths.
 - `avatar` usually needs a usable portrait reference.
 - Requested duration is a target; report the actual delivered duration from the result.
-- Multilingual requests may return fewer variants than requested if one output fails.
+- `langs` must contain exactly one language; empty or multi-language arrays are invalid. Different languages require separately confirmed tasks.
 - Do not resubmit the same brief merely because a long-running poll has not finished.
 - Do not expose the API token in logs, output, source files, or examples.
 
