@@ -29,6 +29,10 @@ The generation tool returns quickly with a task ID. `pending` or an HTTP 200 mea
 
 If you only need a completed older task, ask the Agent to call `suno_get_task` with its saved ID. This checks retrieval without paying for another generation.
 
+### Verified example (2026-10-11)
+
+An isolated local WeKnora Lite build with the Ace model-provider branch connected to Suno MCP, enabled `suno_generate_music` with one-call approval, and submitted exactly one `chirp-v6-mini` instrumental generation. The returned task ID was `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`. A later WeKnora Agent `suno_get_task` call on that **same ID** returned `state=complete`, `response.success=true`, and two `succeeded` outputs: [audio 1](https://cdn.acedata2.cloud/suno/1afac1aa-c215-4f54-a899-7c2a8ee6ea37.mp3) and [audio 2](https://cdn.acedata2.cloud/suno/9b2813f0-03ac-44bb-ba38-cc00a5513f93.mp3). Both URLs returned HTTP 200 with `audio/mpeg`. A matching Ace usage record for this trace shows **0.56 Credits original, 0.504 Credits deducted** under the test account's discount. Browser playback was not verified. This is a local development build result; it does not establish stable-release or marketplace availability.
+
 ## 4. Add a Skill when you need instructions
 
 Workspace Admin/Owner can open **Toolbox → Skills → Add Skill** and paste the public source `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`. Choose a configured sandbox and wait for its install status to become **Ready**. Configure the skill's declared `ACEDATACLOUD_API_TOKEN` privately if it executes shell commands. Then select the skill and sandbox in the Agent editor. Adding a catalog entry alone does not install it; installing a Skill alone does not add MCP tools.
