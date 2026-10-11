@@ -4,6 +4,8 @@
 
 本指南以 2026-10-11 查询到的最新稳定版 **WeKnora v0.8.2** 为准。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。目前「工具箱」的搜索只过滤本空间已添加的条目，不能直接搜索远端市场。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
 
+**Lite v0.8.2 注意事项：** 该版 SQLite 迁移缺少 MCP 元数据 schema，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已合入 `main`，但不在 v0.8.2 发行版里。Lite 正常使用应选择包含该迁移的正式版本；不要照本教程手改生产数据库。独立稳定版源码实验仅在一次性 SQLite 测试库补入上游迁移，之后 Agent 成功执行免费的 `suno_list_models`。
+
 ## 1. 获取 Ace Data Cloud Key
 
 1. 登录 [Ace Data Cloud 控制台](https://platform.acedata.cloud/console/applications)，开通 **Suno** 服务，创建有 Suno 权限的凭据。如果还要在 WeKnora 配置聊天模型，凭据也需要 **AI Chat** 权限。

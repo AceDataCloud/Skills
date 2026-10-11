@@ -4,6 +4,8 @@
 
 This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-11. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. Its Toolbox search currently filters items already added to your workspace; it does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
 
+**Lite v0.8.2 caveat:** its SQLite migrations omit the MCP metadata schema, so adding a service can fail with `table mcp_services has no column named usage_instructions` ([upstream issue #4058](https://github.com/Tencent/WeKnora/issues/4058)). The fix is merged on `main` as [#4060](https://github.com/Tencent/WeKnora/pull/4060), but is absent from the v0.8.2 release. Use a release containing that migration for a normal Lite installation; do not change a production database from this tutorial. Our separate stable-source test applied the upstream migration only to an isolated disposable SQLite database and then completed an Agent `suno_list_models` call.
+
 ## 1. Get an Ace Data Cloud key
 
 1. Sign in to the [Ace Data Cloud console](https://platform.acedata.cloud/console/applications), acquire the **Suno** service, and create a credential with Suno access. If you also add a chat model in WeKnora, that credential needs **AI Chat** access too.
