@@ -6,8 +6,8 @@ Skills; it is not an AceDataCloud API key.
 
 ## Get Your Token
 
-1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications).
-2. Open **General application**. Its API key can access multiple services your
+1. Register an account if needed, then sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=agent_skill&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_setup_api_key).
+2. Open **General application**; if it is missing, choose **Initialize General Application**. Its API key can access multiple services your
    account is entitled to use. You can also use a service-specific application
    and key for that service. Check access, balance, and current pricing first.
 3. Copy an existing key, or select **Manage Keys → Create** to make a separate
@@ -57,7 +57,7 @@ curl -X POST https://api.acedata.cloud/<endpoint> \
 |------|-------|----------|
 | **Service API key** | One application/service | Use for one Skill when you want narrow access |
 | **General application API key** | Services enabled for the account, subject to key restrictions | Use for multiple Skills |
-| **Platform-management token** (`platform-...`) | Account-management API | Use with the `acedatacloud` management Skill, not generation/search |
+| [**Platform-management token**](https://platform.acedata.cloud/console/platform-tokens?utm_source=agent_skill&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_setup_account_token) (`platform-...`) | Account-management API | Use with the `acedatacloud` management Skill, not generation/search |
 
 ## Gotchas
 
