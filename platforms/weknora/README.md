@@ -83,6 +83,14 @@ Use the same Skill source pattern for each service below, replacing `suno-music`
 
 The 17 service cards were each connected and synchronized through the WeKnora backend with the upstream SQLite migration applied to this disposable test database. This is the workspace's configured list, **not** a remote marketplace. Cards use WeKnora's generic tool icon; per-service logos are not shown in this UI. A synchronized tool list is not proof that each paid generation completed.
 
+### Verified GPT Image 2.5 example (2026-10-12)
+
+With a credential authorized for GPT Image and after checking the current [image API price](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations), an Agent in the same isolated patched v0.8.2 instance selected the **GPT Image** MCP service. Only image generation, image task retrieval, and the image model list were enabled; generation required one-call approval. One `openai_generate_image` call used `gpt-image-2.5-flare`, `1024x1024`, `quality=low`, `n=1`, and `async=true`. The Agent queried task `496c8575-2cbc-4c84-b20e-c732f4d4764c` twice: first pending, then `finished_at` with `response.success=true`. The [final image](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) opened at 1024×1024 and visually matched the white-cup prompt. A single matching usage record shows **0.19 Credits original, 0.171 Credits deducted**. No second image generation was submitted.
+
+![GPT Image 2.5 Flare result displayed inside the real English WeKnora chat](assets/gpt-image-2-5-agent-v082.jpg)
+
+This verifies GPT Image's manually configured MCP path in the patched stable-source test instance. It does not verify WeKnora marketplace discovery, unmodified Lite v0.8.2, or the other 15 services' main actions.
+
 For chat models in current v0.8.2, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
 
 ![Preview of the named Ace Data Cloud Provider and GPT-4.1 Mini catalog entry in the development build](assets/ace-model-provider-preview.jpg)

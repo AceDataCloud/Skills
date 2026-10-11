@@ -83,6 +83,14 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 
 17 张服务卡片各自经过 WeKnora 后端连接测试和工具目录同步；仅在一次性 SQLite 测试库补入上游迁移。这是本空间**已配置的列表**，并非远端市场。卡片使用 WeKnora 的通用工具图标，没有服务专属 Logo；工具同步成功不表示每项付费生成都得到终态。
 
+### GPT Image 2.5 真实验收样例（2026-10-12）
+
+使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
+
+![GPT Image 2.5 Flare 图片在真实英文 WeKnora 聊天中展示](assets/gpt-image-2-5-agent-v082.jpg)
+
+这证明补库稳定版测试实例的 GPT Image 手动 MCP 路径，不代表 WeKnora 市场可发现、未经修补的 Lite v0.8.2 可用，也不代表其余 15 项的主流程已验收。
+
 当前 v0.8.2 要添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
 
 ![开发构建中 Ace Data Cloud 命名 Provider 和 GPT-4.1 Mini 目录项的英文预览](assets/ace-model-provider-preview.jpg)
