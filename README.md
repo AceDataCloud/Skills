@@ -12,6 +12,80 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
+## First run with ClawHub and OpenClaw
+
+This example uses Suno. The same API-key steps apply to the other AceDataCloud image, video, music, chat, search, and face Skills. A ClawHub account installs Skills; an **AceDataCloud API key** authorizes API calls. They are separate credentials.
+
+### 1. Install the Skill
+
+Open [Suno on ClawHub](https://clawhub.ai/acedatacloud/skills/suno) and check that the publisher is **@acedatacloud**. Install the [ClawHub CLI](https://github.com/openclaw/clawhub/blob/main/docs/cli.md) if needed, then run:
+
+```bash
+npm install -g clawhub
+clawhub install @acedatacloud/suno
+clawhub list
+```
+
+Start a new OpenClaw session so it loads the installed Skill. The ClawHub names are shorter than the folders in this repository: for example, `@acedatacloud/suno` corresponds to [`skills/suno-music`](skills/suno-music/), and `@acedatacloud/nano-banana` to [`skills/nano-banana-image`](skills/nano-banana-image/). For other agents, use [Quick Install](#quick-install) below.
+
+### 2. Get an AceDataCloud API key
+
+1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications). Create an account first if needed.
+2. Open **General application** (initialize it if the console prompts you). Its key can access the services enabled for your account. A service-specific application key is limited to that service. Enable the intended service if needed, then check its access, balance, and current price before running an example.
+3. Copy an existing API key, or choose **Manage Keys → Create** to make a separate key for OpenClaw. Name it, set an expiration and restrictions if needed, then copy the key from the application card or key list. If you restrict **Allowed APIs**, include both the generation endpoint and its task-query endpoint. For Suno these are `/suno/audios` and `/suno/tasks`.
+
+![Where to copy an API key or open Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+
+![Creating a separate API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
+
+Copy the **key value only**. Do not include `Bearer ` or quotation marks when pasting into a credential field. A platform-management token beginning with `platform-` is for the [account-management Skill](skills/acedatacloud/), not for generation/search requests to `api.acedata.cloud`.
+
+### 3. Make the key available to OpenClaw
+
+Put this line in `~/.openclaw/.env` on the machine running the OpenClaw Gateway, replacing the placeholder with your key:
+
+```dotenv
+ACEDATACLOUD_API_TOKEN=your_api_key_here
+```
+
+OpenClaw [loads this global `.env` file](https://docs.openclaw.ai/help/faq/env-vars#how-does-openclaw-load-environment-variables) even when its Gateway runs as a service. Restart the Gateway and start a fresh session after changing it. Keep the file private (`chmod 600 ~/.openclaw/.env`) and never commit it or paste the key into a chat. For a direct terminal-only test, use `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that terminal instead.
+
+### 4. Submit once, then check the same task
+
+Ask your agent: “Use the Suno Skill to make an instrumental piano melody for a sunrise.” Or run this example after checking the current Suno price; generation is billable:
+
+```bash
+curl -X POST https://api.acedata.cloud/suno/audios \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"chirp-v6","prompt":"A gentle instrumental piano melody for a sunrise, no vocals.","instrumental":true,"async":true}'
+```
+
+If the response gives a task ID, copy it and query **that same task** until it succeeds or fails:
+
+```bash
+curl -X POST https://api.acedata.cloud/suno/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"YOUR_TASK_ID"}'
+```
+
+Use the audio URL from the completed result. Do not submit the generation request again just because a task is pending; that creates another billable task. Other Skills have their own request examples and task endpoints in their `SKILL.md` files.
+
+### 5. If the first run fails
+
+| Symptom | Check |
+|---|---|
+| 401 / unauthorized | Copy the complete API key again. Confirm `ACEDATACLOUD_API_TOKEN` is available to the Gateway, and do not put `Bearer ` inside the key value. |
+| 403 / no access | Check the application has access to the service, the key has not expired, and **Allowed APIs** includes both the submit and task-query routes. A moderation rejection can also return 403; read the response before changing keys. |
+| 400 / invalid request | Use the exact model and request shape in the Skill's current Quick Start. |
+| 429 | Wait and reduce request rate or concurrency; do not automatically retry a billable submit. |
+| Pending, timeout, or 5xx | Query the existing task or request history before resubmitting. Share a task or trace ID with support, never the key. |
+
+For more detail, see the [authentication guide](skills/_shared/authentication.md) and [task-polling guide](skills/_shared/async-tasks.md). Support: [dev@acedata.cloud](mailto:dev@acedata.cloud).
+
+The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide) is the entry point for agents that have not selected a service yet.
+
 ## Available Skills
 
 ### AI Music & Audio
@@ -97,15 +171,7 @@ bulk posting.
 
 ## Prerequisites
 
-Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
-
-1. Register an account
-2. Browse and subscribe to a service (most have free quota)
-3. Create an API credential (token)
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+AceDataCloud API Skills need an API key from [Applications](https://platform.acedata.cloud/console/applications). Follow the [first-run steps](#first-run-with-clawhub-and-openclaw) for the exact UI path, key restrictions, OpenClaw environment setup, and a complete example. Local-only Skills such as `onepage-pdf` and `apple-notes` do not use an AceDataCloud API key; the `acedatacloud` account-management Skill uses a separate platform token.
 
 ## Quick Install
 
@@ -284,6 +350,8 @@ We welcome contributions! To add a new skill:
 5. Submit a pull request — CI will validate your skill format
 
 **Note:** `.agents/skills/` and `.github/skills/` are symlinks to `skills/` — do not modify files via those paths.
+
+The existing ClawHub-only `@acedatacloud/api-guide` listing is maintained in [`clawhub/api-guide/SKILL.md`](clawhub/api-guide/SKILL.md). Its general onboarding instructions are kept separate from the service Skills in `skills/`.
 
 ## License
 

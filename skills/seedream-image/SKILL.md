@@ -5,12 +5,22 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.1"
-compatibility: Requires ACEDATACLOUD_API_TOKEN (see ../_shared/authentication.md). Optionally pair with mcp-seedream-pro or seedream-cli.
+compatibility: Requires ACEDATACLOUD_API_TOKEN (get an API key at https://platform.acedata.cloud/console/applications). Optionally pair with mcp-seedream-pro or seedream-cli.
 ---
 
 # Seedream Image
 
 Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authorization: Bearer $ACEDATACLOUD_API_TOKEN` and JSON request bodies.
+
+## First-time setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/seedream`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Seedream access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/seedream/images` and `/seedream/tasks`. Advanced workflows below may call additional routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Follow the **Generate or edit** example below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.
+
+[Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## Pick the model from the requested capability
 
@@ -96,7 +106,7 @@ POST /seedream/tasks
 {"action": "retrieve", "id": "<task_id>"}
 ```
 
-Follow [async task polling](../_shared/async-tasks.md). Use `callback_url` only when a real public webhook exists. Do not use a health endpoint as a fake callback.
+Follow [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Use `callback_url` only when a real public webhook exists. Do not use a health endpoint as a fake callback.
 
 ## Streaming
 

@@ -5,14 +5,22 @@ license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md).
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (get an API key at https://platform.acedata.cloud/console/applications).
 ---
 
 # Hailuo Video Generation
 
 Generate AI videos through AceDataCloud's Hailuo (MiniMax) API.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## First-time setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/hailuo`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Hailuo access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/hailuo/videos` and `/hailuo/tasks`. Advanced workflows below may call additional routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Run the **Quick Start** below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.
+
+[Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## Quick Start
 
@@ -23,7 +31,7 @@ curl -X POST https://api.acedata.cloud/hailuo/videos \
   -d '{"action": "generate", "prompt": "a dolphin jumping through ocean waves at golden hour", "model": "minimax-t2v"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Poll via `POST /hailuo/tasks` with `{"id": "..."}`.
 ## Models
 
 | Model | Type | Best For |
