@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "Suno": {
+      "type": "http",
+      "url": "https://suno.mcp.acedata.cloud/mcp",
+      "description": "Create Suno music and query the same task ID until state is complete and success is true. Return the final audio URL only after completion."
+    }
+  }
+}

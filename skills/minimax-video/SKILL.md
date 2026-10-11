@@ -42,7 +42,7 @@ Include a `text` item with the generation prompt in every request.
 
 ```bash
 curl -X POST https://api.acedata.cloud/minimax/videos \
-  -H "Authorization: ******" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "MiniMax-H3",
@@ -119,7 +119,7 @@ curl -X POST https://api.acedata.cloud/minimax/videos \
 
 ```bash
 curl -X POST https://api.acedata.cloud/minimax/tasks \
-  -H "Authorization: ******" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"action":"retrieve","id":"TASK_ID"}'
 ```

@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "acedatacloud-ai-media",
-      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
+      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (GPT Image, Midjourney, Flux, Qwen Image, Seedream, Nano Banana), video (Grok, MiniMax H3, Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
       "source": "./",
       "strict": false,
       "skills": [
@@ -19,10 +19,13 @@
         "./skills/producer-music",
         "./skills/fish-audio",
         "./skills/gpt-image-2-5",
+        "./skills/midjourney-image",
         "./skills/flux-image",
         "./skills/seedream-image",
         "./skills/nano-banana-image",
         "./skills/luma-video",
+        "./skills/grok-video",
+        "./skills/minimax-video",
         "./skills/sora-video",
         "./skills/veo-video",
         "./skills/kling-video",
