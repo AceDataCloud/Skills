@@ -19,6 +19,12 @@ This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026
 3. Save and run **Test Connection**. Sync tools, then confirm `suno_generate_music`, `suno_get_task`, and `suno_list_models` are present. Keep just the tools you intend the agent to use enabled. Enable call approval for generation if your workspace requires it.
 4. In your Agent editor, enable MCP access and select the Suno service. Save the Agent, then start a new **Smart Reasoning** conversation. A saved service that is not selected by the Agent is not usable in its chat.
 
+![WeKnora v0.8.2 MCP authentication form with the Suno URL, Authorization header, and an empty secret field](assets/suno-mcp-auth-v082.jpg)
+
+![Suno MCP card with 42 synchronized tools in the English Toolbox](assets/suno-mcp-v082.jpg)
+
+These are real English UI captures from the isolated v0.8.2 frontend and an isolated SQLite database with upstream migration #4060 applied. No key is shown.
+
 The hosted endpoint requires a Bearer credential: an unauthenticated request returns 401. With an authorized Ace key, the MCP `initialize` and `tools/list` calls succeeded on 2026-10-11; `suno_list_models` returned the current model list. These checks establish connection and discovery, not a completed paid song.
 
 ## 3. Generate and retrieve one song
@@ -31,6 +37,10 @@ The generation tool returns quickly with a task ID. `pending` or an HTTP 200 mea
 
 If you only need a completed older task, ask the Agent to call `suno_get_task` with its saved ID. This checks retrieval without paying for another generation.
 
+![A WeKnora v0.8.2 Agent calls Suno List Models and returns current model IDs](assets/suno-agent-list-models-v082.jpg)
+
+This UI run called the free `suno_list_models` tool on the patched stable-source test database; it did not submit another song.
+
 ### Verified example (2026-10-11)
 
 An isolated local WeKnora Lite build with the Ace model-provider branch connected to Suno MCP, enabled `suno_generate_music` with one-call approval, and submitted exactly one `chirp-v6-mini` instrumental generation. The returned task ID was `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`. A later WeKnora Agent `suno_get_task` call on that **same ID** returned `state=complete`, `response.success=true`, and two `succeeded` outputs: [audio 1](https://cdn.acedata2.cloud/suno/1afac1aa-c215-4f54-a899-7c2a8ee6ea37.mp3) and [audio 2](https://cdn.acedata2.cloud/suno/9b2813f0-03ac-44bb-ba38-cc00a5513f93.mp3). Both URLs returned HTTP 200 with `audio/mpeg`. A matching Ace usage record for this trace shows **0.56 Credits original, 0.504 Credits deducted** under the test account's discount. Browser playback was not verified. This is a local development build result; it does not establish stable-release or marketplace availability.
@@ -38,6 +48,8 @@ An isolated local WeKnora Lite build with the Ace model-provider branch connecte
 ## 4. Add a Skill when you need instructions
 
 Workspace Admin/Owner can open **Toolbox → Skills → Add Skill** and paste the public source `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`. Choose a configured sandbox and wait for its install status to become **Ready**. Configure the skill's declared `ACEDATACLOUD_API_TOKEN` privately if it executes shell commands. Then select the skill and sandbox in the Agent editor. Adding a catalog entry alone does not install it; installing a Skill alone does not add MCP tools.
+
+![The Suno Skill is registered in the English workspace catalog but not installed on any sandbox](assets/suno-skill-catalog-v082.jpg)
 
 You can [search Suno on skills.sh](https://www.skills.sh/search?q=suno) and see the `acedatacloud/skills` listing and install command. In v0.8.2, pasting the **skills.sh page URL** into WeKnora returned `Skill not found` because its resolver requires a ClawHub federated copy ([upstream issue #4167](https://github.com/Tencent/WeKnora/issues/4167)). Paste the GitHub skill-directory URL above instead; it registered as `suno-music` in the isolated stable-source test. That is a manual source import, not in-product marketplace search or a completed sandbox install.
 
@@ -68,6 +80,10 @@ Use the same Skill source pattern for each service below, replacing `suno-music`
 | Nano Banana | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
 
 For chat models in current v0.8.2, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
+
+![Preview of the named Ace Data Cloud Provider and GPT-4.1 Mini catalog entry in the development build](assets/ace-model-provider-preview.jpg)
+
+The preview uses the v0.8.2 frontend against the development backend from that PR. The logo is the original Ace brand PNG; this option is absent from the unmodified stable backend.
 
 ## Troubleshooting
 
