@@ -247,6 +247,14 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 3. Only explicit `charged=false` means a pre-settlement refusal; a missing `charged` means unknown, not uncharged. Check payment evidence before spending again. Even if `retryable=true`, a `Failed` order cannot be retried in place: resolve the wallet problem and obtain confirmation before creating and paying a new order.
 4. Share only the order ID and public error code with support. Never log or share full order metadata, `PAYMENT-SIGNATURE`, wallet signatures, authorization payloads or raw payment/RPC diagnostics.
 
+#### X402 ACE buyback and burn proof
+
+When the buyback policy is enabled, eligible Base mainnet Circle USDC and Solana mainnet USDC payments allocate 3% of the actual received amount to buy and burn ACE, with no extra wallet charge. Recharge is counted once; spending those Credits on APIs does not count again. Historical discounted orders and old-policy orders are not automatically backfilled.
+
+1. Read authenticated `GET /api/v1/orders/{order_id}/` on the management host as the order owner and inspect `ace_burn`. The CLI only lists orders, not an order-detail or burn command; the order list and anonymous pay-link response do not include `ace_burn`. If it is absent or null, do not infer eligibility or fabricate proof.
+2. Distinguish the payment receipt (`settlement_network`, `settlement_transaction`) from the asynchronous ACE execution (`execution_network`). Base payments retain their Base receipt; buying and burning ACE happens on Solana. A Base receipt is not a Solana burn transaction. Do not expose operator configuration or internal funding details.
+3. Report verified burn completion only for `ace_burn.state=Completed`, using the `swap_signature` and `burn_signature` actually returned. `Pending`, `Processing` or `Review` is not proof of a burn, and the order's `Finished` state does not prove the burn completed. Base source finality can delay the burn without affecting already credited Credits. Reread the same order to check progress; do not repay or create another order to trigger a burn.
+
 ### Platform tokens — `GET /platform-tokens/`
 
 ```json
