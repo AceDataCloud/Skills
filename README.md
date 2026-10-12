@@ -12,6 +12,44 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
+## First run from skills.sh
+
+Choose one Skill from the [AceDataCloud directory](https://skills.sh/acedatacloud/skills), then install it for your agent. Start with the account/catalog Skill for a read-only check that needs no API key:
+
+```bash
+npx skills add acedatacloud/skills --skill acedatacloud -a codex --yes
+npx skills list
+```
+
+Replace `codex` with your supported agent, such as `claude-code` or `cursor`. The CLI installs into the agent's project skill path; for Codex this is `.agents/skills/`. Start a fresh agent session after installation. For a reproducible snapshot, use a published tag URL instead of the moving default branch. This example was checked on 2026-10-12:
+
+```bash
+npx skills add https://github.com/AceDataCloud/Skills/tree/v2026.1012.274001 \
+  --skill acedatacloud -a codex --yes
+```
+
+Ask the agent: “Use the acedatacloud Skill to show the current Fish Audio price. Do not generate audio.” Or run the installed script from the project directory:
+
+```bash
+python3 .agents/skills/acedatacloud/scripts/acedatacloud.py pricing --service fish --json
+```
+
+This public catalog request needs no token and does not submit a generation. A Skill supplies instructions and bundled scripts; configure any paired MCP server and credentials separately.
+
+For a service Skill, install only the one you need, for example:
+
+```bash
+npx skills add acedatacloud/skills --skill fish-audio -a codex --yes
+```
+
+If you came from skills.sh, open [Applications for the skills.sh first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_sh_first_run). Follow [Get an AceDataCloud API key](#2-get-an-acedatacloud-api-key), check the selected service's current price and balance, and export the key in the environment of the process that runs the Skill:
+
+```bash
+export ACEDATACLOUD_API_TOKEN="your_api_key_here"
+```
+
+Project `.env` loading depends on your agent; installing a Skill does not load the file automatically. Use the selected Skill's Quick Start after approving the intended generation or search cost. For an asynchronous response, query the same task ID until it finishes instead of submitting again. Fish, Suno and Google Search use a service API key; account reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`. Public catalog/pricing reads above need neither.
+
 ## First run with ClawHub and OpenClaw
 
 This example uses Suno. The same API-key steps apply to the other AceDataCloud image, video, music, chat, search, and face Skills. A ClawHub account installs Skills; an **AceDataCloud API key** authorizes API calls. They are separate credentials.

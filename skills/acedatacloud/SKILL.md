@@ -357,4 +357,4 @@ publishing announcements or blogs are **irreversible, money-related or publicly 
 - Announcement endpoints under `/admin/` require a **superuser** token; a normal
   token gets `403`.
 
-> **MCP:** `pip install mcp-acedatacloud` | Hosted: `https://mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_get_pricing`, `acedatacloud_search_docs`, `acedatacloud_get_api_spec`, `acedatacloud_create_credential`, …) with the same write-confirmation guard.
+> **MCP:** `pip install mcp-acedatacloud` | Hosted: `https://mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md). The MCP exposes these as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_get_pricing`, `acedatacloud_search_docs`, `acedatacloud_get_api_spec`, `acedatacloud_create_credential`, …) with the same write-confirmation guard.
