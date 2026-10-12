@@ -2,14 +2,14 @@
 
 [中文指南](README.zh-CN.md) · [WeKnora's Skills guide](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora's MCP guide](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-11. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. The released v0.8.2 Toolbox has no remote marketplace search or service-list search field. A later development build adds filtering of items already registered in the workspace, which still does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
+This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026-10-12. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. The released v0.8.2 Toolbox has no remote marketplace search or service-list search field. A later development build adds filtering of items already registered in the workspace, which still does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
 
 **Lite v0.8.2 caveat:** its SQLite migrations omit the MCP metadata schema, so adding a service can fail with `table mcp_services has no column named usage_instructions` ([upstream issue #4058](https://github.com/Tencent/WeKnora/issues/4058)). The fix is merged on `main` as [#4060](https://github.com/Tencent/WeKnora/pull/4060), but is absent from the v0.8.2 release. Use a release containing that migration for a normal Lite installation; do not change a production database from this tutorial. Our separate stable-source test applied the upstream migration only to an isolated disposable SQLite database and then completed an Agent `suno_list_models` call.
 
 ## 1. Get an Ace Data Cloud key
 
-1. Sign in to the [Ace Data Cloud console](https://platform.acedata.cloud/console/applications), acquire the **Suno** service, and create a credential with Suno access. If you also add a chat model in WeKnora, that credential needs **AI Chat** access too.
-2. Check the [current Suno pricing](https://platform.acedata.cloud/services/suno?tab=pricing) and available Credits before generation. A generation is billable; task lookups are separate reads.
+1. Sign in to the [Ace Data Cloud console](https://platform.acedata.cloud/console/applications?utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding), acquire the **Suno** service, and create a credential with Suno access. If you also add a chat model in WeKnora, that credential needs **AI Chat** access too.
+2. Check the [current Suno pricing](https://platform.acedata.cloud/services/suno?tab=pricing&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding) and available Credits before generation. A generation is billable; task lookups are separate reads.
 3. Keep the key private. Enter it only in WeKnora's credential field. Do not put it in a chat prompt, JSON example, screenshot, or Git commit.
 
 ## 2. Import the Suno MCP service
@@ -26,6 +26,8 @@ This guide follows WeKnora **v0.8.2**, the latest stable release checked on 2026
 These are real English UI captures from the isolated v0.8.2 frontend and an isolated SQLite database with upstream migration #4060 applied. No key is shown.
 
 The hosted endpoint requires a Bearer credential: an unauthenticated request returns 401. With an authorized Ace key, the MCP `initialize` and `tools/list` calls succeeded on 2026-10-11; `suno_list_models` returned the current model list. These checks establish connection and discovery, not a completed paid song.
+
+Before generating, ask the Agent: **“Call only `suno_list_models` and return the model IDs; do not generate music.”** This verifies the tool path without a Suno generation charge. The Agent's chat model can still incur its own usage.
 
 ## 3. Generate and retrieve one song
 
@@ -46,6 +48,8 @@ This UI run called the free `suno_list_models` tool on the patched stable-source
 An isolated local WeKnora Lite build with the Ace model-provider branch connected to Suno MCP, enabled `suno_generate_music` with one-call approval, and submitted exactly one `chirp-v6-mini` instrumental generation. The returned task ID was `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`. A later WeKnora Agent `suno_get_task` call on that **same ID** returned `state=complete`, `response.success=true`, and two `succeeded` outputs: [audio 1](https://cdn.acedata2.cloud/suno/1afac1aa-c215-4f54-a899-7c2a8ee6ea37.mp3) and [audio 2](https://cdn.acedata2.cloud/suno/9b2813f0-03ac-44bb-ba38-cc00a5513f93.mp3). Both URLs returned HTTP 200 with `audio/mpeg`. A matching Ace usage record for this trace shows **0.56 Credits original, 0.504 Credits deducted** under the test account's discount. Browser playback was not verified. This is a local development build result; it does not establish stable-release or marketplace availability.
 
 ## 4. Add a Skill when you need instructions
+
+For the server deployment described here, have a workspace Admin/Owner configure a working sandbox in **Settings → Sandbox Config**. If the list is empty, a Skill can be registered but cannot be installed or run. The hosted MCP path above does not require a Skill sandbox.
 
 Workspace Admin/Owner can open **Toolbox → Skills → Add Skill** and paste the public source `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`. Choose a configured sandbox and wait for its install status to become **Ready**. Configure the skill's declared `ACEDATACLOUD_API_TOKEN` privately if it executes shell commands. Then select the skill and sandbox in the Agent editor. Adding a catalog entry alone does not install it; installing a Skill alone does not add MCP tools.
 
@@ -85,7 +89,7 @@ The 17 service cards were each connected and synchronized through the WeKnora ba
 
 ### Verified GPT Image 2.5 example (2026-10-12)
 
-With a credential authorized for GPT Image and after checking the current [image API price](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations), an Agent in the same isolated patched v0.8.2 instance selected the **GPT Image** MCP service. Only image generation, image task retrieval, and the image model list were enabled; generation required one-call approval. One `openai_generate_image` call used `gpt-image-2.5-flare`, `1024x1024`, `quality=low`, `n=1`, and `async=true`. The Agent queried task `496c8575-2cbc-4c84-b20e-c732f4d4764c` twice: first pending, then `finished_at` with `response.success=true`. The [final image](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) opened at 1024×1024 and visually matched the white-cup prompt. A single matching usage record shows **0.19 Credits original, 0.171 Credits deducted**. No second image generation was submitted.
+With a credential authorized for GPT Image and after checking the current [image API price](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding), an Agent in the same isolated patched v0.8.2 instance selected the **GPT Image** MCP service. Only image generation, image task retrieval, and the image model list were enabled; generation required one-call approval. One `openai_generate_image` call used `gpt-image-2.5-flare`, `1024x1024`, `quality=low`, `n=1`, and `async=true`. The Agent queried task `496c8575-2cbc-4c84-b20e-c732f4d4764c` twice: first pending, then `finished_at` with `response.success=true`. The [final image](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) opened at 1024×1024 and visually matched the white-cup prompt. A single matching usage record shows **0.19 Credits original, 0.171 Credits deducted**. No second image generation was submitted.
 
 ![GPT Image 2.5 Flare result displayed inside the real English WeKnora chat](assets/gpt-image-2-5-agent-v082.jpg)
 
