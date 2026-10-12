@@ -220,6 +220,45 @@ class OrderProcedureTests(unittest.TestCase):
         ):
             self.assertIn(requirement, self.text)
 
+    def test_x402_ace_burn_policy_does_not_promise_extra_charges_or_backfill(self):
+        text = self.text.split("#### X402 ACE buyback and burn proof\n", 1)[1]
+        for requirement in (
+            "When the buyback policy is enabled", "eligible Base mainnet Circle USDC",
+            "Solana mainnet USDC", "3% of the actual received amount",
+            "no extra wallet charge", "Recharge is counted once",
+            "spending those Credits on APIs does not count again",
+            "Historical discounted orders and old-policy orders are not automatically backfilled",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_x402_ace_burn_proof_uses_owner_detail_not_list_or_anonymous_link(self):
+        text = self.text.split("#### X402 ACE buyback and burn proof\n", 1)[1]
+        for requirement in (
+            "GET /api/v1/orders/{order_id}/", "as the order owner",
+            "CLI only lists orders", "not an order-detail or burn command",
+            "order list and anonymous pay-link response do not include `ace_burn`",
+            "absent or null", "do not infer eligibility or fabricate proof",
+            "`settlement_network`", "`settlement_transaction`", "`execution_network`",
+            "Base receipt is not a Solana burn transaction",
+            "Do not expose operator configuration or internal funding details",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```json", text)
+
+    def test_x402_ace_burn_completion_is_independent_of_credits(self):
+        text = self.text.split("#### X402 ACE buyback and burn proof\n", 1)[1]
+        for requirement in (
+            "`ace_burn.state=Completed`", "`swap_signature` and `burn_signature`",
+            "actually returned", "`Pending`, `Processing` or `Review` is not proof",
+            "order's `Finished` state does not prove the burn completed",
+            "Base source finality can delay the burn without affecting already credited Credits",
+            "Reread the same order", "do not repay or create another order",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
     def test_existing_bank_transfer_cli_is_dry_run_without_confirmation(self):
         argv = ["acedatacloud.py", "pay-order", "--id", "ORDER_ID", "--pay-way", "BankTransfer"]
         with patch.object(self.cli.sys, "argv", argv), patch.object(self.cli, "_request") as request, redirect_stdout(io.StringIO()) as output:
