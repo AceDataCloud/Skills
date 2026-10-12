@@ -1,0 +1,21 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Start here",
+      "description": "Read the public catalog and current pricing before choosing a service.",
+      "skills": ["acedatacloud"]
+    },
+    {
+      "title": "Music and voice",
+      "description": "Choose one music or speech Skill, set your API key, and check the current price.",
+      "skills": ["fish-audio", "suno-music"]
+    },
+    {
+      "title": "Web search",
+      "description": "Search web pages, images, news and places with your service API key.",
+      "skills": ["google-search"]
+    }
+  ]
+}
