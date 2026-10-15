@@ -95,7 +95,7 @@ With a credential authorized for GPT Image and after checking the current [image
 
 This verifies GPT Image's manually configured MCP path in the patched stable-source test instance. It does not verify WeKnora marketplace discovery, unmodified Lite v0.8.2, or the other 15 services' main actions.
 
-For chat models in current v0.8.2, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
+For chat models in the tested v0.8.2 UI, use **Settings → Models → Add Model → Chat → API → Custom (OpenAI-compatible)**, base URL `https://api.acedata.cloud/v1`, a documented chat model ID such as `gpt-4.1-mini`, and an Ace key with AI Chat access. Test Connection before saving. A named Ace Data Cloud provider is [under upstream review](https://github.com/Tencent/WeKnora/pull/4163); its source PR and CI are not an installed stable release.
 
 ![Preview of the named Ace Data Cloud Provider and GPT-4.1 Mini catalog entry in the development build](assets/ace-model-provider-preview.jpg)
 
