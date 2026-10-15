@@ -2,9 +2,9 @@
 
 [English guide](README.md) · [WeKnora 技能文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-本指南以 2026-10-12 查询到的最新稳定版 **WeKnora v0.8.2** 为准。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
+2026-10-15 查询到的最新稳定版为 [WeKnora **v0.8.3**](https://github.com/Tencent/WeKnora/releases/tag/v0.8.3)。下方界面步骤和带日期的 Agent 样例来自 v0.8.2，尚未在 v0.8.3 完整重跑。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
 
-**Lite v0.8.2 注意事项：** 该版 SQLite 迁移缺少 MCP 元数据 schema，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已合入 `main`，但不在 v0.8.2 发行版里。Lite 正常使用应选择包含该迁移的正式版本；不要照本教程手改生产数据库。独立稳定版源码实验仅在一次性 SQLite 测试库补入上游迁移，之后 Agent 成功执行免费的 `suno_list_models`。
+**Lite 版本说明：** v0.8.2 缺少 SQLite MCP 元数据迁移，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。已合并的修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已包含在 v0.8.3。请从 v0.8.3 或后续兼容版本开始，不要手改生产数据库。2026-10-15，未经修改的 v0.8.3 源码通过 SQLite 新库 schema、v33 升级保留 MCP 数据测试，以及完整 database 包测试；这证明迁移回归通过，不代表新的 UI 安装或 Agent 主流程验收。下方 v0.8.2 截图来自单独的一次性补迁移测试库。
 
 ## 1. 获取 Ace Data Cloud Key
 
@@ -55,9 +55,9 @@
 
 ![Suno Skill 已登记在英文空间目录，但尚未安装到任何沙箱](assets/suno-skill-catalog-v082.jpg)
 
-可以在 [skills.sh 搜索 Suno](https://www.skills.sh/search?q=suno)，看到 `acedatacloud/skills` 条目和安装命令。但 v0.8.2 将 **skills.sh 页面 URL** 粘贴到 WeKnora 时，会因解析器要求 ClawHub 联合收录副本而报 `Skill not found`（[上游 Issue #4167](https://github.com/Tencent/WeKnora/issues/4167)）。请改用上面的 GitHub Skill 目录 URL；隔离稳定版源码实验已将其登记为 `suno-music`。这是手动来源导入，不等于产品内市场搜索或沙箱安装完成。
+可以在 [skills.sh 搜索 Suno](https://www.skills.sh/search?q=suno)，看到 `acedatacloud/skills` 条目和安装命令。但在 v0.8.2 实测中，将 **skills.sh 页面 URL** 粘贴到 WeKnora 时，会因解析器要求 ClawHub 联合收录副本而报 `Skill not found`（[上游 Issue #4167](https://github.com/Tencent/WeKnora/issues/4167)）。请改用上面的 GitHub Skill 目录 URL；隔离稳定版源码实验已将其登记为 `suno-music`。这是手动来源导入，不等于产品内市场搜索或沙箱安装完成。
 
-WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚于 [Ace Skills 源码](https://github.com/AceDataCloud/Skills)。安装前检查内容与版本。当前稳定版工具箱没有远端市场搜索，粘贴来源仍属手动安装路径。
+WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚于 [Ace Skills 源码](https://github.com/AceDataCloud/Skills)。安装前检查内容与版本。v0.8.2 工具箱没有远端市场搜索。截至 2026-10-15，[对话内发现和安装功能 #3409](https://github.com/Tencent/WeKnora/pull/3409) 仍 OPEN，它与 SQLite 修复 #4060 是独立变更。粘贴来源仍是本指南的手动路径，本指南不证明官方市场安装。
 
 ## 5. 其他按服务名称查找的入口
 
@@ -95,7 +95,7 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 
 这证明补库稳定版测试实例的 GPT Image 手动 MCP 路径，不代表 WeKnora 市场可发现、未经修补的 Lite v0.8.2 可用，也不代表其余 15 项的主流程已验收。
 
-当前 v0.8.2 要添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
+在已测试的 v0.8.2 界面添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
 
 ![开发构建中 Ace Data Cloud 命名 Provider 和 GPT-4.1 Mini 目录项的英文预览](assets/ace-model-provider-preview.jpg)
 
