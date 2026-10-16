@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Upload to TikTok inbox or run a confirmed private-account review post."""
+"""Upload to TikTok inbox or directly post after creator confirmation."""
 
 from __future__ import annotations
 
@@ -71,6 +71,11 @@ def upload_file(path: str) -> dict:
     publish_id = init.get("publish_id")
     if not upload_url or not publish_id:
         fail("TikTok init response did not contain upload_url and publish_id")
+    put_video_file(upload_url, path, size, publish_id)
+    return {"publish_id": publish_id, "status": "UPLOADED"}
+
+
+def put_video_file(upload_url: str, path: str, size: int, publish_id: str) -> None:
     with open(path, "rb") as video:
         body = video.read()
     request = urllib.request.Request(
@@ -89,10 +94,9 @@ def upload_file(path: str) -> dict:
     except urllib.error.HTTPError as error:
         status = error.code
     except urllib.error.URLError as error:
-        fail(f"network error uploading video: {error.reason}")
+        fail(f"network error uploading video for {publish_id}: {error.reason}")
     if status != 201:
-        fail(f"TikTok upload returned HTTP {status}, expected 201")
-    return {"publish_id": publish_id, "status": "UPLOADED"}
+        fail(f"TikTok upload for {publish_id} returned HTTP {status}, expected 201")
 
 
 def creator_info() -> dict:
@@ -109,14 +113,14 @@ def check_media_url(url: str) -> None:
         or parsed.password
         or parsed.fragment
     ):
-        fail("review post requires a public HTTPS video URL under the verified acedata.cloud domain")
+        fail("video URL must be public HTTPS under the verified acedata.cloud domain")
     request = urllib.request.Request(url, method="HEAD")
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             if response.geturl() != url or response.status != 200:
                 fail("video URL redirects or does not return HTTP 200")
             if response.headers.get_content_type() != "video/mp4":
-                fail("review video URL must return video/mp4")
+                fail("video URL must return video/mp4")
     except urllib.error.HTTPError as error:
         fail(f"video URL returned HTTP {error.code}")
     except urllib.error.URLError as error:
@@ -132,17 +136,17 @@ def upload_url(url: str) -> dict:
     return {"publish_id": publish_id, "status": "PROCESSING_DOWNLOAD"}
 
 
-def review_post_url(url: str, duration_sec: float, values: dict, expected_creator_username: str) -> dict:
+def direct_post_info(duration_sec: float, values: dict, expected_creator_username: str) -> dict:
     if not isinstance(duration_sec, (int, float)) or not math.isfinite(duration_sec) or duration_sec <= 0:
-        fail("review video duration must be positive")
+        fail("video duration must be positive")
     if not isinstance(values, dict):
-        fail("review post values must be an object from the confirmed Studio card")
+        fail("post values must be an object from the confirmed Studio card")
     title = values.get("title")
     privacy = values.get("privacy_level")
     if not isinstance(title, str) or len(title.encode("utf-16-le")) // 2 > 2200:
-        fail("review post title must be a string of at most 2200 UTF-16 code units")
-    if privacy != "SELF_ONLY":
-        fail("unaudited review posts require the user-selected SELF_ONLY privacy level")
+        fail("post title must be a string of at most 2200 UTF-16 code units")
+    if not isinstance(privacy, str) or not privacy:
+        fail("privacy level must be selected in the Studio card")
     required_booleans = (
         "disable_comment",
         "disable_duet",
@@ -152,30 +156,36 @@ def review_post_url(url: str, duration_sec: float, values: dict, expected_creato
         "is_aigc",
     )
     if any(type(values.get(field)) is not bool for field in required_booleans):
-        fail("review post requires explicit interaction, disclosure, and AI-content booleans")
-    if values["brand_content_toggle"]:
+        fail("direct post requires explicit interaction, disclosure, and AI-content booleans")
+    if values["brand_content_toggle"] and privacy == "SELF_ONLY":
         fail("branded content cannot use SELF_ONLY privacy")
     info = creator_info()
     actual_creator_username = info.get("creator_username")
-    expected_username = expected_creator_username.removeprefix("@").strip()
+    expected_username = expected_creator_username[1:] if expected_creator_username.startswith("@") else expected_creator_username
+    expected_username = expected_username.strip()
     if not expected_username or not isinstance(actual_creator_username, str) or actual_creator_username.casefold() != expected_username.casefold():
         fail("connected TikTok creator does not match the confirmed destination account")
     options = info.get("privacy_level_options")
     if not isinstance(options, list) or privacy not in options:
-        fail("SELF_ONLY is not in the creator's current TikTok privacy options")
+        fail("selected privacy level is not in the creator's current TikTok privacy options")
     maximum = info.get("max_video_post_duration_sec")
     if type(maximum) not in (int, float) or not math.isfinite(maximum) or duration_sec > maximum:
-        fail("review video exceeds the creator's current TikTok duration limit")
+        fail("video exceeds the creator's current TikTok duration limit")
     for interaction in ("comment", "duet", "stitch"):
         restriction = info.get(f"{interaction}_disabled")
         if type(restriction) is not bool:
             fail(f"creator info did not include the current {interaction} restriction")
         if restriction and values[f"disable_{interaction}"] is False:
             fail(f"the creator's TikTok account disables {interaction}")
-    check_media_url(url)
     post_info = {"title": title, "privacy_level": privacy}
     for field in required_booleans:
         post_info[field] = values[field]
+    return post_info
+
+
+def direct_post_url(url: str, duration_sec: float, values: dict, expected_creator_username: str) -> dict:
+    post_info = direct_post_info(duration_sec, values, expected_creator_username)
+    check_media_url(url)
     init = api(
         "/post/publish/video/init/",
         {"post_info": post_info, "source_info": {"source": "PULL_FROM_URL", "video_url": url}},
@@ -184,6 +194,26 @@ def review_post_url(url: str, duration_sec: float, values: dict, expected_creato
     if not isinstance(publish_id, str) or not publish_id:
         fail("TikTok Direct Post init did not return a publish_id; check account status before retrying")
     return {"publish_id": publish_id, "status": "PROCESSING_DOWNLOAD"}
+
+
+def direct_post_file(path: str, duration_sec: float, values: dict, expected_creator_username: str) -> dict:
+    size = os.path.getsize(path)
+    if size <= 0 or size > MAX_CHUNK_SIZE:
+        fail("video must be a non-empty MP4 no larger than 64 MB")
+    post_info = direct_post_info(duration_sec, values, expected_creator_username)
+    init = api(
+        "/post/publish/video/init/",
+        {
+            "post_info": post_info,
+            "source_info": {"source": "FILE_UPLOAD", "video_size": size, "chunk_size": size, "total_chunk_count": 1},
+        },
+    )
+    upload_url = init.get("upload_url")
+    publish_id = init.get("publish_id")
+    if not isinstance(upload_url, str) or not upload_url or not isinstance(publish_id, str) or not publish_id:
+        fail("TikTok Direct Post init did not return an upload_url and publish_id; check account status before retrying")
+    put_video_file(upload_url, path, size, publish_id)
+    return {"publish_id": publish_id, "status": "PROCESSING_UPLOAD"}
 
 
 def main() -> None:
@@ -196,12 +226,13 @@ def main() -> None:
     status = sub.add_parser("status")
     status.add_argument("publish_id")
     sub.add_parser("creator-info")
-    review = sub.add_parser("review-post-url")
-    review.add_argument("url")
-    review.add_argument("--duration-sec", type=float, required=True)
-    review.add_argument("--expected-creator-username", required=True)
-    review.add_argument("--values-file", required=True)
-    review.add_argument("--confirmed", action="store_true", required=True)
+    for command, source in (("post-url", "url"), ("post-file", "file"), ("review-post-url", "url")):
+        direct = sub.add_parser(command, help=argparse.SUPPRESS if command == "review-post-url" else None)
+        direct.add_argument(source)
+        direct.add_argument("--duration-sec", type=float, required=True)
+        direct.add_argument("--expected-creator-username", required=True)
+        direct.add_argument("--values-file", required=True)
+        direct.add_argument("--confirmed", action="store_true", required=True)
     args = parser.parse_args()
     if args.command == "upload":
         data = upload_file(args.file)
@@ -211,13 +242,16 @@ def main() -> None:
         data = api("/post/publish/status/fetch/", {"publish_id": args.publish_id})
     elif args.command == "creator-info":
         data = creator_info()
-    else:
+    elif args.command in ("post-url", "post-file", "review-post-url"):
         if args.values_file == "-":
             values = json.load(sys.stdin)
         else:
             with open(args.values_file, encoding="utf-8") as confirmed_values:
                 values = json.load(confirmed_values)
-        data = review_post_url(args.url, args.duration_sec, values, args.expected_creator_username)
+        if args.command == "post-file":
+            data = direct_post_file(args.file, args.duration_sec, values, args.expected_creator_username)
+        else:
+            data = direct_post_url(args.url, args.duration_sec, values, args.expected_creator_username)
     output({"ok": True, "data": data})
 
 
