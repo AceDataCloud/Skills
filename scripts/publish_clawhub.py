@@ -21,6 +21,20 @@ def run(args, cwd=REPO):
     return result.stdout.strip()
 
 
+def manifest_name(content):
+    """Read a plain top-level name without executing or expanding YAML tags."""
+    lines = content.splitlines()
+    if not lines or lines[0] != "---":
+        raise RuntimeError("SKILL.md must declare a top-level frontmatter name")
+    for line in lines[1:]:
+        if line == "---":
+            break
+        match = re.fullmatch(r"name:\s*([a-z0-9-]+|'[a-z0-9-]+'|\"[a-z0-9-]+\")\s*", line)
+        if match:
+            return match.group(1).strip("'\"")
+    raise RuntimeError("SKILL.md must declare a plain top-level frontmatter name")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill", required=True, help="Source folder name, e.g. suno-music or api-guide")
@@ -28,7 +42,10 @@ def main(argv=None):
     parser.add_argument("--version", help="Explicit semver; otherwise ClawHub skips unchanged content")
     parser.add_argument("--changelog", required=True, help="Reviewed release notes")
     parser.add_argument("--publish", action="store_true", help="Upload after publisher access and MIT-0 permission are confirmed")
+    parser.add_argument("--accept-mit-0", action="store_true", help="Acknowledge existing human authorization for ClawHub's MIT-0 terms; required with --publish")
     args = parser.parse_args(argv)
+    if args.publish and not args.accept_mit_0:
+        parser.error("--publish requires --accept-mit-0 after human authorization; the CLI accepts these terms during upload")
     name_pattern = r"[a-z0-9]+(?:-[a-z0-9]+)*"
     if not re.fullmatch(name_pattern, args.skill) or not re.fullmatch(name_pattern, args.slug):
         parser.error("--skill and --slug must be unscoped folder names")
@@ -48,11 +65,21 @@ def main(argv=None):
     if changed or ignored:
         raise RuntimeError("The selected skill contains modified, untracked, or ignored files; commit reviewed source first")
     # Never recreate a legacy alias or publish into the logged-in user's namespace.
-    listing = json.loads(run(CLI + ["--no-input", "inspect", f"@{OWNER}/{args.slug}", "--json"]))
+    listing = json.loads(run(CLI + ["--no-input", "inspect", f"@{OWNER}/{args.slug}",
+                                    "--file", "SKILL.md", "--json"]))
     if listing.get("owner", {}).get("handle") != OWNER or listing.get("skill", {}).get("slug") != args.slug:
         raise RuntimeError("The existing listing must resolve to the exact @acedatacloud canonical name")
+    remote_content = (listing.get("file") or {}).get("content")
+    if not isinstance(remote_content, str):
+        raise RuntimeError("Cannot verify the existing listing's SKILL.md identity")
+    local_name = manifest_name((source / "SKILL.md").read_text())
+    if local_name != manifest_name(remote_content):
+        raise RuntimeError("Source and target SKILL.md names differ; refusing to overwrite another skill")
+    display_name = listing["skill"].get("displayName")
+    if not isinstance(display_name, str) or not display_name.strip():
+        raise RuntimeError("Cannot preserve the existing listing's display name")
     command = CLI + ["--no-input", "skill", "publish", str(source),
-                     "--owner", OWNER, "--slug", args.slug,
+                     "--owner", OWNER, "--slug", args.slug, "--name", display_name,
                      "--changelog", args.changelog, "--json",
                      "--source-repo", "AceDataCloud/Skills",
                      "--source-commit", commit, "--source-ref", commit,

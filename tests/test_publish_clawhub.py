@@ -22,6 +22,7 @@ class PublishClawHubTests(unittest.TestCase):
         (source / "SKILL.md").write_text("---\nname: suno-music\n---\n")
         self.calls = []
         self.owner, self.slug = "acedatacloud", "suno"
+        self.remote_content = "---\nname: suno-music\n---\n"
         self.dirty, self.ignored = "", ""
         self.publish_error = False
         self.result = {"ok": True, "status": "unchanged", "version": "1.0.1"}
@@ -35,7 +36,9 @@ class PublishClawHubTests(unittest.TestCase):
         if args[:2] == ["git", "ls-files"]:
             return self.ignored
         if "inspect" in args:
-            return json.dumps({"owner": {"handle": self.owner}, "skill": {"slug": self.slug}})
+            return json.dumps({"owner": {"handle": self.owner},
+                               "skill": {"slug": self.slug, "displayName": "Suno Music"},
+                               "file": {"content": self.remote_content}})
         if "whoami" in args:
             return "Germey"
         if "publish" in args:
@@ -56,6 +59,7 @@ class PublishClawHubTests(unittest.TestCase):
         self.assertEqual(upload[upload.index("--owner") + 1], "acedatacloud")
         self.assertEqual(upload[upload.index("--source-commit") + 1], "a" * 40)
         self.assertEqual(upload[upload.index("--source-path") + 1], "skills/suno-music")
+        self.assertEqual(upload[upload.index("--name") + 1], "Suno Music")
         self.assertFalse(any("whoami" in c for c in self.calls))
         self.assertEqual(result["mode"], "preview")
 
@@ -76,7 +80,7 @@ class PublishClawHubTests(unittest.TestCase):
             self.assertFalse(any("inspect" in c or "publish" in c for c in self.calls))
 
     def test_explicit_publish_checks_token_and_preserves_version(self):
-        self.invoke(["--publish", "--version", "1.0.2"])
+        self.invoke(["--publish", "--accept-mit-0", "--version", "1.0.2"])
         upload = next(c for c in self.calls if "publish" in c)
         self.assertNotIn("--dry-run", upload)
         self.assertEqual(upload[upload.index("--version") + 1], "1.0.2")
@@ -85,13 +89,35 @@ class PublishClawHubTests(unittest.TestCase):
     def test_failed_publish_is_not_reported_as_success_or_retried(self):
         self.publish_error = True
         with self.assertRaisesRegex(RuntimeError, "Rate limit"):
-            self.invoke(["--publish"])
+            self.invoke(["--publish", "--accept-mit-0"])
         self.assertEqual(sum("publish" in c for c in self.calls), 1)
 
     def test_false_ok_is_a_failure(self):
         self.result = {"ok": False}
         with self.assertRaisesRegex(RuntimeError, "confirm success"):
             self.invoke()
+
+    def test_other_skill_identity_is_rejected_before_publish(self):
+        self.remote_content = "---\nname: midjourney-image\n---\n"
+        with self.assertRaisesRegex(RuntimeError, "names differ"):
+            self.invoke()
+        self.assertFalse(any("publish" in c for c in self.calls))
+
+    def test_missing_remote_content_is_rejected_before_publish(self):
+        self.remote_content = None
+        with self.assertRaisesRegex(RuntimeError, "Cannot verify"):
+            self.invoke()
+        self.assertFalse(any("publish" in c for c in self.calls))
+
+    def test_publish_requires_human_license_acknowledgement(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            self.invoke(["--publish"])
+        self.assertEqual(self.calls, [])
+
+    def test_manifest_name_accepts_quotes_but_rejects_body_name(self):
+        self.assertEqual(publisher.manifest_name('---\nname: "suno-music"\n---\n'), "suno-music")
+        with self.assertRaisesRegex(RuntimeError, "frontmatter"):
+            publisher.manifest_name("---\ndescription: Example\n---\nname: suno-music\n")
 
     def test_retired_sora_is_rejected_before_any_command(self):
         with patch.object(publisher, "run", self.fake_run), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
