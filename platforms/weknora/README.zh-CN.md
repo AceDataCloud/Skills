@@ -14,11 +14,33 @@
 
 GitHub `suno-music` 目录登记返回 HTTP 201，skills.sh 页面仍因联合收录副本 404 返回 HTTP 400；沙箱列表和该 Skill 的安装列表均为空。原版后端仍不含 Ace 命名服务商。完整界面安装、Skill 沙箱执行及其余 15 项主要动作仍待验证；下方截图保留原 v0.8.2 日期。
 
+## 按服务名原生发现：已投稿，尚未发行
+
+[Ace 原生集成 PR](https://github.com/Tencent/WeKnora/pull/4163) 提供两种独立产品入口：模型服务商列表中的 **Ace Data Cloud**，以及**工具箱 → MCP 服务 → 添加服务**中的五项独立预设。搜索 `Suno`、`Seedance`、`HappyHorse`、`GPT Image` 或 `Nano Banana`，每项标注 **by Ace Data Cloud**，不冒充对应模型品牌的官方应用。选择后在私密 Token 栏粘贴自己的 Key，再保存并同步工具；预设会补 Bearer 前缀，只需复制 Key 原值。每项是独立连接，不要求安装 Ace 通用合集。
+
+**该 PR 尚未合并，也未进入 v0.8.3。** 当前发行版仍需手动导入下列独立 MCP JSON；这些备用文件不等于官方搜索安装成功：
+
+| 服务 | 独立 MCP 配置 | 既有 canonical Skill |
+| --- | --- | --- |
+| Suno by Ace Data Cloud | [suno.mcp.json](suno.mcp.json) | [suno-music](../../skills/suno-music/SKILL.md) |
+| Seedance by Ace Data Cloud | [seedance.mcp.json](seedance.mcp.json) | [seedance-video](../../skills/seedance-video/SKILL.md) |
+| HappyHorse by Ace Data Cloud | [happyhorse.mcp.json](happyhorse.mcp.json) | [happyhorse-video](../../skills/happyhorse-video/SKILL.md) |
+| GPT Image by Ace Data Cloud | [gpt-image.mcp.json](gpt-image.mcp.json) | [gpt-image-2-5](../../skills/gpt-image-2-5/SKILL.md) |
+| Nano Banana by Ace Data Cloud | [nano-banana.mcp.json](nano-banana.mcp.json) | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
+
+WeKnora 官方 [MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)支持保存外部连接，[Skill 文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox)支持 ClawHub/SkillHub/Git/ZIP 来源；当前没有独立 MCP 市场投稿 API。外部技能上架或手动来源不等于 WeKnora 官方收录。本次按正式源码贡献流程投稿产品内预设入口。
+
 ## 1. 获取 Ace Data Cloud Key
 
-1. 登录 [Ace Data Cloud 控制台](https://platform.acedata.cloud/console/applications?utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding)，开通 **Suno** 服务，创建有 Suno 权限的凭据。如果还要在 WeKnora 配置聊天模型，凭据也需要 **AI Chat** 权限。
-2. 生成前查看 [Suno 当前价格](https://platform.acedata.cloud/services/suno?tab=pricing&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding)和可用 Credits。生成会计费；任务查询是独立的读取操作。
-3. 只在 WeKnora 的凭据输入框填写 Key。不要将 Key 写入对话、示例 JSON、截图或 Git 提交。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_api_key)，打开 **Applications → General application**；如提示尚未初始化，先初始化通用应用。复制已有 API Key，或通过 **Manage Keys → Create** 创建 WeKnora 专用 Key。先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)。如需聊天模型，还需 AI Chat 权限。
+2. 只复制 **Key 原值**；平台管理 Token 不是生成 API Key。待发布预设的私密 Token 栏直接粘贴原值，保存会补 Bearer；当前发行版手动配置则按下文填写 `Authorization` 和 `Bearer <key>`。
+3. Key 不放进对话、示例 JSON、截图或 Git。若限制 Allowed APIs，需同时允许所选生成接口与任务查询接口。生成会计费；首次验证可只做可用的免费模型/说明查询，或读取已有任务。
+
+![真实 Ace 控制台：复制 Key 或打开 Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+
+![真实 Ace 控制台：创建专用 Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
+
+以上真实控制台图片复用固定提交的 SunoDify 教程（来源见 URL；2026-10-18 复核），只证明 Key 获取位置，不是未发布预设的界面图。下方 WeKnora 操作与结果图保留 2026-10-12 的历史测试日期。
 
 ## 2. 导入 Suno MCP 服务
 
@@ -97,7 +119,7 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 
 ### GPT Image 2.5 真实验收样例（2026-10-12）
 
-使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
+使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
 
 ![GPT Image 2.5 Flare 图片在真实英文 WeKnora 聊天中展示](assets/gpt-image-2-5-agent-v082.jpg)
 

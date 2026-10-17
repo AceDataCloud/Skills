@@ -14,11 +14,33 @@ The real v0.8.3 Agent engine then called `suno_list_models` and queried the **ex
 
 The GitHub `suno-music` directory registered with HTTP 201, while the skills.sh page still returned HTTP 400 with a federated-copy 404. The sandbox list and the Skill's installation list were empty. The stable backend still did not contain the named Ace provider. UI installation, Skill sandbox execution, and the other 15 services' main actions remain unverified. The screenshots below keep their original v0.8.2 dates.
 
+## Native service-name discovery: submitted, not released
+
+The [Ace native integration PR](https://github.com/Tencent/WeKnora/pull/4163) proposes two separate product entries: **Ace Data Cloud** in the model Provider picker, and five independent presets in **Toolbox → MCP Services → Add Service**. Search `Suno`, `Seedance`, `HappyHorse`, `GPT Image` or `Nano Banana`; each is labeled **by Ace Data Cloud**, not an official app from that model brand. Choose one, paste your own key in the private Token field, save and sync tools. The preset adds the Bearer prefix, so copy only the key value. Each service remains a separate connection; a general Ace collection is not required.
+
+**This PR is not merged or in v0.8.3.** Current releases still use manual MCP JSON import. The independent files below are the supported fallback, not proof of official search/install:
+
+| Service | Separate MCP configuration | Existing canonical Skill |
+| --- | --- | --- |
+| Suno by Ace Data Cloud | [suno.mcp.json](suno.mcp.json) | [suno-music](../../skills/suno-music/SKILL.md) |
+| Seedance by Ace Data Cloud | [seedance.mcp.json](seedance.mcp.json) | [seedance-video](../../skills/seedance-video/SKILL.md) |
+| HappyHorse by Ace Data Cloud | [happyhorse.mcp.json](happyhorse.mcp.json) | [happyhorse-video](../../skills/happyhorse-video/SKILL.md) |
+| GPT Image by Ace Data Cloud | [gpt-image.mcp.json](gpt-image.mcp.json) | [gpt-image-2-5](../../skills/gpt-image-2-5/SKILL.md) |
+| Nano Banana by Ace Data Cloud | [nano-banana.mcp.json](nano-banana.mcp.json) | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
+
+WeKnora's official [MCP guide](https://weknora.weixin.qq.com/docs/03-features/08-mcp) supports saved connections and [Skill sources](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) from ClawHub/SkillHub/Git/ZIP. It does not provide an independent MCP marketplace submission API. A published external Skill or manual source is not an official WeKnora listing. The pending presets request a native product entry through the normal upstream source contribution process.
+
 ## 1. Get an Ace Data Cloud key
 
-1. Sign in to the [Ace Data Cloud console](https://platform.acedata.cloud/console/applications?utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding), acquire the **Suno** service, and create a credential with Suno access. If you also add a chat model in WeKnora, that credential needs **AI Chat** access too.
-2. Check the [current Suno pricing](https://platform.acedata.cloud/services/suno?tab=pricing&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding) and available Credits before generation. A generation is billable; task lookups are separate reads.
-3. Keep the key private. Enter it only in WeKnora's credential field. Do not put it in a chat prompt, JSON example, screenshot, or Git commit.
+1. [Register or sign in to Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_api_key). Open **Applications → General application**; initialize it if prompted. Copy an existing API key or use **Manage Keys → Create** for a separate WeKnora key. Confirm access to the selected service, balance, expiration and [current pricing](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing). For a chat model, the key also needs AI Chat access.
+2. Copy the **key value only**. A platform-management token is not the generation API key. In the proposed preset, paste it into the private Token field and the Bearer prefix is added on save. In the released manual API Key/Token form, set header `Authorization` and enter `Bearer <key>` as explained below.
+3. Keep the key out of chat, example JSON, screenshots and Git. For restricted keys, allow both the chosen generation endpoint and its task-query endpoint. Generation is billable; first use can be limited to free model/info listing where available or an existing task read.
+
+![Copy a key or open Manage Keys in the real Ace console](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+
+![Create a dedicated key in the real Ace console](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
+
+These real console images are reused from the pinned SunoDify tutorial (source commit above; reviewed 2026-10-18). They show where to obtain a key, not WeKnora's unreleased preset UI. Existing WeKnora setup and result screenshots below retain their 2026-10-12 test dates.
 
 ## 2. Import the Suno MCP service
 
@@ -97,7 +119,7 @@ The 17 service cards were each connected and synchronized through the WeKnora ba
 
 ### Verified GPT Image 2.5 example (2026-10-12)
 
-With a credential authorized for GPT Image and after checking the current [image API price](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=weknora&utm_medium=integration&utm_campaign=agent-onboarding), an Agent in the same isolated patched v0.8.2 instance selected the **GPT Image** MCP service. Only image generation, image task retrieval, and the image model list were enabled; generation required one-call approval. One `openai_generate_image` call used `gpt-image-2.5-flare`, `1024x1024`, `quality=low`, `n=1`, and `async=true`. The Agent queried task `496c8575-2cbc-4c84-b20e-c732f4d4764c` twice: first pending, then `finished_at` with `response.success=true`. The [final image](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) opened at 1024×1024 and visually matched the white-cup prompt. A single matching usage record shows **0.19 Credits original, 0.171 Credits deducted**. No second image generation was submitted.
+With a credential authorized for GPT Image and after checking the current [image API price](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing), an Agent in the same isolated patched v0.8.2 instance selected the **GPT Image** MCP service. Only image generation, image task retrieval, and the image model list were enabled; generation required one-call approval. One `openai_generate_image` call used `gpt-image-2.5-flare`, `1024x1024`, `quality=low`, `n=1`, and `async=true`. The Agent queried task `496c8575-2cbc-4c84-b20e-c732f4d4764c` twice: first pending, then `finished_at` with `response.success=true`. The [final image](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) opened at 1024×1024 and visually matched the white-cup prompt. A single matching usage record shows **0.19 Credits original, 0.171 Credits deducted**. No second image generation was submitted.
 
 ![GPT Image 2.5 Flare result displayed inside the real English WeKnora chat](assets/gpt-image-2-5-agent-v082.jpg)
 
