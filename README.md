@@ -153,7 +153,7 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 | [microsoft-onedrive](skills/microsoft-onedrive/) | List and read OneDrive files via the Microsoft Graph API | `microsoft/onedrive` |
 | [microsoft-outlook](skills/microsoft-outlook/) | Read Outlook mail, calendar events, and contacts via Microsoft Graph | `microsoft/outlook` |
 | [notion](skills/notion/) | Read and search Notion pages, databases, and blocks | `notion` |
-| [slack](skills/slack/) | Read Slack channels, messages, and user info via Web API | `slack` |
+| [slack](skills/slack/) | Search public channels, read joined conversations, and send confirmed bot messages | `slack` |
 | [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
 | [personal-wechat](skills/personal-wechat/) | Operate a personal WeChat account through a self-hosted Wisdom service | `personalwechat` (BYOC) |
 | [didi-ride](skills/didi-ride/) | Book DiDi rides, estimate fares, query/cancel orders, plan routes via the DiDi MCP | `didi` (BYOC) |
