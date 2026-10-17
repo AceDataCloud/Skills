@@ -2,9 +2,17 @@
 
 [English guide](README.md) · [WeKnora 技能文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-2026-10-15 查询到的最新稳定版为 [WeKnora **v0.8.3**](https://github.com/Tencent/WeKnora/releases/tag/v0.8.3)。下方界面步骤和带日期的 Agent 样例来自 v0.8.2，尚未在 v0.8.3 完整重跑。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
+2026-10-17 查询到的最新稳定版为 [WeKnora **v0.8.3**](https://github.com/Tencent/WeKnora/releases/tag/v0.8.3)。下方界面步骤和带日期的 Agent 样例来自 v0.8.2，尚未在 v0.8.3 完整重跑。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
 
 **Lite 版本说明：** v0.8.2 缺少 SQLite MCP 元数据迁移，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。已合并的修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已包含在 v0.8.3。请从 v0.8.3 或后续兼容版本开始，不要手改生产数据库。2026-10-15，未经修改的 v0.8.3 源码通过 SQLite 新库 schema、v33 升级保留 MCP 数据测试，以及完整 database 包测试；这证明迁移回归通过，不代表新的 UI 安装或 Agent 主流程验收。下方 v0.8.2 截图来自单独的一次性补迁移测试库。
+
+### 未修改的 v0.8.3 只读验证（2026-10-17）
+
+官方 v0.8.3 源码的 4,950 个跟踪文件哈希已核对，构建时没有修改源码。在完整提供发行包的 `config/`、`migrations/` 目录后，全新 SQLite 数据库自动迁移到版本 36（`dirty=false`）。测试通过正常鉴权 API 注册和登录本地测试用户、保存 Suno 服务和私密凭据，连接 `suno v1.30.0` 并同步 **42 个工具**。凭据响应不返回 Key，落库值不是明文；没有手动修补 SQL。
+
+真实 v0.8.3 Agent 引擎随后调用 `suno_list_models`，并查询**已有**任务 `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`，读到 complete/succeeded 结果。模型决策来自固定测试驱动，**没有使用真实语言模型**。这验证了 Agent 与工具执行路径，未产生推理或生成费用，不证明模型自主行为或浏览器聊天验收。没有新提交生成。
+
+GitHub `suno-music` 目录登记返回 HTTP 201，skills.sh 页面仍因联合收录副本 404 返回 HTTP 400；沙箱列表和该 Skill 的安装列表均为空。原版后端仍不含 Ace 命名服务商。完整界面安装、Skill 沙箱执行及其余 15 项主要动作仍待验证；下方截图保留原 v0.8.2 日期。
 
 ## 1. 获取 Ace Data Cloud Key
 
