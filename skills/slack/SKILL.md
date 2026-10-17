@@ -1,15 +1,16 @@
 ---
 name: slack
-description: Read channels, messages, canvases, and public-channel search results through a connected Slack workspace.
+description: Read and search accessible Slack content, then send user-confirmed messages as the connected bot.
 when_to_use: |
-  Use when the user wants to find or summarize Slack content that the
-  connected app can access. The connector is read-only.
+  Use when the user wants to find or summarize Slack content the connected
+  app can access, or send a message to a channel or conversation the app
+  has joined.
 connections: [slack]
 allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.1"
+  version: "1.2"
 ---
 
 Use the [Slack Web API](https://api.slack.com/methods) with the connected
@@ -17,11 +18,12 @@ bot token in `$SLACK_TOKEN`. Send it only to `https://slack.com/api/` over
 HTTPS. Check the JSON `ok` field and HTTP status for every response; report
 Slack's error value when a call fails. Respect `Retry-After` on HTTP 429.
 
-This app has read-only bot scopes. It cannot post messages, upload files, join
-channels, or read arbitrary conversations between other users. Channel and
-conversation history is available only where the app has been added. Public
-channel search uses `search:read.public`; do not imply that it searches
-private channels or direct messages.
+Messages are sent as the AceDataCloud bot, not as the user's Slack account.
+The app cannot upload files, join channels, or read arbitrary conversations
+between other users. Channel and conversation history is available only
+where the app has been added. Public channel search uses
+`search:read.public`; do not imply that it searches private channels or
+direct messages.
 
 ## Verify the connected workspace
 
@@ -73,8 +75,8 @@ curl -sS -G -H "Authorization: Bearer $SLACK_TOKEN" \
 ```
 
 If the API reports `missing_scope`, report that result rather than claiming
-the search succeeded. The current connection cannot search private channels
-or direct messages.
+the search succeeded. The connection cannot search private channels or direct
+messages.
 
 ## Resolve a member
 
@@ -84,7 +86,35 @@ curl -sS -G -H "Authorization: Bearer $SLACK_TOKEN" \
   --data-urlencode "email=alice@example.com"
 ```
 
-Use member details only to identify people in retrieved content. Never send
-an email or message from this read-only connection. If `auth.test` returns
-`not_authed` or `invalid_auth`, ask the user to reconnect Slack at
-`https://studio.acedata.cloud/console/connectors`.
+Use member details only to identify people in retrieved content. Do not send
+unsolicited direct messages or enumerate members for outreach.
+
+## Send a message or thread reply
+
+Before each send, resolve the exact workspace, channel or existing
+conversation, and final message text. Call `request_action_confirmation`
+with `kind: "generic"` and show those three values. Send only if the user
+confirms. If the confirmation tool is unavailable, return a draft. If this
+is an unattended run, send only when the saved task already authorizes that
+exact destination and content; otherwise return a draft.
+
+The bot must already be a member of the target channel or conversation.
+If Slack returns `not_in_channel` or `channel_not_found`, ask the user
+to add the app there. Do not call `conversations.join`. Do not retry a
+`chat.postMessage` request whose outcome is unknown; first check the
+channel history to avoid duplicates.
+
+```sh
+curl -sS -X POST https://slack.com/api/chat.postMessage \
+  -H "Authorization: Bearer $SLACK_TOKEN" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d "$(jq -nc --arg ch "C0123456789" --arg text "Confirmed message" \
+    '{channel:$ch, text:$text}')"
+```
+
+For a reply in an existing thread, include its exact `thread_ts` in the
+payload. Check `ok`, `channel`, and `ts` in the response and report the
+sent message link or channel and timestamp.
+
+If `auth.test` returns `not_authed` or `invalid_auth`, ask the user to
+reconnect Slack at `https://studio.acedata.cloud/console/connectors`.
