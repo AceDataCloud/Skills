@@ -15,9 +15,9 @@ npx --yes skills@1.7.2 list
 
 `codex` 可换成已支持的 `claude-code` 或 `cursor`。Codex 文件位于 `.agents/skills/happyhorse-video/SKILL.md`；安装后开启新会话。安装不会生成媒体，也不会替你配置 Key。2026-10-18 验过的固定源码是 `v2026.1017.279001`；该版本先于这次说明改进，合并后默认分支才会包含新版说明。
 
-![skills.sh真实安装控件](https://raw.githubusercontent.com/AceDataCloud/Skills/main/docs/skills-sh/installation-page-20261017.jpg)
+![skills.sh真实安装控件](https://raw.githubusercontent.com/AceDataCloud/Skills/0901d63b7f7d216318463b1c33976838a084da3b/docs/skills-sh/installation-page-20261017.jpg)
 
-这是 2026-10-17 拍摄的账户技能真实目录页，用于展示共同安装控件；请使用上面的本服务 slug，不把该图当本服务安装/生成结果。[图片来源和边界](https://github.com/AceDataCloud/Skills/blob/main/docs/skills-sh/image-sources.json)。
+这是 2026-10-17 拍摄的账户技能真实目录页，用于展示共同安装控件；请使用上面的本服务 slug，不把该图当本服务安装/生成结果。[图片来源和边界](https://github.com/AceDataCloud/Skills/blob/0901d63b7f7d216318463b1c33976838a084da3b/docs/skills-sh/image-sources.json)。
 
 ## 2. 注册、登录和复制 Token
 
