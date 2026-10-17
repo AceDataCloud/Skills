@@ -1,6 +1,6 @@
 ---
 name: slack
-description: Read and search accessible Slack content, then send user-confirmed messages as the connected bot.
+description: Read and find recent messages in joined Slack channels, then send user-confirmed messages as the connected bot.
 when_to_use: |
   Use when the user wants to find or summarize Slack content the connected
   app can access, or send a message to a channel or conversation the app
@@ -10,7 +10,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.2"
+  version: "1.3"
 ---
 
 Use the [Slack Web API](https://api.slack.com/methods) with the connected
@@ -21,9 +21,11 @@ Slack's error value when a call fails. Respect `Retry-After` on HTTP 429.
 Messages are sent as the AceDataCloud bot, not as the user's Slack account.
 The app cannot upload files, join channels, or read arbitrary conversations
 between other users. Channel and conversation history is available only
-where the app has been added. Public channel search uses
-`search:read.public`; do not imply that it searches private channels or
-direct messages.
+where the app has been added. The bot token cannot use Slack's legacy
+`search.messages` method: it returns `not_allowed_token_type` even though
+the app has `search:read.public`. Studio does not receive the Slack event
+`action_token` needed for the Real-time Search API. Do not claim
+workspace-wide search or call either API with this connection.
 
 ## Verify the connected workspace
 
@@ -53,7 +55,7 @@ to IDs from this response rather than inventing IDs.
 curl -sS -G -H "Authorization: Bearer $SLACK_TOKEN" \
   https://slack.com/api/conversations.history \
   --data-urlencode "channel=C0123456789" \
-  --data-urlencode "limit=100"
+  --data-urlencode "limit=15"
 
 curl -sS -G -H "Authorization: Bearer $SLACK_TOKEN" \
   https://slack.com/api/conversations.replies \
@@ -65,18 +67,28 @@ Read a private channel or direct message only if the app is a member. If
 Slack returns `not_in_channel` or `channel_not_found`, ask the user to add
 the app to that conversation. Do not try to join it automatically.
 
-## Search public-channel messages
+## Find a keyword in one joined channel's recent messages
+
+Ask the user for a channel when they request search without one. Fetch only
+that channel's recent history, then filter the returned messages locally.
+This is a bounded recent-history scan, not Slack's native search. State the
+time window and whether older messages remain unread. On new installs of
+commercial apps outside the Slack Marketplace, Slack may limit
+`conversations.history` to one call per minute with at most 15 messages;
+respect `Retry-After` and do not fan out across channels.
 
 ```sh
+KEYWORD="deploy"
 curl -sS -G -H "Authorization: Bearer $SLACK_TOKEN" \
-  https://slack.com/api/search.messages \
-  --data-urlencode "query=in:#engineering deploy" \
-  --data-urlencode "count=20"
+  https://slack.com/api/conversations.history \
+  --data-urlencode "channel=C0123456789" \
+  --data-urlencode "limit=15" \
+  | jq --arg q "$KEYWORD" '{ok, error, has_more, matches: [.messages[]? | select((.text // "") | contains($q)) | {ts, user, text}]}'
 ```
 
-If the API reports `missing_scope`, report that result rather than claiming
-the search succeeded. The connection cannot search private channels or direct
-messages.
+If Slack returns an error, report it rather than claiming the search
+succeeded. An empty match list is only a result for the messages fetched,
+not proof that the keyword is absent from the channel's full history.
 
 ## Resolve a member
 
