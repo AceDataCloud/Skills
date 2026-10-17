@@ -17,9 +17,9 @@ This example targets Codex; replace `codex` with your supported agent, such as `
 
 For the released snapshot checked on 2026-10-18, use `https://github.com/AceDataCloud/Skills/tree/v2026.1017.279001` in place of `acedatacloud/skills`. That released snapshot predates these improved instructions; use the default branch after this PR is merged to receive them.
 
-![Real skills.sh installation control](https://raw.githubusercontent.com/AceDataCloud/Skills/main/docs/skills-sh/installation-page-20261017.jpg)
+![Real skills.sh installation control](https://raw.githubusercontent.com/AceDataCloud/Skills/0901d63b7f7d216318463b1c33976838a084da3b/docs/skills-sh/installation-page-20261017.jpg)
 
-Actual account-Skill page captured on 2026-10-17, showing the same installation control. Use this service's slug above; the screenshot is not a suno-music installation or generation result. [Image sources and limits](https://github.com/AceDataCloud/Skills/blob/main/docs/skills-sh/image-sources.json).
+Actual account-Skill page captured on 2026-10-17, showing the same installation control. Use this service's slug above; the screenshot is not a suno-music installation or generation result. [Image sources and limits](https://github.com/AceDataCloud/Skills/blob/0901d63b7f7d216318463b1c33976838a084da3b/docs/skills-sh/image-sources.json).
 
 ## 2. Register, sign in and get the correct API key
 
