@@ -1,18 +1,24 @@
 ---
 name: suno-music
-description: Generate AI music with Suno via AceDataCloud API. Use when creating songs from text prompts, generating lyrics, extending tracks, creating covers, extracting vocals, managing voice personas, editing and rendering multitrack Studio projects, training custom music models from authorized audio, or any music generation task. Supports text-to-music, custom styles, multi-format output (MP3, WAV, MIDI, MP4), and vocal separation.
+description: Suno music by Ace Data Cloud. Generate songs, instrumental music and lyrics, extend tracks, create covers and edit multitrack Studio projects. Use when the user asks for Suno music or song generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment (get an API key at https://platform.acedata.cloud/console/applications). Optionally pair with mcp-suno for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# Suno Music Generation
+# Suno by Ace Data Cloud
 
 Generate AI-powered music through AceDataCloud's Suno API.
 
-## First-time setup
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official Suno publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill suno-music --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/suno-music). Keep the slug `suno-music` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+## ClawHub / OpenClaw setup
 
 1. Already installed from skills.sh? Continue at step 2. For a coding agent, install with `npx skills add acedatacloud/skills --skill suno-music --yes` ([installation and first run](https://github.com/AceDataCloud/Skills#first-run-from-skillssh)). For OpenClaw, use `clawhub install @acedatacloud/suno` and check that the ClawHub publisher is **@acedatacloud**.
 2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Suno access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.

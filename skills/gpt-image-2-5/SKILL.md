@@ -1,14 +1,14 @@
 ---
 name: gpt-image-2-5
-description: Generate or edit images with GPT Image 2.5 Flare or Sunburst through AceDataCloud. Choose Flare for speed or Sunburst for high-fidelity control; never use the unsupported bare gpt-image-2.5 name.
+description: GPT Image 2.5 by Ace Data Cloud. Generate and edit images using Flare for speed or Sunburst for higher-fidelity control. Use when the user asks for GPT Image, gpt-image-2.5-flare or gpt-image-2.5-sunburst image generation or editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md).
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# GPT Image 2.5
+# GPT Image by Ace Data Cloud
 
 Use one exact model ID for every request:
 
@@ -19,7 +19,13 @@ Use one exact model ID for every request:
 
 Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official GPT Image publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill gpt-image-2-5 --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/gpt-image-2-5). Keep the slug `gpt-image-2-5` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+> **Setup:** See [authentication](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md) for token setup.
 
 ## Generate
 

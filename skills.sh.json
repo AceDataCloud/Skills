@@ -3,19 +3,48 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Start here",
-      "description": "Read the public catalog and current pricing before choosing a service.",
-      "skills": ["acedatacloud"]
+      "title": "Suno by Ace Data Cloud",
+      "description": "Install the Suno Skill independently; connect your own Ace API key.",
+      "skills": [
+        "suno-music"
+      ]
     },
     {
-      "title": "Music and voice",
-      "description": "Choose one music or speech Skill, set your API key, and check the current price.",
-      "skills": ["fish-audio", "suno-music"]
+      "title": "Seedance by Ace Data Cloud",
+      "description": "Install the Seedance Skill independently; connect your own Ace API key.",
+      "skills": [
+        "seedance-video"
+      ]
     },
     {
-      "title": "Web search",
-      "description": "Search web pages, images, news and places with your service API key.",
-      "skills": ["google-search"]
+      "title": "HappyHorse by Ace Data Cloud",
+      "description": "Install the HappyHorse Skill independently; connect your own Ace API key.",
+      "skills": [
+        "happyhorse-video"
+      ]
+    },
+    {
+      "title": "GPT Image by Ace Data Cloud",
+      "description": "Install the GPT Image Skill independently; connect your own Ace API key.",
+      "skills": [
+        "gpt-image-2-5"
+      ]
+    },
+    {
+      "title": "Nano Banana by Ace Data Cloud",
+      "description": "Install the Nano Banana Skill independently; connect your own Ace API key.",
+      "skills": [
+        "nano-banana-image"
+      ]
+    },
+    {
+      "title": "Supporting tools",
+      "description": "Optional voice, web search and account or public pricing tools.",
+      "skills": [
+        "fish-audio",
+        "google-search",
+        "acedatacloud"
+      ]
     }
   ]
 }

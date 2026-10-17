@@ -1,18 +1,24 @@
 ---
 name: seedance-video
-description: Generate and edit AI videos with Seedance via AceDataCloud API. Use for text/image video, Seedance 2.x multimodal image/audio/video reference, Seedance 2.5 pure-audio reference, edit, extend, and up to 30-second output. Supports multiple models, up to 4k, aspect ratio, and optional audio generation.
+description: Seedance video by Ace Data Cloud. Generate text-to-video and image-to-video, use multimodal references, or edit and extend video. Use when the user asks for Seedance 2.0 or 2.5 video generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (get an API key at https://platform.acedata.cloud/console/applications). Optionally pair with mcp-seedance for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# Seedance Video Generation
+# Seedance by Ace Data Cloud
 
 Generate AI dance and motion videos through AceDataCloud's Seedance (ByteDance) API.
 
-## First-time setup
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official Seedance publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill seedance-video --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/seedance-video). Keep the slug `seedance-video` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+## ClawHub / OpenClaw setup
 
 1. Install the official Skill with `clawhub install @acedatacloud/seedance`. Check that the ClawHub publisher is **@acedatacloud**.
 2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Seedance access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.

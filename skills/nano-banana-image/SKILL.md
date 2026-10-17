@@ -1,18 +1,24 @@
 ---
 name: nano-banana-image
-description: Generate or edit images with Nano Banana through AceDataCloud, including the 2.1 model.
+description: Nano Banana image by Ace Data Cloud. Generate and edit images with Nano Banana, Nano Banana 2.1 or Pro. Use when the user asks for Nano Banana or NanoBanana image generation, reference-image editing or 1K, 2K and 4K output.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (get an API key at https://platform.acedata.cloud/console/applications). Optionally pair with mcp-nano-banana for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# NanoBanana Image Generation
+# Nano Banana by Ace Data Cloud
 
 Generate and edit AI images through AceDataCloud's NanoBanana (Gemini-based) API.
 
-## First-time setup
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official Nano Banana publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill nano-banana-image --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/nano-banana-image). Keep the slug `nano-banana-image` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+## ClawHub / OpenClaw setup
 
 1. Install the official Skill with `clawhub install @acedatacloud/nano-banana`. Check that the ClawHub publisher is **@acedatacloud**.
 2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Nano Banana access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
