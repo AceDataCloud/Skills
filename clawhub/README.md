@@ -16,3 +16,7 @@ Before adding `--publish --accept-mit-0`, verify that the existing login has pub
 After an authorized release, inspect its version, files, source information, and scan result. Search and install anonymously using the canonical scoped name. Keep source/PR, submitted release, review, searchable listing, installation, actual host calls, terminal results, billing, and referrals as separate verification stages. Registry downloads and installs do not prove AceDataCloud registration or API use.
 
 ClawHub generates `skill-card.md` and the CLI excludes it when computing source publishes. Its presence in a downloaded artifact does not require adding it to this repository. Compare authored files against the source and retain registry metadata/hashes for the generated card separately. An unchanged fingerprint does not prove that source-provenance metadata was attached to an old release. Do not issue a new generation merely to check a pending task: query the same task ID.
+
+## Native single-service discovery
+
+See the [Top 5 single-service catalog](readme/README.md) ([中文](readme/README.zh-CN.md)). `scripts/build_clawhub_catalog.py` builds independent Suno, Seedance, HappyHorse, GPT Image and Nano Banana packages from canonical references with native credential metadata and per-service onboarding. This is the service-name discovery track; the existing `publish-clawhub.sh` remains the guarded updater for unchanged canonical source folders. The builder only previews and has no upload option.
