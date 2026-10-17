@@ -397,6 +397,48 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
         self.assertIn("Display settings do not disable thinking", text)
 
 
+class GeminiAudioProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("ai-chat").split("## Native Gemini Generate Content\n", 1)[1]
+        cls.text = cls.text.split("## OpenAI Embeddings\n", 1)[0]
+
+    def test_native_audio_example_uses_contents_and_file_data(self):
+        example, = json_examples(self.text)
+        self.assertEqual(set(example), {"contents", "generationConfig"})
+        content, = example["contents"]
+        self.assertEqual(content["role"], "user")
+        prompt, audio = content["parts"]
+        self.assertTrue(prompt["text"])
+        self.assertEqual(audio, {"fileData": {"mimeType": "audio/wav", "fileUri": "HTTPS_AUDIO_URL"}})
+        self.assertGreaterEqual(example["generationConfig"]["maxOutputTokens"], 512)
+        for requirement in (
+            "POST /v1beta/models/gemini-3.5-flash:generateContent",
+            "POST /v1beta/models/{model}:streamGenerateContent?alt=sse",
+            "same AceDataCloud Bearer token", "not OpenAI `messages`",
+            "`inlineData` with `mimeType` and base64-encoded `data`",
+            "HTTPS_AUDIO_URL", "actual audio MIME type",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertIn("native Gemini audio analysis", (ROOT / "README.md").read_text())
+
+    def test_file_lifetime_timeout_and_model_support_boundaries(self):
+        for requirement in (
+            "directly accessible over HTTPS without login",
+            "signed URL must remain valid for the entire request",
+            "may exceed 90 seconds", "total request timeout",
+            "file size and workload", "not a server processing limit",
+            "do not automatically resubmit a potentially billable request",
+            "Audio output", "`codeExecution`", "`googleSearch`", "`urlContext`", "`cachedContent`",
+            "no uniform availability guarantee", "selected model's actual response",
+            "not a promise of support on OpenAI-compatible or conversation routes",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertNotIn('"responseModalities": ["AUDIO"]', self.text)
+
+
 class ChatGatewayProcedureTests(unittest.TestCase):
     def test_recommendations_are_live_editorial_preferences_not_access_grants(self):
         text = read_skill("ai-chat")
