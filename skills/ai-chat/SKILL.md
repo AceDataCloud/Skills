@@ -1,6 +1,6 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or stateful conversations and scheduled agent tasks across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, native Gemini audio analysis, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or stateful conversations and scheduled agent tasks across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -20,6 +20,8 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /openai/responses` (public alias `/v1/responses`) | OpenAI-compatible responses API |
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
+| `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
+| `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` | Native Gemini SSE streaming |
 
 ## First-time setup
 
@@ -92,9 +94,9 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
 
 > **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
+> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models; they
+> do not work on the OpenAI-compatible chat, Claude Messages, or conversation
+> routes. Generate images through the dedicated endpoints instead — Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
 
 ## OpenAI-Compatible Chat
@@ -128,6 +130,33 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Native Gemini Generate Content
+
+Use the native Gemini routes for audio analysis with the same AceDataCloud Bearer token. Confirm Gemini API access, current pricing, the selected public model, and any **Allowed APIs** restrictions before submitting. These routes use `contents` and `parts`, not OpenAI `messages`.
+
+1. Put the prompt and audio in a user content item's `parts`. Use `inlineData` with `mimeType` and base64-encoded `data`, or `fileData` with `mimeType` and `fileUri`. Text, image and video inputs, thinking configuration and custom function declarations are also accepted on this native surface; this is not a promise of support on OpenAI-compatible or conversation routes.
+2. For `fileData.fileUri`, use a file directly accessible over HTTPS without login. A signed URL must remain valid for the entire request. Replace `HTTPS_AUDIO_URL` below with the real file URL and set the actual audio MIME type; the example assumes WAV.
+3. Set the client's total request timeout for the file size and workload. Non-streaming audio analysis returns only after model processing completes and may exceed 90 seconds; 90 seconds is not a server processing limit. If the client disconnects, the server may still be processing: do not automatically resubmit a potentially billable request.
+4. Submit the native request below. For Gemini 3.x Flash thinking models, keep `generationConfig.maxOutputTokens` at least 512 so reasoning does not consume the entire output budget.
+
+```json
+POST /v1beta/models/gemini-3.5-flash:generateContent
+{
+  "contents": [
+    {
+      "role": "user",
+      "parts": [
+        {"text": "Summarize this audio."},
+        {"fileData": {"mimeType": "audio/wav", "fileUri": "HTTPS_AUDIO_URL"}}
+      ]
+    }
+  ],
+  "generationConfig": {"maxOutputTokens": 1024}
+}
+```
+
+For streaming, send the same native body to `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` and consume SSE events. Audio output, built-in tools (`codeExecution`, `googleSearch`, `urlContext`) and explicit context caching (`cachedContent`) have no uniform availability guarantee: use the selected model's actual response and surface errors rather than promising support or assuming those fields always return 400.
 
 ## OpenAI Embeddings
 
