@@ -1,0 +1,35 @@
+{
+  "name": "nano-banana-by-ace-data-cloud",
+  "version": "0.1.0",
+  "description": "Nano Banana by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "support@acedata.cloud"
+  },
+  "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/nano-banana-by-ace-data-cloud",
+  "repository": "https://github.com/AceDataCloud/Skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "nano-banana",
+    "image",
+    "ace-data-cloud"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Ace Data Cloud API Token",
+      "description": "Paste a dedicated Ace service API Token with Nano Banana access. Raw token only; not an Anthropic, model-vendor or platform management key.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "nano-banana": {
+      "type": "http",
+      "url": "https://nanobanana.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_token}"
+      }
+    }
+  }
+}

@@ -62,6 +62,86 @@
         "./skills/xiaohongshu",
         "./skills/content-fanout"
       ]
+    },
+    {
+      "name": "suno-by-ace-data-cloud",
+      "description": "Suno by Ace Data Cloud: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/suno-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "suno",
+        "music",
+        "ace-data-cloud"
+      ]
+    },
+    {
+      "name": "seedance-by-ace-data-cloud",
+      "description": "Seedance by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/seedance-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/seedance-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "seedance",
+        "video",
+        "ace-data-cloud"
+      ]
+    },
+    {
+      "name": "happyhorse-by-ace-data-cloud",
+      "description": "HappyHorse by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/happyhorse-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/happyhorse-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "happyhorse",
+        "video",
+        "ace-data-cloud"
+      ]
+    },
+    {
+      "name": "gpt-image-by-ace-data-cloud",
+      "description": "GPT Image by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/gpt-image-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/gpt-image-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "gpt-image",
+        "image",
+        "ace-data-cloud"
+      ]
+    },
+    {
+      "name": "nano-banana-by-ace-data-cloud",
+      "description": "Nano Banana by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/nano-banana-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/nano-banana-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "nano-banana",
+        "image",
+        "ace-data-cloud"
+      ]
     }
   ]
 }

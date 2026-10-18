@@ -1,0 +1,35 @@
+{
+  "name": "suno-by-ace-data-cloud",
+  "version": "0.1.0",
+  "description": "Suno by Ace Data Cloud: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "support@acedata.cloud"
+  },
+  "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
+  "repository": "https://github.com/AceDataCloud/Skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "suno",
+    "music",
+    "ace-data-cloud"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Ace Data Cloud API Token",
+      "description": "Paste a dedicated Ace service API Token with Suno access. Raw token only; not an Anthropic, model-vendor or platform management key.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "suno": {
+      "type": "http",
+      "url": "https://suno.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_token}"
+      }
+    }
+  }
+}
