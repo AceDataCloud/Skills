@@ -96,7 +96,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 |-------|-------------|
 | [suno-music](skills/suno-music/) | Generate Suno music, lyrics, covers, vocals, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
-| [fish-audio](skills/fish-audio/) | Text-to-speech and voice synthesis with Fish Audio |
+| [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
 
 ### AI Image Generation
 
