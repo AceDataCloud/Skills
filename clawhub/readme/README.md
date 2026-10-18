@@ -6,11 +6,13 @@ Each entry is one service maintained by **Ace Data Cloud**. Users search the ser
 |---|---|---|---|
 | Suno by Ace Data Cloud | `skills/suno-music` | `@acedatacloud/suno` | Existing 1.0.1; new branded bundle is a preview |
 | Seedance by Ace Data Cloud | `skills/seedance-video` | `@acedatacloud/seedance` | Existing 1.0.1; new branded bundle is a preview |
-| HappyHorse by Ace Data Cloud | `skills/happyhorse-video` | `@acedatacloud/happyhorse` | No public Ace entry verified; prepared candidate |
-| GPT Image by Ace Data Cloud | `skills/gpt-image-2-5` | `@acedatacloud/gpt-image` | No public Ace entry verified; prepared candidate |
+| HappyHorse by Ace Data Cloud | `skills/happyhorse-video` | `@acedatacloud/happyhorse` | No public text Skill verified; prepared candidate |
+| GPT Image by Ace Data Cloud | `skills/gpt-image-2-5` | `@acedatacloud/gpt-image` | No public text Skill verified; prepared candidate |
 | Nano Banana by Ace Data Cloud | `skills/nano-banana-image` | `@acedatacloud/nano-banana` | Existing 1.0.1; new branded bundle is a preview |
 
 Do not create duplicate aliases, accounts or per-service source repositories. [ClawHub policy](https://github.com/openclaw/clawhub/blob/main/docs/acceptable-usage.md#disallowed-marketplace-behavior) allows differentiated maintained catalogs and prohibits duplicative listings, impersonation and artificial engagement. Service-name-first titles state the Ace integration's maintainer; they do not claim model-brand or OpenClaw endorsement.
+
+**Code plugins are a separate live option.** All five services already have public ClawHub code-plugin entries maintained in [OpenClawProvider](https://github.com/AceDataCloud/OpenClawProvider/pull/18): `@acedatacloud/<service>-openclaw` (Suno 0.1.2, the other four 0.1.1 as checked 2026-10-18). For example, [HappyHorse](https://clawhub.ai/acedatacloud/plugins/happyhorse-openclaw) and [GPT Image](https://clawhub.ai/acedatacloud/plugins/gpt-image-openclaw) can be found as plugins even though the text Skill candidates above are not published. This table describes Skills only; it must not be read as saying those services are missing from ClawHub entirely.
 
 ## Build and review
 
@@ -28,6 +30,8 @@ Each generated `SKILL.md`, English README and Chinese README includes:
 2. Register/sign in → Applications → General application → copy/create a dedicated API key, check current access, balance, restrictions and price.
 3. Existing pinned real API-key tutorial screenshots, dated as reused references, and OpenClaw's native `skills.entries.<skill-name>.apiKey` configuration. No fabricated configuration screenshot.
 4. A user prompt, canonical request examples, same-task polling, output expectations and 401/403/429/timeout troubleshooting. No automatic new billable retry or model fallback.
+
+Each bundle also includes a byte-identical historical real ClawHub Suno installation screenshot and its provenance in `assets/`. This is a directory-entry reference for Skill 1.0.1 dated 2026-10-17, not evidence of a new candidate installation or successful API call. The native Key-configuration screenshot is still pending; no fake interface is substituted.
 
 ClawHub runtime metadata declares `curl`, `ACEDATACLOUD_API_TOKEN`, `primaryEnv`, a service-specific emoji and a homepage. Skill emoji is not a claim to a model owner's official logo. Code-plugin `assets/icon.png` rules do not apply to these text Skills. The existing registry `icon` fields are empty, so no new uploaded icon is claimed.
 

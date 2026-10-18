@@ -8,12 +8,14 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 from urllib.parse import urlencode
 
 REPO = Path(__file__).resolve().parents[1]
 CLI = ["npx", "--yes", "clawhub@0.23.3"]
 SCREENSHOT = "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/"
+INSTALL_IMAGE = "suno-clawhub-20261017.jpg"
 
 
 def link(service, placement, path="/console/applications"):
@@ -42,6 +44,10 @@ openclaw skills install {ref}
 
 旧版也可使用 `clawhub install {ref}`。本说明/预览不代表新版已通过审核；以真实条目和安装结果为准。
 
+![真实 ClawHub Suno 安装入口，2026-10-17](assets/{INSTALL_IMAGE})
+
+这是 Suno Skill 1.0.1 的真实历史目录页，仅说明发布者与安装入口；其他服务使用上面的各自条目。它不是本候选包的安装/运行结果，也不证明付费调用。图像来源与限制在包内 `assets/source.json`；新的原生 Key 配置实拍仍待补齐。
+
 ## 2. 注册并取得服务密钥
 
 [注册或登录 Ace]({link(service,'signup','/')}) → [Applications]({link(service,'api_key')}) → **General application**（没有则先 Initialize General Application）。检查该服务的权限、余额和[当前价格]({link(service,'pricing','/models')})。
@@ -67,7 +73,7 @@ openclaw skills install {ref}
 ## 4. 首次使用与结果
 
 确认本次成本并获得用户对生成的同意后，输入：**{service['query_zh']}**。具体请求字段、模型和例子在本包 `SKILL.md`，无需再安装别的服务。
-预期：{service['expected']}
+预期：{service['expected_zh']}
 返回任务 ID 后保存它，仅查询同一 ID，直到明确成功/失败；不要因超时或处理中重复提交付费生成。失败保留原始错误，不切换模型。用户内容/参考媒体会发送到 `api.acedata.cloud`，仅使用有权处理的内容。
 
 ## 常见问题
@@ -93,6 +99,10 @@ openclaw skills install {ref}
 ```
 
 Older/direct workflows can use `clawhub install {ref}`. Source/preview availability is not registry approval; inspect the real listing and installed version.
+
+![Real ClawHub Suno install entry, 2026-10-17](assets/{INSTALL_IMAGE})
+
+This historical Suno Skill 1.0.1 page shows the publisher and install entry only. Other services use their own listing above. It is not an installation or execution result for this candidate, and does not prove a paid call. See bundled `assets/source.json` for provenance and limits. A real screenshot of the new native Key configuration is still pending.
 
 ## 2. Register and copy a service key
 
@@ -157,11 +167,13 @@ def build(repo, service, output):
     (target / "SKILL.md").write_text("---" + front + "---\n\n" + onboarding(service) + "\n## Service API reference\n" + body)
     (target / "README.md").write_text(onboarding(service))
     (target / "README.zh-CN.md").write_text(onboarding(service, zh=True))
+    shutil.copytree(repo / "clawhub/assets", target / "assets")
     return {"service": service["id"], "source": service["source"], "bundle": str(target),
             "source_name": name, "slug": service["slug"], "display_name": service["display_name"],
             "categories": service["categories"], "topics": service["topics"],
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-            "bundle_files": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(target.iterdir())}}
+            "bundle_files": {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                             for p in sorted(target.rglob("*")) if p.is_file()}}
 
 
 def main():
@@ -172,7 +184,7 @@ def main():
     args = parser.parse_args()
     catalog = json.loads((REPO / "clawhub/catalog.json").read_text())
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
-    inputs = ["clawhub/catalog.json", "scripts/build_clawhub_catalog.py"] + [s["source"] for s in catalog["services"]]
+    inputs = ["clawhub/catalog.json", "clawhub/assets", "scripts/build_clawhub_catalog.py"] + [s["source"] for s in catalog["services"]]
     dirty = subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=all", "--", *inputs], cwd=REPO, text=True).strip()
     if args.preview and dirty:
         parser.error("Commit the reviewed catalog, builder and service inputs before attaching source provenance to a registry preview")

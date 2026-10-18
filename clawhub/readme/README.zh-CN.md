@@ -15,7 +15,11 @@ python3 scripts/build_clawhub_catalog.py --service all --output /tmp/ace-clawhub
 
 原生 runtime metadata 声明 `curl`、Key 环境变量及 `primaryEnv`，方便宿主识别凭据；沙箱不自动继承 Key，按官方文档单独配置。使用服务专用 emoji，不冒用品牌官方图标。已有目录 icon 为空，不声称已补图标。
 
-2026-10-18：Suno、Seedance、Nano Banana 已有 1.0.1；新标题/元数据/引导只是待审包。HappyHorse、GPT Image 尚未核实 Ace 公开条目，准备的是候选；需先在现有 publisher 后台核 hidden/pending，避免重复。
+2026-10-18：Suno、Seedance、Nano Banana 已有 **Skill** 1.0.1；新标题/元数据/引导只是待审包。HappyHorse、GPT Image 尚未核实公开的**文本 Skill**，需先在现有 publisher 后台核 hidden/pending，避免重复。
+
+另有五个**代码插件**已经公开：`@acedatacloud/<service>-openclaw`，Suno 0.1.2、其余四项 0.1.1，由 [OpenClawProvider 原负责人](https://github.com/AceDataCloud/OpenClawProvider/pull/18)维护。[HappyHorse](https://clawhub.ai/acedatacloud/plugins/happyhorse-openclaw) 与 [GPT Image](https://clawhub.ai/acedatacloud/plugins/gpt-image-openclaw)已有这条安装路径，不能把“缺文本 Skill”说成“ClawHub 没有这两个服务”。本目录仅负责不同的文本 Skill 分发。
+
+五个候选包随包提供字节不变的真实 ClawHub Suno 安装页原图与 `assets/source.json`：截图日期为 2026-10-17、Skill 1.0.1，只说明目录入口，不证明新候选安装或付费生成。中文预期结果使用中文；原生 Key 配置界面仍待真实截图，不绘制替代。
 
 Backend 当前认可 `agent_skill/referral`，未定义 `clawhub` source，因此使用四项 UTM：`agent_skill / referral / evergreen / <service>_clawhub_<placement>`。不修改全局归因合同，不承诺已有注册或收入。
 

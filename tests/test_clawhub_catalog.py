@@ -42,6 +42,9 @@ class NativeCatalogTests(unittest.TestCase):
                 self.assertNotIn("(../", text)
                 self.assertNotIn("Continue until\n> `response.data[].video_url` appears", text)
                 self.assertIn("same ID", text)
+                image = target / "assets/suno-clawhub-20261017.jpg"
+                self.assertEqual(image.read_bytes(), (ROOT / "clawhub/assets" / image.name).read_bytes())
+                self.assertIn("assets/suno-clawhub-20261017.jpg", result["bundle_files"])
                 self.assertIn("sandbox", text)
                 self.assertIn("not an official integration", text)
                 self.assertEqual((ROOT / service["source"] / "SKILL.md").read_bytes(), original)
@@ -56,6 +59,9 @@ class NativeCatalogTests(unittest.TestCase):
                     self.assertIn("platform-", readme)
                     self.assertIn("General application", readme)
                     self.assertIn("429", readme)
+                    self.assertIn("(assets/suno-clawhub-20261017.jpg)", readme)
+                self.assertIn(service["expected_zh"], (target / "README.zh-CN.md").read_text())
+                self.assertNotIn(service["expected"], (target / "README.zh-CN.md").read_text())
                 self.assertIn("gpt-image-2.5-flare", text) if service["id"] == "gpt-image" else None
 
     def test_links_match_current_backend_contract_without_new_source(self):
