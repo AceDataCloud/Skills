@@ -6,14 +6,14 @@
 
 ## 1. 安装入口
 
-源 PR 合并后，在 Claude Code 中执行：
+五个独立插件已于 2026-10-19 随源码 `605e92ed` 进入公开 Ace Git marketplace。在 Claude Code 中执行：
 
 ```text
 /plugin marketplace add AceDataCloud/Skills
 /plugin install seedance-by-ace-data-cloud@acedatacloud-skills
 ```
 
-在已添加市场的 `/plugin` → Discover 搜 **Seedance** 或 **seedance-by-ace-data-cloud**。这是 **Ace 自有 marketplace 的原生插件安装**，不是 Anthropic 官方目录已收录。当前改动尚未合并发布，合并前只能用 PR 本地 checkout 验证；不能把本地安装算成官方上架。旧媒体合集仍可选，不需要安装全套；避免同时启用重复服务。
+在已添加市场的 `/plugin` → Discover 搜 **Seedance** 或 **seedance-by-ace-data-cloud**。这是 **Ace 自有 marketplace 的原生插件安装**，不是 Anthropic 官方目录已收录。公开 main 已包含五个 0.1.0 插件；2026-10-19 已用官方 Claude Code 2.1.303 从公开 GitHub 正常添加市场并逐项独立安装，查看五项原生敏感 Token 配置。它证明自有市场公开安装，不证明 Anthropic 官方目录收录或真实付费业务成功。旧媒体合集仍可选，不需要安装全套；避免同时启用重复服务。
 
 初始安装验证使用 2.1.81；2026-10-19 已使用官方 Release 且 SHA256 校验的 Claude Code 2.1.303 通过严格manifest、五项安装、原生敏感配置/脱敏读取和仅本机的 header/env 替换测试。它不替代普通公开安装、真实账号认证或付费首调。
 
@@ -51,7 +51,7 @@
 
 ## 常见问题与隐私
 
-- 找不到插件：先添加 Ace 市场，确认对应源码已合并发布；官方目录尚未确认，CI 通过不等于上架。
+- 找不到插件：先添加 Ace 市场，或执行 `claude plugin marketplace update acedatacloud-skills` 后核对服务 slug；组织允许列表或 Git 下载失败也可能阻止安装。Anthropic 官方目录仍未确认。
 - 401：核对原始 Token、有效期、应用/服务/API 权限；不要填写其他厂商密钥。
 - 余额不足、403、429：查看原错误，检查权限/内容限制/余额，遵守限速，不自动重发付费请求。
 - 任务 pending：按服务说明轮询原 ID，不用“再生成一次”查进度。
