@@ -15,7 +15,7 @@
 
 在已添加市场的 `/plugin` → Discover 搜 **HappyHorse** 或 **happyhorse-by-ace-data-cloud**。这是 **Ace 自有 marketplace 的原生插件安装**，不是 Anthropic 官方目录已收录。当前改动尚未合并发布，合并前只能用 PR 本地 checkout 验证；不能把本地安装算成官方上架。旧媒体合集仍可选，不需要安装全套；避免同时启用重复服务。
 
-真实验证版本是 Claude Code 2.1.81，不代表最新。若没有 **Configure options**，先从官方渠道更新客户端；Token 对话框和付费首调另行验收。
+初始安装验证使用 2.1.81；2026-10-19 已使用官方 Release 且 SHA256 校验的 Claude Code 2.1.303 通过严格manifest、五项安装、原生敏感配置/脱敏读取和仅本机的 header/env 替换测试。它不替代普通公开安装、真实账号认证或付费首调。
 
 ## 2. 登录 Ace 并获取专用 Token
 
@@ -31,7 +31,9 @@
 
 ## 3. 在插件原生配置中粘贴
 
-启用插件，在 `/plugin` → **Installed** → **happyhorse-by-ace-data-cloud** → **Configure options** 的 **Ace Data Cloud API Token** 中粘贴。插件声明了 `sensitive: true`；按当前官方文档由客户端安全存储并填到对应 MCP 请求头。不要把 Key 放进聊天、Git、截图或共享配置。这里使用固定 Ace Token，不同时给相同连接配置 OAuth；插件不会自动充值或扩大权限。
+启用插件，在 `/plugin` → **Installed** → **happyhorse-by-ace-data-cloud** → **Configure options** 的 **Ace Data Cloud API Token** 中粘贴。插件声明了 `sensitive: true`；按当前官方文档，该值与 settings.json 分开保存并填入 MCP 配置。macOS 优先 Keychain，写入失败会退回 .credentials.json；无受支持 keychain 的平台也使用该凭据文件。实际使用前核对本机存储路径与文件保护，不能承诺所有平台都进 Keychain。不要把 Key 放进聊天、Git、截图或共享配置。这里使用固定 Ace Token，不同时给相同连接配置 OAuth；插件不会自动充值或扩大权限。
+
+2.1.303 起可用 `claude plugin configure happyhorse-by-ace-data-cloud@acedatacloud-skills --json` 只查看已配置状态，不回显敏感值；`--values-stdin` 是原生本地输入接口，应接可信秘密来源，真实 Token 不放命令参数、提示词或共享文件。配置保存成功不代表服务已经接受凭据。
 
 ![历史真实 Claude 自定义连接弹窗，示例是 Suno](../assets/claude-custom-connector-historical.png)
 

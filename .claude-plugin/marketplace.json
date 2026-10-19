@@ -77,7 +77,8 @@
         "suno",
         "music",
         "ace-data-cloud"
-      ]
+      ],
+      "displayName": "Suno by Ace Data Cloud"
     },
     {
       "name": "seedance-by-ace-data-cloud",
@@ -93,7 +94,8 @@
         "seedance",
         "video",
         "ace-data-cloud"
-      ]
+      ],
+      "displayName": "Seedance by Ace Data Cloud"
     },
     {
       "name": "happyhorse-by-ace-data-cloud",
@@ -109,7 +111,8 @@
         "happyhorse",
         "video",
         "ace-data-cloud"
-      ]
+      ],
+      "displayName": "HappyHorse by Ace Data Cloud"
     },
     {
       "name": "gpt-image-by-ace-data-cloud",
@@ -125,7 +128,8 @@
         "gpt-image",
         "image",
         "ace-data-cloud"
-      ]
+      ],
+      "displayName": "GPT Image by Ace Data Cloud"
     },
     {
       "name": "nano-banana-by-ace-data-cloud",
@@ -141,7 +145,8 @@
         "nano-banana",
         "image",
         "ace-data-cloud"
-      ]
+      ],
+      "displayName": "Nano Banana by Ace Data Cloud"
     }
   ]
 }

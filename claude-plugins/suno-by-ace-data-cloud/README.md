@@ -15,7 +15,7 @@ The source is the Ace-maintained marketplace. It is **not currently verified as 
 
 Or use the equivalent shell commands `claude plugin marketplace add AceDataCloud/Skills` and `claude plugin install suno-by-ace-data-cloud@acedatacloud-skills`. In `/plugin` → Discover for the added marketplace, search **Suno** or **suno-by-ace-data-cloud**. Other Ace services are separate entries; the older media bundle remains optional. If both copies enable the same service, disable the unused copy to avoid duplicate tools.
 
-This source change has not been merged or released. Before merge, validate and install from a local checkout of this PR; do not expect `main` or the official marketplace to contain it. The plugin's manifest and local installation are tested with Claude Code 2.1.81; that is not a claim about the current newest version. Update Claude Code from its official distribution if **Configure options** is absent. Credential-entry UI and a paid first run require separate verification.
+This source change has not been merged or released. Before merge, validate and install from a local checkout of this PR; do not expect `main` or the official marketplace to contain it. Initial manifest/install checks used Claude Code 2.1.81. On 2026-10-19, the SHA256-verified official Claude Code 2.1.303 release also passed strict manifest checks, five independent installs, native sensitive-option configuration/redacted readback, and local-only header/env substitution tests. This does not prove ordinary public installation or real service authentication; paid first use remains separate.
 
 ## 2. Get a dedicated Ace API Token
 
@@ -31,9 +31,11 @@ Both are existing redacted Ace UI tutorial images from [SunoDify commit 8d3d035]
 
 ## 3. Paste it in Claude Code
 
-Enable the plugin. In `/plugin` → **Installed** → **suno-by-ace-data-cloud** → **Configure options**, paste the raw token into **Ace Data Cloud API Token**. Current Claude plugin documentation specifies `userConfig` with `sensitive: true`, stored by the client in secure credential storage and substituted into this plugin's MCP header. This plugin does not read another application's key or a keychain directly.
+Enable the plugin. In `/plugin` → **Installed** → **suno-by-ace-data-cloud** → **Configure options**, paste the raw token into **Ace Data Cloud API Token**. Current Claude plugin documentation specifies `userConfig` with `sensitive: true`, stored by the client separately from `settings.json` and substituted into the plugin's MCP configuration. On macOS the current documented store is Keychain, with a `.credentials.json` fallback if Keychain rejects the write; platforms without a supported keychain use that credential file. Protect the client config directory and inspect the actual store used on your platform before entering a real Token. This plugin does not read another application's key or a keychain directly.
 
 The value becomes the header `Authorization: Bearer <your Ace token>` for `https://suno.mcp.acedata.cloud/mcp`. Do not also configure OAuth on this same token-based connection. The MCP connects when Claude loads the enabled plugin; inspect `/mcp` after configuration. Never put a real token in a prompt, Git commit, shared settings file or screenshot. The plugin does not grant service access or top up the account.
+
+With Claude Code 2.1.303 or later, `claude plugin configure suno-by-ace-data-cloud@acedatacloud-skills --json` shows which options are configured without revealing their sensitive values. Its documented `--values-stdin` interface accepts values from a trusted local secret source; do not pass a real Token in shell arguments, prompts or a shared file. The configure command stores plugin options; it does not prove the remote service accepted the credential.
 
 ### Existing host screenshot and what it does not prove
 

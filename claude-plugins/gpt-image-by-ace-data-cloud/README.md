@@ -2,7 +2,7 @@
 
 [简体中文](readme/README_zh_Hans.md) · Version 0.1.0 · [Install a Claude plugin](https://code.claude.com/docs/en/plugins/install)
 
-GPT Image by Ace Data Cloud brings image tools into Claude Code as one independently installable plugin. **Ace Data Cloud provides this integration and bills service use. It is not an official plugin from the GPT Image model vendor or Anthropic.** It connects the existing Ace MCP instead of shipping another API implementation.
+GPT Image by Ace Data Cloud brings image tools into Claude Code as one independently installable plugin. **Ace Data Cloud provides this integration and bills service use. It is not an official plugin from the GPT Image model vendor or Anthropic.** It starts the existing, restricted GPT Image profile from the published Ace MCP package instead of shipping another API implementation.
 
 ## 1. Install this service
 
@@ -15,7 +15,7 @@ The source is the Ace-maintained marketplace. It is **not currently verified as 
 
 Or use the equivalent shell commands `claude plugin marketplace add AceDataCloud/Skills` and `claude plugin install gpt-image-by-ace-data-cloud@acedatacloud-skills`. In `/plugin` → Discover for the added marketplace, search **GPT Image** or **gpt-image-by-ace-data-cloud**. Other Ace services are separate entries; the older media bundle remains optional. If both copies enable the same service, disable the unused copy to avoid duplicate tools.
 
-This source change has not been merged or released. Before merge, validate and install from a local checkout of this PR; do not expect `main` or the official marketplace to contain it. The plugin's manifest and local installation are tested with Claude Code 2.1.81; that is not a claim about the current newest version. Update Claude Code from its official distribution if **Configure options** is absent. Credential-entry UI and a paid first run require separate verification.
+This source change has not been merged or released. Before merge, validate and install from a local checkout of this PR; do not expect `main` or the official marketplace to contain it. Initial manifest/install checks used Claude Code 2.1.81. On 2026-10-19, the SHA256-verified official Claude Code 2.1.303 release also passed strict manifest checks, five independent installs, native sensitive-option configuration/redacted readback, and local-only header/env substitution tests. This does not prove ordinary public installation or real service authentication; paid first use remains separate.
 
 ## 2. Get a dedicated Ace API Token
 
@@ -31,9 +31,11 @@ Both are existing redacted Ace UI tutorial images from [SunoDify commit 8d3d035]
 
 ## 3. Paste it in Claude Code
 
-Enable the plugin. In `/plugin` → **Installed** → **gpt-image-by-ace-data-cloud** → **Configure options**, paste the raw token into **Ace Data Cloud API Token**. Current Claude plugin documentation specifies `userConfig` with `sensitive: true`, stored by the client in secure credential storage and substituted into this plugin's MCP header. This plugin does not read another application's key or a keychain directly.
+Enable the plugin. In `/plugin` → **Installed** → **gpt-image-by-ace-data-cloud** → **Configure options**, paste the raw token into **Ace Data Cloud API Token**. Current Claude plugin documentation specifies `userConfig` with `sensitive: true`, stored by the client separately from `settings.json` and substituted into the plugin's MCP configuration. On macOS the current documented store is Keychain, with a `.credentials.json` fallback if Keychain rejects the write; platforms without a supported keychain use that credential file. Protect the client config directory and inspect the actual store used on your platform before entering a real Token. This plugin does not read another application's key or a keychain directly.
 
-The value becomes the header `Authorization: Bearer <your Ace token>` for `https://openai.mcp.acedata.cloud/mcp`. Do not also configure OAuth on this same token-based connection. The MCP connects when Claude loads the enabled plugin; inspect `/mcp` after configuration. Never put a real token in a prompt, Git commit, shared settings file or screenshot. The plugin does not grant service access or top up the account.
+The plugin starts `uvx mcp-openai-pro==2026.10.19.3 --profile gpt-image` and supplies the saved value only to that process as `ACEDATACLOUD_API_TOKEN`. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) from its official source if `uvx` is absent. The first launch downloads the pinned public package using the user's normal package configuration. The local process calls Ace's image/task API over HTTPS. There is no separate hosted GPT Image URL: using the generic OpenAI remote would expose unrelated tools. Inspect `/mcp` after configuration. Never put a real token in a prompt, Git commit, shared settings file or screenshot. The plugin does not grant service access or top up the account.
+
+With Claude Code 2.1.303 or later, `claude plugin configure gpt-image-by-ace-data-cloud@acedatacloud-skills --json` shows which options are configured without revealing their sensitive values. Its documented `--values-stdin` interface accepts values from a trusted local secret source; do not pass a real Token in shell arguments, prompts or a shared file. The configure command stores plugin options; it does not prove the remote service accepted the credential.
 
 ### Existing host screenshot and what it does not prove
 
@@ -43,7 +45,7 @@ This is an **unchanged historical Claude Web/Desktop custom-connector screenshot
 
 ## 4. Verify setup, then use the service
 
-Call `openai_list_image_models` with no arguments to read local model reference information. It does not submit a paid generation or prove balance/authorization for generation.
+Call `gpt_image_list_models` with no arguments to read local model reference information. It does not submit a paid generation or prove balance/authorization for generation.
 
 Try these prompts (the generation example is a request to prepare, not permission to charge):
 
@@ -53,7 +55,7 @@ Try these prompts (the generation example is a request to prepare, not permissio
 
 When you explicitly choose to run a paid operation, review its model, parameters, current price and output count. A successful response may contain final media URLs directly. When it contains a pending task ID, poll that same ID with the retrieval tool; do not start a second generation to check status. Record the terminal result, original task/trace ID and usage receipt when checking billing; a connected icon or listed tool alone is not a successful generation.
 
-The underlying OpenAI MCP also advertises chat, audio and embedding tools. This plugin does not isolate that server-side catalog. Use a dedicated key restricted to image generation/editing and task retrieval; use only the image tools for this workflow.
+The published `gpt-image` profile exposes exactly `gpt_image_generate`, `gpt_image_edit`, `gpt_image_get_task`, `gpt_image_list_tasks` and `gpt_image_list_models`. Chat, audio, embeddings, DALL-E and Nano Banana are excluded. Generation/editing require an explicit GPT Image model; the plugin adds no fallback. Still restrict its dedicated key to the image operations and `/openai/tasks` it needs.
 
 ## FAQ
 
@@ -65,6 +67,6 @@ The underlying OpenAI MCP also advertises chat, audio and embedding tools. This 
 
 ## Privacy, support and maintenance
 
-The MCP receives the configured Ace credential and the arguments needed for selected tool calls. Generation can send user-provided prompts/reference media to the Ace service and consumes Credits. This plugin registers **no hooks, telemetry, automatic software installer or background generation**. Only use reference media you have selected for this task. See [Ace privacy policy](https://platform.acedata.cloud/privacy), [terms](https://platform.acedata.cloud/terms), and [support](https://platform.acedata.cloud/support); email support@acedata.cloud for service questions. Server-side retention and usage are governed by the service policy, not a promise that this plugin deletes tasks.
+The local MCP process receives the configured Ace credential and sends the arguments needed for selected image/task calls to the Ace API. Generation can send user-provided prompts/reference media to the Ace service and consumes Credits. This plugin registers **no hooks, telemetry or background generation**. Its declared `uvx` MCP command may download the pinned Python package and dependencies on first launch; it does not run an install hook or modify your global Python environment. Only use reference media you have selected for this task. See [Ace privacy policy](https://platform.acedata.cloud/privacy), [terms](https://platform.acedata.cloud/terms), and [support](https://platform.acedata.cloud/support); email support@acedata.cloud for service questions. Server-side retention and usage are governed by the service policy, not a promise that this plugin deletes tasks.
 
 The icon in `assets/ace-data-cloud-mark.png` is the Ace mark, not a third-party official logo. The canonical API/Skill reference is [maintained here](https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5); the MCP source is [AceDataCloud/MCPs](https://github.com/AceDataCloud/MCPs/tree/main/openai). Keep exact tool/model behavior there, rather than copying worker or billing code into this plugin.

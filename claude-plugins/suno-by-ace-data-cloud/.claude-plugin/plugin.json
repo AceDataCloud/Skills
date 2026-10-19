@@ -31,5 +31,11 @@
         "Authorization": "Bearer ${user_config.api_token}"
       }
     }
-  }
+  },
+  "displayName": "Suno by Ace Data Cloud",
+  "icon": "./assets/ace-data-cloud-mark.png",
+  "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
+  "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+  "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+  "supportUrl": "https://platform.acedata.cloud/support"
 }

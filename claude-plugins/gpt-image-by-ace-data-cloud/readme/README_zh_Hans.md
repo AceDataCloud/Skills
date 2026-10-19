@@ -2,7 +2,7 @@
 
 [English](../README.md) · 版本 0.1.0
 
-这是 Ace Data Cloud 提供的 **GPT Image image服务独立插件**，不是 GPT Image 模型厂商或 Anthropic 官方插件。仅复用现有 MCP，不改变 Claude 的聊天模型；付费请求按 Ace Credits 计费。
+这是 Ace Data Cloud 提供的 **GPT Image image服务独立插件**，不是 GPT Image 模型厂商或 Anthropic 官方插件。复用现有 MCP 的五工具 GPT Image 专用 stdio profile，不改变 Claude 的聊天模型；付费请求按 Ace Credits 计费。
 
 ## 1. 安装入口
 
@@ -15,7 +15,7 @@
 
 在已添加市场的 `/plugin` → Discover 搜 **GPT Image** 或 **gpt-image-by-ace-data-cloud**。这是 **Ace 自有 marketplace 的原生插件安装**，不是 Anthropic 官方目录已收录。当前改动尚未合并发布，合并前只能用 PR 本地 checkout 验证；不能把本地安装算成官方上架。旧媒体合集仍可选，不需要安装全套；避免同时启用重复服务。
 
-真实验证版本是 Claude Code 2.1.81，不代表最新。若没有 **Configure options**，先从官方渠道更新客户端；Token 对话框和付费首调另行验收。
+初始安装验证使用 2.1.81；2026-10-19 已使用官方 Release 且 SHA256 校验的 Claude Code 2.1.303 通过严格manifest、五项安装、原生敏感配置/脱敏读取和仅本机的 header/env 替换测试。它不替代普通公开安装、真实账号认证或付费首调。
 
 ## 2. 登录 Ace 并获取专用 Token
 
@@ -31,7 +31,9 @@
 
 ## 3. 在插件原生配置中粘贴
 
-启用插件，在 `/plugin` → **Installed** → **gpt-image-by-ace-data-cloud** → **Configure options** 的 **Ace Data Cloud API Token** 中粘贴。插件声明了 `sensitive: true`；按当前官方文档由客户端安全存储并填到对应 MCP 请求头。不要把 Key 放进聊天、Git、截图或共享配置。这里使用固定 Ace Token，不同时给相同连接配置 OAuth；插件不会自动充值或扩大权限。
+启用插件，在 `/plugin` → **Installed** → **gpt-image-by-ace-data-cloud** → **Configure options** 的 **Ace Data Cloud API Token** 中粘贴。插件声明了 `sensitive: true`；按当前官方文档，该值与 settings.json 分开保存并填入 MCP 配置。macOS 优先 Keychain，写入失败会退回 .credentials.json；无受支持 keychain 的平台也使用该凭据文件。实际使用前核对本机存储路径与文件保护，不能承诺所有平台都进 Keychain。不要把 Key 放进聊天、Git、截图或共享配置。这里使用固定 Ace Token，不同时给相同连接配置 OAuth；插件不会自动充值或扩大权限。
+
+2.1.303 起可用 `claude plugin configure gpt-image-by-ace-data-cloud@acedatacloud-skills --json` 只查看已配置状态，不回显敏感值；`--values-stdin` 是原生本地输入接口，应接可信秘密来源，真实 Token 不放命令参数、提示词或共享文件。配置保存成功不代表服务已经接受凭据。
 
 ![历史真实 Claude 自定义连接弹窗，示例是 Suno](../assets/claude-custom-connector-historical.png)
 
@@ -39,13 +41,13 @@
 
 ## 4. 免费检查、首用与同 ID 查询
 
-免费验证：只调用 `openai_list_image_models` 查看本地参考资料，不产生新生成任务；这不证明余额或生成权限。
+免费验证：只调用 `gpt_image_list_models` 查看本地参考资料，不产生新生成任务；这不证明余额或生成权限。
 
 付费首用前明确模型、输入、张数/时长和当前价格，执行须以你对该次请求的授权为准。返回任务 ID 后只查询 **同一 ID** 直到成功/失败，不重新发生成；返回最终成功和媒体 URL 后再显示结果。仅有 Connected、工具列表、任务 ID 或部分预览不代表完成。查询旧任务也不能授权新生成。
 
-工具名：`openai_list_image_models`, `openai_generate_image`, `openai_edit_image`, `openai_get_task`。
+工具名：`gpt_image_list_models`, `gpt_image_generate`, `gpt_image_edit`, `gpt_image_get_task`, `gpt_image_list_tasks`。
 
-GPT Image 复用的 OpenAI MCP 还会展示 chat/audio/embedding 等工具，插件没有在服务端隔离目录；请给它专用的图片与任务接口限制 Key，仅使用此图片流程。
+已发布的 GPT Image 专用 profile 只有上述五个图片/任务/本地参考工具，排除 chat/audio/embedding、DALL-E 和 Nano Banana；生成与编辑必须显式选 GPT Image 模型，不新增 fallback。插件启动 `uvx mcp-openai-pro==2026.10.19.3 --profile gpt-image`，把原生敏感配置只传为本地进程的 ACEDATACLOUD_API_TOKEN。缺 uvx 时从 uv 官方安装源安装；首次启动可能按本机正常包配置下载固定公开 Python 包与依赖。没有独立 hosted GPT Image URL，不改用泛 OpenAI 远端。仍使用图片/任务权限专用 Key。
 
 ## 常见问题与隐私
 
@@ -55,6 +57,6 @@ GPT Image 复用的 OpenAI MCP 还会展示 chat/audio/embedding 等工具，插
 - 任务 pending：按服务说明轮询原 ID，不用“再生成一次”查进度。
 - 官方目录：[政策 §4.B](https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy)限制独立 AI 图/音/视频生成，除非获得书面允许；本插件不冒称获准，不绕过准入。
 
-插件没有 hooks、遥测、后台生成或自动装软件；MCP 只接收配置的 Ace 凭据和所选工具参数。只发送用户选定的提示词/参考媒体，不发送无关会话和文件。服务端存储见 [隐私政策](https://platform.acedata.cloud/privacy)、[条款](https://platform.acedata.cloud/terms) 与 [支持](https://platform.acedata.cloud/support)。集成图标使用 Ace 标志，准确标识提供方。
+插件没有 hooks、遥测或后台生成；声明的 uvx MCP 命令首次启动可能下载固定 Python 包和依赖，不通过安装hook改全局 Python。本地 MCP 只接收配置的 Ace 凭据和所选图片/任务参数。只发送用户选定的提示词/参考媒体，不发送无关会话和文件。服务端存储见 [隐私政策](https://platform.acedata.cloud/privacy)、[条款](https://platform.acedata.cloud/terms) 与 [支持](https://platform.acedata.cloud/support)。集成图标使用 Ace 标志，准确标识提供方。
 
 [完整英文步骤与三个示例](../README.md) · [已有维护源](https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5)

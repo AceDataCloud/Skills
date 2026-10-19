@@ -31,6 +31,9 @@ class ClaudeServicePluginTests(unittest.TestCase):
             manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text())
             self.assertEqual(manifest["name"], slug)
             self.assertEqual(manifest["author"]["name"], "Ace Data Cloud")
+            self.assertTrue(manifest["displayName"].endswith(" by Ace Data Cloud"))
+            self.assertEqual(entry["displayName"], manifest["displayName"])
+            self.assertTrue((folder / manifest["icon"]).is_file())
             self.assertNotIn("skills", entry)  # Do not combine conflicting manifests.
             skills = list((folder / "skills").glob("*/SKILL.md"))
             self.assertEqual(len(skills), 1)
@@ -50,11 +53,24 @@ class ClaudeServicePluginTests(unittest.TestCase):
             self.assertTrue(token["required"])
             self.assertNotIn("default", token)
             server = manifest["mcpServers"][service]
-            self.assertEqual(server["type"], "http")
-            self.assertEqual(server["url"], f"https://{host}.mcp.acedata.cloud/mcp")
-            self.assertEqual(
-                server["headers"], {"Authorization": "Bearer ${user_config.api_token}"}
-            )
+            if service == "gpt-image":
+                self.assertEqual(server["command"], "uvx")
+                self.assertEqual(
+                    server["args"],
+                    ["mcp-openai-pro==2026.10.19.3", "--profile", "gpt-image"],
+                )
+                self.assertEqual(
+                    server["env"],
+                    {"ACEDATACLOUD_API_TOKEN": "${user_config.api_token}"},
+                )
+                self.assertNotIn("url", server)
+                self.assertNotIn("headers", server)
+            else:
+                self.assertEqual(server["type"], "http")
+                self.assertEqual(server["url"], f"https://{host}.mcp.acedata.cloud/mcp")
+                self.assertEqual(
+                    server["headers"], {"Authorization": "Bearer ${user_config.api_token}"}
+                )
             self.assertNotIn("hooks", manifest)
             self.assertNotIn("dependencies", manifest)
             self.assertFalse((folder / "hooks").exists())

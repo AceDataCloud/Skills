@@ -131,21 +131,30 @@
       "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
       "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
       "supportUrl": "https://platform.acedata.cloud/support",
-      "mcp_url": "https://openai.mcp.acedata.cloud/mcp",
       "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
       "prompts": [
         "List GPT Image models without generating an image.",
         "Prepare a one-image GPT Image prompt; show the exact supported model and current price before running.",
         "Retrieve the existing GPT Image task TASK_ID, without submitting another image request."
       ],
-      "data_handling": "Only selected tool arguments and the dedicated Ace credential go to the configured Ace MCP; no hooks or background telemetry.",
+      "data_handling": "Only selected image/task arguments and the dedicated Ace credential go to the local restricted profile and corresponding Ace API; uvx may download the pinned package/dependencies, no hooks or background telemetry.",
       "unverified": [
         "policy exception",
         "secure Token UI on current production client",
         "reviewer account",
         "paid generation/task terminal/billing",
         "official directory approval/search/install"
-      ]
+      ],
+      "mcp_configuration": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": [
+          "mcp-openai-pro==2026.10.19.3",
+          "--profile",
+          "gpt-image"
+        ],
+        "credential": "sensitive userConfig api_token → child ACEDATACLOUD_API_TOKEN"
+      }
     },
     {
       "name": "nano-banana-by-ace-data-cloud",

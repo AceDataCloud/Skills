@@ -1,6 +1,6 @@
 # Independent Claude Code service plugins
 
-These five entries install independently from the Ace-maintained `acedatacloud-skills` marketplace. Each owns a narrow workflow and connects the existing MCP server through a separately configured Ace service token. They share the maintained API/MCP backend; no worker, model price or provider fallback is copied here.
+These five entries install independently from the Ace-maintained `acedatacloud-skills` marketplace. Each owns a narrow workflow and connects an existing MCP through a separately configured Ace service token. Four use hosted HTTP; GPT Image uses the published five-tool stdio profile via pinned uvx package, with no separate hosted URL. They share the maintained API/MCP backend; no worker, model price or provider fallback is copied here.
 
 | Service | Plugin / illustrated guide |
 |---|---|
@@ -14,4 +14,4 @@ The source PR must be merged before GitHub `main` installs work. This is not an 
 
 The bundled key screenshots are existing redacted Ace tutorial images, with provenance in [assets-sources.json](assets-sources.json). The historical Suno host image is accurately labeled in every guide. Current Token option UI and ordinary real-host first use are pending shared UI validation; no screenshots are fabricated.
 
-`displayName`, directory-only icon fields and `userConfig` UI support vary by Claude Code version. The source uses a brand-explicit install slug and description rather than a `displayName` rejected by the tested 2.1.81 validator. An Ace icon and human-readable title are prepared in each plugin for a future permitted listing. We do not change global branding, credentials or analytics rules.
+Current manifests and marketplace entries set service-first `displayName` values (for example, Suno by Ace Data Cloud), with an Ace icon and legal/support links. They are strictly validated with official Claude Code 2.1.303; older 2.1.81 rejects newer display fields, so update from the official distribution before installation. Native sensitive options are tested with fake values and local-only transport receivers. Official directory permission, actual service authentication and ordinary public installation remain separate stages. No global branding, credentials or analytics rules are changed.
