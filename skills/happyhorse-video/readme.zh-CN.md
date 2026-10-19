@@ -69,7 +69,7 @@ curl -X POST https://api.acedata.cloud/happyhorse/tasks \
   -d '{"id":"YOUR_TASK_ID","action":"retrieve"}'
 ```
 
-同步 GPT Image 若已返回 `data[].url` 则无需查任务；异步或 pending 要继续同 ID 查询。最终应拿到真实返回的音频/视频/图片 URL；本页不伪造结果或账单。
+异步或 pending 要继续同 ID 查询。最终应拿到真实返回的音频/视频/图片 URL；本页不伪造结果或账单。
 
 本教程没有实际生成媒体。拿到媒体后，还需用原 task/request 对应记录核实唯一账单，不能把安装或示例当真实调用结果。
 

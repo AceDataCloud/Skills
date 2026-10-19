@@ -48,7 +48,7 @@ For an already running IDE, restart it from the configured environment or use th
 
 Read [SKILL.md](SKILL.md) and its exact request shape first. Ask your assistant to use **Seedance by Ace Data Cloud**, inspect the current price, and prepare a single video request using `doubao-seedance-2-0-260128`. Approve the intended cost before it submits `/seedance/videos`. Installation and a prepared request do not prove that generation ran.
 
-Run the existing Quick Start (the Generate section for GPT Image) only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/seedance/tasks`. Do not resubmit generation to check progress. Wait for the terminal `succeeded` result and use its returned video URL.
+Run the existing Quick Start only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/seedance/tasks`. Do not resubmit generation to check progress. Wait for the terminal `succeeded` result and use its returned video URL.
 
 Example request copied from this Skill's current Quick Start. **Billable: run only after confirming the service, price and intended request.** It has not been executed for this guide:
 
@@ -59,7 +59,7 @@ curl -X POST https://api.acedata.cloud/seedance/videos \
   -d '{"model": "doubao-seedance-2-0-260128", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "async": true}'
 ```
 
-If the response returns a task ID, query that ID with the following command; replace `YOUR_TASK_ID` with the existing ID. A synchronous GPT Image result can already contain `data[].url` and does not need a task lookup:
+If the response returns a task ID, query that ID with the following command; replace `YOUR_TASK_ID` with the existing ID.
 
 ```bash
 curl -X POST https://api.acedata.cloud/seedance/tasks \

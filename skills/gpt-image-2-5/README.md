@@ -48,7 +48,7 @@ For an already running IDE, restart it from the configured environment or use th
 
 Read [SKILL.md](SKILL.md) and its exact request shape first. Ask your assistant to use **GPT Image by Ace Data Cloud**, inspect the current price, and prepare a single image request using `gpt-image-2.5-flare`. Approve the intended cost before it submits `/openai/images/generations`. Installation and a prepared request do not prove that generation ran.
 
-Run the existing Quick Start (the Generate section for GPT Image) only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/openai/tasks`. Do not resubmit generation to check progress. A synchronous result uses `data[].url`; an asynchronous response requires querying its existing task before returning the final image.
+Run the existing Generate section only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/openai/tasks`. Do not resubmit generation to check progress. A synchronous result uses `data[].url`; an asynchronous response requires querying its existing task before returning the final image.
 
 Example request copied from this Skill's current Quick Start. **Billable: run only after confirming the service, price and intended request.** It has not been executed for this guide:
 

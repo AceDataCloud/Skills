@@ -14,41 +14,28 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 ## First run from skills.sh
 
-Choose one Skill from the [AceDataCloud directory](https://skills.sh/acedatacloud/skills), then install it for your agent. Start with the account/catalog Skill for a read-only check that needs no API key:
+Choose the service you want, then install **that Skill only**. Each integration is maintained by **Ace Data Cloud** and uses your Ace API key; it is not published by the model or service vendor.
+
+| Service | Official directory entry | Skill name | First-run guide |
+|---|---|---|---|
+| Suno | [Suno on skills.sh](https://skills.sh/acedatacloud/skills/suno-music) | `suno-music` | [English](skills/suno-music/README.md) / [简体中文](skills/suno-music/readme.zh-CN.md) |
+| Seedance | [Seedance on skills.sh](https://skills.sh/acedatacloud/skills/seedance-video) | `seedance-video` | [English](skills/seedance-video/README.md) / [简体中文](skills/seedance-video/readme.zh-CN.md) |
+| HappyHorse | [HappyHorse on skills.sh](https://skills.sh/acedatacloud/skills/happyhorse-video) | `happyhorse-video` | [English](skills/happyhorse-video/README.md) / [简体中文](skills/happyhorse-video/readme.zh-CN.md) |
+| GPT Image | [GPT Image on skills.sh](https://skills.sh/acedatacloud/skills/gpt-image-2-5) | `gpt-image-2-5` | [English](skills/gpt-image-2-5/README.md) / [简体中文](skills/gpt-image-2-5/readme.zh-CN.md) |
+| Nano Banana | [Nano Banana on skills.sh](https://skills.sh/acedatacloud/skills/nano-banana-image) | `nano-banana-image` | [English](skills/nano-banana-image/README.md) / [简体中文](skills/nano-banana-image/readme.zh-CN.md) |
+
+For example, install Suno into your Codex project:
 
 ```bash
-npx skills add acedatacloud/skills --skill acedatacloud -a codex --yes
-npx skills list
+npx --yes skills@1.7.2 add acedatacloud/skills --skill suno-music -a codex --yes
+npx --yes skills@1.7.2 list
 ```
 
-Replace `codex` with your supported agent, such as `claude-code` or `cursor`. The CLI installs into the agent's project skill path; for Codex this is `.agents/skills/`. Start a fresh agent session after installation. For a reproducible snapshot, use a published tag URL instead of the moving default branch. This example was checked on 2026-10-12:
+Replace `codex` with your supported agent, such as `claude-code` or `cursor`. For Codex the files are copied to `.agents/skills/suno-music/`; start a fresh assistant session. No ClawHub account, OpenClaw installation or paired MCP server is required for this path. Installation itself does not generate media.
 
-```bash
-npx skills add https://github.com/AceDataCloud/Skills/tree/v2026.1012.274001 \
-  --skill acedatacloud -a codex --yes
-```
+Follow the selected service's guide: **Ace registration/sign-in → Applications / General application → check service access, balance and current price → copy or create a dedicated API key → make it available to the assistant process → submit once and query the same task ID**. The guides include real redacted Ace key-management images and service-specific request examples. A Skill cannot configure an environment variable or load `.env` automatically; follow your assistant's environment/secret settings. Never paste a key into a prompt.
 
-Ask the agent: “Use the acedatacloud Skill to show the current Fish Audio price. Do not generate audio.” Or run the installed script from the project directory:
-
-```bash
-python3 .agents/skills/acedatacloud/scripts/acedatacloud.py pricing --service fish --json
-```
-
-This public catalog request needs no token and does not submit a generation. A Skill supplies instructions and bundled scripts; configure any paired MCP server and credentials separately.
-
-For a service Skill, install only the one you need, for example:
-
-```bash
-npx skills add acedatacloud/skills --skill fish-audio -a codex --yes
-```
-
-If you came from skills.sh, open [Applications for the skills.sh first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_sh_first_run). Follow [Get an AceDataCloud API key](#2-get-an-acedatacloud-api-key), check the selected service's current price and balance, and export the key in the environment of the process that runs the Skill:
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your_api_key_here"
-```
-
-Project `.env` loading depends on your agent; installing a Skill does not load the file automatically. Use the selected Skill's Quick Start after approving the intended generation or search cost. For an asynchronous response, query the same task ID until it finishes instead of submitting again. Fish, Suno and Google Search use a service API key; account reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`. Public catalog/pricing reads above need neither.
+The optional [`acedatacloud` account Skill](skills/acedatacloud/) can read public catalog/pricing without a key. Account-resource reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`; service generation uses `ACEDATACLOUD_API_TOKEN`. Neither the account Skill nor a model-provider configuration is a prerequisite for the five service Skills.
 
 ## First run with ClawHub and OpenClaw
 

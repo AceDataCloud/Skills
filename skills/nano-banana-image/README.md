@@ -48,7 +48,7 @@ For an already running IDE, restart it from the configured environment or use th
 
 Read [SKILL.md](SKILL.md) and its exact request shape first. Ask your assistant to use **Nano Banana by Ace Data Cloud**, inspect the current price, and prepare a single image request using `nano-banana-2.1`. Approve the intended cost before it submits `/nano-banana/images`. Installation and a prepared request do not prove that generation ran.
 
-Run the existing Quick Start (the Generate section for GPT Image) only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/nano-banana/tasks`. Do not resubmit generation to check progress. Read the image URL from the completed result. Keep this endpoint's schema separate from the OpenAI-compatible image schema.
+Run the existing Quick Start only after the key and intended cost are correct. For an asynchronous response, save its task ID and query **that same ID** at `/nano-banana/tasks`. Do not resubmit generation to check progress. Read the image URL from the completed result. Keep this endpoint's schema separate from the OpenAI-compatible image schema.
 
 Example request copied from this Skill's current Quick Start. **Billable: run only after confirming the service, price and intended request.** It has not been executed for this guide:
 
@@ -59,7 +59,7 @@ curl -X POST https://api.acedata.cloud/nano-banana/images \
   -d '{"action": "generate", "prompt": "a watercolor painting of a French countryside village", "model": "nano-banana"}'
 ```
 
-If the response returns a task ID, query that ID with the following command; replace `YOUR_TASK_ID` with the existing ID. A synchronous GPT Image result can already contain `data[].url` and does not need a task lookup:
+If the response returns a task ID, query that ID with the following command; replace `YOUR_TASK_ID` with the existing ID.
 
 ```bash
 curl -X POST https://api.acedata.cloud/nano-banana/tasks \
