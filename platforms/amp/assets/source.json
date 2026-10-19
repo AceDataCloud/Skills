@@ -1,0 +1,31 @@
+{
+  "as_of": "2026-10-18",
+  "assets": [
+    {
+      "path": "official-cli-command-palette.png",
+      "source_url": "https://static.ampcode.com/docs/cli-command-palette.png",
+      "official_page_url": "https://ampcode.com/docs/cli/keybindings",
+      "retrieved_at": "2026-10-18",
+      "capture_date": "Not specified by Amp",
+      "product_version": "Not specified by Amp",
+      "unedited": true,
+      "what_it_shows": "Official Amp CLI command palette; not an Ace run",
+      "limits": "Does not show Skill installation or Ace use. page logs is debug output, not a tool entry.",
+      "sha256": "882f0e5d13f1e23f39c7dec48b6c6f0e8a866e7a96a6a7df0859077667d7e67d"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png",
+      "official_page_url": "https://github.com/AceDataCloud/SunoDify/blob/main/README.md",
+      "retrieved_at": "2026-10-18",
+      "what_it_shows": "Real redacted Ace Applications key card",
+      "limits": "Dify guide source; Key creation dialog is shared Ace console, not Amp UI."
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png",
+      "official_page_url": "https://github.com/AceDataCloud/SunoDify/blob/main/README.md",
+      "retrieved_at": "2026-10-18",
+      "what_it_shows": "Real redacted Ace dedicated-key dialog",
+      "limits": "Example key name is Dify; replace with own Amp key name."
+    }
+  ]
+}
