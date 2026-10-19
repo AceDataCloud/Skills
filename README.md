@@ -12,6 +12,31 @@
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
+## First run from skills.sh
+
+Choose the service you want, then install **that Skill only**. Each integration is maintained by **Ace Data Cloud** and uses your Ace API key; it is not published by the model or service vendor.
+
+| Service | Official directory entry | Skill name | First-run guide |
+|---|---|---|---|
+| Suno | [Suno on skills.sh](https://skills.sh/acedatacloud/skills/suno-music) | `suno-music` | [English](skills/suno-music/README.md) / [简体中文](skills/suno-music/readme.zh-CN.md) |
+| Seedance | [Seedance on skills.sh](https://skills.sh/acedatacloud/skills/seedance-video) | `seedance-video` | [English](skills/seedance-video/README.md) / [简体中文](skills/seedance-video/readme.zh-CN.md) |
+| HappyHorse | [HappyHorse on skills.sh](https://skills.sh/acedatacloud/skills/happyhorse-video) | `happyhorse-video` | [English](skills/happyhorse-video/README.md) / [简体中文](skills/happyhorse-video/readme.zh-CN.md) |
+| GPT Image | [GPT Image on skills.sh](https://skills.sh/acedatacloud/skills/gpt-image-2-5) | `gpt-image-2-5` | [English](skills/gpt-image-2-5/README.md) / [简体中文](skills/gpt-image-2-5/readme.zh-CN.md) |
+| Nano Banana | [Nano Banana on skills.sh](https://skills.sh/acedatacloud/skills/nano-banana-image) | `nano-banana-image` | [English](skills/nano-banana-image/README.md) / [简体中文](skills/nano-banana-image/readme.zh-CN.md) |
+
+For example, install Suno into your Codex project:
+
+```bash
+npx --yes skills@1.7.2 add acedatacloud/skills --skill suno-music -a codex --yes
+npx --yes skills@1.7.2 list
+```
+
+Replace `codex` with your supported agent, such as `claude-code` or `cursor`. For Codex the files are copied to `.agents/skills/suno-music/`; start a fresh assistant session. No ClawHub account, OpenClaw installation or paired MCP server is required for this path. Installation itself does not generate media.
+
+Follow the selected service's guide: **Ace registration/sign-in → Applications / General application → check service access, balance and current price → copy or create a dedicated API key → make it available to the assistant process → submit once and query the same task ID**. The guides include real redacted Ace key-management images and service-specific request examples. A Skill cannot configure an environment variable or load `.env` automatically; follow your assistant's environment/secret settings. Never paste a key into a prompt.
+
+The optional [`acedatacloud` account Skill](skills/acedatacloud/) can read public catalog/pricing without a key. Account-resource reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`; service generation uses `ACEDATACLOUD_API_TOKEN`. Neither the account Skill nor a model-provider configuration is a prerequisite for the five service Skills.
+
 ## First run with ClawHub and OpenClaw
 
 This example uses Suno. The same API-key steps apply to the other AceDataCloud image, video, music, chat, search, and face Skills. A ClawHub account installs Skills; an **AceDataCloud API key** authorizes API calls. They are separate credentials.

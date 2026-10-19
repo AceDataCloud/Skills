@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-18",
+  "images": [
+    {
+      "path": "installation-page-20261017.jpg",
+      "source_url": "https://skills.sh/acedatacloud/skills/acedatacloud",
+      "date": "2026-10-17",
+      "type": "real_page",
+      "limits": "Account skill page shows the actual skills.sh installation control. This is not a Top5 service result or terminal installation proof."
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png",
+      "official_page_url": "https://github.com/AceDataCloud/SunoDify/blob/8d3d03570e73324220f111f7fe343da0792a8071/README.md",
+      "date": "original capture date not specified; checked 2026-10-18",
+      "type": "real_redacted_console_screenshot",
+      "limits": "Shared Ace key screen, not this host generation proof."
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png",
+      "official_page_url": "https://github.com/AceDataCloud/SunoDify/blob/8d3d03570e73324220f111f7fe343da0792a8071/README.md",
+      "date": "original capture date not specified; checked 2026-10-18",
+      "type": "real_redacted_console_screenshot",
+      "limits": "Dify tutorial field is illustrative; no actual key appears."
+    }
+  ]
+}
