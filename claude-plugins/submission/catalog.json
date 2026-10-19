@@ -1,0 +1,194 @@
+{
+  "as_of": "2026-10-18",
+  "submission_state": "not submitted",
+  "policy_gate": "Directory Policy 4.B requires express written permission for standalone AI image/video/audio generation. Do not submit or claim an exception without it.",
+  "official_mechanism": "https://claude.ai/directory/manage -> Submit new -> Plugin bundle; one folder per service. Source account needs push access; paid plan/role; terms acceptance is a human gate.",
+  "official_examples": [
+    {
+      "name": "runway-api",
+      "source": "https://github.com/anthropics/claude-plugins-official/blob/ea10b213686c90bb1984b2016937310e05336cf3/.claude-plugin/marketplace.json",
+      "meaning": "Observed listed entry only; not approval for this publisher"
+    }
+  ],
+  "plugins": [
+    {
+      "name": "suno-by-ace-data-cloud",
+      "displayName": "Suno by Ace Data Cloud",
+      "source_repo": "https://github.com/AceDataCloud/Skills",
+      "source_folder": "claude-plugins/suno-by-ace-data-cloud",
+      "version": "0.1.0",
+      "description": "Suno music workflow through an Ace account; independently installable.",
+      "author": "Ace Data Cloud",
+      "keywords": [
+        "suno",
+        "music",
+        "ace-data-cloud"
+      ],
+      "icon": "./assets/ace-data-cloud-mark.png",
+      "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
+      "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+      "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+      "supportUrl": "https://platform.acedata.cloud/support",
+      "mcp_url": "https://suno.mcp.acedata.cloud/mcp",
+      "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
+      "prompts": [
+        "List the Suno models without generating music.",
+        "Prepare a Suno instrumental music request and explain its current price before running it.",
+        "Retrieve the Suno task TASK_ID; do not create a new song."
+      ],
+      "data_handling": "Only selected tool arguments and the dedicated Ace credential go to the configured Ace MCP; no hooks or background telemetry.",
+      "unverified": [
+        "policy exception",
+        "secure Token UI on current production client",
+        "reviewer account",
+        "paid generation/task terminal/billing",
+        "official directory approval/search/install"
+      ]
+    },
+    {
+      "name": "seedance-by-ace-data-cloud",
+      "displayName": "Seedance by Ace Data Cloud",
+      "source_repo": "https://github.com/AceDataCloud/Skills",
+      "source_folder": "claude-plugins/seedance-by-ace-data-cloud",
+      "version": "0.1.0",
+      "description": "Seedance video workflow through an Ace account; independently installable.",
+      "author": "Ace Data Cloud",
+      "keywords": [
+        "seedance",
+        "video",
+        "ace-data-cloud"
+      ],
+      "icon": "./assets/ace-data-cloud-mark.png",
+      "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/seedance-by-ace-data-cloud",
+      "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+      "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+      "supportUrl": "https://platform.acedata.cloud/support",
+      "mcp_url": "https://seedance.mcp.acedata.cloud/mcp",
+      "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
+      "prompts": [
+        "List Seedance models without generating a video.",
+        "Prepare a Seedance product-video request; show the exact model, length and current price before running.",
+        "Retrieve Seedance task TASK_ID without submitting it again."
+      ],
+      "data_handling": "Only selected tool arguments and the dedicated Ace credential go to the configured Ace MCP; no hooks or background telemetry.",
+      "unverified": [
+        "policy exception",
+        "secure Token UI on current production client",
+        "reviewer account",
+        "paid generation/task terminal/billing",
+        "official directory approval/search/install"
+      ]
+    },
+    {
+      "name": "happyhorse-by-ace-data-cloud",
+      "displayName": "HappyHorse by Ace Data Cloud",
+      "source_repo": "https://github.com/AceDataCloud/Skills",
+      "source_folder": "claude-plugins/happyhorse-by-ace-data-cloud",
+      "version": "0.1.0",
+      "description": "HappyHorse video workflow through an Ace account; independently installable.",
+      "author": "Ace Data Cloud",
+      "keywords": [
+        "happyhorse",
+        "video",
+        "ace-data-cloud"
+      ],
+      "icon": "./assets/ace-data-cloud-mark.png",
+      "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/happyhorse-by-ace-data-cloud",
+      "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+      "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+      "supportUrl": "https://platform.acedata.cloud/support",
+      "mcp_url": "https://happyhorse.mcp.acedata.cloud/mcp",
+      "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
+      "prompts": [
+        "List HappyHorse video models without generating.",
+        "Prepare a HappyHorse first-frame video request; explain the current price before running.",
+        "Retrieve HappyHorse task TASK_ID, using the original ID."
+      ],
+      "data_handling": "Only selected tool arguments and the dedicated Ace credential go to the configured Ace MCP; no hooks or background telemetry.",
+      "unverified": [
+        "policy exception",
+        "secure Token UI on current production client",
+        "reviewer account",
+        "paid generation/task terminal/billing",
+        "official directory approval/search/install"
+      ]
+    },
+    {
+      "name": "gpt-image-by-ace-data-cloud",
+      "displayName": "GPT Image by Ace Data Cloud",
+      "source_repo": "https://github.com/AceDataCloud/Skills",
+      "source_folder": "claude-plugins/gpt-image-by-ace-data-cloud",
+      "version": "0.1.0",
+      "description": "GPT Image image workflow through an Ace account; independently installable.",
+      "author": "Ace Data Cloud",
+      "keywords": [
+        "gpt-image",
+        "image",
+        "ace-data-cloud"
+      ],
+      "icon": "./assets/ace-data-cloud-mark.png",
+      "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/gpt-image-by-ace-data-cloud",
+      "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+      "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+      "supportUrl": "https://platform.acedata.cloud/support",
+      "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
+      "prompts": [
+        "List GPT Image models without generating an image.",
+        "Prepare a one-image GPT Image prompt; show the exact supported model and current price before running.",
+        "Retrieve the existing GPT Image task TASK_ID, without submitting another image request."
+      ],
+      "data_handling": "Only selected image/task arguments and the dedicated Ace credential go to the local restricted profile and corresponding Ace API; uvx may download the pinned package/dependencies, no hooks or background telemetry.",
+      "unverified": [
+        "policy exception",
+        "secure Token UI on current production client",
+        "reviewer account",
+        "paid generation/task terminal/billing",
+        "official directory approval/search/install"
+      ],
+      "mcp_configuration": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": [
+          "mcp-openai-pro==2026.10.19.3",
+          "--profile",
+          "gpt-image"
+        ],
+        "credential": "sensitive userConfig api_token → child ACEDATACLOUD_API_TOKEN"
+      }
+    },
+    {
+      "name": "nano-banana-by-ace-data-cloud",
+      "displayName": "Nano Banana by Ace Data Cloud",
+      "source_repo": "https://github.com/AceDataCloud/Skills",
+      "source_folder": "claude-plugins/nano-banana-by-ace-data-cloud",
+      "version": "0.1.0",
+      "description": "Nano Banana image workflow through an Ace account; independently installable.",
+      "author": "Ace Data Cloud",
+      "keywords": [
+        "nano-banana",
+        "image",
+        "ace-data-cloud"
+      ],
+      "icon": "./assets/ace-data-cloud-mark.png",
+      "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/nano-banana-by-ace-data-cloud",
+      "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+      "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+      "supportUrl": "https://platform.acedata.cloud/support",
+      "mcp_url": "https://nanobanana.mcp.acedata.cloud/mcp",
+      "brand_statement": "Not the model vendor or Anthropic official plugin. Known-brand review may be required.",
+      "prompts": [
+        "Explain Nano Banana setup and supported operations without making any API call.",
+        "Prepare one Nano Banana image request; explain exact model, resolution and current price before running.",
+        "Retrieve Nano Banana task TASK_ID without submitting another request."
+      ],
+      "data_handling": "Only selected tool arguments and the dedicated Ace credential go to the configured Ace MCP; no hooks or background telemetry.",
+      "unverified": [
+        "policy exception",
+        "secure Token UI on current production client",
+        "reviewer account",
+        "paid generation/task terminal/billing",
+        "official directory approval/search/install"
+      ]
+    }
+  ]
+}

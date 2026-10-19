@@ -260,10 +260,10 @@ For a new track, first add the source audio to the project, then retrieve the co
 
 ```json
 POST /suno/projects
-{"action":"generate_track","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","source_audio_id":"AUDIO_ID","render_audio_id":"RENDER_AUDIO_ID","model":"chirp-v5","start_seconds":12,"end_seconds":20,"stem_control_tags":"add Piano","tags":"gentle piano, instrumental","batch_size":2,"instrumental":true,"vocal_gender":"unspecified","async":true}
+{"action":"generate_track","id":"PROJECT_ID","version_id":"CURRENT_VERSION_ID","source_audio_id":"AUDIO_ID","render_audio_id":"RENDER_AUDIO_ID","model":"chirp-v5","start_seconds":12,"end_seconds":20,"stem_control_tags":"add Piano","tags":"gentle piano, instrumental","instrumental":true,"vocal_gender":"unspecified","async":true}
 ```
 
-`stem_control_tags` is descriptive text, not an enum. `batch_size` is 1–4 (default 2). `instrumental` defaults to true; use `prompt` for new-track text/lyrics and `vocal_gender` (`f`, `m`, `unspecified`, default `unspecified`) for a preference, not a guaranteed result. Both generation actions accept `tags` and `negative_tags` (default empty strings). Source-second ranges are not output-duration guarantees; inspect each candidate's actual duration. Generation does not add candidates to the project.
+`generate_track` always submits two candidates; do not send `batch_size`. `stem_control_tags` is descriptive text, not an enum. `instrumental` defaults to true; use `prompt` for new-track text/lyrics and `vocal_gender` (`f`, `m`, `unspecified`, default `unspecified`) for a preference, not a guaranteed result. Both generation actions accept `tags` and `negative_tags` (default empty strings). Source-second ranges are not output-duration guarantees; inspect each candidate's actual duration. Generation does not add candidates to the project.
 
 Poll to success, read `response.data.operation_id` and the chosen `response.data.candidates[].id` (do not substitute project IDs or the commit task ID), and let the user choose a candidate before committing:
 

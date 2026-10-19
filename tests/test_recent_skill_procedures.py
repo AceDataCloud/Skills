@@ -59,7 +59,7 @@ class SunoProjectsProcedureTests(unittest.TestCase):
         for requirement in (
             "render_audio_id",
             "stem_control_tags",
-            "1–4 (default 2)",
+            "`generate_track` always submits two candidates",
             "shorter than 26 seconds",
             "Never silently switch models",
             "let the user choose",
@@ -95,7 +95,9 @@ class SunoProjectsProcedureTests(unittest.TestCase):
         self.assertEqual(generate["render_audio_id"], "RENDER_AUDIO_ID")
         self.assertEqual(generate["stem_control_tags"], "add Piano")
         self.assertEqual(generate["model"], "chirp-v5")
-        self.assertEqual(generate["batch_size"], 2)
+        self.assertNotIn("batch_size", generate)
+        self.assertIn("do not send `batch_size`", self.text)
+        self.assertNotIn("1–4 (default 2)", self.text)
         self.assertIs(generate["instrumental"], True)
         self.assertEqual(generate["vocal_gender"], "unspecified")
         self.assertLess(generate["start_seconds"], generate["end_seconds"])
@@ -128,6 +130,95 @@ class SunoProjectsProcedureTests(unittest.TestCase):
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, self.text)
+
+
+class FishSavedVoiceProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("fish-audio")
+        cls.saved = cls.text.split("### 5. Create a persistent public voice model\n", 1)[1]
+        cls.saved = cls.saved.split("## Parameters", 1)[0]
+
+    def test_create_example_uses_single_url_and_no_visibility_control(self):
+        example, = json_examples(self.saved)
+        self.assertEqual(set(example), {"title", "voices"})
+        self.assertTrue(example["title"])
+        self.assertEqual(example["voices"], "HTTPS_REFERENCE_AUDIO_URL")
+        for requirement in (
+            "POST /fish/model", "same AceDataCloud Bearer token",
+            "single URL string, not an array", "HTTP 201",
+            "model object directly", "actual `_id`", "as `reference_id`",
+            "audio downloads", "sufficient duration", "recognized format",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.saved)
+
+    def test_publication_requires_confirmation_and_cannot_be_made_private(self):
+        for requirement in (
+            "permission to clone and publish", "obtain explicit confirmation",
+            "saved publicly long-term", "other users may search for and use it",
+            "Do not proceed if a private saved voice is required",
+            "`visibility` does not change publication",
+            "even when set to `private` or `unlist`", "Omit it from requests",
+            "temporary reference without a saved model",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.saved)
+        self.assertIn("persistent public voice models", (ROOT / "README.md").read_text())
+
+    def test_self_list_is_account_scoped_not_private_or_author_equivalent(self):
+        self.assertIn("?self=true&page_size=10&page_number=1&sort_by=created_at", self.saved)
+        for requirement in (
+            "created and saved through this platform", "current calling account",
+            "different API Tokens for that same account", "only a list filter",
+            "remain public and usable by others", "not equivalent to filtering",
+            "1-based `page_number`", "newest creation first",
+            "`created_at` and `task_count`", "`author_id` can further filter",
+            "`title_language` is not supported with `self=true`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.saved)
+
+    def test_pagination_handles_boolean_and_nullable_has_more(self):
+        for requirement in (
+            "`items`, `total`, and `has_more`",
+            "For `self=true`, `has_more` is boolean; stop when false",
+            "Public-library queries may return `has_more: null`",
+            "use `total` and `page_size`", "instead of treating null as false",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.saved)
+
+
+class CDNUploadProcedureTests(unittest.TestCase):
+    def test_upload_preserves_multipart_and_platform_auth(self):
+        text = read_skill("cos-upload")
+        for requirement in (
+            "POST https://platform.acedata.cloud/api/v1/files/",
+            "Authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN",
+            '-F "file=@/path/to/video.mp4"', "On HTTP 200",
+            "use the returned `file_url` rather than constructing a URL",
+            "One file per request", "100 MB per file",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```json", text)
+
+    def test_path_mime_and_retention_do_not_promise_conversion_or_archiving(self):
+        text = read_skill("cos-upload")
+        for requirement in (
+            "unique `uploads/<uuid>` path", "filename's safe extension",
+            "returned `mime`", "object-storage metadata",
+            "extension matches the actual content", "MIME type is stored as supplied",
+            "if omitted or `application/octet-stream`",
+            "infers it from the filename", "standard MIME mappings",
+            "Neither extension handling nor MIME inference converts",
+            "publicly accessible without authentication", "do not upload sensitive data",
+            "not a permanent-archive guarantee", "own object storage",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("CDN-served and stable", text)
 
 
 class MaestroProcedureTests(unittest.TestCase):
@@ -228,6 +319,8 @@ class OrderProcedureTests(unittest.TestCase):
             "no extra wallet charge", "Recharge is counted once",
             "spending those Credits on APIs does not count again",
             "Historical discounted orders and old-policy orders are not automatically backfilled",
+            "no fixed per-operation or daily USDC buyback cap",
+            "available funds, market quotes and chain confirmations can still delay completion",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)

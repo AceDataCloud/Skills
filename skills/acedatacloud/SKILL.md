@@ -249,7 +249,7 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 
 #### X402 ACE buyback and burn proof
 
-When the buyback policy is enabled, eligible Base mainnet Circle USDC and Solana mainnet USDC payments allocate 3% of the actual received amount to buy and burn ACE, with no extra wallet charge. Recharge is counted once; spending those Credits on APIs does not count again. Historical discounted orders and old-policy orders are not automatically backfilled.
+When the buyback policy is enabled, eligible Base mainnet Circle USDC and Solana mainnet USDC payments allocate 3% of the actual received amount to buy and burn ACE, with no extra wallet charge. Recharge is counted once; spending those Credits on APIs does not count again. Historical discounted orders and old-policy orders are not automatically backfilled. There is no fixed per-operation or daily USDC buyback cap; available funds, market quotes and chain confirmations can still delay completion.
 
 1. Read authenticated `GET /api/v1/orders/{order_id}/` on the management host as the order owner and inspect `ace_burn`. The CLI only lists orders, not an order-detail or burn command; the order list and anonymous pay-link response do not include `ace_burn`. If it is absent or null, do not infer eligibility or fabricate proof.
 2. Distinguish the payment receipt (`settlement_network`, `settlement_transaction`) from the asynchronous ACE execution (`execution_network`). Base payments retain their Base receipt; buying and burning ACE happens on Solana. A Base receipt is not a Solana burn transaction. Do not expose operator configuration or internal funding details.

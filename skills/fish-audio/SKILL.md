@@ -1,6 +1,6 @@
 ---
 name: fish-audio
-description: Generate AI text-to-speech audio, use saved voices, or create a one-shot voice clone from an HTTPS reference audio URL and exact transcript via AceDataCloud API.
+description: Generate text-to-speech, find saved voices, create a persistent public voice model, or make a one-shot clone from an HTTPS audio URL and exact transcript via AceDataCloud API.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -43,7 +43,8 @@ Synchronous responses return a direct audio URL:
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /fish/tts` | Text-to-speech generation |
-| `GET /fish/model` | Browse/search public Fish reference voices |
+| `POST /fish/model` | Create a persistent public voice model from an audio URL |
+| `GET /fish/model` | Browse/search public voices or list voices created through this platform with `self=true` |
 | `GET /fish/model/{id}` | Fetch one reference voice by ID |
 | `POST /fish/tasks` | Poll async TTS jobs when `async: true` |
 
@@ -111,6 +112,37 @@ Headers:
 Use an actual public webhook that you operate; replace the example URL. If you
 do not have one, use the synchronous Quick Start above. After an asynchronous
 submission returns a task ID, see [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md) and query `POST /fish/tasks` with `{"id":"..."}`.
+
+### 5. Create a persistent public voice model
+
+Only use audio the user has permission to clone and publish. Before submitting, obtain explicit confirmation that the voice will be saved publicly long-term and other users may search for and use it. Do not proceed if a private saved voice is required: `visibility` does not change publication, even when set to `private` or `unlist`. Omit it from requests. For a temporary reference without a saved model, use the one-shot workflow above.
+
+Replace `HTTPS_REFERENCE_AUDIO_URL` with a publicly downloadable audio URL, preferably ending in `.mp3` or `.wav`:
+
+```json
+POST /fish/model
+{
+  "title": "My authorized narration voice",
+  "voices": "HTTPS_REFERENCE_AUDIO_URL"
+}
+```
+
+Send the same AceDataCloud Bearer token and JSON content type. `title` and `voices` are required; `voices` must be a single URL string, not an array, multipart upload, or binary data. Optional fields include `description`, `cover_image`, `tags` (string array), `texts` (reference transcript array), `enhance_audio_quality`, and `generate_sample`.
+
+HTTP 201 returns the model object directly. Save its actual `_id` and inspect `state`; use that `_id` as `reference_id` for later TTS, not a fabricated ID. On HTTP 400, check that the audio downloads, has sufficient duration, and has a recognized format; do not repeat an unchanged request.
+
+### 6. List voices created by the calling account
+
+```bash
+curl "https://api.acedata.cloud/fish/model?self=true&page_size=10&page_number=1&sort_by=created_at" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN"
+```
+
+`self=true` returns voices created and saved through this platform by the current calling account, including those created with different API Tokens for that same account. It is only a list filter, not an access restriction: these voices remain public and usable by others. It is not equivalent to filtering by a shared author ID.
+
+Results default to newest creation first with 1-based `page_number` pagination. `sort_by` supports `created_at` and `task_count` for `self=true`; `author_id` can further filter the saved voices by author. `title`, `tag`, and `language` also filter results. `title_language` is not supported with `self=true`; omit `self` to search the public voice library by title language.
+
+Read `items`, `total`, and `has_more`. For `self=true`, `has_more` is boolean; stop when false. Public-library queries may return `has_more: null`; use `total` and `page_size` to determine remaining pages instead of treating null as false.
 
 ## Parameters — `/fish/tts`
 

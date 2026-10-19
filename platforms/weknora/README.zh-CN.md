@@ -2,13 +2,45 @@
 
 [English guide](README.md) · [WeKnora 技能文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
-本指南以 2026-10-11 查询到的最新稳定版 **WeKnora v0.8.2** 为准。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。目前「工具箱」的搜索只过滤本空间已添加的条目，不能直接搜索远端市场。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
+2026-10-17 查询到的最新稳定版为 [WeKnora **v0.8.3**](https://github.com/Tencent/WeKnora/releases/tag/v0.8.3)。下方界面步骤和带日期的 Agent 样例来自 v0.8.2，尚未在 v0.8.3 完整重跑。WeKnora 能从 ClawHub、SkillHub、Git、ZIP 导入公开技能，也能连接 Streamable HTTP MCP 服务。已发布的 v0.8.2「工具箱」没有远端市场搜索，实测也没有服务列表搜索框；后续开发构建只增加对本空间已登记条目的过滤，仍不搜索远端目录。首次真实调用建议使用下方已托管的 Suno MCP。Skill 提供操作说明，MCP 提供可调用的工具。
+
+**Lite 版本说明：** v0.8.2 缺少 SQLite MCP 元数据迁移，添加服务可能报 `table mcp_services has no column named usage_instructions`（[上游 Issue #4058](https://github.com/Tencent/WeKnora/issues/4058)）。已合并的修复 [#4060](https://github.com/Tencent/WeKnora/pull/4060) 已包含在 v0.8.3。请从 v0.8.3 或后续兼容版本开始，不要手改生产数据库。2026-10-15，未经修改的 v0.8.3 源码通过 SQLite 新库 schema、v33 升级保留 MCP 数据测试，以及完整 database 包测试；这证明迁移回归通过，不代表新的 UI 安装或 Agent 主流程验收。下方 v0.8.2 截图来自单独的一次性补迁移测试库。
+
+### 未修改的 v0.8.3 只读验证（2026-10-17）
+
+官方 v0.8.3 源码的 4,950 个跟踪文件哈希已核对，构建时没有修改源码。在完整提供发行包的 `config/`、`migrations/` 目录后，全新 SQLite 数据库自动迁移到版本 36（`dirty=false`）。测试通过正常鉴权 API 注册和登录本地测试用户、保存 Suno 服务和私密凭据，连接 `suno v1.30.0` 并同步 **42 个工具**。凭据响应不返回 Key，落库值不是明文；没有手动修补 SQL。
+
+真实 v0.8.3 Agent 引擎随后调用 `suno_list_models`，并查询**已有**任务 `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`，读到 complete/succeeded 结果。模型决策来自固定测试驱动，**没有使用真实语言模型**。这验证了 Agent 与工具执行路径，未产生推理或生成费用，不证明模型自主行为或浏览器聊天验收。没有新提交生成。
+
+GitHub `suno-music` 目录登记返回 HTTP 201，skills.sh 页面仍因联合收录副本 404 返回 HTTP 400；沙箱列表和该 Skill 的安装列表均为空。原版后端仍不含 Ace 命名服务商。完整界面安装、Skill 沙箱执行及其余 15 项主要动作仍待验证；下方截图保留原 v0.8.2 日期。
+
+## 按服务名原生发现：已投稿，尚未发行
+
+[Ace 原生集成 PR](https://github.com/Tencent/WeKnora/pull/4163) 提供两种独立产品入口：模型服务商列表中的 **Ace Data Cloud**，以及**工具箱 → MCP 服务 → 添加服务**中的五项独立预设。搜索 `Suno`、`Seedance`、`HappyHorse`、`GPT Image` 或 `Nano Banana`，每项标注 **by Ace Data Cloud**，不冒充对应模型品牌的官方应用。选择后在私密 Token 栏粘贴自己的 Key，再保存并同步工具；预设会补 Bearer 前缀，只需复制 Key 原值。每项是独立连接，不要求安装 Ace 通用合集。
+
+**该 PR 尚未合并，也未进入 v0.8.3。** 当前发行版仍需手动导入下列独立 MCP JSON；这些备用文件不等于官方搜索安装成功：
+
+| 服务 | 独立 MCP 配置 | 既有 canonical Skill |
+| --- | --- | --- |
+| Suno by Ace Data Cloud | [suno.mcp.json](suno.mcp.json) | [suno-music](../../skills/suno-music/SKILL.md) |
+| Seedance by Ace Data Cloud | [seedance.mcp.json](seedance.mcp.json) | [seedance-video](../../skills/seedance-video/SKILL.md) |
+| HappyHorse by Ace Data Cloud | [happyhorse.mcp.json](happyhorse.mcp.json) | [happyhorse-video](../../skills/happyhorse-video/SKILL.md) |
+| GPT Image by Ace Data Cloud | [gpt-image.mcp.json](gpt-image.mcp.json) | [gpt-image-2-5](../../skills/gpt-image-2-5/SKILL.md) |
+| Nano Banana by Ace Data Cloud | [nano-banana.mcp.json](nano-banana.mcp.json) | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
+
+WeKnora 官方 [MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mcp)支持保存外部连接，[Skill 文档](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox)支持 ClawHub/SkillHub/Git/ZIP 来源；当前没有独立 MCP 市场投稿 API。外部技能上架或手动来源不等于 WeKnora 官方收录。本次按正式源码贡献流程投稿产品内预设入口。
 
 ## 1. 获取 Ace Data Cloud Key
 
-1. 登录 [Ace Data Cloud 控制台](https://platform.acedata.cloud/console/applications)，开通 **Suno** 服务，创建有 Suno 权限的凭据。如果还要在 WeKnora 配置聊天模型，凭据也需要 **AI Chat** 权限。
-2. 生成前查看 [Suno 当前价格](https://platform.acedata.cloud/services/suno?tab=pricing)和可用 Credits。生成会计费；任务查询是独立的读取操作。
-3. 只在 WeKnora 的凭据输入框填写 Key。不要将 Key 写入对话、示例 JSON、截图或 Git 提交。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_api_key)，打开 **Applications → General application**；如提示尚未初始化，先初始化通用应用。复制已有 API Key，或通过 **Manage Keys → Create** 创建 WeKnora 专用 Key。先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)。如需聊天模型，还需 AI Chat 权限。
+2. 只复制 **Key 原值**；平台管理 Token 不是生成 API Key。待发布预设的私密 Token 栏直接粘贴原值，保存会补 Bearer；当前发行版手动配置则按下文填写 `Authorization` 和 `Bearer <key>`。
+3. Key 不放进对话、示例 JSON、截图或 Git。若限制 Allowed APIs，需同时允许所选生成接口与任务查询接口。生成会计费；首次验证可只做可用的免费模型/说明查询，或读取已有任务。
+
+![真实 Ace 控制台：复制 Key 或打开 Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+
+![真实 Ace 控制台：创建专用 Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
+
+以上真实控制台图片复用固定提交的 SunoDify 教程（来源见 URL；2026-10-18 复核），只证明 Key 获取位置，不是未发布预设的界面图。下方 WeKnora 操作与结果图保留 2026-10-12 的历史测试日期。
 
 ## 2. 导入 Suno MCP 服务
 
@@ -17,7 +49,15 @@
 3. 保存并运行**测试连接**，同步工具，确认有 `suno_generate_music`、`suno_get_task` 和 `suno_list_models`。只启用需要的工具；如果空间要求生成操作先审批，为生成工具打开调用审批。
 4. 在 Agent 编辑页启用 MCP，选中 Suno 服务并保存，然后新建**智能推理**对话。仅保存服务而未让 Agent 选中时，对话不能使用它。
 
+![WeKnora v0.8.2 英文界面的 Suno MCP 鉴权表单：URL、Authorization Header 与空密钥框](assets/suno-mcp-auth-v082.jpg)
+
+![英文工具箱中的 Suno MCP 卡片，已同步 42 个工具](assets/suno-mcp-v082.jpg)
+
+截图来自真实 v0.8.2 英文前端和仅在隔离测试库补入上游迁移 #4060 的 SQLite 实例；图中没有 Key。
+
 托管端点要求 Bearer 凭据：未授权请求返回 401。2026-10-11 使用有权限的 Ace Key 实测 MCP `initialize`、`tools/list` 成功，`suno_list_models` 返回当前模型列表。这证明连接和工具发现，尚不代表付费歌曲已经生成完成。
+
+生成前先让 Agent：**“只调用 `suno_list_models` 并返回模型 ID，不要生成音乐。”** 这能验证工具路径且不产生 Suno 生成费用；Agent 使用的聊天模型仍可能产生独立用量。
 
 ## 3. 生成并查询同一首歌
 
@@ -29,15 +69,25 @@
 
 如果已有旧任务只想查询结果，让 Agent 用保存的 ID 调 `suno_get_task` 即可；这不会再提交一次付费生成。
 
+![WeKnora v0.8.2 Agent 调用 Suno List Models 并返回当前模型 ID](assets/suno-agent-list-models-v082.jpg)
+
+此截图是补入迁移后的稳定版源码实例调用**免费** `suno_list_models` 的结果，未再次生成歌曲。
+
 ### 真实验收样例（2026-10-11）
 
 隔离的 WeKnora Lite 本地构建接入 Ace 模型 Provider 分支和 Suno MCP，对 `suno_generate_music` 开启单次审批，只提交了 **1 次** `chirp-v6-mini` 纯音乐生成。返回任务 ID `938109ac-c2b8-4cdd-9c0d-2bf8cf66b4be`。之后 WeKnora Agent 用**同一个 ID** 调 `suno_get_task`，拿到 `state=complete`、`response.success=true` 与两条 `succeeded` 结果：[音频 1](https://cdn.acedata2.cloud/suno/1afac1aa-c215-4f54-a899-7c2a8ee6ea37.mp3)、[音频 2](https://cdn.acedata2.cloud/suno/9b2813f0-03ac-44bb-ba38-cc00a5513f93.mp3)。两个 URL 的 HTTP HEAD 均为 200、`audio/mpeg`。同 trace 的 Ace 调用流水显示原价 **0.56 Credits**，测试账户实际扣除 **0.504 Credits**。浏览器播放未验证。这是本地开发构建验收，不等于稳定版或市场上架。
 
 ## 4. 需要操作说明时安装 Skill
 
+本文的服务端部署需先由空间 Admin/Owner 在**设置 → 沙箱配置**配置一个可用沙箱。若列表为空，Skill 可以登记到目录，但不能安装或运行；上面的托管 MCP 路径不要求 Skill 沙箱。
+
 空间 Admin/Owner 可以打开 **工具箱 → 技能管理 → 添加技能**，粘贴公开来源 `https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music`。选定已配置的沙箱，等待安装状态变为**就绪**。如果 Skill 会执行 Shell 命令，私下配置它声明的 `ACEDATACLOUD_API_TOKEN`。然后在 Agent 编辑页选择对应 Skill 和沙箱。添加到目录不等于安装到沙箱；安装 Skill 也不会自动增加 MCP 工具。
 
-WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚于 [Ace Skills 源码](https://github.com/AceDataCloud/Skills)。安装前检查内容与版本。当前稳定版工具箱没有远端市场搜索，粘贴来源仍属手动安装路径。
+![Suno Skill 已登记在英文空间目录，但尚未安装到任何沙箱](assets/suno-skill-catalog-v082.jpg)
+
+可以在 [skills.sh 搜索 Suno](https://www.skills.sh/search?q=suno)，看到 `acedatacloud/skills` 条目和安装命令。但在 v0.8.2 实测中，将 **skills.sh 页面 URL** 粘贴到 WeKnora 时，会因解析器要求 ClawHub 联合收录副本而报 `Skill not found`（[上游 Issue #4167](https://github.com/Tencent/WeKnora/issues/4167)）。请改用上面的 GitHub Skill 目录 URL；隔离稳定版源码实验已将其登记为 `suno-music`。这是手动来源导入，不等于产品内市场搜索或沙箱安装完成。
+
+WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚于 [Ace Skills 源码](https://github.com/AceDataCloud/Skills)。安装前检查内容与版本。v0.8.2 工具箱没有远端市场搜索。截至 2026-10-15，[对话内发现和安装功能 #3409](https://github.com/Tencent/WeKnora/pull/3409) 仍 OPEN，它与 SQLite 修复 #4060 是独立变更。粘贴来源仍是本指南的手动路径，本指南不证明官方市场安装。
 
 ## 5. 其他按服务名称查找的入口
 
@@ -63,13 +113,30 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 | Kling | [kling-video](../../skills/kling-video/SKILL.md) |
 | Nano Banana | [nano-banana-image](../../skills/nano-banana-image/SKILL.md) |
 
-当前 v0.8.2 要添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
+![隔离的 WeKnora v0.8.2 空间中已配置 17 个具名 MCP 服务](assets/seventeen-mcp-cards-v082.jpg)
+
+17 张服务卡片各自经过 WeKnora 后端连接测试和工具目录同步；仅在一次性 SQLite 测试库补入上游迁移。这是本空间**已配置的列表**，并非远端市场。卡片使用 WeKnora 的通用工具图标，没有服务专属 Logo；工具同步成功不表示每项付费生成都得到终态。
+
+### GPT Image 2.5 真实验收样例（2026-10-12）
+
+使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
+
+![GPT Image 2.5 Flare 图片在真实英文 WeKnora 聊天中展示](assets/gpt-image-2-5-agent-v082.jpg)
+
+这证明补库稳定版测试实例的 GPT Image 手动 MCP 路径，不代表 WeKnora 市场可发现、未经修补的 Lite v0.8.2 可用，也不代表其余 15 项的主流程已验收。
+
+在已测试的 v0.8.2 界面添加聊天模型，请选 **设置 → 模型 → 添加模型 → 对话 → API → 自定义（OpenAI 兼容接口）**，Base URL 为 `https://api.acedata.cloud/v1`，模型 ID 选公开支持的聊天模型，例如 `gpt-4.1-mini`，填写具有 AI Chat 权限的 Ace Key，先**测试连接**再保存。Ace Data Cloud 命名 Provider 的[上游 PR 仍在审核](https://github.com/Tencent/WeKnora/pull/4163)；源码和 CI 不等于稳定版已内置。
+
+![开发构建中 Ace Data Cloud 命名 Provider 和 GPT-4.1 Mini 目录项的英文预览](assets/ace-model-provider-preview.jpg)
+
+预览由 v0.8.2 前端连接该 PR 的开发后端得到；图标使用 Ace 原始 PNG。未经修改的稳定版后端还没有这个选项。
 
 ## 排障
 
-- **工具箱搜 Suno 没结果**：它只搜索本空间已添加的 Skill/MCP。先添加 MCP URL 或 Skill 来源，之后本地搜索才能找到。
+- **添加前无法搜索 Suno**：v0.8.2 工具箱没有远端市场搜索，实测稳定版界面也没有服务列表搜索框。请直接添加 MCP URL 或 Git Skill 来源。后续开发构建只能过滤本空间已登记条目。
 - **401 / 403**：检查已保存凭据是否按 `Authorization: Bearer` 发送，以及 Suno 权限。403 也可能是内容审核，应读取具体错误消息。
 - **429**：按返回的限速时间等待。**5xx 或连接中断**：保留原 `task_id`，先查询它，不要直接再生成。
 - **工具已同步但 Agent 不调用**：确认 Agent 使用智能推理、已启用 MCP、选中 Suno、相应工具处于启用状态。
 - **只有任务 ID，没有可播放音频**：继续查到 `state=complete` 且 `success=true`，检查最终 URL 并打开验证。任务 ID 不能当成交付产物。
 - **Skill 不可用**：检查沙箱安装是否就绪，以及 Agent 选择的沙箱与技能范围。沙箱重建期间可能短暂不可用。
+- **skills.sh 页面报 `Skill not found`**：使用第 4 步的 GitHub Skill 目录地址。当前 WeKnora 的 skills.sh 解析器只覆盖被 ClawHub 联合收录的条目；其余缺口见 [#4167](https://github.com/Tencent/WeKnora/issues/4167)。
