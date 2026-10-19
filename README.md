@@ -355,6 +355,8 @@ We welcome contributions! To add a new skill:
 
 The existing ClawHub-only `@acedatacloud/api-guide` listing is maintained in [`clawhub/api-guide/SKILL.md`](clawhub/api-guide/SKILL.md). Its general onboarding instructions are kept separate from the service Skills in `skills/`.
 
+For a reviewed update to an existing listing, follow the [ClawHub maintenance guide](clawhub/README.md). The publishing helper previews one explicit listing by default and pins its source commit.
+
 ## License
 
 [Apache-2.0](LICENSE)
