@@ -10,7 +10,7 @@ These five entries install independently from the Ace-maintained `acedatacloud-s
 | GPT Image | [gpt-image-by-ace-data-cloud](gpt-image-by-ace-data-cloud/README.md) |
 | Nano Banana | [nano-banana-by-ace-data-cloud](nano-banana-by-ace-data-cloud/README.md) |
 
-The source PR must be merged before GitHub `main` installs work. This is not an Anthropic official-directory listing or a native chat provider. Current Directory Policy §4.B restricts standalone AI media generation absent express written permission. An existing official listing such as Runway is evidence of that entry, not permission for Ace. [Review gates and per-service submission material](submission/README.md) remain separate from source and local-install checks.
+The five plugins are published on GitHub `main` at source merge `605e92ed` (2026-10-19), version 0.1.0. Normal public Git marketplace clone and five independent native installations were verified with official Claude Code 2.1.303. This is not an Anthropic official-directory listing or a native chat provider. Current Directory Policy §4.B restricts standalone AI media generation absent express written permission. An existing official listing such as Runway is evidence of that entry, not permission for Ace. [Review gates and per-service submission material](submission/README.md) remain separate from source and local-install checks.
 
 The bundled key screenshots are existing redacted Ace tutorial images, with provenance in [assets-sources.json](assets-sources.json). The historical Suno host image is accurately labeled in every guide. Current Token option UI and ordinary real-host first use are pending shared UI validation; no screenshots are fabricated.
 

@@ -6,7 +6,7 @@ HappyHorse by Ace Data Cloud brings video tools into Claude Code as one independ
 
 ## 1. Install this service
 
-The source is the Ace-maintained marketplace. It is **not currently verified as an entry in Anthropic's official directory**. After the source PR is merged, add this marketplace once and install only the service you need:
+The source is the Ace-maintained marketplace. It is **not currently verified as an entry in Anthropic's official directory**. The five plugins were released to the public Git-backed Ace marketplace on 2026-10-19 (source merge `605e92ed`). Add this marketplace once and install only the service you need:
 
 ```text
 /plugin marketplace add AceDataCloud/Skills
@@ -15,7 +15,7 @@ The source is the Ace-maintained marketplace. It is **not currently verified as 
 
 Or use the equivalent shell commands `claude plugin marketplace add AceDataCloud/Skills` and `claude plugin install happyhorse-by-ace-data-cloud@acedatacloud-skills`. In `/plugin` → Discover for the added marketplace, search **HappyHorse** or **happyhorse-by-ace-data-cloud**. Other Ace services are separate entries; the older media bundle remains optional. If both copies enable the same service, disable the unused copy to avoid duplicate tools.
 
-This source change has not been merged or released. Before merge, validate and install from a local checkout of this PR; do not expect `main` or the official marketplace to contain it. Initial manifest/install checks used Claude Code 2.1.81. On 2026-10-19, the SHA256-verified official Claude Code 2.1.303 release also passed strict manifest checks, five independent installs, native sensitive-option configuration/redacted readback, and local-only header/env substitution tests. This does not prove ordinary public installation or real service authentication; paid first use remains separate.
+The public `main` marketplace contains these plugins at version 0.1.0. On 2026-10-19, ordinary `claude plugin marketplace add AceDataCloud/Skills` cloned the public repository, and all five independent plugins installed and exposed the required sensitive Token option schema under official Claude Code 2.1.303. This is the Ace-maintained marketplace, not Anthropic's official directory. Initial manifest/install checks used Claude Code 2.1.81. On 2026-10-19, the SHA256-verified official Claude Code 2.1.303 release also passed strict manifest checks, five independent installs, native sensitive-option configuration/redacted readback, and local-only header/env substitution tests. Those initial local and synthetic-credential checks did not prove public installation or real service authentication. The later ordinary public-main installation check described above passed; real service authentication and paid first use remain separate.
 
 ## 2. Get a dedicated Ace API Token
 
@@ -57,7 +57,7 @@ When you explicitly choose to run a paid operation, review its model, parameters
 
 ## FAQ
 
-- **Plugin not found:** add the Ace marketplace first; this new source must be merged/released. It is not published just because its PR checks pass.
+- **Plugin not found:** add the Ace marketplace first or run `claude plugin marketplace update acedatacloud-skills`, then check the exact service slug. An organization allowlist or a failed Git download may still block installation. Anthropic official-directory search is a separate, unverified channel.
 - **401:** check the raw Ace token, expiration, service/Allowed APIs and which application's key you copied. Do not send a management or Anthropic credential.
 - **Insufficient balance / 403 / 429:** inspect the service error and permissions or current balance. A reference tool does not prove generation access; respect rate limits and moderation.
 - **Task still pending:** poll the original ID at the service's documented interval. Avoid automatic generation retries.
