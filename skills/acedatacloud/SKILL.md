@@ -240,6 +240,12 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 2. An automatic red-invoice reversal submission leaves the invoice `Issued`; inspect `red_state` for progress. Submission is not completion. Do not reapply while confirmation, red-invoice issuance or archiving is pending.
 3. Reapply only after successful red-invoice issuance and archiving change the original invoice to `Voided` and release the order's invoicing restriction. Failed or uncertain reversals require finance review; do not bypass the restriction. The original invoice remains in invoice history. Manually issued invoices must first be voided or reversed in the tax/invoicing system, then confirmed by finance in the platform.
 
+#### X402 network selection
+
+1. Read the current order or API payment challenge's `accepts` before selecting a network. Arbitrum One (`arbitrum` in official TypeScript/Python X402 clients, CAIP-2 `eip155:42161` on the wire) has opt-in code support, not guaranteed production availability. If it is absent from `accepts`, do not attempt payment on that chain; a page feature flag does not enable an unconfigured server network.
+2. Arbitrum supports only `exact` payments with native USDC (6 decimals), not bridged USDC or `upto`. Use the returned asset, recipient and `accepts[].maxAmountRequired`; never hardcode an amount or invent payment parameters.
+3. Confirm the wallet supports the target chain and has USDC on that chain. The same EVM address can have different balances on different networks; a Solana address is not an EVM USDC address. Obtain confirmation before signing or paying; network support does not authorize a charge.
+
 #### X402 failure recovery
 
 1. The initial HTTP 402 without `PAYMENT-SIGNATURE` is a payment challenge, not a failed payment. For signed-payment failures, read `extensions.acedatacloud.paymentError`; do not construct wallet signatures or recipient/asset addresses from guesses.
