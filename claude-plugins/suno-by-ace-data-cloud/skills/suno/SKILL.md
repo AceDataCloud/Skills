@@ -22,4 +22,10 @@ For generation/editing, collect the user's intended input, model and output limi
 
 When an operation returns only a task ID, retain that exact ID and poll the related get-task tool at the documented interval until success or failure. Do not submit again to check progress, automatically retry billable writes, or treat a task ID/partial preview as completion. If the result already contains terminal success and final media URLs, report those. Surface rate-limit, moderation, balance and internal errors accurately rather than claiming success.
 
+## Custom inputs and processing failures
+
+When the connected tool supports `negative_tags`, use it only with `custom: true`. The audio endpoint currently enforces no fixed character limit for this field; keep it concise because overly long input may still fail.
+
+A downloadable audio file does not guarantee its `audio_id` remains usable for covers, extension or stem separation. Preserve the public HTTP 500 codes `suno_processing_unavailable` (processing unavailable), `suno_model_unavailable` (selected model unavailable for this operation), and `suno_processing_failed` (processing returned no audio). Retain `task_id` and `trace_id` when returned and contact support with those IDs, never the API key. Query the existing task if submission is uncertain; do not automatically retry a paid operation or silently switch models.
+
 This plugin does not make Suno a native Claude chat model, and installation does not establish Anthropic directory approval. The full existing API reference remains maintained at https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music; read it only when an advanced action needs it.

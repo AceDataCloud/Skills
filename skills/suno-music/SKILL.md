@@ -331,7 +331,7 @@ An identical key and payload replay the original result, including failure, with
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
-| `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); used in custom mode |
+| `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); applies only with `custom: true`. No fixed character limit is currently enforced by this endpoint; keep it concise because overly long input may still fail |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
 | `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
 | `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
@@ -353,6 +353,20 @@ Bridge section
 [Outro]
 Ending lyrics
 ```
+
+## Audio processing failure recovery
+
+A downloadable audio file does not guarantee its `audio_id` remains usable for follow-up processing such as covers, extension or stem separation. Keep the original audio and task evidence; do not infer processing availability from the download URL.
+
+For `/suno/audios`, preserve these public HTTP 500 error codes instead of reporting a generic failure:
+
+| Code | Meaning |
+|------|---------|
+| `suno_processing_unavailable` | Music processing is unavailable |
+| `suno_model_unavailable` | The selected model is unavailable for this operation |
+| `suno_processing_failed` | Music processing returned no audio |
+
+On any of these errors, retain `task_id` and `trace_id` when returned and contact support with those IDs, never the API key. If submission is uncertain, query the existing task before considering another request. Do not automatically retry a paid operation or silently switch models; a failed result is not authorization for a new billable request.
 
 ## Gotchas
 

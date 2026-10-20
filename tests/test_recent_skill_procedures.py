@@ -20,6 +20,40 @@ def json_examples(text):
         yield json.loads(re.sub(r"^POST /[^\n]+\n", "", block))
 
 
+class SunoAudioProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.skills = {
+            "canonical": read_skill("suno-music"),
+            "claude": (ROOT / "claude-plugins/suno-by-ace-data-cloud/skills/suno/SKILL.md").read_text(),
+            "amp": (ROOT / "platforms/amp/skills/suno-by-acedatacloud/SKILL.md").read_text(),
+        }
+
+    def test_negative_tags_has_custom_scope_without_a_fixed_limit_promise(self):
+        for name, text in self.skills.items():
+            with self.subTest(skill=name):
+                line = next(line for line in text.splitlines() if "`negative_tags`" in line and "`custom: true`" in line)
+                self.assertIn("no fixed character limit", line.lower())
+                self.assertIn("keep it concise", line)
+                self.assertIn("overly long input may still fail", line)
+
+    def test_processing_failures_keep_ids_and_require_safe_recovery(self):
+        for name, text in self.skills.items():
+            with self.subTest(skill=name):
+                recovery = text.split("## Audio processing failure recovery\n", 1)[-1] if name == "canonical" else text.split("## Custom inputs and processing failures\n", 1)[1]
+                for requirement in (
+                    "downloadable audio file does not guarantee its `audio_id` remains usable",
+                    "HTTP 500", "suno_processing_unavailable",
+                    "suno_model_unavailable", "suno_processing_failed",
+                    "`task_id` and `trace_id` when returned",
+                    "contact support with those IDs, never the API key",
+                    "existing task", "submission is uncertain",
+                    "automatically retry a paid operation or silently switch models",
+                ):
+                    self.assertIn(requirement, recovery)
+                self.assertNotIn("```", recovery.split("## Gotchas", 1)[0])
+
+
 class SunoProjectsProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -294,6 +328,27 @@ class OrderProcedureTests(unittest.TestCase):
             "Manually issued invoices must first be voided or reversed",
         ):
             self.assertIn(requirement, self.text)
+
+    def test_x402_arbitrum_selection_requires_live_accepts_and_native_usdc(self):
+        text = self.text.split("#### X402 network selection\n", 1)[1].split("#### X402 failure recovery\n", 1)[0]
+        for requirement in (
+            "current order or API payment challenge's `accepts`",
+            "Arbitrum One", "`arbitrum`", "`eip155:42161`",
+            "opt-in code support, not guaranteed production availability",
+            "If it is absent from `accepts`, do not attempt payment on that chain",
+            "feature flag does not enable an unconfigured server network",
+            "only `exact`", "native USDC (6 decimals)", "not bridged USDC or `upto`",
+            "returned asset, recipient and `accepts[].maxAmountRequired`",
+            "never hardcode an amount or invent payment parameters",
+            "wallet supports the target chain", "USDC on that chain",
+            "different balances on different networks",
+            "Solana address is not an EVM USDC address",
+            "Obtain confirmation before signing or paying",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```", text)
+        self.assertNotIn("?features=", text)
 
     def test_x402_recovery_preserves_codes_and_unknown_charge_state(self):
         for requirement in (
