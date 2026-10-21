@@ -45,6 +45,7 @@ class SunoAudioProcedureTests(unittest.TestCase):
                     "downloadable audio file does not guarantee its `audio_id` remains usable",
                     "HTTP 500", "suno_processing_unavailable",
                     "suno_model_unavailable", "suno_processing_failed",
+                    "HTTP 500 `api_error`", "`the account may have been offline`",
                     "`task_id` and `trace_id` when returned",
                     "contact support with those IDs, never the API key",
                     "existing task", "submission is uncertain",
