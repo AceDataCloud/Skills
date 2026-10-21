@@ -366,6 +366,8 @@ For `/suno/audios`, preserve these public HTTP 500 error codes instead of report
 | `suno_model_unavailable` | The selected model is unavailable for this operation |
 | `suno_processing_failed` | Music processing returned no audio |
 
+Also preserve HTTP 500 `api_error` with the message `the account may have been offline` when returned by `/suno/audios`.
+
 On any of these errors, retain `task_id` and `trace_id` when returned and contact support with those IDs, never the API key. If submission is uncertain, query the existing task before considering another request. Do not automatically retry a paid operation or silently switch models; a failed result is not authorization for a new billable request.
 
 ## Gotchas
