@@ -636,6 +636,76 @@ class ChatGatewayProcedureTests(unittest.TestCase):
         self.assertNotIn("not `/v1/*`", text)
 
 
+class RegionalCatalogProcedureTests(unittest.TestCase):
+    def test_account_procedure_uses_public_fields_and_preserves_mixed_media(self):
+        text = read_skill("acedatacloud").split("#### Regional catalog discovery\n", 1)[1]
+        text = text.split("### Dataset reference pricing\n", 1)[0]
+        for requirement in (
+            "get-service --service <alias-or-uuid> --json",
+            "`available_regions`, `unavailable_regions`",
+            "chat-only `chat_unavailable_regions`",
+            "apis --service <alias-or-uuid> --json", "docs-list --json",
+            "doc --id <document-uuid> --json",
+            "`pricing` and `spec` summaries omit these fields",
+            "Empty region lists mean no explicit regional rule, not an access grant",
+            "requesting visitor's IP", "not the display language or a `?country=` override",
+            "Claude services and chat APIs/documents",
+            "OpenAI, Gemini and Grok", "keep media entries",
+            "do not hide the entire service based on `chat_unavailable_regions`",
+            "missing entry/404 as proof of retirement or revoked API access",
+            "does not change API routing or billing",
+            "check actual account access, key restrictions and current pricing separately",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertIn("region-aware public catalog discovery", (ROOT / "README.md").read_text())
+
+    def test_chat_discovery_does_not_advertise_hidden_entries_or_revoke_access(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "requesting visitor's IP", "not the display language or a `?country=` override",
+            "Mainland-China views hide marked Claude, OpenAI, Gemini and Grok chat",
+            "mixed OpenAI/Gemini/Grok services keep their media entries",
+            "do not use a cached global list to advertise region-hidden chat",
+            "missing catalog entry is not evidence of retirement or revoked API access",
+            "does not change API routing or billing",
+            "Report the discovery limitation", "check actual account access and pricing",
+            "do not silently replace a user-selected model",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_existing_cli_preserves_public_region_fields_without_client_side_hiding(self):
+        script = ROOT / "skills" / "acedatacloud" / "scripts" / "acedatacloud.py"
+        spec = importlib.util.spec_from_file_location("acedatacloud_region_skill", script)
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        row_id = "00000000-0000-4000-8000-000000000001"
+        regions = {"available_regions": [], "unavailable_regions": ["cn"]}
+        service = {"id": row_id, "alias": "test-mixed", "available_regions": [],
+                   "unavailable_regions": [], "chat_unavailable_regions": ["cn"]}
+        api = {"id": row_id, "service_id": row_id, "path": "/test/chat", **regions}
+        document = {"id": row_id, "alias": "test-chat-guide", **regions}
+        for command, item, path, single in (
+            (["get-service", "--service", row_id], service, "/services/", True),
+            (["apis"], api, "/apis/", False),
+            (["docs-list"], document, "/documents/", False),
+            (["doc", "--id", row_id], document, "/documents/", True),
+        ):
+            with self.subTest(command=command):
+                payload = {"count": 1, "items": [item]}
+                output = io.StringIO()
+                with patch.object(cli.sys, "argv", ["acedatacloud.py", *command, "--json"]), patch.object(
+                    cli, "_request", return_value=(200, payload)
+                ) as request, redirect_stdout(output):
+                    cli.main()
+                request.assert_called_once()
+                self.assertEqual(request.call_args.args[1:3], ("GET", path))
+                self.assertEqual(request.call_args.kwargs, {"auth_required": False})
+                result = json.loads(output.getvalue())
+                self.assertEqual(result if single else result["items"][0], item)
+
+
 class AgentTaskProcedureTests(unittest.TestCase):
     def test_turn_limit_is_per_request_not_history(self):
         text = read_skill("ai-chat")

@@ -292,6 +292,12 @@ These work without auth (send the token if you have one; not required):
 - **Model catalog** — `GET /models/catalog/` → `{ rates, modalities, count, items:[{ id, name, provider,
   modality, unit, capabilities, pricing:{ input_credits, output_credits, official_* } }] }`. Filter client-side.
 
+#### Regional catalog discovery
+
+1. Read the current public catalog from the caller's environment. Use `get-service --service <alias-or-uuid> --json` to inspect `available_regions`, `unavailable_regions` and the service's chat-only `chat_unavailable_regions`. Use `apis --service <alias-or-uuid> --json`, `docs-list --json` or `doc --id <document-uuid> --json` for API/document region fields. The `pricing` and `spec` summaries omit these fields. Empty region lists mean no explicit regional rule, not an access grant.
+2. Visibility follows the requesting visitor's IP, not the display language or a `?country=` override. Mainland-China catalog reads hide marked Claude services and chat APIs/documents. Mixed OpenAI, Gemini and Grok services hide their chat entries but keep media entries; do not hide the entire service based on `chat_unavailable_regions`.
+3. Respect the current public results when presenting catalog choices. Do not use a cached global list to advertise region-hidden chat or treat a missing entry/404 as proof of retirement or revoked API access. This presentation filtering does not change API routing or billing; check actual account access, key restrictions and current pricing separately before a service call.
+
 ### Dataset reference pricing
 
 1. Resolve the requested dataset's public service with `get-service --service <alias-or-uuid>` and read its current metadata. Contact-only datasets are catalog entries, not automatically downloadable purchases; a missing price does not mean free data.
