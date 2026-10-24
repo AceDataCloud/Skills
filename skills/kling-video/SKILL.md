@@ -99,6 +99,7 @@ POST /kling/videos
   "model": "kling-o1",
   "mode": "std",
   "duration": 5,
+  "generate_audio": false,
   "video_list": [
     {
       "video_url": "https://example.com/source.mp4",
@@ -109,7 +110,20 @@ POST /kling/videos
 }
 ```
 
-Use `refer_type: "feature"` to reference style, motion, or a neighboring shot. Use `refer_type: "base"` to edit the supplied video. A base video cannot be combined with first/end frames.
+Use `refer_type: "feature"` to reference style, motion, or a neighboring shot. Use `refer_type: "base"` (the default) to edit the supplied video. A base video cannot be combined with first/end frames.
+
+#### Reference-video billing
+
+1. Before submitting, check the current price for the model, mode and reference inputs. `kling-o1` and `kling-v3-omni` use a separate reference-video tier when `video_list` supplies a video; `image_list`, first frames and end frames alone do not trigger it. With a reference video, set `generate_audio=false`.
+2. For successful reference-video requests, std costs **1.202 Credits per billed second** and pro costs **1.602 Credits per billed second**. For comparison, a 5-second `kling-o1` request costs:
+
+   | Mode | Without reference video | With 5 billed reference-video seconds |
+   |---|---:|---:|
+   | std | 4.005 Credits | 6.010 Credits |
+   | pro | 5.340 Credits | 8.010 Credits |
+
+3. With `refer_type=base`, editing may follow the reference clip's length: final billing uses actual output duration rounded to integer seconds (5.708s bills as 6s; 5.041s as 5s). With `refer_type=feature`, billing uses the requested `duration`. Do not assume a base edit bills exactly the requested duration.
+4. Poll the same task to completion and read the returned `usage.reference_video_seconds` for the final billed seconds. Reconcile the completed usage with the billing record; the submission estimate may differ from the final charge. Report only usage actually returned, not an invented response or cost inferred from the number of result URLs.
 
 ### 4. Extend Video
 

@@ -27,6 +27,12 @@ Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.m
 
 > **Setup:** See [authentication](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md) for token setup.
 
+## Regional catalog check
+
+Before recommending GPT Image, inspect the OpenAI service's current public `image_unavailable_regions` and the image API/guide `unavailable_regions` from the caller's environment. The service record is available at `GET https://platform.acedata.cloud/api/v1/services/?id=06f2acb7-e4d4-43de-9909-76e27b4e2355`.
+
+Mainland-China catalog views hide OpenAI image generation/editing and companion guides. Raw REST results may still contain marked rows; honor the metadata rather than treating presence as publication. Visibility follows the requesting visitor's IP, not the display language or a `?country=` override. Do not recommend region-hidden images from a cached global catalog or hide unrelated OpenAI capabilities. This presentation filtering does not change API routing or billing and is not proof of retirement or revoked API access. For a user-selected model, report any discovery limitation and check actual account access, key restrictions and pricing before submitting; do not silently substitute another model.
+
 ## Generate
 
 ```bash

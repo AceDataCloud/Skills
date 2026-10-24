@@ -636,6 +636,40 @@ class ChatGatewayProcedureTests(unittest.TestCase):
         self.assertNotIn("not `/v1/*`", text)
 
 
+class KlingReferenceBillingProcedureTests(unittest.TestCase):
+    def test_reference_example_disables_audio_and_retains_public_model(self):
+        text = read_skill("kling-video")
+        reference, = (example for example in json_examples(text) if "video_list" in example)
+        self.assertEqual(reference["model"], "kling-o1")
+        self.assertEqual(reference["duration"], 5)
+        self.assertIs(reference["generate_audio"], False)
+        self.assertEqual(reference["video_list"][0]["refer_type"], "base")
+        self.assertIn("<<<video_1>>>", reference["prompt"])
+        self.assertNotIn("reference_video_seconds", reference)
+
+    def test_billing_distinguishes_video_inputs_and_final_duration(self):
+        text = read_skill("kling-video").split("#### Reference-video billing\n", 1)[1]
+        text = text.split("### 4. Extend Video", 1)[0]
+        for requirement in (
+            "current price", "`kling-o1` and `kling-v3-omni`",
+            "`video_list` supplies a video",
+            "`image_list`, first frames and end frames alone do not trigger it",
+            "`generate_audio=false`", "successful reference-video requests",
+            "1.202 Credits per billed second", "1.602 Credits per billed second",
+            "| std | 4.005 Credits | 6.010 Credits |",
+            "| pro | 5.340 Credits | 8.010 Credits |",
+            "`refer_type=base`", "actual output duration rounded to integer seconds",
+            "5.708s bills as 6s", "5.041s as 5s",
+            "`refer_type=feature`", "requested `duration`",
+            "Poll the same task to completion", "`usage.reference_video_seconds`",
+            "submission estimate may differ from the final charge",
+            "Report only usage actually returned",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```", text)
+
+
 class RegionalCatalogProcedureTests(unittest.TestCase):
     def test_account_procedure_uses_public_fields_and_preserves_mixed_media(self):
         text = read_skill("acedatacloud").split("#### Regional catalog discovery\n", 1)[1]
@@ -643,15 +677,19 @@ class RegionalCatalogProcedureTests(unittest.TestCase):
         for requirement in (
             "get-service --service <alias-or-uuid> --json",
             "`available_regions`, `unavailable_regions`",
-            "chat-only `chat_unavailable_regions`",
+            "chat-only `chat_unavailable_regions`", "image-only `image_unavailable_regions`",
             "apis --service <alias-or-uuid> --json", "docs-list --json",
             "doc --id <document-uuid> --json",
             "`pricing` and `spec` summaries omit these fields",
             "Empty region lists mean no explicit regional rule, not an access grant",
             "requesting visitor's IP", "not the display language or a `?country=` override",
             "Claude services and chat APIs/documents",
-            "OpenAI, Gemini and Grok", "keep media entries",
-            "do not hide the entire service based on `chat_unavailable_regions`",
+            "OpenAI, Gemini and Grok", "media visibility must be checked separately",
+            "OpenAI image generation/editing and companion guides are also hidden in mainland China",
+            "Do not hide the entire service based on `chat_unavailable_regions` or `image_unavailable_regions`",
+            "unrelated media entries retain their own rules",
+            "Raw REST/CLI results may still include marked rows",
+            "apply their region metadata when presenting choices",
             "missing entry/404 as proof of retirement or revoked API access",
             "does not change API routing or billing",
             "check actual account access, key restrictions and current pricing separately",
@@ -665,7 +703,11 @@ class RegionalCatalogProcedureTests(unittest.TestCase):
         for requirement in (
             "requesting visitor's IP", "not the display language or a `?country=` override",
             "Mainland-China views hide marked Claude, OpenAI, Gemini and Grok chat",
-            "mixed OpenAI/Gemini/Grok services keep their media entries",
+            "Check media visibility separately",
+            "OpenAI image generation/editing and companion guides are also hidden in mainland China",
+            "`image_unavailable_regions` and API/document `unavailable_regions`",
+            "do not hide unrelated media or the entire mixed service",
+            "presence alone is not visibility",
             "do not use a cached global list to advertise region-hidden chat",
             "missing catalog entry is not evidence of retirement or revoked API access",
             "does not change API routing or billing",
@@ -683,9 +725,10 @@ class RegionalCatalogProcedureTests(unittest.TestCase):
         row_id = "00000000-0000-4000-8000-000000000001"
         regions = {"available_regions": [], "unavailable_regions": ["cn"]}
         service = {"id": row_id, "alias": "test-mixed", "available_regions": [],
-                   "unavailable_regions": [], "chat_unavailable_regions": ["cn"]}
-        api = {"id": row_id, "service_id": row_id, "path": "/test/chat", **regions}
-        document = {"id": row_id, "alias": "test-chat-guide", **regions}
+                   "unavailable_regions": [], "chat_unavailable_regions": ["cn"],
+                   "image_unavailable_regions": ["cn"]}
+        api = {"id": row_id, "service_id": row_id, "path": "/openai/images/generations", **regions}
+        document = {"id": row_id, "alias": "openai-images-generations-integration", **regions}
         for command, item, path, single in (
             (["get-service", "--service", row_id], service, "/services/", True),
             (["apis"], api, "/apis/", False),

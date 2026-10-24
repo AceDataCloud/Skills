@@ -14,6 +14,25 @@ class GPTImage25SkillContractTests(unittest.TestCase):
         self.assertIn("actual text, reference-image, and output-image tokens", text)
         self.assertIn("Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`", text)
 
+    def test_regional_catalog_check_preserves_access_and_unrelated_media(self) -> None:
+        text = SKILL.read_text().split("## Regional catalog check\n", 1)[1]
+        text = text.split("## Generate\n", 1)[0]
+        for requirement in (
+            "`image_unavailable_regions`", "`unavailable_regions`",
+            "Mainland-China catalog views hide OpenAI image generation/editing and companion guides",
+            "Raw REST results may still contain marked rows",
+            "requesting visitor's IP", "not the display language or a `?country=` override",
+            "Do not recommend region-hidden images from a cached global catalog",
+            "or hide unrelated OpenAI capabilities",
+            "does not change API routing or billing",
+            "not proof of retirement or revoked API access",
+            "check actual account access, key restrictions and pricing",
+            "do not silently substitute another model",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```", text)
+
 
 if __name__ == "__main__":
     unittest.main()
