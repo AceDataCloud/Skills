@@ -292,6 +292,17 @@ These work without auth (send the token if you have one; not required):
 - **Model catalog** — `GET /models/catalog/` → `{ rates, modalities, count, items:[{ id, name, provider,
   modality, unit, capabilities, pricing:{ input_credits, output_credits, official_* } }] }`. Filter client-side.
 
+#### Platform runtime config
+
+1. Read public `GET https://platform.acedata.cloud/api/v1/config/` for the current request's `features` and `region`. No token is required; signed-in context can affect feature flags. The CLI has no config command; use REST rather than inventing a flag.
+2. Read `region`, not `country`: it is a lowercase country/region code detected from the request IP, or `null` when unknown. The endpoint accepts no region override; do not send `country` or `region` query parameters. A frontend region selection stays local: prefer that selection for display, otherwise use the returned `region`. It does not override catalog visibility, access or server-side security.
+3. Read only needed feature keys with safe defaults for missing keys, and do not share a long-lived config cache across users. Optional `features` query or `X-Feature-Overrides` header overrides apply only to client-overridable flags or superusers; they are not an access bypass. This response is not a source for branding, CDN, currency, language, support contacts or announcements.
+
+```bash
+curl --get https://platform.acedata.cloud/api/v1/config/ \
+  -H "Accept: application/json"
+```
+
 #### Regional catalog discovery
 
 1. Read the current public catalog from the caller's environment. Use `get-service --service <alias-or-uuid> --json` to inspect `available_regions`, `unavailable_regions`, the service's chat-only `chat_unavailable_regions` and image-only `image_unavailable_regions`. Use `apis --service <alias-or-uuid> --json`, `docs-list --json` or `doc --id <document-uuid> --json` for API/document region fields. The `pricing` and `spec` summaries omit these fields. Empty region lists mean no explicit regional rule, not an access grant.

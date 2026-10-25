@@ -18,6 +18,7 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /aichat/conversations` | Legacy conversation endpoint |
 | `POST /openai/chat/completions` (public alias `/v1/chat/completions`) | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` (public alias `/v1/responses`) | OpenAI-compatible responses API |
+| `POST /kimi/chat/completions` (public alias `/v1/chat/completions`) | Kimi Chat Completions with model-specific reasoning controls |
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
 | `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
@@ -132,6 +133,27 @@ Common parameters:
 | `stream` | boolean | Enable SSE streaming |
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
+
+## Kimi Chat Completions
+
+1. Check current Kimi access, pricing and **Allowed APIs** restrictions for `/kimi/chat/completions` before submitting with the same AceDataCloud service Bearer token. `kimi-k3.1-pro` is the recommended Kimi model; `kimi-k3` remains available. Do not silently replace an explicitly selected model.
+2. Send `model` and `messages` to `POST /kimi/chat/completions` (public alias `/v1/chat/completions`). K3.1 Pro supports top-level `reasoning_effort` values `low`, `high` and `max`. Both K3.1 Pro and K3 always enable reasoning; do not send settings to disable it. For K3, use `max` or omit the field rather than relying on other values. K2.6 uses `thinking`, not this effort control.
+3. For K3.1 Pro image understanding, use `image_url` content blocks alongside text in `messages`. The official context specification is up to 1,048,576 tokens, not a guaranteed per-request platform limit. Check the chosen route's own model list before using Responses or Messages; shared pricing rules do not establish protocol support.
+4. Read text from `choices[].message.content`. Preserve the complete assistant message, including `reasoning_content` and `tool_calls` when returned, unchanged in subsequent turns and tool-result exchanges. Execute only authorized tools and verify their results; do not fabricate response or reasoning fields.
+5. Read actual `usage` and check current input, output and cache-hit pricing in the public model catalog. Do not assume a cache hit or convert the official model price directly into an account charge.
+
+```bash
+curl -X POST https://api.acedata.cloud/kimi/chat/completions \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model":"kimi-k3.1-pro",
+    "messages":[{"role":"user","content":"Review this code and suggest a repair plan."}],
+    "reasoning_effort":"low"
+  }'
+```
+
+`/aichat2/conversations` also lists `kimi-k3.1-pro`; use its conversation payload below rather than assuming the Kimi-specific effort field is available on that route.
 
 ## Native Gemini Generate Content
 
