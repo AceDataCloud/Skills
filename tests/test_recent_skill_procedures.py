@@ -546,6 +546,56 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
         self.assertIn("Display settings do not disable thinking", text)
 
 
+class KimiChatProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("ai-chat").split("## Kimi Chat Completions\n", 1)[1]
+        cls.text = cls.text.split("## Native Gemini Generate Content\n", 1)[0]
+
+    def test_request_uses_public_route_and_k31_effort(self):
+        payload = json.loads(re.search(r"-d '(\{.*?\})'", self.text, re.DOTALL).group(1))
+        self.assertEqual(set(payload), {"model", "messages", "reasoning_effort"})
+        self.assertEqual(payload["model"], "kimi-k3.1-pro")
+        self.assertEqual(payload["reasoning_effort"], "low")
+        self.assertEqual(payload["messages"][0]["role"], "user")
+        self.assertTrue(payload["messages"][0]["content"])
+        self.assertIn("https://api.acedata.cloud/kimi/chat/completions", self.text)
+        self.assertIn("Authorization: Bearer $ACEDATACLOUD_API_TOKEN", self.text)
+        self.assertIn("public alias `/v1/chat/completions`", self.text)
+
+    def test_model_specific_reasoning_and_history_are_preserved(self):
+        for requirement in (
+            "`kimi-k3.1-pro` is the recommended Kimi model",
+            "`kimi-k3` remains available",
+            "`low`, `high` and `max`",
+            "Both K3.1 Pro and K3 always enable reasoning",
+            "do not send settings to disable it",
+            "For K3, use `max` or omit the field",
+            "K2.6 uses `thinking`, not this effort control",
+            "Preserve the complete assistant message",
+            "`reasoning_content` and `tool_calls` when returned",
+            "unchanged in subsequent turns and tool-result exchanges",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_context_pricing_and_protocols_are_not_overpromised(self):
+        for requirement in (
+            "access, pricing and **Allowed APIs** restrictions",
+            "Do not silently replace an explicitly selected model",
+            "`image_url` content blocks",
+            "1,048,576 tokens, not a guaranteed per-request platform limit",
+            "route's own model list before using Responses or Messages",
+            "shared pricing rules do not establish protocol support",
+            "Read actual `usage`", "input, output and cache-hit pricing",
+            "Do not assume a cache hit",
+            "`/aichat2/conversations` also lists `kimi-k3.1-pro`",
+            "rather than assuming the Kimi-specific effort field is available",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+
 class GeminiAudioProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -668,6 +718,45 @@ class KlingReferenceBillingProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
         self.assertNotIn("```", text)
+
+
+class PlatformConfigProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("acedatacloud").split("#### Platform runtime config\n", 1)[1]
+        cls.text = cls.text.split("#### Regional catalog discovery\n", 1)[0]
+
+    def test_public_config_uses_ip_region_without_query_overrides(self):
+        for requirement in (
+            "GET https://platform.acedata.cloud/api/v1/config/",
+            "`features` and `region`", "No token is required",
+            "Read `region`, not `country`", "lowercase country/region code",
+            "detected from the request IP, or `null` when unknown",
+            "accepts no region override",
+            "do not send `country` or `region` query parameters",
+            "frontend region selection stays local",
+            "does not override catalog visibility, access or server-side security",
+            "CLI has no config command",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        command, = re.findall(r"```bash\n(.*?)\n```", self.text, re.DOTALL)
+        self.assertIn("curl --get https://platform.acedata.cloud/api/v1/config/", command)
+        self.assertNotIn("?", command)
+        self.assertNotIn("--data", command)
+        self.assertNotIn("Authorization", command)
+
+    def test_flags_do_not_grant_access_or_supply_unrelated_metadata(self):
+        for requirement in (
+            "safe defaults for missing keys",
+            "do not share a long-lived config cache across users",
+            "`features` query or `X-Feature-Overrides` header",
+            "only to client-overridable flags or superusers",
+            "not an access bypass",
+            "not a source for branding, CDN, currency, language, support contacts or announcements",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
 
 
 class RegionalCatalogProcedureTests(unittest.TestCase):
