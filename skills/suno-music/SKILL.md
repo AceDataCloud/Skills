@@ -1,6 +1,6 @@
 ---
 name: suno-music
-description: Suno music by Ace Data Cloud. Generate songs, instrumental music and lyrics, extend tracks, create covers and edit multitrack Studio projects. Use when the user asks for Suno music or song generation.
+description: Suno music by Ace Data Cloud. Generate songs, instrumental music and lyrics, check audio availability, extend tracks, create covers and edit multitrack Studio projects. Use when the user asks for Suno music or song generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -55,6 +55,25 @@ curl -X POST https://api.acedata.cloud/suno/audios \
 | `chirp-v4` | Fast, reliable |
 | `chirp-v3-5` | Legacy, stable |
 | `chirp-v3-0` | Legacy |
+
+## Audio availability precheck (Beta)
+
+Before extending or covering an existing song, optionally check `POST /suno/availability`. Use the song's `audio_id` UUID from a completed Suno task, not a `task_id`. Use the same AceDataCloud service Bearer token and include `/suno/availability` in **Allowed APIs** if the key is restricted. The check currently costs 0 Credits; it does not submit a generation.
+
+```bash
+curl -X POST https://api.acedata.cloud/suno/availability \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"audio_id":"33333333-3333-4333-8333-333333333333"}'
+```
+
+Replace the example UUID with the actual song ID. Send only `audio_id`, not `async`, `model`, or an action. The endpoint returns synchronously, even though its response includes `task_id`; do not poll `/suno/tasks` for this check.
+
+- HTTP 200 with `success=true`, the checked `data.id`, and `data.available=true` means positive evidence on the current channel at check time. It is not a guarantee that a later extension, cover or other operation will succeed; availability can change before that operation.
+- A successful check never returns `data.available=false`. HTTP 503 `availability_unknown` means unknown, not unavailable; an inconclusive offline status is not proof that processing will fail. Do not turn this error into `false` or a definitive rejection.
+- HTTP 400 means a missing or invalid `audio_id`; HTTP 401 means a missing or invalid token; HTTP 429 means rate limiting. HTTP 500 and other upstream failures are errors, not a negative availability result. Preserve returned `error.code` and `error.message`, plus `task_id` and `trace_id` for troubleshooting, never the token.
+
+After the check, submit a follow-up operation only with the user's authorization and follow its normal task-polling rules. Do not automatically retry a paid operation or silently switch models in response to a precheck result.
 
 ## Core Workflows
 
@@ -318,6 +337,7 @@ An identical key and payload replay the original result, including failure, with
 | `/suno/vox` | POST | Extract vocal track (stem separation) |
 | `/suno/voices` | POST | Create a reusable voice from an audio URL; requires `audio_url`, with optional `name` and `description` |
 | `/suno/timing` | POST | Get word-level timing/subtitles |
+| `/suno/availability` | POST | Synchronous audio availability precheck (Beta); positive evidence or error, never `false` |
 | `/suno/persona` | POST | Save a vocal style as a reusable persona; requires `audio_id` and `name` |
 | `/suno/persona` | GET | List reusable personas |
 | `/suno/persona` | DELETE | Delete a reusable persona |

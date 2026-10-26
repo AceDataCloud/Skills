@@ -136,7 +136,7 @@ Common parameters:
 
 ## Kimi Chat Completions
 
-1. Check current Kimi access, pricing and **Allowed APIs** restrictions for `/kimi/chat/completions` before submitting with the same AceDataCloud service Bearer token. `kimi-k3.1-pro` is the recommended Kimi model; `kimi-k3` remains available. Do not silently replace an explicitly selected model.
+1. Check current Kimi access, pricing and **Allowed APIs** restrictions for `/kimi/chat/completions` before submitting with the same AceDataCloud service Bearer token. `kimi-k3.1-pro` and `kimi-k3` remain available; choose recommendations from the current public model catalog's `recommended` flag, not a fixed model preference. Do not silently replace an explicitly selected model.
 2. Send `model` and `messages` to `POST /kimi/chat/completions` (public alias `/v1/chat/completions`). K3.1 Pro supports top-level `reasoning_effort` values `low`, `high` and `max`. Both K3.1 Pro and K3 always enable reasoning; do not send settings to disable it. For K3, use `max` or omit the field rather than relying on other values. K2.6 uses `thinking`, not this effort control.
 3. For K3.1 Pro image understanding, use `image_url` content blocks alongside text in `messages`. The official context specification is up to 1,048,576 tokens, not a guaranteed per-request platform limit. Check the chosen route's own model list before using Responses or Messages; shared pricing rules do not establish protocol support.
 4. Read text from `choices[].message.content`. Preserve the complete assistant message, including `reasoning_content` and `tool_calls` when returned, unchanged in subsequent turns and tool-result exchanges. Execute only authorized tools and verify their results; do not fabricate response or reasoning fields.

@@ -55,6 +55,48 @@ class SunoAudioProcedureTests(unittest.TestCase):
                 self.assertNotIn("```", recovery.split("## Gotchas", 1)[0])
 
 
+class SunoAvailabilityProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("suno-music")
+
+    def precheck(self):
+        return self.text.split("## Audio availability precheck (Beta)\n", 1)[1].split("## Core Workflows\n", 1)[0]
+
+    def test_request_is_authenticated_synchronous_and_audio_id_only(self):
+        text = self.precheck()
+        payload = json.loads(re.search(r"-d '(\{.*?\})'", text, re.DOTALL).group(1))
+        self.assertEqual(payload, {"audio_id": "33333333-3333-4333-8333-333333333333"})
+        for requirement in (
+            "POST https://api.acedata.cloud/suno/availability",
+            "Authorization: Bearer $ACEDATACLOUD_API_TOKEN",
+            "Content-Type: application/json",
+            "**Allowed APIs**", "UUID", "not a `task_id`",
+            "currently costs 0 Credits", "returns synchronously",
+            "do not poll `/suno/tasks` for this check",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertIn("| `/suno/availability` | POST |", self.text)
+
+    def test_positive_evidence_is_not_a_processing_guarantee_or_false_result(self):
+        text = self.precheck()
+        for requirement in (
+            "`success=true`", "`data.id`", "`data.available=true`",
+            "never returns `data.available=false`",
+            "current channel at check time", "not a guarantee",
+            "HTTP 503 `availability_unknown`", "unknown, not unavailable",
+            "HTTP 400", "HTTP 401", "HTTP 429", "HTTP 500",
+            "`error.code` and `error.message`", "`task_id` and `trace_id`",
+            "Do not automatically retry a paid operation or silently switch models",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn('"success":', text)
+        self.assertNotIn('"available":', text)
+        self.assertIn("check audio availability", (ROOT / "README.md").read_text())
+
+
 class SunoProjectsProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -565,8 +607,9 @@ class KimiChatProcedureTests(unittest.TestCase):
 
     def test_model_specific_reasoning_and_history_are_preserved(self):
         for requirement in (
-            "`kimi-k3.1-pro` is the recommended Kimi model",
-            "`kimi-k3` remains available",
+            "`kimi-k3.1-pro` and `kimi-k3` remain available",
+            "current public model catalog's `recommended` flag",
+            "not a fixed model preference",
             "`low`, `high` and `max`",
             "Both K3.1 Pro and K3 always enable reasoning",
             "do not send settings to disable it",
