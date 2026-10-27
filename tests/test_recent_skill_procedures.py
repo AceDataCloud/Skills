@@ -682,6 +682,56 @@ class GeminiAudioProcedureTests(unittest.TestCase):
 
 
 class ChatGatewayProcedureTests(unittest.TestCase):
+    def test_protocol_billing_distinguishes_inclusive_and_separate_cache_usage(self):
+        text = read_skill("ai-chat").split("## Token billing across compatible protocols\n", 1)[1]
+        text = text.split("## OpenAI-Compatible Chat\n", 1)[0]
+        rows = {line.split("|")[1].strip(): line for line in text.splitlines() if line.lstrip().startswith("| ")}
+        for protocol, total, cache in (
+            ("Chat Completions", "usage.prompt_tokens", "usage.prompt_tokens_details.cached_tokens"),
+            ("Responses", "usage.input_tokens", "usage.input_tokens_details"),
+        ):
+            with self.subTest(protocol=protocol):
+                self.assertIn(f"`{total}` includes reported cache tokens", rows[protocol])
+                self.assertIn(f"`{cache}`", rows[protocol])
+                self.assertIn("subset, not extra input", rows[protocol])
+                self.assertIn("corresponding cache price", rows[protocol])
+        messages = rows["Messages"]
+        for requirement in (
+            "`usage.input_tokens` excludes", "`usage.cache_read_input_tokens`",
+            "`usage.cache_creation_input_tokens`", "dimensions separately",
+            "`usage.cache_creation`", "5-minute/1-hour details",
+            "do not add them again to the creation total",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, messages)
+        for requirement in (
+            "model's actual input, output and cache usage",
+            "does not turn token billing into a fixed per-request fee",
+            "console's current model prices", "returned `usage.cost`",
+            "Report only returned usage/cost fields",
+            "not evidence of a cache hit or a free request",
+            "Do not invent a charge from a reference USD price",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```", text)
+
+    def test_cross_protocol_pricing_is_not_a_route_publication_grant(self):
+        text = read_skill("ai-chat")
+        for requirement in (
+            "Use the native Claude Messages API for `claude-opus-5-5` and `claude-sonnet-5-5`",
+            "Messages is recommended for Opus 5.5",
+            "verify that route's current public model list and account access",
+            "Cross-protocol pricing rules do not establish route support",
+            "A settlement rule is not a publication or access grant",
+            "do not silently substitute another model or route after an error",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("Messages only", text)
+        self.assertNotIn("Messages-only", text)
+        self.assertNotIn("available only through the dedicated Claude Messages API", text)
+
     def test_recommendations_are_live_editorial_preferences_not_access_grants(self):
         text = read_skill("ai-chat")
         for requirement in (
@@ -702,7 +752,10 @@ class ChatGatewayProcedureTests(unittest.TestCase):
             "either conversation endpoint",
             "no public model introduction",
             "catalog visibility does not guarantee access",
-            "`prompt_tokens` exceeds 272,000 (not at exactly 272,000)",
+            "total input exceeds 272,000 (not at exactly 272,000)",
+            "input totals already include reported cache tokens",
+            "for Messages, add the separately reported cache-read and cache-creation tokens",
+            "to uncached input before checking this threshold",
             "Do not silently substitute `gpt-5.6-sol`",
         ):
             with self.subTest(requirement=requirement):
