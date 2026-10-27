@@ -76,7 +76,7 @@ models include:
 |--------|------------------|
 | OpenAI / reasoning | `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol-fast`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
 | OpenAI free-tier chat-completions | `gpt-5.5:free`, `gpt-5:free`, `gpt-4.1:free`, `gpt-4o:free`, `gpt-4o-mini:free`, `gpt-oss:free` |
-| Claude | `claude-opus-5-5` and `claude-sonnet-5-5` (Messages only), `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
+| Claude | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
 | Gemini | `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
 | Grok | `grok-4.7`, `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-v4.1-flash`, `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
@@ -87,11 +87,11 @@ When the user asks for a recommended model, read the current public `GET https:/
 
 Catalog discovery follows the requesting visitor's IP, not the display language or a `?country=` override. Mainland-China views hide marked Claude, OpenAI, Gemini and Grok chat catalog entries. Check media visibility separately: OpenAI image generation/editing and companion guides are also hidden in mainland China. Read the service's `image_unavailable_regions` and API/document `unavailable_regions`; do not hide unrelated media or the entire mixed service based on chat-only or image-only restrictions. Raw catalog responses may retain marked rows, so presence alone is not visibility. Honor the current public visibility when recommending models; do not use a cached global list to advertise region-hidden chat or images. A missing catalog entry is not evidence of retirement or revoked API access: this presentation filtering does not change API routing or billing. Report the discovery limitation, check actual account access and pricing, and do not silently replace a user-selected model.
 
-To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completions, Responses, Messages, or either conversation endpoint above. It is listed in the public model/pricing catalog with vision capability, but has no public model introduction. Check account eligibility and current pricing before requesting it; catalog visibility does not guarantee access. Its pricing rules use a higher tier when recorded `prompt_tokens` exceeds 272,000 (not at exactly 272,000). Do not silently substitute `gpt-5.6-sol` after an access or parameter error; protocol-specific features remain model-dependent.
+To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completions, Responses, Messages, or either conversation endpoint above. It is listed in the public model/pricing catalog with vision capability, but has no public model introduction. Check account eligibility and current pricing before requesting it; catalog visibility does not guarantee access. Its pricing rules use a higher tier when total input exceeds 272,000 (not at exactly 272,000). For Chat Completions and Responses, input totals already include reported cache tokens; for Messages, add the separately reported cache-read and cache-creation tokens to uncached input before checking this threshold. Do not silently substitute `gpt-5.6-sol` after an access or parameter error; protocol-specific features remain model-dependent.
 
 `gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.
 
-`claude-opus-5-5` and `claude-sonnet-5-5` are available only through the dedicated Claude Messages API; do not send it to `/openai/chat/completions` or `/aichat2/conversations`.
+Use the native Claude Messages API for `claude-opus-5-5` and `claude-sonnet-5-5`; Messages is recommended for Opus 5.5. Before choosing Chat Completions, Responses or a conversation endpoint, verify that route's current public model list and account access. Cross-protocol pricing rules do not establish route support or identical feature support.
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
@@ -101,6 +101,20 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 > do not work on the OpenAI-compatible chat, Claude Messages, or conversation
 > routes. Generate images through the dedicated endpoints instead — Gemini via
 > `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+
+## Token billing across compatible protocols
+
+1. Before submitting, check the selected route's current public model list, account access, key restrictions and current model pricing. A settlement rule is not a publication or access grant. Keep the requested public model ID; do not silently substitute another model or route after an error.
+2. For accepted compatible-model requests, billing follows the model's actual input, output and cache usage. Switching between Chat Completions, Responses and Messages does not turn token billing into a fixed per-request fee or guarantee the same price across protocols.
+3. Read the actual response `usage` using that protocol's fields:
+
+   | Protocol | Input/cache accounting |
+   |----------|------------------------|
+   | Chat Completions | `usage.prompt_tokens` includes reported cache tokens. Treat `usage.prompt_tokens_details.cached_tokens` as a subset, not extra input; the reported cache portion uses its corresponding cache price. |
+   | Responses | `usage.input_tokens` includes reported cache tokens. Treat reported cache tokens in `usage.input_tokens_details` as a subset, not extra input; the cache portion uses its corresponding cache price. |
+   | Messages | `usage.input_tokens` excludes the separately reported `usage.cache_read_input_tokens` and `usage.cache_creation_input_tokens`. Account for these dimensions separately at their corresponding prices. If `usage.cache_creation` reports 5-minute/1-hour details, these partition creation usage; do not add them again to the creation total. |
+
+4. Check the console's current model prices and the returned `usage.cost` for the actual charge. Report only returned usage/cost fields; missing cache or cost data is not evidence of a cache hit or a free request. Do not invent a charge from a reference USD price.
 
 ## OpenAI-Compatible Chat
 
@@ -198,7 +212,7 @@ POST /openai/embeddings
 
 ## Native Claude Messages
 
-Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including Messages-only models. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
+Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including `claude-opus-5-5` and `claude-sonnet-5-5`. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
 
 ```bash
 curl -X POST https://api.acedata.cloud/v1/messages \
