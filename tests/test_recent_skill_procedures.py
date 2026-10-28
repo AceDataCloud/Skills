@@ -719,10 +719,10 @@ class ChatGatewayProcedureTests(unittest.TestCase):
     def test_cross_protocol_pricing_is_not_a_route_publication_grant(self):
         text = read_skill("ai-chat")
         for requirement in (
-            "Use the native Claude Messages API for `claude-opus-5-5` and `claude-sonnet-5-5`",
-            "Messages is recommended for Opus 5.5",
-            "verify that route's current public model list and account access",
-            "Cross-protocol pricing rules do not establish route support",
+            "`claude-opus-5-5` is available on Claude Chat Completions",
+            "Messages remains the recommended route for complete thinking blocks",
+            "Check the current public model list and account access",
+            "cross-protocol pricing rules do not establish identical feature support",
             "A settlement rule is not a publication or access grant",
             "do not silently substitute another model or route after an error",
         ):
