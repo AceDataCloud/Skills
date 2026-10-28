@@ -19,6 +19,8 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /openai/chat/completions` (public alias `/v1/chat/completions`) | OpenAI-compatible stateless chat completions |
 | `POST /openai/responses` (public alias `/v1/responses`) | OpenAI-compatible responses API |
 | `POST /kimi/chat/completions` (public alias `/v1/chat/completions`) | Kimi Chat Completions with model-specific reasoning controls |
+| `POST /v1/chat/completions` (alias `/claude/chat/completions`) | Claude Chat Completions, including Opus 5.5 |
+| `POST /gemini/chat/completions` (public alias `/v1/chat/completions`) | Gemini Chat Completions, including Gemini 4 Argon |
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
 | `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
@@ -91,7 +93,7 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 
 `gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.
 
-`claude-opus-5-5` is available on Claude Chat Completions (`POST /v1/chat/completions`) and native Messages (`POST /v1/messages`). Messages remains the recommended route for complete thinking blocks and native tool semantics. For Chat Completions, use `n=1`, omit non-default `temperature` and `top_p`, and use `tool_choice: "auto"` rather than forcing a tool. `claude-sonnet-5-5` remains a Messages model. Check the current public model list and account access before using another route; cross-protocol pricing rules do not establish identical feature support.
+`claude-opus-5-5` is available on Claude Chat Completions (`POST /v1/chat/completions`) and native Messages (`POST /v1/messages`). Messages remains the recommended route for complete thinking blocks and native tool semantics. Ordinary and streaming Chat Completions are supported, but Chat replies do not return native thinking blocks. For Chat Completions, use `n=1`, omit non-default `temperature` and `top_p`, and use `tool_choice: "auto"` rather than forcing a tool. `claude-sonnet-5-5` remains a Messages model. Check the current public model list and account access before using another route; cross-protocol pricing rules do not establish identical feature support.
 
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
@@ -168,6 +170,25 @@ curl -X POST https://api.acedata.cloud/kimi/chat/completions \
 ```
 
 `/aichat2/conversations` also lists `kimi-k3.1-pro`; use its conversation payload below rather than assuming the Kimi-specific effort field is available on that route.
+
+## Gemini 4 Argon
+
+1. Check Gemini access, current pricing and **Allowed APIs** restrictions for the chosen route. Keep the exact public ID `gemini-4-argon`. For Chat Completions, send `model` and `messages` to `POST /gemini/chat/completions` (public alias `/v1/chat/completions`); ordinary and SSE streaming text replies are supported. Set `stream: true` for streaming.
+2. For native Generate Content, put the model in `POST /v1beta/models/gemini-4-argon:generateContent` and send `contents` with `parts`, not `messages`. Use `generationConfig.maxOutputTokens` for the output budget. For native streaming, send the same body to `POST /v1beta/models/gemini-4-argon:streamGenerateContent?alt=sse`. These routes do not provide Google Interactions background long-output or server-side session features.
+3. Thinking and visible text share the output budget: set Chat `max_tokens` or native `generationConfig.maxOutputTokens` generously. Google's guidance for ordinary Argon tasks is at least 32,768 output tokens, not a required platform minimum. The official unified context is 1,048,576 tokens across input, thinking and output, with a regular synchronous output cap of 65,536; these are not guaranteed client/platform limits. Allow sufficient client timeout and inspect stop reasons if the answer is empty or incomplete. Do not rely on sampling controls (`temperature`, `top_p`, `top_k`, or native `topP`/`topK`); Argon ignores them.
+4. Argon supports implicit caching only; do not create or reference explicit cache resources or send native `cachedContent`. Check actual usage and the platform's current prices rather than assuming a cache hit or discount. Google's reference pricing is promotional through November 30, 2026 and rises from December 1, 2026; it is not the account's charge.
+5. Read Chat text from `choices[].message.content` and check `choices[].finish_reason`; streaming text arrives in `choices[].delta.content`. For native replies, read `candidates[].content.parts` and `candidates[].finishReason`, and retain actual `usageMetadata`, including `thoughtsTokenCount` and `cachedContentTokenCount` when returned. Never fabricate missing usage or response fields.
+
+```json
+POST /gemini/chat/completions
+{
+  "model": "gemini-4-argon",
+  "messages": [{"role": "user", "content": "Review this migration plan and identify missing validation steps."}],
+  "max_tokens": 32768
+}
+```
+
+`/aichat2/conversations` also lists `gemini-4-argon`; use its stateful conversation payload below, not Chat or native Gemini request fields. Do not infer Responses, Messages or legacy conversation support from shared pricing rules.
 
 ## Native Gemini Generate Content
 
