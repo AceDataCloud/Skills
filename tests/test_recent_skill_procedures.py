@@ -681,7 +681,80 @@ class GeminiAudioProcedureTests(unittest.TestCase):
         self.assertNotIn('"responseModalities": ["AUDIO"]', self.text)
 
 
+class GeminiArgonProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("ai-chat").split("## Gemini 4 Argon\n", 1)[1]
+        cls.text = cls.text.split("## Native Gemini Generate Content\n", 1)[0]
+
+    def test_chat_example_and_native_routes_keep_protocol_fields_separate(self):
+        example, = json_examples(self.text)
+        self.assertEqual(set(example), {"model", "messages", "max_tokens"})
+        self.assertEqual(example["model"], "gemini-4-argon")
+        self.assertEqual(example["max_tokens"], 32768)
+        message, = example["messages"]
+        self.assertEqual(message["role"], "user")
+        self.assertTrue(message["content"])
+        for requirement in (
+            "POST /gemini/chat/completions", "public alias `/v1/chat/completions`",
+            "POST /v1beta/models/gemini-4-argon:generateContent",
+            "POST /v1beta/models/gemini-4-argon:streamGenerateContent?alt=sse",
+            "`contents` with `parts`, not `messages`", "`stream: true`",
+            "Gemini access, current pricing", "**Allowed APIs**",
+            "`/aichat2/conversations` also lists `gemini-4-argon`",
+            "not Chat or native Gemini request fields",
+            "Do not infer Responses, Messages or legacy conversation support",
+            "do not provide Google Interactions background long-output or server-side session features",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_budget_cache_and_pricing_are_model_specific(self):
+        for requirement in (
+            "Thinking and visible text share the output budget",
+            "Chat `max_tokens` or native `generationConfig.maxOutputTokens`",
+            "32,768 output tokens, not a required platform minimum",
+            "1,048,576 tokens across input, thinking and output",
+            "synchronous output cap of 65,536",
+            "not guaranteed client/platform limits", "sufficient client timeout",
+            "Argon ignores them", "`temperature`", "`top_p`", "`top_k`", "`topP`/`topK`",
+            "implicit caching only", "do not create or reference explicit cache resources",
+            "or send native `cachedContent`", "rather than assuming a cache hit or discount",
+            "promotional through November 30, 2026", "from December 1, 2026",
+            "it is not the account's charge",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_response_handling_uses_actual_protocol_fields(self):
+        for field in (
+            "choices[].message.content", "choices[].finish_reason", "choices[].delta.content",
+            "candidates[].content.parts", "candidates[].finishReason",
+            "usageMetadata", "thoughtsTokenCount", "cachedContentTokenCount",
+        ):
+            with self.subTest(field=field):
+                self.assertIn(f"`{field}`", self.text)
+        self.assertIn("Never fabricate missing usage or response fields", self.text)
+        self.assertNotIn('"usageMetadata":', self.text)
+        self.assertNotIn('"choices":', self.text)
+
+
 class ChatGatewayProcedureTests(unittest.TestCase):
+    def test_opus_chat_constraints_and_public_alias_are_preserved(self):
+        text = read_skill("ai-chat")
+        opus = next(line for line in text.splitlines() if line.startswith("`claude-opus-5-5` is available"))
+        for requirement in (
+            "Ordinary and streaming Chat Completions are supported",
+            "Chat replies do not return native thinking blocks",
+            "use `n=1`", "omit non-default `temperature` and `top_p`",
+            'use `tool_choice: "auto"` rather than forcing a tool',
+            "`claude-sonnet-5-5` remains a Messages model",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, opus)
+        self.assertIn("`POST /v1/chat/completions` (alias `/claude/chat/completions`)", text)
+        self.assertIn("`POST /gemini/chat/completions` (public alias `/v1/chat/completions`)", text)
+
     def test_protocol_billing_distinguishes_inclusive_and_separate_cache_usage(self):
         text = read_skill("ai-chat").split("## Token billing across compatible protocols\n", 1)[1]
         text = text.split("## OpenAI-Compatible Chat\n", 1)[0]
