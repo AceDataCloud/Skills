@@ -55,6 +55,52 @@ class SunoAudioProcedureTests(unittest.TestCase):
                 self.assertNotIn("```", recovery.split("## Gotchas", 1)[0])
 
 
+class SunoPrivateVoiceCoverProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("suno-music").split("#### Cover with a specified voice\n", 1)[1]
+        cls.text = cls.text.split("### 5. Full Song Creation Workflow\n", 1)[0]
+
+    def test_create_upload_cover_examples_preserve_voice_and_audio_ids(self):
+        voice, upload, cover = json_examples(self.text)
+        self.assertEqual(voice, {"audio_url": "HTTPS_VOICE_REFERENCE_URL", "name": "My Voice"})
+        self.assertEqual(upload, {
+            "audio_url": "HTTPS_ORIGINAL_SONG_URL",
+            "mode": "standard",
+            "persona_id": "PERSONA_ID",
+        })
+        self.assertEqual(cover["action"], "upload_cover")
+        self.assertEqual(cover["model"], "chirp-v6")
+        self.assertEqual(cover["audio_id"], "VOICE_LINKED_UPLOAD_AUDIO_ID")
+        self.assertEqual(cover["persona_id"], upload["persona_id"])
+        self.assertIs(cover["custom"], True)
+        self.assertIs(cover["instrumental"], False)
+        self.assertTrue(cover["lyric"].startswith("[Verse]\n"))
+        self.assertIs(cover["async"], True)
+        self.assertNotIn("vocal_gender", cover)
+        self.assertEqual(re.findall(r"^POST (/[^\n]+)$", self.text, re.MULTILINE),
+                         ["/suno/voices", "/suno/upload", "/suno/audios"])
+
+    def test_private_voice_constraints_and_terminal_cover_evidence(self):
+        for requirement in (
+            "`generate`, `cover`, or `upload_cover`",
+            "`vocal_gender` is not required and cannot replace a voice ID",
+            "voice similarity depends on the reference and result",
+            "private voice", "user is authorized to use",
+            "same service channel", "Reuse the voice's actual `persona_id`",
+            "returned `data.persona_id`", '`mode: "standard"` (the default)',
+            'never `mode: "enhanced"`', "After upload succeeds",
+            "returned `data.audio_id` with the same `persona_id`",
+            "Do not reuse an older audio ID",
+            "Poll the cover's original task via `/suno/tasks` to terminal success",
+            "preview URL is not a finished cover", "**Allowed APIs**",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertNotIn('"success":', self.text)
+        self.assertNotIn('"is_public":', self.text)
+
+
 class SunoAvailabilityProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -119,7 +119,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
-| [suno-music](skills/suno-music/) | Generate Suno music, lyrics, covers, vocals, check audio availability before follow-up processing, and edit/render versioned multitrack Studio projects |
+| [suno-music](skills/suno-music/) | Generate Suno music, lyrics, voice-linked covers, vocals, check audio availability before follow-up processing, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
 
@@ -127,7 +127,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
-| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5 Flare or Sunburst |
+| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5 Flare or Sunburst, including xhigh/max quality |
 | [midjourney-image](skills/midjourney-image/) | Generate, edit, upscale, and describe Midjourney images or videos |
 | [flux-image](skills/flux-image/) | Generate/edit Flux images and generate FLUX 3 videos |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |

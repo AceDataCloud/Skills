@@ -60,7 +60,8 @@ The result is in `data[].url`.
 
 - `size` may be `auto` or `WIDTHxHEIGHT`.
 - Custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
-- `quality` accepts `auto`, `low`, `medium`, or `high`.
+- For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst` (including their `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
+- Pass `quality` in generation JSON, URL-edit JSON, or multipart file edits (for example, `"quality":"xhigh"` in JSON or `-F "quality=max"` in multipart). On `:official` variants, quality affects token usage; the displayed pre-request price is an estimate, not the final charge.
 - `n` accepts 1–10 and billing uses the number of images returned. Use URL output for `n>1`; `b64_json` requires `n=1`.
 - The `:official` variants bill for actual text, reference-image, and output-image tokens; use returned usage records for final cost.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.

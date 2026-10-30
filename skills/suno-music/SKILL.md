@@ -134,6 +134,51 @@ POST /suno/audios
 }
 ```
 
+#### Cover with a specified voice
+
+Use `persona_id` to select a singer style or cloned voice for `generate`, `cover`, or `upload_cover`. `vocal_gender` is not required and cannot replace a voice ID; voice similarity depends on the reference and result.
+
+For a private voice created through `/suno/voices`, use this sequence with recordings the user is authorized to use. Keep voice creation, original-song upload, and cover on the same service channel.
+
+1. Reuse the voice's actual `persona_id`, or create a voice from a publicly accessible, clean single-speaker recording and save the returned `data.persona_id`:
+
+```json
+POST /suno/voices
+{
+  "audio_url": "HTTPS_VOICE_REFERENCE_URL",
+  "name": "My Voice"
+}
+```
+
+2. Upload the original song with that same `persona_id` to associate the song with the private voice. This field works only with `mode: "standard"` (the default), never `mode: "enhanced"`:
+
+```json
+POST /suno/upload
+{
+  "audio_url": "HTTPS_ORIGINAL_SONG_URL",
+  "mode": "standard",
+  "persona_id": "PERSONA_ID"
+}
+```
+
+3. After upload succeeds, use its returned `data.audio_id` with the same `persona_id` for the cover. Do not reuse an older audio ID that was not associated with this private voice:
+
+```json
+POST /suno/audios
+{
+  "action": "upload_cover",
+  "model": "chirp-v6",
+  "audio_id": "VOICE_LINKED_UPLOAD_AUDIO_ID",
+  "persona_id": "PERSONA_ID",
+  "custom": true,
+  "instrumental": false,
+  "lyric": "[Verse]\nOriginal lyrics to sing",
+  "async": true
+}
+```
+
+Poll the cover's original task via `/suno/tasks` to terminal success using the audio clip-state rule below; an upload result or preview URL is not a finished cover. Include `/suno/voices` and `/suno/upload` in **Allowed APIs** when needed, alongside `/suno/audios` and `/suno/tasks`.
+
 ### 5. Full Song Creation Workflow
 
 For best results follow this multi-step workflow:
