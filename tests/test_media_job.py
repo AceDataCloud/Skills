@@ -38,6 +38,48 @@ class MediaJobs(unittest.TestCase):
                 job.run('image', 'A book', path, api=api, token='test')
         self.assertEqual(api.call_count, 1)
 
+    def test_image_recipe_is_one_watermark_free_2k_image(self):
+        api = Mock(return_value={'data': [{'url': 'https://cdn.example/image.jpg'}]})
+        with tempfile.TemporaryDirectory() as directory:
+            result = job.run('image', 'A book', Path(directory) / 'job.json', api=api, token='test')
+        self.assertEqual(result['status'], 'completed')
+        self.assertEqual(api.call_count, 1)
+        payload = api.call_args.args[1]
+        self.assertEqual(payload['size'], '2K')
+        self.assertEqual(payload['sequential_image_generation'], 'disabled')
+        self.assertIs(payload['watermark'], False)
+
+    def test_authenticated_api_call_does_not_follow_redirects(self):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from threading import Thread
+        from unittest.mock import patch
+        requests = []
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                requests.append(self.path)
+                self.send_response(302)
+                self.send_header('Location', '/unexpected-destination')
+                self.end_headers()
+            def do_GET(self):
+                requests.append(self.path)
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b'{}')
+            def log_message(self, *args):
+                pass
+        server = HTTPServer(('127.0.0.1', 0), Handler)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with patch.object(job, 'ORIGIN', f'http://127.0.0.1:{server.server_port}'), patch('urllib.request.getproxies', return_value={}):
+                with self.assertRaisesRegex(RuntimeError, 'HTTP 302'):
+                    job.call('/wan/videos', {}, 'test-credential')
+            self.assertEqual(requests, ['/wan/videos'])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
     def test_state_cannot_be_reused_for_another_request(self):
         api = Mock(return_value={'audio_url': 'https://cdn.example/voice.mp3'})
         with tempfile.TemporaryDirectory() as directory:

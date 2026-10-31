@@ -12,20 +12,27 @@ import urllib.request
 ORIGIN = 'https://api.acedata.cloud'
 RECIPES = {
     'video': ('wan', '/videos', {'model': 'wan3.0-video', 'duration': 5, 'resolution': '720P', 'ratio': '16:9', 'audio': False}),
-    'image': ('seedream', '/images', {'model': 'doubao-seedream-5-0-lite-260128', 'size': '2K', 'sequential_image_generation': 'disabled', 'response_format': 'url'}),
+    'image': ('seedream', '/images', {'model': 'doubao-seedream-5-0-lite-260128', 'size': '2K', 'sequential_image_generation': 'disabled', 'response_format': 'url', 'watermark': False}),
     'audio': ('fish', '/tts', {'reference_id': 'd7900c21663f485ab63ebdb7e5905036', 'format': 'mp3'}),
 }
+
+
+class RejectRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, fp, code, message, headers, new_url):
+        return None
 
 
 def call(path, payload, token, headers=None):
     request = urllib.request.Request(ORIGIN + path, data=json.dumps(payload).encode(), headers={
         'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', **(headers or {})})
     try:
-        with urllib.request.urlopen(request, timeout=45) as response:
+        with urllib.request.build_opener(RejectRedirect()).open(request, timeout=45) as response:
             raw = response.read(4 * 1024 * 1024 + 1)
     except urllib.error.HTTPError as error:
         # Do not expose request headers or provider response bodies containing secrets.
-        raise RuntimeError(f'API returned HTTP {error.code}; preserve the original state file.') from None
+        status = error.code
+        error.close()
+        raise RuntimeError(f'API returned HTTP {status}; preserve the original state file.') from None
     if len(raw) > 4 * 1024 * 1024:
         raise RuntimeError('API response exceeds the result limit.')
     return json.loads(raw)

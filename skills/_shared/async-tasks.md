@@ -43,7 +43,7 @@ Supported fixed recipes:
 | Kind | Output | Bound |
 |---|---|---|
 | `video` | Wan 3 video | 5 seconds, 720P, 16:9, no audio |
-| `image` | Seedream 5.0 Lite image | One 2K image |
+| `image` | Seedream 5.0 Lite image | One 2K image, watermark disabled |
 | `audio` | Fish s2-pro MP3 | Up to 300 characters, preset public voice |
 
 `completed` includes actual URLs. `failed` is a terminal provider result.
