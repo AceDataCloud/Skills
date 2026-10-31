@@ -1,50 +1,54 @@
-# Async Task Polling
+# Async media tasks
 
-Many generation APIs (images, video, music) support asynchronous requests. When
-the endpoint supports `async: true`, it returns a `task_id` immediately without
-requiring a webhook. Check the individual Skill for its exact request and task
-endpoint.
+Submit a generation once with `"async": true`, save its `task_id` immediately,
+and poll the corresponding `/tasks` endpoint with `{"id":"<original task ID>"}`.
+Use `callback_url` only for a real webhook you control. A health endpoint is not a
+webhook. Do not submit a replacement generation to check progress.
 
-## Pattern
+## Read the task envelope correctly
 
-**Step 1:** Submit once with `async: true` when that endpoint supports it.
+The task endpoint can return a persisted envelope with `request`, `response`,
+`started_at` and `finished_at`. The model result is inside **`response`**; a
+missing top-level `status` does not mean the job is still running.
 
-```bash
-curl -X POST https://api.acedata.cloud/<service>/<resource> \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "...", "async": true}'
-```
+- `response.success == false` or `response.error`: stop and report failure.
+- `response` contains the expected media URL: deliver that real URL.
+- `finished_at` is set but no deliverable exists: stop and inspect the original
+  result; do not generate again.
+- A valid task is still pending: wait and query the same ID.
+- Submission timed out before an ID was returned: outcome is unknown. Reconcile
+  the original request before any replacement generation.
 
-Use `callback_url` only when you operate a real public webhook that can receive
-the completed result. Do not send callbacks to a health endpoint as a shortcut.
-Endpoints without `async: true` may return a final result synchronously or
-offer a separate callback workflow; follow their service guide.
+A synchronous response may already contain the media URL. Deliver it directly.
+Never treat an HTTP 200/202 or a task ID alone as completed generation.
 
-**Step 2:** Poll the task endpoint every 3-5 seconds until the status is terminal.
+## Fixed, bounded media jobs
 
-```bash
-curl -X POST https://api.acedata.cloud/<service>/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from step 1>"}'
-```
-
-For batch polling, use:
+For small autonomous jobs, the standard-library Python helper
+[`scripts/media_job.py`](scripts/media_job.py) keeps a private state file before
+submission. Repeating the command with that **same state file and brief** resumes
+the original task. A lost submission response never causes an automatic retry.
+The state file is a recovery record, not a credential store.
 
 ```bash
-curl -X POST https://api.acedata.cloud/<service>/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
+# ACEDATACLOUD_API_TOKEN must already be in this process's environment.
+# Allocate one private state path per customer task, then keep it for recovery.
+python3 skills/_shared/scripts/media_job.py video \
+  --state /private/jobs/your-original-task-id.json \
+  --prompt 'Morning mist above a calm lake, a slow camera move, no text.'
 ```
 
-## Important Notes
+Supported fixed recipes:
 
-- Save the returned `task_id`. If the response is already terminal, use that
-  result; do not assume every call needs polling.
-- Poll every 3-5 seconds for music, every 5 seconds for images/video
-- Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
-- A pending task is not a reason to resubmit the generation request. Re-query
-  the same task ID so you do not create another billable job.
+| Kind | Output | Bound |
+|---|---|---|
+| `video` | Wan 3 video | 5 seconds, 720P, 16:9, no audio |
+| `image` | Seedream 5.0 Lite image | One 2K image |
+| `audio` | Fish s2-pro MP3 | Up to 300 characters, preset public voice |
+
+`completed` includes actual URLs. `failed` is a terminal provider result.
+`pending` includes the original task ID and state path; resume it later.
+Do not create a new state file just because the original job is slow. Do not
+print credentials or use shell tracing. Quote user text as an argument; never
+execute it as shell code. The helper does not change subscription prices or
+credential spending limits. Check current API pricing before first use.
