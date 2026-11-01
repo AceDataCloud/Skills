@@ -152,13 +152,13 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
-## MiMo integration preparation
+## MiMo
 
-`mimo-v2.6-pro` and `mimo-v2.6-flash` are prepared identifiers, not a current availability promise. Do not recommend or submit them until the live catalog and account permissions confirm activation.
+Use `mimo-v2.6-pro` or `mimo-v2.6-flash` with the MiMo service. Check the live catalog, account permissions and current service status before submitting requests.
 
-After activation, use `POST /mimo/chat/completions` (or its permitted `/v1/chat/completions` alias) with standard `model` and `messages` fields. The initial contract covers text, streaming, reasoning via `thinking.type`, and client-executed `type=function` tools with `tool_choice=auto`. Use `max_completion_tokens` to bound reasoning plus final output. Preserve assistant `reasoning_content`, tool calls and matching tool-result IDs across turns. Request stream usage with `stream_options.include_usage=true` when needed.
+Use `POST /mimo/chat/completions` (or its permitted `/v1/chat/completions` alias) with standard `model` and `messages` fields. The initial contract covers text, streaming, reasoning via `thinking.type`, and client-executed `type=function` tools with `tool_choice=auto`. Use `max_completion_tokens` to bound reasoning plus final output. Preserve assistant `reasoning_content`, tool calls and matching tool-result IDs across turns. Request stream usage with `stream_options.include_usage=true` when needed.
 
-`/aichat2/conversations` uses its own conversation payload and the `mimo` group. Do not assume Chat Completions-specific options exist on that route. Built-in web search, multimodal inputs, Responses, Messages, Batch and UltraSpeed are outside the prepared release. Query current prices; reasoning output is already included in completion tokens, and cached input must not be billed twice.
+`/aichat2/conversations` uses its own conversation payload and the `mimo` group. Do not assume Chat Completions-specific options exist on that route. Built-in web search, multimodal inputs, Responses, Messages, Batch and UltraSpeed are outside this service contract. Query current prices; reasoning output is already included in completion tokens, and cached input must not be billed twice.
 
 ## Kimi Chat Completions
 
