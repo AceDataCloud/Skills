@@ -76,7 +76,7 @@ Real response (trimmed):
 POST /webextrator/render
 {
   "url": "https://example.com",
-  "wait_until": "networkidle",
+  "wait_until": "load",
   "block_resources": ["image", "media", "font"]
 }
 ```
@@ -100,15 +100,20 @@ POST /webextrator/tasks
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `url` | Yes | Page URL to render (`http(s)://`) |
-| `wait_until` | No | `load` / `domcontentloaded` / `networkidle` / `commit` (default `networkidle`) |
-| `timeout` | No | Navigation timeout in seconds (default 30) |
-| `delay` | No | Extra wait in seconds after `wait_until` (for SPAs) |
+| `wait_until` | No | `load` / `domcontentloaded` / `networkidle` / `commit` (default `load`) |
+| `timeout` | No | Navigation timeout in positive integer seconds (minimum 1, default 30), not a total processing deadline |
+| `delay` | No | Extra wait in nonnegative integer seconds after `wait_until` (for SPAs; default 0) |
 | `wait_for_selector` | No | CSS selector to wait for before ready |
 | `block_resources` | No | Drop `image`/`font`/`media`/`stylesheet`/`xhr`/`fetch` |
 | `headers` | No | Extra request headers for the target site |
 | `user_agent` | No | Override the browser User-Agent |
+| `cookies` | No | Cookie array injected before navigation; each item requires `name`, `value`, `domain` |
+| `bypass_cache` | No | Boolean, default false; skips cache reads, but the result may still be written to cache |
+| `cache_ttl_seconds` | No | Nonnegative integer seconds, default 3600; `0` disables caching this response |
 | `async` | No | `true` submits without blocking; poll `/webextrator/tasks` for the result |
 | `callback_url` | No | Posted the final envelope when running asynchronously |
+
+Cookies also accept optional `path`, Unix-seconds `expires`, `httpOnly`, `secure`, and `sameSite` (`Strict`, `Lax`, `None`). These nested cookie keys keep their exact casing; the top-level request uses snake_case. Send cookies or private headers only for sites the user authorizes, and never print their values or commit them. For SPA content, prefer `wait_for_selector` plus an integer `delay` over assuming all pages reach network idle.
 
 ### Extract-only
 

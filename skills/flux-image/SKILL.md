@@ -28,7 +28,7 @@ Generate and edit images through AceDataCloud's Flux API.
 curl -X POST https://api.acedata.cloud/flux/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "async": true}'
+  -d '{"action": "generate", "prompt": "a cat wearing a space helmet, photorealistic", "model": "flux-dev", "size": "1024x1024", "async": true}'
 ```
 
 > **Async:** See [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Poll via `POST /flux/tasks` with `{"id": "..."}`.
@@ -40,9 +40,9 @@ curl -X POST https://api.acedata.cloud/flux/images \
 | `flux-dev` | Good | Fast | 256–1440px | Quick generation (default) |
 | `flux-pro` | High | Medium | 256–1440px | Production work |
 | `flux-2-klein` | Good | Fastest | 256–1440px | Compact / lowest-latency Flux 2 generation |
-| `flux-2-flex` | High | Fast | 256–1440px | Faster high-quality generation |
-| `flux-2-pro` | Higher | Medium | 256–1440px | Better prompt following |
-| `flux-2-max` | Highest | Slow | 256–1440px | Maximum quality generation |
+| `flux-2-flex` | High | Fast | Aspect ratios | Faster high-quality generation |
+| `flux-2-pro` | Higher | Medium | Aspect ratios | Better prompt following |
+| `flux-2-max` | Highest | Slow | Aspect ratios | Maximum quality generation |
 | `flux-kontext-pro` | High | Medium | Aspect ratios | Image editing |
 | `flux-kontext-max` | Highest | Slow | Aspect ratios | Complex editing |
 
@@ -54,17 +54,17 @@ POST /flux/images
   "prompt": "a minimalist logo of a mountain",
   "action": "generate",
   "model": "flux-2-pro",
-  "size": "1024x1024",
+  "size": "1:1",
   "count": 1
 }
 ```
 
 ### Size Options
 
-**For dev/pro/flux-2** (pixel dimensions):
+**For `flux-dev`, `flux-pro`, and `flux-2-klein`** (pixel dimensions):
 - `"1024x1024"`, `"1344x768"`, `"768x1344"`, `"1024x576"`, `"576x1024"`
 
-**For kontext** (aspect ratios):
+**For `flux-2-flex`, `flux-2-pro`, `flux-2-max`, and Kontext models** (aspect ratios, not pixel dimensions):
 - `"1:1"`, `"16:9"`, `"9:16"`, `"4:3"`, `"3:4"`, `"3:2"`, `"2:3"`, `"21:9"`, `"9:21"`
 
 ## Edit Images
@@ -77,14 +77,15 @@ POST /flux/images
   "prompt": "change the background to a beach sunset",
   "action": "edit",
   "image_url": "https://example.com/photo.jpg",
-  "model": "flux-kontext-pro"
+  "model": "flux-kontext-pro",
+  "size": "1:1"
 }
 ```
 
 ## Gotchas
 
-- Use pixel dimensions (e.g., `"1024x1024"`) with dev/pro/flux-2 models, aspect ratios (e.g., `"16:9"`) with kontext models
-- Editing requires kontext models (`flux-kontext-pro` or `flux-kontext-max`) — other models only support generation
+- Send `size` explicitly: pixel dimensions for `flux-dev`, `flux-pro`, and `flux-2-klein`; aspect ratios for `flux-2-flex`, `flux-2-pro`, `flux-2-max`, and Kontext
+- For MCP `flux_edit_image`, select a model from its live schema; `flux-2-klein` supports generation only and is not an edit-model choice
 - `count` parameter generates multiple images in one request (increases cost proportionally)
 - `flux-2-klein` is the lightest Flux 2 model — useful when latency matters more than peak quality
 - `flux-2-max` produces highest quality but is slowest — use dev/klein/flex for iteration and max for final output

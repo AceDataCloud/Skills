@@ -108,7 +108,7 @@ POST /suno/audios
 
 ### 3. Extend a Song
 
-Continue an existing song from a specific timestamp with new lyrics.
+Continue an existing song from a specific timestamp with new lyrics. `extend` and `upload_extend` require a source `audio_id` and `continue_at > 0`; fractional seconds such as `30.792` are preserved without rounding. Lyrics and style guide only the new section after that boundary, not the earlier song. Do not send an extra `persona_id` for extension.
 
 ```json
 POST /suno/audios
@@ -211,7 +211,23 @@ For best results follow this multi-step workflow:
 | `remaster` | Remaster an existing audio |
 | `mashup` | Blend multiple audio IDs together |
 | `samples` | Add samples to an uploaded song |
-| `inspo` | Generate a song inspired by an existing audio |
+| `inspo` | Generate from 1–4 complete reference audio URLs |
+| `add_stem` | Generate a specified instrument or vocal track for source audio |
+| `extract_stem` | Extract a specified stem and its complementary version |
+| `sounds` | Generate a one-shot or looping sound effect |
+| `adjust_speed` | Change playback speed, optionally preserving pitch |
+
+### Select action-specific inputs
+
+- Source `audio_id` is required for extension, covers, concat, stems/all_stems, section replacement, underpainting/overpainting, remaster, samples, adding/extracting a stem, and speed adjustment. `mashup` needs at least two `mashup_audio_ids` instead.
+- `persona_id` is a voice ID, not a song ID. `artist_consistency` and `artist_consistency_vox` require it and may also take the source song's `audio_id`; `generate`, `cover`, and `upload_cover` can use it. Extra voice IDs are not used by `extend` or `upload_extend`. Voice support on `mashup` and `inspo` depends on the selected service channel; do not promise it for other actions.
+- For `replace_section`, supply `audio_id`, nonnegative `replace_section_start`, and `replace_section_end` greater than the start and no later than the source duration. `lyric` contains full lyrics/context; `prompt` contains the new interval lyrics. Optional `negative_tags` excludes styles. Default `replace_section_result_mode="full_song"` returns two assembled songs; `"candidates"` returns two unassembled segments, not finished full songs.
+- `samples` uses one source audio interval: `samples_start` defaults to 0 and must be nonnegative; required `samples_end` must be greater than the start and within the source duration. Both support fractional seconds. This is not Inspo.
+- `inspo` needs 1–4 publicly accessible authorized HTTP(S) `audio_urls`. Set `instrumental=true` for music without lyrics; `lyric_prompt` generates lyrics only with `custom=true` and no `lyric`. A `persona_id` is channel-dependent, not a guaranteed voice match.
+- `all_stems` waits for every stem before terminal success. A playable early URL is not completion of the full stem set.
+- `add_stem` and `extract_stem` require `stem_type` from the current API/tool schema. `sounds` needs `sound` and `sound_type` (`one-shot` or `loop`), with optional integer `bpm` (1–300) and `key`. `adjust_speed` needs source `audio_id`, `title` and `speed_multiplier` (0.25–4); `keep_pitch` defaults to false.
+
+MCP exposes these as `suno_add_stem`, `suno_extract_stem`, `suno_generate_sound`, and `suno_adjust_speed`. Inspect the connected schemas before calling; retain and poll the original task ID rather than resubmitting to check progress.
 
 ## Custom Music Models (Beta)
 
@@ -264,6 +280,8 @@ POST /suno/custom-models
 ```
 
 Async acceptance is not terminal success: poll the returned task and inspect `response.success`. A custom-model request never falls back to another model. The model must belong to the current Suno application and have `status: "ready"`.
+
+In MCP, `suno_generate_with_custom_model` also accepts `instrumental=true` without lyrics, or `lyric_prompt` for automatic lyrics; otherwise provide `lyric`. Title and style are optional. Inspect its schema for `negative_tags`, `vocal_gender`, `weirdness`, `style_influence`, `duration`, and `callback_url`; preserve explicit `0` control values. Studio uses `suno_manage_project` with `request.action` and a separate `idempotency_key`; follow the version, complete-state and terminal-result rules below.
 
 ### Archive
 
@@ -396,10 +414,12 @@ An identical key and payload replay the original result, including failure, with
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `lyric_prompt` | object | Structured prompt payload for auto-generating lyrics (used when `custom: true` without explicit `lyric`) |
-| `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); applies only with `custom: true`. No fixed character limit is currently enforced by this endpoint; keep it concise because overly long input may still fail |
+| `negative_tags` | string | Style or genre tags to avoid (e.g., `"heavy metal, distortion"`); use for generation with `custom: true` or `replace_section`. No fixed character limit is currently enforced by this endpoint; keep it concise because overly long input may still fail |
 | `style_influence` | number | Strength of style influence (advanced custom mode, v5+ only) |
-| `audio_weight` | number | Weight for audio reference when covering (advanced, v5+ only) |
-| `duration` | integer | Target track length in seconds (typically 10–360). Best supported on `generate` with `custom: true` on newer models such as `chirp-v5-5` |
+| `audio_weight` | number | Audio/reference influence from 0–1; preserve explicit `0`. Model/action dependent, including generation, extension, covers, adding a stem and voice consistency |
+| `variety` | string | `off`, `normal`, `high`, `extra`, `max`; only `generate` and `add_stem` |
+| `max_mode` | boolean | Enhanced mode for `generate` with `custom=true`, or `add_stem`; costs more, so enable only after explicit user selection and a current price check |
+| `duration` | integer | Target track length of 10–360 seconds; only `generate` uses it. Actual length depends on model/mode and must be read from the result |
 
 ## Lyrics Format
 
@@ -443,7 +463,7 @@ On any of these errors, retain `task_id` and `trace_id` when returned and contac
 - Style tags are descriptive phrases, not enum values (e.g., "Synthwave, Electronic, Dreamy")
 - `vocal_gender` ("f"/"m") is only supported on v4.5+ models
 - `variation_category` ("high"/"normal"/"subtle") is only supported on v5+ models
-- `duration` is forwarded as you send it — support varies by model and action, and an unsupported combination may ignore it or return an error, so verify with one request before batching. Note the request `duration` is a *target*; the `duration` in each returned clip is the *actual* length and will vary slightly
+- Only `generate` uses `duration`; other actions do not. It is a *target*, not a fixed output length; read each returned clip's *actual* `duration` rather than promising the requested length
 - The `concat` action merges extended song segments — requires audio_id of the extended track
 - `persona` requires an existing `audio_id` and a `name`; optional `vox_audio_id`, `vocal_start`, `vocal_end`, and `description` refine the vocal reference
 - Upload external audio via `/suno/upload` before using it with extend/cover
