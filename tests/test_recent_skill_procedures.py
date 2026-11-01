@@ -33,6 +33,8 @@ class SunoAudioProcedureTests(unittest.TestCase):
         for name, text in self.skills.items():
             with self.subTest(skill=name):
                 line = next(line for line in text.splitlines() if "`negative_tags`" in line and "`custom: true`" in line)
+                self.assertIn("`replace_section`", line)
+                self.assertNotIn("only with", line)
                 self.assertIn("no fixed character limit", line.lower())
                 self.assertIn("keep it concise", line)
                 self.assertIn("overly long input may still fail", line)
@@ -53,6 +55,99 @@ class SunoAudioProcedureTests(unittest.TestCase):
                 ):
                     self.assertIn(requirement, recovery)
                 self.assertNotIn("```", recovery.split("## Gotchas", 1)[0])
+
+
+class MusicActionInputTests(unittest.TestCase):
+    def test_producer_examples_follow_action_specific_requirements(self):
+        text = read_skill("producer-music")
+        requests = [json.loads(body) for body in re.findall(
+            r"```json\nPOST /producer/audios\n(.*?)\n```", text, re.DOTALL
+        )]
+        requests += [json.loads(body) for body in re.findall(r"-d '(\{.*?\})'", text, re.DOTALL)]
+        self.assertGreaterEqual(len(requests), 6)
+        for body in requests:
+            with self.subTest(body=body):
+                action = body["action"]
+                if action == "generate":
+                    if not body.get("custom", False):
+                        self.assertTrue(body["prompt"])
+                    elif not body.get("instrumental", False):
+                        self.assertTrue(body["lyric"])
+                else:
+                    self.assertTrue(body["audio_id"])
+                    if action == "extend":
+                        self.assertGreater(body["continue_at"], 0)
+                        self.assertTrue(body.get("instrumental") or body.get("lyric"))
+                self.assertNotEqual(body.get("lyric"), "")
+                self.assertNotEqual(body.get("prompt"), "")
+        instrumental = next(body for body in requests if body.get("instrumental"))
+        self.assertTrue(instrumental["custom"])
+        self.assertNotIn("lyric", instrumental)
+        self.assertNotIn("prompt", instrumental)
+        stems = next(body for body in requests if body["action"] == "stems")
+        self.assertEqual(set(stems), {"action", "audio_id"})
+        self.assertNotIn("Required for every `/producer/audios` request; use", text)
+        for line in text.splitlines():
+            if line.startswith(("| `lyrics_strength`", "| `sound_strength`")):
+                self.assertIn("default: 0.5", line)
+
+    def test_suno_action_controls_keep_source_timing_and_completion_boundaries(self):
+        text = read_skill("suno-music")
+        for requirement in (
+            "`continue_at > 0`", "`30.792`", "without rounding",
+            "not the earlier song", "`persona_id` is a voice ID, not a song ID",
+            "`artist_consistency` and `artist_consistency_vox` require it",
+            "Extra voice IDs are not used by `extend` or `upload_extend`",
+            "at least two `mashup_audio_ids`", "nonnegative `replace_section_start`",
+            "`replace_section_end` greater than the start", "no later than the source duration",
+            "`samples_start` defaults to 0", "required `samples_end`",
+            "Both support fractional seconds", "This is not Inspo",
+            "1–4 publicly accessible authorized HTTP(S) `audio_urls`",
+            "`all_stems` waits for every stem before terminal success",
+            "Only `generate` uses `duration`", "other actions do not",
+            "`variety`", "`max_mode`", "explicit user selection and a current price check",
+            "preserve explicit `0` control values", "`suno_generate_with_custom_model`",
+            "`suno_manage_project`", "`idempotency_key`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        for tool in ("suno_add_stem", "suno_extract_stem", "suno_generate_sound", "suno_adjust_speed"):
+            self.assertIn(f"`{tool}`", text)
+
+
+class FluxAndWebExtratorInputTests(unittest.TestCase):
+    def test_flux_examples_use_model_appropriate_explicit_sizes(self):
+        text = read_skill("flux-image")
+        requests = list(json_examples(text))
+        requests += [json.loads(body) for body in re.findall(r"-d '(\{.*?\})'", text, re.DOTALL)]
+        self.assertEqual(len(requests), 3)
+        ratio_models = {"flux-2-flex", "flux-2-pro", "flux-2-max", "flux-kontext-pro", "flux-kontext-max"}
+        for body in requests:
+            with self.subTest(body=body):
+                pattern = r"\d+:\d+" if body["model"] in ratio_models else r"\d+x\d+"
+                self.assertRegex(body["size"], pattern)
+                self.assertTrue(body["prompt"])
+        self.assertIn("`flux-2-klein` supports generation only", text)
+        self.assertIn("`flux_edit_image`", text)
+        self.assertNotIn("dev/pro/flux-2 models", text)
+
+    def test_webextrator_defaults_cookie_shape_and_cache_controls(self):
+        text = read_skill("webextrator")
+        render = next(body for body in json_examples(text) if "wait_until" in body)
+        self.assertEqual(render["wait_until"], "load")
+        for requirement in (
+            "(default `load`)", "positive integer seconds (minimum 1, default 30)",
+            "not a total processing deadline", "nonnegative integer seconds",
+            "`name`, `value`, `domain`", "Unix-seconds `expires`",
+            "`httpOnly`, `secure`, and `sameSite`", "`Strict`, `Lax`, `None`",
+            "nested cookie keys keep their exact casing", "top-level request uses snake_case",
+            "`bypass_cache`", "skips cache reads", "may still be written to cache",
+            "`cache_ttl_seconds`", "default 3600", "`0` disables caching this response",
+            "only for sites the user authorizes", "never print their values or commit them",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("default `networkidle`", text)
 
 
 class SunoPrivateVoiceCoverProcedureTests(unittest.TestCase):
@@ -289,6 +384,16 @@ class FishSavedVoiceProcedureTests(unittest.TestCase):
                 self.assertIn(requirement, self.saved)
         self.assertIn("persistent public voice models", (ROOT / "README.md").read_text())
 
+    def test_mcp_creation_and_reuse_keep_publication_confirmation(self):
+        for requirement in (
+            'fish_create_model(title="My authorized narration voice", voices="HTTPS_REFERENCE_AUDIO_URL")',
+            "only after the same publication confirmation", "no private/unlisted option",
+            "`fish_generate_audio(reference_id=...)`", "`fish_list_models(self=true)`",
+            "For a one-shot reference", "`references` instead",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.saved)
+
     def test_self_list_is_account_scoped_not_private_or_author_equivalent(self):
         self.assertIn("?self=true&page_size=10&page_number=1&sort_by=created_at", self.saved)
         for requirement in (
@@ -362,6 +467,15 @@ class MaestroProcedureTests(unittest.TestCase):
             "Multiple languages return HTTP 400", "empty or multi-language arrays are invalid",
             "confirm the additional tasks", "Track each task ID independently",
             "do not promise shared visuals across tasks",
+        ):
+            self.assertIn(requirement, text)
+
+    def test_voice_is_a_preset_or_real_hex_id_not_freeform_style(self):
+        text = read_skill("maestro-video")
+        for requirement in (
+            "actual 32-character hexadecimal Fish `reference_id`",
+            "other freeform text is not a valid voice ID",
+            "Freeform visual direction belongs in `style`, not `voice`",
         ):
             self.assertIn(requirement, text)
 
@@ -548,6 +662,22 @@ class AccountOAuthProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, self.text)
 
+    def test_two_step_changes_require_visible_reauthorization_not_secret_collection(self):
+        for requirement in (
+            "Two-step verification is completed on Ace Data Cloud's authorization page",
+            "before the authorization code is issued",
+            "must not request, save or forward authenticator secrets or recovery codes",
+            "may invalidate existing sessions, refresh tokens and related platform authorization tokens",
+            "`invalid_grant`", "restart user-visible authorization",
+            "do not loop with an old code or bypass verification",
+            "Ordinary model API Key authentication is unchanged",
+            "separate Key review and revocation",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertIn("has no scheduled expiry", read_skill("acedatacloud"))
+        self.assertNotIn("and never expires", read_skill("acedatacloud"))
+
     def test_studio_and_token_lifecycle_do_not_overpromise(self):
         for requirement in (
             "acedatacloud:oauth:ready", "acedatacloud:oauth:init",
@@ -609,6 +739,36 @@ class ClaudeMessagesProcedureTests(unittest.TestCase):
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
+
+    def test_compatible_models_keep_messages_payload_and_structured_output(self):
+        text = read_skill("ai-chat").split("## Native Claude Messages\n", 1)[1]
+        text = text.split("## Stateful / Agentic Conversations\n", 1)[0]
+        for model in (
+            "gpt-6.1-sol", "gpt-6.1-terra", "gpt-6-sol", "gpt-6-luna", "gpt-6-astra",
+            "gpt-5.6-sol-fast", "gpt-5.6-sol", "glm-5.3", "glm-5.2", "glm-5.1",
+            "glm-5-turbo", "glm-5", "gemini-3.6-flash",
+        ):
+            self.assertIn(f"`{model}`", text)
+        for requirement in (
+            "Check the current route list, account access and pricing",
+            "Keep Messages fields and response handling when switching models",
+            "cross-protocol requests map their semantics",
+            "`tools[].input_schema`", "`tool_use`", "`tool_result`", "matching IDs",
+            "`tool_choice.disable_parallel_tool_use=true`",
+            "platform does not automatically raise it", "`output_config.format`",
+            "Messages `content` text blocks", "do not expect Chat `choices` or Responses `output`",
+            "same model, messages, and applicable system/tools/thinking fields",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        structured, = json_examples(text)
+        output_format = structured["output_config"]["format"]
+        self.assertEqual(output_format["type"], "json_schema")
+        self.assertEqual(output_format["schema"], {
+            "type": "object", "properties": {"answer": {"type": "string"}},
+            "required": ["answer"], "additionalProperties": False,
+        })
+        self.assertNotIn('"content":', json.dumps(structured))
 
     def test_native_example_uses_bearer_auth_without_metadata_guidance(self):
         text = read_skill("ai-chat")
@@ -1070,7 +1230,7 @@ class AgentTaskProcedureTests(unittest.TestCase):
     def test_scheduled_examples_use_action_payloads_and_bounded_template(self):
         text = read_skill("ai-chat").split("## Scheduled Agent Tasks\n", 1)[1].split("## Gotchas\n", 1)[0]
         examples = {example["action"]: example for example in json_examples(text)}
-        self.assertEqual(set(examples), {"create", "retrieve_runs", "update"})
+        self.assertEqual(set(examples), {"create", "retrieve_batch", "retrieve_runs", "update"})
         create = examples["create"]
         self.assertEqual(create["schedule"], {"type": "cron", "cron": "0 9 * * *", "tz": "UTC"})
         self.assertGreaterEqual(create["template"]["max_turns"], 1)
@@ -1091,6 +1251,24 @@ class AgentTaskProcedureTests(unittest.TestCase):
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
+
+    def test_scheduled_search_is_owner_scoped_before_pagination(self):
+        text = read_skill("ai-chat").split("### Search and page through scheduled tasks\n", 1)[1]
+        text = text.split("Creation payload", 1)[0]
+        example, = json_examples(text)
+        self.assertEqual(example, {"action": "retrieve_batch", "search": "Daily", "offset": 0, "limit": 10})
+        for requirement in (
+            "all tasks owned by the current user, before pagination",
+            "case-insensitive substring", "surrounding whitespace ignored",
+            "not a regular expression", "Omitted or empty `search` lists all tasks",
+            "newest-created first", "`items` for the page and `count` for the total",
+            "`offset` defaults to 0", "`limit` defaults to 100 and must be 1–100",
+            "Keep `search` unchanged", "increase `offset` by `limit`",
+            "accumulated items reach `count`", "do not search only the currently loaded page",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn('"items":', text)
 
     def test_run_failure_and_handoff_failure_are_distinct(self):
         text = read_skill("ai-chat")

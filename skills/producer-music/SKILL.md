@@ -28,7 +28,7 @@ Generate AI music through AceDataCloud's Producer API.
 curl -X POST https://api.acedata.cloud/producer/audios \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"action": "generate", "lyric": "", "prompt": "upbeat electronic dance track with synth leads"}'
+  -d '{"action": "generate", "prompt": "upbeat electronic dance track with synth leads"}'
 ```
 
 > **Async:** All generation is async. See [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Poll via `POST /producer/tasks` with `{"id": "..."}` every 3-5 seconds.
@@ -59,6 +59,20 @@ curl -X POST https://api.acedata.cloud/producer/audios \
 | `variation` | Generate a variation of an existing song |
 | `stems` | Separate a song into stems |
 
+## Choose inputs by action
+
+Always send `action`, then supply only the inputs needed for that operation:
+
+| Operation | Required inputs |
+|---|---|
+| `generate`, `custom=false` (default) | Nonempty `prompt` |
+| `generate`, `custom=true`, `instrumental=false` | Nonempty `lyric` |
+| `generate`, `custom=true`, `instrumental=true` | Neither lyrics nor an extra prompt is required |
+| `extend` | Source `audio_id`, `continue_at > 0`, and nonempty `lyric` unless `instrumental=true` |
+| `cover`, `variation`, `replace_section`, `swap_vocals`, `swap_instrumentals`, `stems` | Source `audio_id`; add the selected operation's editing controls |
+
+Do not insert empty lyrics or prompts just to satisfy a universal required-field rule. In MCP, supplying `lyric` to `producer_extend_music` or `producer_replace_section` selects custom lyrics mode; instrumental extension can omit lyrics with `instrumental=true`.
+
 ## Workflows
 
 ### 1. Generate from Prompt
@@ -67,7 +81,6 @@ curl -X POST https://api.acedata.cloud/producer/audios \
 POST /producer/audios
 {
   "action": "generate",
-  "lyric": "",
   "prompt": "chill lo-fi hip hop with rain sounds and soft piano"
 }
 ```
@@ -92,8 +105,7 @@ POST /producer/audios
 POST /producer/audios
 {
   "action": "generate",
-  "lyric": "",
-  "prompt": "epic orchestral soundtrack for a movie trailer",
+  "custom": true,
   "instrumental": true
 }
 ```
@@ -105,9 +117,9 @@ POST /producer/audios
 {
   "action": "extend",
   "audio_id": "existing-audio-id",
-  "lyric": "",
-  "prompt": "",
-  "continue_at": 30
+  "custom": true,
+  "lyric": "[Verse]\nA new chapter starts tonight",
+  "continue_at": 30.792
 }
 ```
 
@@ -118,8 +130,8 @@ POST /producer/audios
 {
   "action": "replace_section",
   "audio_id": "existing-audio-id",
-  "lyric": "",
-  "prompt": "",
+  "custom": true,
+  "lyric": "[Chorus]\nNew words for this section",
   "replace_section_start": 15,
   "replace_section_end": 30
 }
@@ -131,9 +143,7 @@ POST /producer/audios
 POST /producer/audios
 {
   "action": "stems",
-  "audio_id": "existing-audio-id",
-  "lyric": "",
-  "prompt": ""
+  "audio_id": "existing-audio-id"
 }
 ```
 
@@ -170,18 +180,18 @@ POST /producer/upload
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `action` | string | Required for every `/producer/audios` request; see actions table |
-| `prompt` | string | Required for every `/producer/audios` request; use an empty string when an edit action does not use a prompt |
+| `prompt` | string | Required for non-custom `generate`; not unconditionally required for editing or custom instrumental generation |
 | `model` | string | Model (e.g., `"FUZZ-2.0 Pro"`) |
 | `custom` | boolean | Enable custom lyrics mode |
 | `instrumental` | boolean | Pure instrumental (no vocals) |
 | `title` | string | Song title |
-| `lyric` | string | Required for every `/producer/audios` request; custom lyrics use `[Verse]`, `[Chorus]` tags, otherwise use an empty string |
+| `lyric` | string | Required for custom non-instrumental `generate` and non-instrumental `extend`; use `[Verse]`, `[Chorus]` tags |
 | `audio_id` | string | Existing audio ID (for edit actions) |
-| `continue_at` | number | Seconds — where to extend from |
+| `continue_at` | number | Required for `extend`; seconds greater than 0, including fractional seconds |
 | `replace_section_start` | number | Start time of section to replace |
 | `replace_section_end` | number | End time of section to replace |
-| `lyrics_strength` | 0-1 | Lyrics adherence (default: 0.7) |
-| `sound_strength` | 0.2-1 | Sound quality weight (default: 0.7) |
+| `lyrics_strength` | 0-1 | Lyrics adherence (default: 0.5) |
+| `sound_strength` | 0.2-1 | Sound quality weight (default: 0.5) |
 | `weirdness` | 0-1 | Creative randomness (default: 0.5) |
 | `seed` | string | Seed for reproducibility |
 

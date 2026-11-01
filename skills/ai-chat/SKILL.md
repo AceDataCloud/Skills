@@ -21,8 +21,8 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /kimi/chat/completions` (public alias `/v1/chat/completions`) | Kimi Chat Completions with model-specific reasoning controls |
 | `POST /v1/chat/completions` (alias `/claude/chat/completions`) | Claude Chat Completions, including Opus 5.5 |
 | `POST /gemini/chat/completions` (public alias `/v1/chat/completions`) | Gemini Chat Completions, including Gemini 4 Argon |
-| `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages, including thinking and tool calls |
-| `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count native Claude input tokens without generating output |
+| `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages and published compatible models in Messages format |
+| `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count input tokens for the selected published Messages model without generating output |
 | `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
 | `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` | Native Gemini SSE streaming |
 
@@ -83,7 +83,7 @@ models include:
 | Grok | `grok-4.7`, `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
 | DeepSeek | `deepseek-v4.1-flash`, `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
 | Kimi | `kimi-k3.1-pro`, `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
-| GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
+| GLM | `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 | MiMo | `mimo-v2.6-pro`, `mimo-v2.6-flash` |
 
 When the user asks for a recommended model, read the current public `GET https://platform.acedata.cloud/api/v1/models/` response and prefer suitable entries with `recommended=true`. This is an editorial preference, not an access grant or a new API capability; `recommended=false` does not retire a model. Check the selected model's supported route and current pricing before calling it, and do not silently replace a model the user explicitly selected.
@@ -244,7 +244,9 @@ POST /openai/embeddings
 
 ## Native Claude Messages
 
-Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including `claude-opus-5-5` and `claude-sonnet-5-5`. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
+Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including `claude-opus-5-5` and `claude-sonnet-5-5`, or another model published on this Messages route. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
+
+The published Messages and Count Tokens lists also include `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-6-astra`, `gpt-5.6-sol-fast`, `gpt-5.6-sol`, `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5-turbo`, `glm-5`, and `gemini-3.6-flash`. Check the current route list, account access and pricing before selecting one. Keep Messages fields and response handling when switching models; do not send Chat Completions or Responses payloads to this route.
 
 ```bash
 curl -X POST https://api.acedata.cloud/v1/messages \
@@ -259,13 +261,35 @@ curl -X POST https://api.acedata.cloud/v1/messages \
   }'
 ```
 
-- Send `thinking`, `output_config`, effort, sampling parameters, and extension fields unchanged. The platform does not enforce a frozen per-model enum or rewrite thinking modes; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Pass-through is not a promise of feature support across models or protocols.
+- Use Messages `thinking`, `output_config`, effort, sampling parameters, and extension fields. Same-protocol requests pass extension fields unchanged; cross-protocol requests map their semantics. The platform does not enforce a frozen per-model enum; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Mapping is not a promise of identical feature support across models or protocols.
 - Common `thinking.type` values are `adaptive`, `enabled`, and `disabled`; newer modes such as `between_tools`, fixed `budget_tokens`, and whether thinking can be disabled depend on the model. Common effort values include `low`, `medium`, `high`, `xhigh`, and `max`, but are not a closed enum.
 - `thinking.display="summarized"` returns a readable summary, not raw reasoning. `omitted` hides the thinking text while retaining its opaque `signature`. Beta `updates` requests short progress updates between tool calls with hidden reasoning; send `anthropic-beta: thinking-display-updates-2026-08-18` and `thinking.display="updates"`. The value and beta header are forwarded, not rewritten to `summarized`; actual support and output depend on the selected model.
 - Thinking shares the `max_tokens` budget with final text. Display settings do not disable thinking or reduce its token billing. Increase the budget or lower supported effort if the final answer is empty or truncated.
 - In multi-turn/tool-use conversations, return complete assistant thinking blocks and signatures unchanged. Never invent or edit a signature. Cross-protocol handling of `redacted_thinking` depends on the model service; surface errors instead of dropping blocks or silently changing the request.
 
-To estimate input size, send the native input to `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) with the same model, messages, and applicable system/tools/thinking fields. Read `input_tokens`; this endpoint generates no model output and consumes no quota. Its thinking configuration is extensible too; do not substitute a locally hard-coded model validator.
+For tools, use `tools[].input_schema`, `tool_choice`, assistant `tool_use` blocks and user `tool_result` blocks with matching IDs. Set `tool_choice.disable_parallel_tool_use=true` when parallel tool calls are not wanted. `max_tokens` is the output budget shared by thinking and text; the platform does not automatically raise it.
+
+For structured output, add `output_config.format` to the same Messages request:
+
+```json
+{
+  "output_config": {
+    "format": {
+      "type": "json_schema",
+      "schema": {
+        "type": "object",
+        "properties": {"answer": {"type": "string"}},
+        "required": ["answer"],
+        "additionalProperties": false
+      }
+    }
+  }
+}
+```
+
+Read generated text from Messages `content` text blocks, including structured JSON text; do not expect Chat `choices` or Responses `output`. These controls are passed through or mapped according to protocol; surface the selected model's specific parameter errors instead of rewriting the request silently.
+
+To estimate input size, send the input to `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) with the same model, messages, and applicable system/tools/thinking fields. Read `input_tokens`; this endpoint generates no model output and consumes no quota. Its thinking configuration is extensible too; do not substitute a locally hard-coded model validator.
 
 ## Stateful / Agentic Conversations
 
@@ -302,7 +326,7 @@ Useful parameters:
 | `allowed_skills` / `allowed_mcp_servers` | array | Restrict tool-use scope |
 | `unattended_policy` | object | Tool-use permission policy |
 | `tool_results` | array | Return results for previously requested tool calls |
-| `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek`) |
+| `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `mimo`, `deepseek`) |
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
@@ -318,6 +342,17 @@ Use `POST /aichat2/scheduled-tasks` on `https://api.acedata.cloud` with the same
 4. After creation, retain the returned task `id`. List with `action="retrieve_batch"`; inspect executions with `action="retrieve_runs"` and that `id`, or `action="retrieve_runs_batch"` for all tasks (optional `status`, `offset`, `limit`). Read each run's `status`, `error_code` and `conversation_id`; retrieve the conversation through `/aichat2/conversations` for the full result. Task `state="enabled"` (shown as “running” in the list) is not evidence of a successful run.
 5. Consecutive AI execution failures **do not auto-pause** the task: the next scheduled run still attempts execution. Auto-pause occurs after **five consecutive handoff failures** to the execution service, not five failed AI runs. Insufficient balance fails a run; a request for user input/consent fails with `awaiting_user_input`. Diagnose the run history, fix balance/authorization/prompt issues, and explicitly pause recurring failures to prevent further attempts.
 6. Pause with `action="update"`, the task `id` and `state="disabled"`; resume with `state="enabled"` only after confirmation. Delete with `action="delete"` and `id` only after confirming permanent removal.
+
+### Search and page through scheduled tasks
+
+Use `action="retrieve_batch"` with optional `search` to find task names across all tasks owned by the current user, before pagination. Matching is a case-insensitive substring search with surrounding whitespace ignored, not a regular expression. Omitted or empty `search` lists all tasks, newest-created first.
+
+```json
+POST /aichat2/scheduled-tasks
+{"action":"retrieve_batch","search":"Daily","offset":0,"limit":10}
+```
+
+Read `items` for the page and `count` for the total matching tasks. `offset` defaults to 0; `limit` defaults to 100 and must be 1–100. Keep `search` unchanged and increase `offset` by `limit` for each next page until the accumulated items reach `count`. Clearing search restores the full list; do not search only the currently loaded page.
 
 Creation payload (preview locally and obtain confirmation before sending):
 

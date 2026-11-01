@@ -101,7 +101,7 @@ Available presets include:
 - Male: `calm-male`, `deep-male`, `documentary-male`, `energetic-male`, `storyteller-male`
 - Automatic: `auto`
 
-Voice controls timbre rather than language. The same preset speaks the language selected in `langs`.
+Voice controls timbre rather than language. The same preset speaks the language selected in `langs`. For a saved voice, pass its actual 32-character hexadecimal Fish `reference_id`; other freeform text is not a valid voice ID. Freeform visual direction belongs in `style`, not `voice`.
 
 ## Reference Media
 

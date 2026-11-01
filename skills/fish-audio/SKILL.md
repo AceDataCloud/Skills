@@ -131,6 +131,8 @@ POST /fish/model
 
 Send the same AceDataCloud Bearer token and JSON content type. `title` and `voices` are required; `voices` must be a single URL string, not an array, multipart upload, or binary data. Optional fields include `description`, `cover_image`, `tags` (string array), `texts` (reference transcript array), `enhance_audio_quality`, and `generate_sample`.
 
+For MCP, call `fish_create_model(title="My authorized narration voice", voices="HTTPS_REFERENCE_AUDIO_URL")` only after the same publication confirmation. It has no private/unlisted option. Reuse its actual `_id` in `fish_generate_audio(reference_id=...)`, or find saved voices with `fish_list_models(self=true)`. For a one-shot reference, use `fish_generate_audio` with `references` instead.
+
 HTTP 201 returns the model object directly. Save its actual `_id` and inspect `state`; use that `_id` as `reference_id` for later TTS, not a fabricated ID. On HTTP 400, check that the audio downloads, has sufficient duration, and has a recognized format; do not repeat an unchanged request.
 
 ### 6. List voices created by the calling account
