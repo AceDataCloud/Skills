@@ -500,6 +500,54 @@ class MaestroProcedureTests(unittest.TestCase):
         self.assertIn("one language per task", (ROOT / "README.md").read_text())
 
 
+class AccountBalanceAndUsageProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        text = read_skill("acedatacloud")
+        cls.balance = text.split("### Balance / subscriptions", 1)[1].split("### Usage records", 1)[0]
+        cls.usage = text.split("#### Retention-aware usage investigation\n", 1)[1].split("### Services", 1)[0]
+
+    def test_saved_proxy_balance_is_not_availability_evidence(self):
+        for requirement in (
+            "balance --json", "`disabled` and `expired_at`", "`remaining_amount`",
+            "positive balance alone is not an availability check",
+            "paused balance synchronization or a synchronization timeout",
+            "returns the last saved balance", "current service status in the console",
+            "does not prove the service is currently usable",
+            "same platform token, balance endpoint and field names",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.balance)
+
+    def test_usage_window_and_body_lifetime_are_distinct(self):
+        for requirement in (
+            "list, aggregate and CSV export queries", "most recent 60 days",
+            "call records and billing summaries share this window",
+            "usage --days 7 --json", "usage-summary --days 30 --json",
+            "older than 60 days returns HTTP 400", "narrow the range",
+            "bodies are retained for only 30 days", "list omits bodies even for newer records",
+            "authenticated `GET /usage/apis/{id}`", "actual record ID",
+            "CLI has no usage-detail command", "records 30–60 days old",
+            "no longer returns `metadata.request` or `metadata.response`",
+            "do not treat their absence as a failed or free call",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.usage)
+
+    def test_body_expiry_preserves_billing_and_requires_call_time_archiving(self):
+        for requirement in (
+            "trace, status, timestamps, model, usage and actual deducted amount",
+            "Body expiry does not change actual deductions, usage or aggregate statistics",
+            "model and effective-result summaries are retained before bodies expire",
+            "Do not invent missing bodies", "secure storage",
+            "authorized request/response bodies at call time",
+            "CSV exports and aggregate statistics do not extend the body-retention window",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.usage)
+        self.assertNotIn("```", self.usage)
+
+
 class OrderProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

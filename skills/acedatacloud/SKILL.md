@@ -163,6 +163,11 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 
 Filters: `service_id`, `scope` (`Individual`/`Global`), `user_id` (superuser only).
 
+Before reporting that a subscription is usable:
+
+1. Run `balance --json` and check `disabled` and `expired_at` alongside `remaining_amount`; a positive balance alone is not an availability check.
+2. For proxy services, paused balance synchronization or a synchronization timeout returns the last saved balance. Check the current service status in the console before reporting availability; a successful balance query does not prove the service is currently usable. Keep using the same platform token, balance endpoint and field names.
+
 ### Usage records — `GET /usage/apis/`
 
 Per-request call records (status code, latency, credits deducted).
@@ -192,6 +197,13 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
   → `{ "items": [{ "date", "api_id", "amount" }], "total": <credits>, "apis": { "<id>": { "title" } } }`
 - **Status-code filter values** — `GET /usage/apis/status-codes/` → `{ "items": [200, 400, 502] }`
 - **CSV export** — `GET /usage/apis/export/?created_at_from=&created_at_to=` (downloads `usages.csv`)
+
+#### Retention-aware usage investigation
+
+1. Keep list, aggregate and CSV export queries within the most recent 60 days; call records and billing summaries share this window. For the CLI, use `usage --days 7 --json` or `usage-summary --days 30 --json`. A time boundary older than 60 days returns HTTP 400; narrow the range rather than repeatedly retrying it.
+2. Request and response bodies are retained for only 30 days. The list omits bodies even for newer records. If bodies are needed, use authenticated `GET /usage/apis/{id}` on the management host with the actual record ID; the CLI has no usage-detail command. For records 30–60 days old, detail no longer returns `metadata.request` or `metadata.response`; do not treat their absence as a failed or free call.
+3. For older records within the 60-day window, investigate using the returned trace, status, timestamps, model, usage and actual deducted amount. Body expiry does not change actual deductions, usage or aggregate statistics; model and effective-result summaries are retained before bodies expire. Do not invent missing bodies or infer the original payload from a summary.
+4. If long-term body retention is required, arrange secure storage of authorized request/response bodies at call time. CSV exports and aggregate statistics do not extend the body-retention window.
 
 ### Services — `GET /services/`
 
