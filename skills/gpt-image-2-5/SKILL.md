@@ -13,11 +13,13 @@ compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment 
 Use one exact model ID for every request:
 
 - `gpt-image-2.5-flare` — faster generation.
+- `gpt-image-2.5-flare:reverse` — explicit reverse alias, equivalent to `gpt-image-2.5-flare`.
 - `gpt-image-2.5-sunburst` — higher-fidelity output and editing control.
+- `gpt-image-2.5-sunburst:reverse` — explicit reverse alias, equivalent to `gpt-image-2.5-sunburst`.
 - `gpt-image-2.5-flare:official` — Flare using the official, token-billed variant.
 - `gpt-image-2.5-sunburst:official` — Sunburst using the official, token-billed variant.
 
-Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs.
+Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs. To explicitly select a reverse variant, replace `model` in Generate or Edit with the complete `:reverse` alias above; preserve the suffix. Both aliases support generation JSON, URL-edit JSON and multipart file edits with the same parameter limits as their unsuffixed names.
 
 ## Install and connect from skills.sh
 
@@ -47,7 +49,7 @@ curl -X POST https://api.acedata.cloud/openai/images/generations \
 ```bash
 curl -X POST https://api.acedata.cloud/openai/images/edits \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -F "model=gpt-image-2.5-sunburst" \
+  -F "model=gpt-image-2.5-sunburst:reverse" \
   -F "prompt=Keep the subject and composition; change only the background to dark navy." \
   -F "image=@input.png" \
   -F "size=1024x1024" \
@@ -60,9 +62,11 @@ The result is in `data[].url`.
 
 - `size` may be `auto` or `WIDTHxHEIGHT`.
 - Custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
-- For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst` (including their `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
+- For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst` (including their `:reverse` and `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
 - Pass `quality` in generation JSON, URL-edit JSON, or multipart file edits (for example, `"quality":"xhigh"` in JSON or `-F "quality=max"` in multipart). On `:official` variants, quality affects token usage; the displayed pre-request price is an estimate, not the final charge.
-- `n` accepts 1–10 and billing uses the number of images returned. Use URL output for `n>1`; `b64_json` requires `n=1`.
+- `n` accepts 1–10. Use URL output for `n>1`; `b64_json` requires `n=1`.
+- Unsuffixed Flare/Sunburst and their `:reverse` aliases bill per successful image, with a base price of 0.19 Credits per image for generation and editing. Check current account pricing and final usage records; token statistics in a reverse response do not change its billing mode.
+- During automatic recovery, reverse models (including `:reverse` aliases) may be fulfilled using GPT Image 2.5 Flare; the requested model and per-successful-image billing remain unchanged. Do not resubmit to force recovery or silently change the user's requested model.
 - The `:official` variants bill for actual text, reference-image, and output-image tokens; use returned usage records for final cost.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
 - Image editing accepts URL input in JSON or local files with multipart form data.
