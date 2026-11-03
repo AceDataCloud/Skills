@@ -14,13 +14,49 @@ class GPTImage25SkillContractTests(unittest.TestCase):
         self.assertIn("actual text, reference-image, and output-image tokens", text)
         self.assertIn("Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`", text)
 
+    def test_reverse_aliases_preserve_identity_and_request_formats(self) -> None:
+        text = SKILL.read_text()
+        for variant in ("flare", "sunburst"):
+            with self.subTest(variant=variant):
+                self.assertIn(
+                    f"`gpt-image-2.5-{variant}:reverse` — explicit reverse alias, "
+                    f"equivalent to `gpt-image-2.5-{variant}`.", text
+                )
+        for requirement in (
+            "replace `model` in Generate or Edit with the complete `:reverse` alias",
+            "preserve the suffix",
+            "Both aliases support generation JSON, URL-edit JSON and multipart file edits",
+            "same parameter limits as their unsuffixed names",
+            '-F "model=gpt-image-2.5-sunburst:reverse"',
+            "`n` accepts 1–10", "`b64_json` requires `n=1`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_reverse_billing_and_recovery_do_not_change_requested_model(self) -> None:
+        legacy = SKILL.parent.parent / "gpt-image-2" / "SKILL.md"
+        for skill in (SKILL, legacy):
+            with self.subTest(skill=skill.parent.name):
+                text = skill.read_text()
+                for requirement in (
+                    "bill per successful image", "0.19 Credits per image",
+                    "for generation and editing", "final usage records",
+                    "token statistics", "do not change", "billing mode",
+                    "automatic recovery", "may be fulfilled using GPT Image 2.5 Flare",
+                    "requested model and per-successful-image billing remain unchanged",
+                    "Do not resubmit to force recovery or silently change the user's requested model",
+                ):
+                    with self.subTest(requirement=requirement):
+                        self.assertIn(requirement, text)
+                self.assertNotIn("0.11", text)
+
     def test_quality_levels_are_model_scoped_and_cover_both_edit_formats(self) -> None:
         text = SKILL.read_text().split("## Shared contract\n", 1)[1]
         quality = next(line for line in text.splitlines() if line.startswith("- For generation and editing, `quality`"))
         for requirement in (
             "`auto` (default), `low`, `medium`, or `high`",
             "Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst`",
-            "including their `:official` variants",
+            "including their `:reverse` and `:official` variants",
             "`xhigh` and `max`",
             "do not use those extra levels with other GPT Image models",
         ):

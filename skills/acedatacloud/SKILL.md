@@ -135,7 +135,7 @@ is **`items`**.)
 ### Balance / subscriptions — `GET /applications/`
 
 An *Application* is your subscription to one Service; its `remaining_amount` is
-your balance (in **Credits**) for that service.
+your balance in the returned `service.unit` (for example `Credit`, `Count` or `Token`), not necessarily USD.
 
 ```bash
 curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
@@ -165,8 +165,10 @@ Filters: `service_id`, `scope` (`Individual`/`Global`), `user_id` (superuser onl
 
 Before reporting that a subscription is usable:
 
-1. Run `balance --json` and check `disabled` and `expired_at` alongside `remaining_amount`; a positive balance alone is not an availability check.
-2. For proxy services, paused balance synchronization or a synchronization timeout returns the last saved balance. Check the current service status in the console before reporting availability; a successful balance query does not prove the service is currently usable. Keep using the same platform token, balance endpoint and field names.
+1. Run `balance --json` and check `disabled` and `expired_at` alongside `remaining_amount`; a positive balance alone is not an availability check. Check for null before comparing balances, and use the returned `service.unit` for thresholds.
+2. Read `allow_overdraft` from the application list or detail. It is a read-only boolean, defaults to `false`, and requires separate administrator authorization; do not try to enable it through application create/update parameters. For `type="Usage"` with `allow_overdraft=true`, a low or negative balance alone does not block calls: normal usage charges continue. A negative balance is unsettled usage; recharge offsets it without resetting `used_amount`. Disabled applications, expiry and API credential limits still apply. A missing flag is not an overdraft grant; `Period` applications do not support overdraft.
+3. An overdraft-enabled Usage application keeps charging its own balance even below zero; it does not switch to the global account due to insufficient balance. Otherwise, `allow_consume_global` controls fallback; any overdraft permission then belongs to the global Application actually charged, not the originating one.
+4. For proxy services, paused balance synchronization or a synchronization timeout returns the last saved balance. Check the current service status in the console before reporting availability; a successful balance query does not prove the service is currently usable. Keep using the same platform token, balance endpoint and field names.
 
 ### Usage records — `GET /usage/apis/`
 
@@ -386,8 +388,8 @@ publishing announcements or blogs are **irreversible, money-related or publicly 
 
 - Use the **platform token** (`ACEDATACLOUD_PLATFORM_TOKEN`), not the
   `api.acedata.cloud` service token — the latter returns 401 here.
-- `remaining_amount` / `used_amount` / `amount` are in **Credits**, not USD.
-  Convert with a service's package: `USD = Credits × (package.price / package.amount)`.
+- Read `service.unit` before interpreting `remaining_amount` / `used_amount` / `amount`; they are not automatically USD.
+  For Credit-based services, convert with a service's USD package: `USD = Credits × (package.price / package.amount)`.
 - Newly created credential/platform tokens are returned in full **only once** —
   store them immediately.
 - Credential "rotate" is delete + recreate; there is no in-place rotate endpoint.

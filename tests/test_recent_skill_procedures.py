@@ -519,6 +519,43 @@ class AccountBalanceAndUsageProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, self.balance)
 
+    def test_overdraft_balance_check_is_read_only_and_usage_scoped(self):
+        for requirement in (
+            "Check for null before comparing balances", "returned `service.unit`",
+            "Read `allow_overdraft` from the application list or detail",
+            "read-only boolean", "defaults to `false`", "separate administrator authorization",
+            "do not try to enable it through application create/update parameters",
+            '`type="Usage"` with `allow_overdraft=true`',
+            "low or negative balance alone does not block calls", "normal usage charges continue",
+            "negative balance is unsettled usage", "recharge offsets it without resetting `used_amount`",
+            "Disabled applications, expiry and API credential limits still apply",
+            "missing flag is not an overdraft grant", "`Period` applications do not support overdraft",
+            "keeps charging its own balance even below zero",
+            "does not switch to the global account due to insufficient balance",
+            "`allow_consume_global` controls fallback",
+            "global Application actually charged, not the originating one",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.balance)
+
+    def test_balance_json_preserves_overdraft_and_nullable_or_negative_amounts(self):
+        script = ROOT / "skills/acedatacloud/scripts/acedatacloud.py"
+        spec = importlib.util.spec_from_file_location("acedatacloud_balance_skill", script)
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        for flag in ({}, {"allow_overdraft": False}, {"allow_overdraft": True}):
+            for remaining in (None, -2.5, 0, 10):
+                with self.subTest(flag=flag, remaining=remaining):
+                    item = {"id": "TEST_APPLICATION", "remaining_amount": remaining,
+                            "type": "Usage", "service": {"unit": "Credit"}, **flag}
+                    payload = {"count": 1, "items": [item]}
+                    with patch.object(cli.sys, "argv", ["acedatacloud.py", "balance", "--json"]), patch.object(
+                        cli, "_request", return_value=(200, payload)
+                    ) as request, redirect_stdout(io.StringIO()) as output:
+                        cli.main()
+                    self.assertEqual(request.call_args.args[1:3], ("GET", "/applications/"))
+                    self.assertEqual(json.loads(output.getvalue()), payload)
+
     def test_usage_window_and_body_lifetime_are_distinct(self):
         for requirement in (
             "list, aggregate and CSV export queries", "most recent 60 days",
