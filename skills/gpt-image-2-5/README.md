@@ -84,3 +84,5 @@ Use the exact task response fields and terminal states in SKILL.md. A URL in thi
 | Media URL unavailable | Confirm terminal success and use the actual returned URL; share only task/trace ID with support. |
 
 Support: [dev@acedata.cloud](mailto:dev@acedata.cloud). Source: [AceDataCloud/Skills](https://github.com/AceDataCloud/Skills). skills.sh installation counters are not unique users or revenue. Source links use the four supported UTM fields for this skills.sh guide; they do not prove a registration or payment.
+
+This Skill also supports GPT Image 2.6 Flare/Sunburst and their `:reverse` / `:official` variants. Keep the existing installation slug `gpt-image-2-5`.
