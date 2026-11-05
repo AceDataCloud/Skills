@@ -343,6 +343,44 @@ Use `POST /aichat2/scheduled-tasks` on `https://api.acedata.cloud` with the same
 5. Consecutive AI execution failures **do not auto-pause** the task: the next scheduled run still attempts execution. Auto-pause occurs after **five consecutive handoff failures** to the execution service, not five failed AI runs. Insufficient balance fails a run; a request for user input/consent fails with `awaiting_user_input`. Diagnose the run history, fix balance/authorization/prompt issues, and explicitly pause recurring failures to prevent further attempts.
 6. Pause with `action="update"`, the task `id` and `state="disabled"`; resume with `state="enabled"` only after confirmation. Delete with `action="delete"` and `id` only after confirming permanent removal.
 
+### Timing jitter and trigger probability
+
+Confirm these settings before creating or updating a task; preserve explicit zero values. Send them at the request's top level, not inside `schedule` or `template`:
+
+| Field | Values and behavior |
+|-------|---------------------|
+| `jitter_seconds` | Nonnegative integer seconds, default `60`; `0` disables jitter. Cloud runs independently shift before or after their planned time. For interval tasks, the actual jitter is capped at one quarter of `interval_seconds`. Local runs do not use jitter. |
+| `trigger_probability` | Number from `0` to `1`, default `1` (including older tasks without this field). `0` skips every attempt; `1` starts every attempt. Each account is sampled independently when due, independently of jitter; this is not a fixed quota of accounts per cycle. |
+
+Probability applies to cloud, local and **Run now** attempts. Sampling happens before conversation creation, model calls and billing. A skipped attempt has `status="skipped"` and `error_code="probability_skipped"`: it creates no conversation, incurs no model charge and does not pause the task. Repeated callbacks reuse the saved sampling result, not a new draw. Changing probability does not reset the next planned execution time. Inspect history rather than retrying **Run now** to force a start.
+
+### Account-bound cloud runs
+
+After confirming each connected account, allowed Skill and per-account spending scope, save selections in top-level `unattended_policy.connection_bindings`. One connector may have multiple distinct `connection_id` values; other connectors must each use one account. The task supports at most 100 bindings total. Local execution still permits only one account per connector. Replace placeholders with actual connected account IDs and installed, authorized Skills; never guess IDs or copy credentials into the request.
+
+For an already confirmed read-only task, preview this update and obtain confirmation before sending:
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "update",
+  "id": "TASK_ID",
+  "jitter_seconds": 0,
+  "trigger_probability": 1,
+  "unattended_policy": {
+    "allowed_skills": ["github"],
+    "connection_bindings": [
+      {"connector_identifier": "github/github", "connection_id": "CONNECTED_ACCOUNT_ONE_ID"},
+      {"connector_identifier": "github/github", "connection_id": "CONNECTED_ACCOUNT_TWO_ID"}
+    ]
+  }
+}
+```
+
+Each triggered account gets an independently authorized, billed run and its own conversation; one account's failure does not block the others. Zero jitter does not guarantee simultaneous starts. The task list remains one configuration, and its next execution time is the earliest across accounts. Changing account selections reschedules runs; changing the prompt does not reset execution times. Pause, resume and delete affect all accounts, but already-started runs may finish. Existing single-account tasks stay unchanged; multi-account selection does not merge old task copies. Review and explicitly pause duplicates to avoid duplicate charges.
+
+For **Run now**, inspect every returned `runs[]` entry's `run_id`, `status` and, when started, `conversation_id`, plus `triggered_count` and `skipped_count`. Compatibility fields refer only to the first actually started run; when all attempts skip, no `conversation_id` is returned. A missing conversation is not automatically a failure. In run history, `run_accounts` snapshots the accounts actually selected for that run; later binding changes do not rewrite it. Older/default-account runs may omit it. If an explicitly bound account expires, is revoked or deleted, do not substitute the connector's default account; reauthorize the intended account before resuming.
+
 ### Search and page through scheduled tasks
 
 Use `action="retrieve_batch"` with optional `search` to find task names across all tasks owned by the current user, before pagination. Matching is a case-insensitive substring search with surrounding whitespace ignored, not a regular expression. Omitted or empty `search` lists all tasks, newest-created first.
