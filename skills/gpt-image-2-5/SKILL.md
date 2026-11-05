@@ -1,23 +1,30 @@
 ---
 name: gpt-image-2-5
-description: GPT Image 2.5 by Ace Data Cloud. Generate and edit images using Flare for speed or Sunburst for higher-fidelity control. Use when the user asks for GPT Image, gpt-image-2.5-flare or gpt-image-2.5-sunburst image generation or editing.
+description: Generate or edit GPT Image 2.5 and 2.6 images through Ace Data Cloud using Flare or Sunburst, including reverse and official variants. Use for GPT Image generation and reference-image editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
 # GPT Image by Ace Data Cloud
 
+Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
+
 Use one exact model ID for every request:
 
 - `gpt-image-2.5-flare` — faster generation.
+- `gpt-image-2.6-flare` — faster generation.
 - `gpt-image-2.5-flare:reverse` — explicit reverse alias, equivalent to `gpt-image-2.5-flare`.
+- `gpt-image-2.6-flare:reverse` — explicit reverse alias, equivalent to `gpt-image-2.6-flare`.
 - `gpt-image-2.5-sunburst` — higher-fidelity output and editing control.
+- `gpt-image-2.6-sunburst` — higher-fidelity output and editing control.
 - `gpt-image-2.5-sunburst:reverse` — explicit reverse alias, equivalent to `gpt-image-2.5-sunburst`.
+- `gpt-image-2.6-sunburst:reverse` — explicit reverse alias, equivalent to `gpt-image-2.6-sunburst`.
 - `gpt-image-2.5-flare:official` — Flare using the official, token-billed variant.
+- `gpt-image-2.6-flare:official` — Flare using the official, token-billed variant.
 - `gpt-image-2.5-sunburst:official` — Sunburst using the official, token-billed variant.
+- `gpt-image-2.6-sunburst:official` — Sunburst using the official, token-billed variant.
 
 Do not send `gpt-image-2.5` or `gpt-image-2.5:reverse`; they are not model IDs. To explicitly select a reverse variant, replace `model` in Generate or Edit with the complete `:reverse` alias above; preserve the suffix. Both aliases support generation JSON, URL-edit JSON and multipart file edits with the same parameter limits as their unsuffixed names.
 
@@ -62,11 +69,13 @@ The result is in `data[].url`.
 
 - `size` may be `auto` or `WIDTHxHEIGHT`.
 - Custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
-- For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst` (including their `:reverse` and `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
+- For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. GPT Image 2.5 and 2.6 Flare/Sunburst (including their `:reverse` and `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
 - Pass `quality` in generation JSON, URL-edit JSON, or multipart file edits (for example, `"quality":"xhigh"` in JSON or `-F "quality=max"` in multipart). On `:official` variants, quality affects token usage; the displayed pre-request price is an estimate, not the final charge.
 - `n` accepts 1–10. Use URL output for `n>1`; `b64_json` requires `n=1`.
-- Unsuffixed Flare/Sunburst and their `:reverse` aliases bill per successful image, with a base price of 0.19 Credits per image for generation and editing. Check current account pricing and final usage records; token statistics in a reverse response do not change its billing mode.
-- During automatic recovery, reverse models (including `:reverse` aliases) may be fulfilled using GPT Image 2.5 Flare; the requested model and per-successful-image billing remain unchanged. Do not resubmit to force recovery or silently change the user's requested model.
+- Unsuffixed 2.5 Flare/Sunburst and their `:reverse` aliases bill per successful image, with a base price of 0.19 Credits per image for generation and editing. The corresponding 2.6 models bill 0.22 Credits per image for generation and editing. Check current account pricing and final usage records; token statistics in a reverse response do not change its billing mode.
+- During automatic recovery, 2.5 reverse models (including `:reverse` aliases) may be fulfilled using GPT Image 2.5 Flare; the requested model and per-successful-image billing remain unchanged. Do not resubmit to force recovery or silently change the user's requested model.
 - The `:official` variants bill for actual text, reference-image, and output-image tokens; use returned usage records for final cost.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
 - Image editing accepts URL input in JSON or local files with multipart form data.
+
+For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cross-model fallback is configured for 2.6. Use PNG/JPEG/WebP only; SVG/GIF are not exposed. Official 2.6 variants use the same token rates as 2.5.

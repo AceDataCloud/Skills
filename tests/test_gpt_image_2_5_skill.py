@@ -55,7 +55,7 @@ class GPTImage25SkillContractTests(unittest.TestCase):
         quality = next(line for line in text.splitlines() if line.startswith("- For generation and editing, `quality`"))
         for requirement in (
             "`auto` (default), `low`, `medium`, or `high`",
-            "Only `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst`",
+            "GPT Image 2.5 and 2.6 Flare/Sunburst",
             "including their `:reverse` and `:official` variants",
             "`xhigh` and `max`",
             "do not use those extra levels with other GPT Image models",

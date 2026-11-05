@@ -74,3 +74,5 @@ curl -X POST https://api.acedata.cloud/openai/tasks \
 - **媒体打不开**：确认终态，使用实际返回 URL；支持排障只提供 task/trace ID，不提供 Key。
 
 联系 [dev@acedata.cloud](mailto:dev@acedata.cloud)。站点安装数不代表独立用户或营收；本页四项 UTM 只标识 skills.sh 来源，不证明注册或付费。
+
+此 Skill 同时支持 GPT Image 2.6 Flare/Sunburst，以及各自的 `:reverse` 和 `:official` 变体；安装名称保持 `gpt-image-2-5`。
