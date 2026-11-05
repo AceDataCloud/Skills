@@ -79,7 +79,7 @@
       "source": "skills/gpt-image-2-5",
       "slug": "gpt-image",
       "display_name": "GPT Image by Ace Data Cloud",
-      "description": "Generate and edit GPT Image 2.5 images through Ace Data Cloud with Flare or Sunburst. Use when the user selects GPT Image; return the image or retrieve the original asynchronous task.",
+      "description": "Generate and edit GPT Image 2.5 and 2.6 images through Ace Data Cloud with Flare or Sunburst. Use when the user selects GPT Image; return the image or retrieve the original asynchronous task.",
       "categories": [
         "creative"
       ],
