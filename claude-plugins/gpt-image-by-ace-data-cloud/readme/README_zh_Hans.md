@@ -47,7 +47,7 @@
 
 工具名：`gpt_image_list_models`, `gpt_image_generate`, `gpt_image_edit`, `gpt_image_get_task`, `gpt_image_list_tasks`。
 
-已发布的 GPT Image 专用 profile 只有上述五个图片/任务/本地参考工具，排除 chat/audio/embedding、DALL-E 和 Nano Banana；生成与编辑必须显式选 GPT Image 模型，不新增 fallback。插件启动 `uvx mcp-openai-pro==2026.11.6.0 --profile gpt-image`，把原生敏感配置只传为本地进程的 ACEDATACLOUD_API_TOKEN。缺 uvx 时从 uv 官方安装源安装；首次启动可能按本机正常包配置下载固定公开 Python 包与依赖。没有独立 hosted GPT Image URL，不改用泛 OpenAI 远端。仍使用图片/任务权限专用 Key。
+已发布的 GPT Image 专用 profile 只有上述五个图片/任务/本地参考工具，排除 chat/audio/embedding、DALL-E 和 Nano Banana；生成与编辑必须显式选 GPT Image 模型，不新增 fallback。插件启动 `uvx mcp-openai-pro==2026.11.6.1 --profile gpt-image`，把原生敏感配置只传为本地进程的 ACEDATACLOUD_API_TOKEN。缺 uvx 时从 uv 官方安装源安装；首次启动可能按本机正常包配置下载固定公开 Python 包与依赖。没有独立 hosted GPT Image URL，不改用泛 OpenAI 远端。仍使用图片/任务权限专用 Key。
 
 ## 常见问题与隐私
 
