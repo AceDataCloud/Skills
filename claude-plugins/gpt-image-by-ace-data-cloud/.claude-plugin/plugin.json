@@ -1,6 +1,6 @@
 {
   "name": "gpt-image-by-ace-data-cloud",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "GPT Image by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
   "author": {
     "name": "Ace Data Cloud",
@@ -27,7 +27,7 @@
     "gpt-image": {
       "command": "uvx",
       "args": [
-        "mcp-openai-pro==2026.11.6.0",
+        "mcp-openai-pro==2026.11.6.1",
         "--profile",
         "gpt-image"
       ],

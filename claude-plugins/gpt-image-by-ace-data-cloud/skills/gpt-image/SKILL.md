@@ -22,7 +22,7 @@ For generation/editing, collect the user's intended input, model and output limi
 
 When an operation returns only a task ID, retain that exact ID and poll the related get-task tool at the documented interval until success or failure. Do not submit again to check progress, automatically retry billable writes, or treat a task ID/partial preview as completion. If the result already contains terminal success and final media URLs, report those. Surface rate-limit, moderation, balance and internal errors accurately rather than claiming success.
 
-The plugin starts the published `mcp-openai-pro==2026.11.6.0 --profile gpt-image` stdio profile. Its five-tool catalog excludes chat, audio, embeddings, DALL-E and Nano Banana. An explicit GPT Image model is required for creation/editing; no model fallback is added. The saved Token is passed only as ACEDATACLOUD_API_TOKEN to that process, never inserted into the conversation. Keep its key restricted to image/task APIs.
+The plugin starts the published `mcp-openai-pro==2026.11.6.1 --profile gpt-image` stdio profile. Its five-tool catalog excludes chat, audio, embeddings, DALL-E and Nano Banana. An explicit GPT Image model is required for creation/editing; no model fallback is added. The saved Token is passed only as ACEDATACLOUD_API_TOKEN to that process, never inserted into the conversation. Keep its key restricted to image/task APIs.
 
 This plugin does not make GPT Image a native Claude chat model, and installation does not establish Anthropic directory approval. The full existing API reference remains maintained at https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5; read it only when an advanced action needs it.
 

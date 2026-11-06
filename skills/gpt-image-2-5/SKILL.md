@@ -83,12 +83,14 @@ For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cr
 
 ## Animated GIF (GPT Image 2.6)
 
-GIF generation and editing support `gpt-image-2.6-flare`, `gpt-image-2.6-flare:reverse`, `gpt-image-2.6-flare:official`, and `gpt-image-2.6-sunburst:official` only. Ordinary/reverse Sunburst GIF is unavailable; do not silently change the requested model.
+GIF generation and editing support `gpt-image-2.6-flare`, `gpt-image-2.6-flare:reverse`, `gpt-image-2.6-flare:official`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-sunburst:reverse`, and `gpt-image-2.6-sunburst:official`. Do not silently change the requested model.
 
-Set `output_format: "gif"` in generation JSON, URL-edit JSON, or multipart file edits. GIF defaults to a `512x512` preview, `frame_count: 9`, and `frame_duration_ms: 200`; omitted size or `size: "auto"` uses the GIF preview default. The returned GIF can have different actual dimensions. Frame controls accept positive integers and apply only to GIF. Native animation, frame timing, and looping are preserved in both URL and Base64 output. Static 4K sizes do not apply to GIF.
+Set `output_format: "gif"` in generation JSON, URL-edit JSON, or multipart file edits. GIF defaults to a `512x512` preview, `frame_count: 9`, and `frame_duration_ms: 200`; omitted size or `size: "auto"` uses the GIF preview default. The returned GIF can have different actual dimensions. GIF frame counts must be integers from 2 to 16. Frame duration must be an integer from 20 to 655350 ms, rounded to the nearest 10ms when encoded. Frame controls apply only to GIF. Native animation, frame timing, and looping are preserved in both URL and Base64 output. Static 4K sizes do not apply to GIF.
 
 ```json
 {"model":"gpt-image-2.6-flare","prompt":"A red ball bouncing in a seamless loop","output_format":"gif","size":"512x512","frame_count":9,"frame_duration_ms":200,"n":1,"async":true}
 ```
 
 Keep the original task ID and poll it to completion. The normal per-image or official token billing for the requested model still applies; inspect actual usage for the final charge.
+
+GPT Image 2.6 supports `complexity="low"|"medium"|"high"` (omitted: model default high). Static edits accept `markup`: a PNG with transparent pixels, matching the first reference after orientation, up to 16,777,216 pixels per image and 40MB for the annotation. JSON accepts an HTTPS URL, PNG data URL or an object containing only `image_url`; multipart accepts an annotation file. Do not combine markup with mask, GIF or prompt_rewriter. GIF frame count is 2–16; frame duration is 20–655350ms, rounded to 10ms. GIF rejects masks, custom compression and partial streaming. Pricing is unchanged.
