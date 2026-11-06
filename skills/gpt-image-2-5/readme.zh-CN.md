@@ -76,3 +76,5 @@ curl -X POST https://api.acedata.cloud/openai/tasks \
 联系 [dev@acedata.cloud](mailto:dev@acedata.cloud)。站点安装数不代表独立用户或营收；本页四项 UTM 只标识 skills.sh 来源，不证明注册或付费。
 
 此 Skill 同时支持 GPT Image 2.6 Flare/Sunburst，以及各自的 `:reverse` 和 `:official` 变体；安装名称保持 `gpt-image-2-5`。
+
+原生 GIF 生成和编辑支持 GPT Image 2.6 Flare 普通、reverse、official，以及 Sunburst official。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。Sunburst 普通/reverse 暂不支持 GIF。静态 PNG/JPEG/WebP 支持 4K；GIF 不支持 4K 尺寸。

@@ -47,7 +47,7 @@
 
 工具名：`gpt_image_list_models`, `gpt_image_generate`, `gpt_image_edit`, `gpt_image_get_task`, `gpt_image_list_tasks`。
 
-已发布的 GPT Image 专用 profile 只有上述五个图片/任务/本地参考工具，排除 chat/audio/embedding、DALL-E 和 Nano Banana；生成与编辑必须显式选 GPT Image 模型，不新增 fallback。插件启动 `uvx mcp-openai-pro==2026.11.5.0 --profile gpt-image`，把原生敏感配置只传为本地进程的 ACEDATACLOUD_API_TOKEN。缺 uvx 时从 uv 官方安装源安装；首次启动可能按本机正常包配置下载固定公开 Python 包与依赖。没有独立 hosted GPT Image URL，不改用泛 OpenAI 远端。仍使用图片/任务权限专用 Key。
+已发布的 GPT Image 专用 profile 只有上述五个图片/任务/本地参考工具，排除 chat/audio/embedding、DALL-E 和 Nano Banana；生成与编辑必须显式选 GPT Image 模型，不新增 fallback。插件启动 `uvx mcp-openai-pro==2026.11.6.0 --profile gpt-image`，把原生敏感配置只传为本地进程的 ACEDATACLOUD_API_TOKEN。缺 uvx 时从 uv 官方安装源安装；首次启动可能按本机正常包配置下载固定公开 Python 包与依赖。没有独立 hosted GPT Image URL，不改用泛 OpenAI 远端。仍使用图片/任务权限专用 Key。
 
 ## 常见问题与隐私
 
@@ -60,3 +60,5 @@
 插件没有 hooks、遥测或后台生成；声明的 uvx MCP 命令首次启动可能下载固定 Python 包和依赖，不通过安装hook改全局 Python。本地 MCP 只接收配置的 Ace 凭据和所选图片/任务参数。只发送用户选定的提示词/参考媒体，不发送无关会话和文件。服务端存储见 [隐私政策](https://platform.acedata.cloud/privacy)、[条款](https://platform.acedata.cloud/terms) 与 [支持](https://platform.acedata.cloud/support)。集成图标使用 Ace 标志，准确标识提供方。
 
 [完整英文步骤与三个示例](../README.md) · [已有维护源](https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5)
+
+原生 GIF 生成和编辑支持 GPT Image 2.6 Flare 普通、reverse、official，以及 Sunburst official。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。Sunburst 普通/reverse 暂不支持 GIF。静态 PNG/JPEG/WebP 支持 4K；GIF 不支持 4K 尺寸。
