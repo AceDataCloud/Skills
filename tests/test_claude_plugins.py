@@ -79,6 +79,31 @@ class ClaudeServicePluginTests(unittest.TestCase):
             self.assertNotIn("$ANTHROPIC_AUTH_TOKEN", text)
             self.assertNotIn("$ANTHROPIC_API_KEY", text)
 
+    def test_gpt_image_controls_distinguish_backend_support_from_tool_limits(self):
+        folder = PLUGIN_ROOT / "gpt-image-by-ace-data-cloud"
+        skill = (folder / "skills/gpt-image/SKILL.md").read_text()
+        for requirement in (
+            "Flare/Sunburst (standard, reverse, official)",
+            "does not prove that the pinned MCP exposes every combination",
+            "live input schema", "`gpt_image_list_models`",
+            "do not bypass validation or silently switch models",
+            "Frames must be integers 2–16", "integer 20–655350 ms",
+            "nearest 10ms", "`n` counts GIF files, not frames",
+            "masks, markup, custom compression, prompt rewriting or partial-image streaming",
+            "model pixel budget", "independently of `quality`", "no separate surcharge",
+            "only if the connected edit schema accepts it", "transparent pixels",
+            "16,777,216 pixels", "40MB", "same-task polling",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, skill)
+        for doc in (
+            folder / "README.md", folder / "readme/README_zh_Hans.md",
+            folder / "skills/gpt-image/SKILL.md",
+        ):
+            text = doc.read_text()
+            self.assertNotIn("Ordinary/reverse Sunburst GIF is unavailable", text)
+            self.assertNotIn("Sunburst 普通/reverse 暂不支持 GIF", text)
+
     def test_guides_and_image_references_survive_plugin_copy(self):
         for service in EXPECTED:
             folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"

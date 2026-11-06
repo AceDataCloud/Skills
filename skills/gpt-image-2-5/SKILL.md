@@ -1,6 +1,6 @@
 ---
 name: gpt-image-2-5
-description: Generate or edit GPT Image 2.5 and 2.6 images through Ace Data Cloud using Flare or Sunburst, including reverse and official variants. Use for GPT Image generation and reference-image editing.
+description: Generate or edit GPT Image 2.5 and 2.6 images through Ace Data Cloud using Flare or Sunburst, including reverse and official variants. Use for image generation, reference-image editing, 2.6 animated GIFs and annotation-guided static edits.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -78,7 +78,7 @@ The result is in `data[].url`.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
 - Image editing accepts URL input in JSON or local files with multipart form data.
 
-For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cross-model fallback is configured for 2.6. Static output supports PNG/JPEG/WebP, including 4K `3840x2160` or `2160x3840`; SVG is not exposed. Official 2.6 variants use the same token rates as 2.5.
+For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cross-model fallback is configured for 2.6. Static generation and editing support PNG/JPEG/WebP, including 4K `3840x2160` or `2160x3840`; pass concrete pixels, not `size: "4K"`. `4096x4096` exceeds the pixel limit. SVG is not exposed. Official 2.6 variants use the same token rates as 2.5.
 
 
 ## Animated GIF (GPT Image 2.6)
@@ -91,6 +91,32 @@ Set `output_format: "gif"` in generation JSON, URL-edit JSON, or multipart file 
 {"model":"gpt-image-2.6-flare","prompt":"A red ball bouncing in a seamless loop","output_format":"gif","size":"512x512","frame_count":9,"frame_duration_ms":200,"n":1,"async":true}
 ```
 
-Keep the original task ID and poll it to completion. The normal per-image or official token billing for the requested model still applies; inspect actual usage for the final charge.
+For image-to-GIF, send the same GIF controls to `/openai/images/edits` with `image` and a prompt describing the motion and what to preserve. Use an image URL in JSON or `-F "image=@input.png"` with multipart; pass GIF controls as form fields for multipart.
 
-GPT Image 2.6 supports `complexity="low"|"medium"|"high"` (omitted: model default high). Static edits accept `markup`: a PNG with transparent pixels, matching the first reference after orientation, up to 16,777,216 pixels per image and 40MB for the annotation. JSON accepts an HTTPS URL, PNG data URL or an object containing only `image_url`; multipart accepts an annotation file. Do not combine markup with mask, GIF or prompt_rewriter. GIF frame count is 2–16; frame duration is 20–655350ms, rounded to 10ms. GIF rejects masks, custom compression and partial streaming. Pricing is unchanged.
+Keep the original task ID and poll it to completion; do not resubmit a pending job. `n` counts returned GIF files, not animation frames. The normal per-successful-file or official token billing for the requested model still applies; inspect actual usage for the final charge.
+
+Do not combine GIF with `mask`, `markup`, `output_compression`, `prompt_rewriter` or partial-image streaming. Incompatible combinations are rejected before generation. Size, frame count and `n` share a model pixel budget: ordinary Flare has a verified `1024x1024`, 2-frame combination, not blanket support for every 1K combination or 4K GIF. Start with the recommended `512x512`, 9-frame, 200ms settings.
+
+## Planning complexity (GPT Image 2.6 only)
+
+For generation or editing, pass `complexity: "low"`, `"medium"` or `"high"` in JSON, or `-F "complexity=medium"` in multipart. Omission uses the model default `high`. Complexity controls composition planning independently of rendering `quality`; it has no separate per-request surcharge, while official variants still bill actual token usage. Do not send it to other models.
+
+## Annotation-guided static editing (GPT Image 2.6 only)
+
+1. Prepare a PNG annotation layer with transparent pixels and the same dimensions as the first reference image after orientation correction. Mark the areas to change and explain the intended changes in `prompt`. Each image must be at most 16,777,216 pixels; the annotation must be at most 40MB.
+2. Submit `image`, `prompt` and `markup` to `/openai/images/edits` with the user's exact 2.6 model. JSON `markup` accepts an HTTPS URL, PNG base64 data URL or an object containing only `image_url`; multipart accepts an annotation file or HTTPS URL. `file_id` is not supported.
+3. Use static PNG/JPEG/WebP output. Do not combine `markup` with `mask`, GIF or `prompt_rewriter`. Omit `input_fidelity` for GPT Image 2.6; it is not applicable.
+4. Poll the same task ID to its terminal result and use the returned media URL.
+
+```bash
+curl -X POST https://api.acedata.cloud/openai/images/edits \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -F "model=gpt-image-2.6-sunburst:reverse" \
+  -F "image=@input.png" \
+  -F "markup=@annotation.png" \
+  -F "prompt=Change only the circled background area to dark navy; preserve the subject." \
+  -F "output_format=png" \
+  -F "complexity=medium" \
+  -F "n=1" \
+  -F "async=true"
+```

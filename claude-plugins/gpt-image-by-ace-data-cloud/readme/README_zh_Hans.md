@@ -61,4 +61,4 @@
 
 [完整英文步骤与三个示例](../README.md) · [已有维护源](https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5)
 
-原生 GIF 生成和编辑支持 GPT Image 2.6 Flare 普通、reverse、official，以及 Sunburst official。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。Sunburst 普通/reverse 暂不支持 GIF。静态 PNG/JPEG/WebP 支持 4K；GIF 不支持 4K 尺寸。
+Backend API 的原生 GIF 生成和编辑支持 GPT Image 2.6 Flare/Sunburst 普通、reverse、official。固定版本 MCP 暴露的组合可能更少：提交前检查实时输入 schema 和 `gpt_image_list_models` 参考；不支持时说明工具限制，不绕过校验或擅自换模型。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。GIF 限制、构图复杂度和标注引导静态编辑见[插件流程](../skills/gpt-image/SKILL.md)。静态 PNG/JPEG/WebP 支持具体 4K 像素尺寸；GIF 不能套用静态 4K 规格。
