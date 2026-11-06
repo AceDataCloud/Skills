@@ -57,7 +57,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
                 self.assertEqual(server["command"], "uvx")
                 self.assertEqual(
                     server["args"],
-                    ["mcp-openai-pro==2026.11.5.0", "--profile", "gpt-image"],
+                    ["mcp-openai-pro==2026.11.6.0", "--profile", "gpt-image"],
                 )
                 self.assertEqual(
                     server["env"],

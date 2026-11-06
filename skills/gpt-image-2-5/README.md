@@ -86,3 +86,5 @@ Use the exact task response fields and terminal states in SKILL.md. A URL in thi
 Support: [dev@acedata.cloud](mailto:dev@acedata.cloud). Source: [AceDataCloud/Skills](https://github.com/AceDataCloud/Skills). skills.sh installation counters are not unique users or revenue. Source links use the four supported UTM fields for this skills.sh guide; they do not prove a registration or payment.
 
 This Skill also supports GPT Image 2.6 Flare/Sunburst and their `:reverse` / `:official` variants. Keep the existing installation slug `gpt-image-2-5`.
+
+Native GIF generation/editing is available for GPT Image 2.6 Flare (standard, reverse, official) and Sunburst official. Use `output_format=gif`, with optional `frame_count` and `frame_duration_ms` (defaults: 9 frames, 200 ms, 512x512 preview). Ordinary/reverse Sunburst GIF is unavailable. Static PNG/JPEG/WebP supports 4K; 4K is not a GIF size.

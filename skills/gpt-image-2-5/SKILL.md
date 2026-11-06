@@ -68,7 +68,7 @@ The result is in `data[].url`.
 ## Shared contract
 
 - `size` may be `auto` or `WIDTHxHEIGHT`.
-- Custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
+- Static PNG/JPEG/WebP custom dimensions use multiples of 16, max side 3840, 655,360–8,294,400 pixels, and aspect ratio at most 3:1.
 - For generation and editing, `quality` accepts `auto` (default), `low`, `medium`, or `high`. GPT Image 2.5 and 2.6 Flare/Sunburst (including their `:reverse` and `:official` variants) additionally support `xhigh` and `max`; do not use those extra levels with other GPT Image models.
 - Pass `quality` in generation JSON, URL-edit JSON, or multipart file edits (for example, `"quality":"xhigh"` in JSON or `-F "quality=max"` in multipart). On `:official` variants, quality affects token usage; the displayed pre-request price is an estimate, not the final charge.
 - `n` accepts 1–10. Use URL output for `n>1`; `b64_json` requires `n=1`.
@@ -78,4 +78,17 @@ The result is in `data[].url`.
 - For long jobs, pass `async: true` or `callback_url`, then poll `POST /openai/tasks` with `{"id":"<task_id>"}`.
 - Image editing accepts URL input in JSON or local files with multipart form data.
 
-For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cross-model fallback is configured for 2.6. Use PNG/JPEG/WebP only; SVG/GIF are not exposed. Official 2.6 variants use the same token rates as 2.5.
+For 2.6, use the complete Flare/Sunburst ID; `gpt-image-2.6` is not valid. No cross-model fallback is configured for 2.6. Static output supports PNG/JPEG/WebP, including 4K `3840x2160` or `2160x3840`; SVG is not exposed. Official 2.6 variants use the same token rates as 2.5.
+
+
+## Animated GIF (GPT Image 2.6)
+
+GIF generation and editing support `gpt-image-2.6-flare`, `gpt-image-2.6-flare:reverse`, `gpt-image-2.6-flare:official`, and `gpt-image-2.6-sunburst:official` only. Ordinary/reverse Sunburst GIF is unavailable; do not silently change the requested model.
+
+Set `output_format: "gif"` in generation JSON, URL-edit JSON, or multipart file edits. GIF defaults to a `512x512` preview, `frame_count: 9`, and `frame_duration_ms: 200`; omitted size or `size: "auto"` uses the GIF preview default. The returned GIF can have different actual dimensions. Frame controls accept positive integers and apply only to GIF. Native animation, frame timing, and looping are preserved in both URL and Base64 output. Static 4K sizes do not apply to GIF.
+
+```json
+{"model":"gpt-image-2.6-flare","prompt":"A red ball bouncing in a seamless loop","output_format":"gif","size":"512x512","frame_count":9,"frame_duration_ms":200,"n":1,"async":true}
+```
+
+Keep the original task ID and poll it to completion. The normal per-image or official token billing for the requested model still applies; inspect actual usage for the final charge.
