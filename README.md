@@ -127,7 +127,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
-| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5/2.6 Flare or Sunburst, including reverse/official variants and xhigh/max quality |
+| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit GPT Image 2.5/2.6 Flare or Sunburst images, including reverse/official variants, 2.6 animated GIFs and annotation-guided static edits |
 | [midjourney-image](skills/midjourney-image/) | Generate, edit, upscale, and describe Midjourney images or videos |
 | [flux-image](skills/flux-image/) | Generate/edit Flux images and generate FLUX 3 videos |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |

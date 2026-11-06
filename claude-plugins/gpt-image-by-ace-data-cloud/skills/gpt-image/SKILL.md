@@ -26,4 +26,12 @@ The plugin starts the published `mcp-openai-pro==2026.11.6.1 --profile gpt-image
 
 This plugin does not make GPT Image a native Claude chat model, and installation does not establish Anthropic directory approval. The full existing API reference remains maintained at https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5; read it only when an advanced action needs it.
 
-Native GIF generation/editing is available for GPT Image 2.6 Flare (standard, reverse, official) and Sunburst official. Use `output_format=gif`, with optional `frame_count` and `frame_duration_ms` (defaults: 9 frames, 200 ms, 512x512 preview). Ordinary/reverse Sunburst GIF is unavailable. Static PNG/JPEG/WebP supports 4K; 4K is not a GIF size.
+## GPT Image 2.6 controls
+
+The Backend API supports native GIF generation/editing for GPT Image 2.6 Flare/Sunburst (standard, reverse, official). This does not prove that the pinned MCP exposes every combination: inspect its live input schema and `gpt_image_list_models` reference before submitting. If the connected tool disallows the requested model/format, report that tool limitation; do not bypass validation or silently switch models.
+
+For supported GIF requests, use `output_format=gif`. Start with `size=512x512`, `frame_count=9`, `frame_duration_ms=200`; omitted/auto size uses the preview preset and actual output dimensions may vary. Frames must be integers 2–16; duration must be an integer 20–655350 ms, rounded to the nearest 10ms when encoded. Frame controls are GIF-only; `n` counts GIF files, not frames. Do not combine GIF with masks, markup, custom compression, prompt rewriting or partial-image streaming. Size, frames and file count share a model pixel budget; static 4K limits do not establish GIF support.
+
+For 2.6 generation/editing, `complexity=low/medium/high` controls planning independently of `quality`, defaults to high and has no separate surcharge; official billing still uses actual tokens. For static annotation edits, use `markup` only if the connected edit schema accepts it: a PNG with transparent pixels, matching the first reference after orientation, at most 16,777,216 pixels per image and 40MB for the annotation. Explain the marks in the prompt; do not combine with mask, GIF or prompt rewriting, and do not use `file_id` or `input_fidelity` for this workflow. Use only input forms declared by the tool.
+
+Static PNG/JPEG/WebP generation/editing supports 4K concrete sizes such as `3840x2160`; neither `4K` nor `4096x4096` is a valid size. Follow the same-task polling procedure above.
