@@ -87,4 +87,6 @@ Support: [dev@acedata.cloud](mailto:dev@acedata.cloud). Source: [AceDataCloud/Sk
 
 This Skill also supports GPT Image 2.6 Flare/Sunburst and their `:reverse` / `:official` variants. Keep the existing installation slug `gpt-image-2-5`.
 
-Native GIF generation/editing is available for GPT Image 2.6 Flare (standard, reverse, official) and Sunburst official. Use `output_format=gif`, with optional `frame_count` and `frame_duration_ms` (defaults: 9 frames, 200 ms, 512x512 preview). Ordinary/reverse Sunburst GIF is unavailable. Static PNG/JPEG/WebP supports 4K; 4K is not a GIF size.
+Native GIF generation/editing is available for GPT Image 2.6 Flare/Sunburst (standard, reverse, official). Use `output_format=gif`, with optional `frame_count` and `frame_duration_ms` (defaults: 9 frames, 200 ms, 512x512 preview).  Static PNG/JPEG/WebP supports 4K; 4K is not a GIF size.
+
+GPT Image 2.6 supports `complexity="low"|"medium"|"high"` (omitted: model default high). Static edits accept `markup`: a PNG with transparent pixels, matching the first reference after orientation, up to 16,777,216 pixels per image and 40MB for the annotation. JSON accepts an HTTPS URL, PNG data URL or an object containing only `image_url`; multipart accepts an annotation file. Do not combine markup with mask, GIF or prompt_rewriter. GIF frame count is 2–16; frame duration is 20–655350ms, rounded to 10ms. GIF rejects masks, custom compression and partial streaming. Pricing is unchanged.

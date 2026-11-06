@@ -77,4 +77,6 @@ curl -X POST https://api.acedata.cloud/openai/tasks \
 
 此 Skill 同时支持 GPT Image 2.6 Flare/Sunburst，以及各自的 `:reverse` 和 `:official` 变体；安装名称保持 `gpt-image-2-5`。
 
-原生 GIF 生成和编辑支持 GPT Image 2.6 Flare 普通、reverse、official，以及 Sunburst official。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。Sunburst 普通/reverse 暂不支持 GIF。静态 PNG/JPEG/WebP 支持 4K；GIF 不支持 4K 尺寸。
+原生 GIF 生成和编辑支持 GPT Image 2.6 Flare 普通、reverse、official，以及 Sunburst 普通、reverse、official。设置 `output_format=gif`，可传 `frame_count` 和 `frame_duration_ms`；默认 9 帧、每帧 200ms、512x512 预览。静态 PNG/JPEG/WebP 支持 4K；GIF 不支持 4K 尺寸。
+
+GPT Image 2.6 支持 `complexity=low/medium/high`，省略时使用默认 high。静态编辑可传 `markup` 标注图：含透明像素的 PNG，与第一张参考图方向校正后的尺寸相同，每张图最多 16777216 像素，标注图最大 40MB。JSON 接受 HTTPS URL、PNG data URL 或仅含 image_url 的对象；multipart 接受标注文件。不能与 mask、GIF 或 prompt_rewriter 同用。GIF 帧数为 2–16，每帧时长为 20–655350ms（按10ms取整）；不支持 mask、自定义压缩和部分图像流式输出。价格保持不变。
