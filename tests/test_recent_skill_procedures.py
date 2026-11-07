@@ -1315,7 +1315,7 @@ class AgentTaskProcedureTests(unittest.TestCase):
     def test_scheduled_examples_use_action_payloads_and_bounded_template(self):
         text = read_skill("ai-chat").split("## Scheduled Agent Tasks\n", 1)[1].split("## Gotchas\n", 1)[0]
         examples = {example["action"]: example for example in json_examples(text)}
-        self.assertEqual(set(examples), {"create", "retrieve_batch", "retrieve_runs", "update"})
+        self.assertEqual(set(examples), {"create", "retrieve_batch", "retrieve_runs", "update", "trigger_selected"})
         create = examples["create"]
         self.assertEqual(create["schedule"], {"type": "cron", "cron": "0 9 * * *", "tz": "UTC"})
         self.assertGreaterEqual(create["template"]["max_turns"], 1)
@@ -1346,15 +1346,17 @@ class AgentTaskProcedureTests(unittest.TestCase):
             "default `60`", "`0` disables jitter", "before or after",
             "one quarter of `interval_seconds`", "Local runs do not use jitter",
             "Number from `0` to `1`, default `1`", "older tasks without this field",
-            "`0` skips every attempt", "`1` starts every attempt",
+            "`0` skips every automatic attempt", "`1` starts every automatic attempt",
             "Each account is sampled independently when due, independently of jitter",
             "not a fixed quota of accounts per cycle",
-            "cloud, local and **Run now**", "before conversation creation, model calls and billing",
+            "only to automatic cloud and local scheduled attempts",
+            "not **Run now** or other manual runs", "before conversation creation, model calls and billing",
             '`status="skipped"`', '`error_code="probability_skipped"`',
             "creates no conversation", "incurs no model charge", "does not pause the task",
             "Repeated callbacks reuse the saved sampling result",
             "Changing probability does not reset the next planned execution time",
-            "rather than retrying **Run now** to force a start",
+            "Manual runs bypass probability even when the saved value is `0`",
+            "confirm their accounts and spending scope before triggering",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
@@ -1362,7 +1364,7 @@ class AgentTaskProcedureTests(unittest.TestCase):
 
     def test_account_binding_update_uses_top_level_controls_and_real_id_placeholders(self):
         text = read_skill("ai-chat").split("### Account-bound cloud runs\n", 1)[1]
-        text = text.split("### Search and page through scheduled tasks\n", 1)[0]
+        text = text.split("### Manually trigger selected accounts\n", 1)[0]
         example, = json_examples(text)
         self.assertEqual(set(example), {
             "action", "id", "jitter_seconds", "trigger_probability", "unattended_policy",
@@ -1395,14 +1397,64 @@ class AgentTaskProcedureTests(unittest.TestCase):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, text)
 
-    def test_multi_account_results_handle_all_skipped_without_fabricated_conversations(self):
+    def test_selected_trigger_example_is_a_subset_of_saved_bindings_without_updates(self):
+        text = read_skill("ai-chat").split("## Scheduled Agent Tasks\n", 1)[1].split("## Gotchas\n", 1)[0]
+        examples = list(json_examples(text))
+        binding_update = next(body for body in examples if "unattended_policy" in body)
+        trigger = next(body for body in examples if body["action"] == "trigger_selected")
+        self.assertEqual(trigger, {
+            "action": "trigger_selected", "id": "TASK_ID",
+            "connection_ids": ["CONNECTED_ACCOUNT_ONE_ID"],
+        })
+        saved_ids = {binding["connection_id"] for binding in binding_update["unattended_policy"]["connection_bindings"]}
+        self.assertLess(set(trigger["connection_ids"]), saved_ids)
+        self.assertEqual(len(trigger["connection_ids"]), len(set(trigger["connection_ids"])))
+        for requirement in (
+            "current saved bindings", "exact accounts and billable scope for this invocation",
+            "nothing selected by default", "choose one or more accounts or explicitly select all",
+            "Single-account tasks trigger directly", "required `connection_ids`",
+            "nonempty array of unique IDs", "saved multi-account connector only",
+            "Other connectors' fixed accounts remain attached to each run",
+            "Unknown, removed or out-of-scope IDs reject the entire request without starting any runs",
+            "Do not update saved bindings just to run a subset",
+            "obtain confirmation before sending", 'Legacy `action="trigger"` without an account list',
+            "all configured accounts", "only when that full scope is confirmed",
+            "If an older service rejects `trigger_selected`, surface the error",
+            "never fall back to `trigger` or all accounts",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+    def test_manual_runs_bypass_sampling_and_jitter_without_changing_saved_schedule(self):
+        text = read_skill("ai-chat").split("### Manually trigger selected accounts\n", 1)[1]
+        text = text.split("### Search and page through scheduled tasks\n", 1)[0]
+        for requirement in (
+            "Manual runs bypass `jitter_seconds` and `trigger_probability`",
+            "including a saved probability of `0`", "without waiting for the previous account to finish",
+            "unselected accounts get no run records", "single-account **Run now**",
+            '`action="trigger"` and local manual runs',
+            "Saved account bindings, trigger probability and the next scheduled execution remain unchanged",
+            "authorization checks and normal billing still apply",
+            "records its effective `trigger_probability` as `1`",
+            "without rewriting task configuration or historical records",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        for obsolete in ("all attempts skip", "when started, `conversation_id`", "retrying **Run now** to force a start"):
+            self.assertNotIn(obsolete, read_skill("ai-chat"))
+
+    def test_multi_account_results_require_completion_and_preserve_account_snapshots(self):
         text = read_skill("ai-chat").split("### Account-bound cloud runs\n", 1)[1]
         text = text.split("### Search and page through scheduled tasks\n", 1)[0]
         for requirement in (
-            "every returned `runs[]` entry's `run_id`, `status`",
-            "when started, `conversation_id`", "`triggered_count` and `skipped_count`",
-            "first actually started run", "when all attempts skip, no `conversation_id`",
-            "A missing conversation is not automatically a failure",
+            "On successful cloud acceptance", "every returned `runs[]` entry's `run_id`",
+            '`status="queued"` and `conversation_id`',
+            "`triggered_count` is the number of accounts started",
+            "compatibility `skipped_count` is always `0`",
+            "Top-level compatibility fields point to the first started run",
+            "Queued acceptance is not successful completion",
+            "check final results before reporting success or considering another billable trigger",
+            "opens the conversation for one started account and task run history for multiple accounts",
             "`run_accounts` snapshots the accounts actually selected",
             "later binding changes do not rewrite it", "Older/default-account runs may omit it",
             "expires, is revoked or deleted", "do not substitute the connector's default account",
@@ -1412,6 +1464,7 @@ class AgentTaskProcedureTests(unittest.TestCase):
                 self.assertIn(requirement, text)
         for fabricated_response in ('"runs":', '"conversation_id":', '"triggered_count":'):
             self.assertNotIn(fabricated_response, text)
+        self.assertIn("selected-account manual runs", (ROOT / "README.md").read_text())
 
     def test_scheduled_search_is_owner_scoped_before_pagination(self):
         text = read_skill("ai-chat").split("### Search and page through scheduled tasks\n", 1)[1]

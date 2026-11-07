@@ -349,10 +349,10 @@ Confirm these settings before creating or updating a task; preserve explicit zer
 
 | Field | Values and behavior |
 |-------|---------------------|
-| `jitter_seconds` | Nonnegative integer seconds, default `60`; `0` disables jitter. Cloud runs independently shift before or after their planned time. For interval tasks, the actual jitter is capped at one quarter of `interval_seconds`. Local runs do not use jitter. |
-| `trigger_probability` | Number from `0` to `1`, default `1` (including older tasks without this field). `0` skips every attempt; `1` starts every attempt. Each account is sampled independently when due, independently of jitter; this is not a fixed quota of accounts per cycle. |
+| `jitter_seconds` | Nonnegative integer seconds, default `60`; `0` disables jitter. Automatic cloud runs independently shift before or after their planned time. For interval tasks, the actual jitter is capped at one quarter of `interval_seconds`. Local runs do not use jitter. |
+| `trigger_probability` | Number from `0` to `1`, default `1` (including older tasks without this field). `0` skips every automatic attempt; `1` starts every automatic attempt. Each account is sampled independently when due, independently of jitter; this is not a fixed quota of accounts per cycle. |
 
-Probability applies to cloud, local and **Run now** attempts. Sampling happens before conversation creation, model calls and billing. A skipped attempt has `status="skipped"` and `error_code="probability_skipped"`: it creates no conversation, incurs no model charge and does not pause the task. Repeated callbacks reuse the saved sampling result, not a new draw. Changing probability does not reset the next planned execution time. Inspect history rather than retrying **Run now** to force a start.
+Probability applies only to automatic cloud and local scheduled attempts, not **Run now** or other manual runs. Sampling happens before conversation creation, model calls and billing. A skipped automatic attempt has `status="skipped"` and `error_code="probability_skipped"`: it creates no conversation, incurs no model charge and does not pause the task. Repeated callbacks reuse the saved sampling result, not a new draw. Changing probability does not reset the next planned execution time. Manual runs bypass probability even when the saved value is `0`; confirm their accounts and spending scope before triggering.
 
 ### Account-bound cloud runs
 
@@ -379,7 +379,26 @@ POST /aichat2/scheduled-tasks
 
 Each triggered account gets an independently authorized, billed run and its own conversation; one account's failure does not block the others. Zero jitter does not guarantee simultaneous starts. The task list remains one configuration, and its next execution time is the earliest across accounts. Changing account selections reschedules runs; changing the prompt does not reset execution times. Pause, resume and delete affect all accounts, but already-started runs may finish. Existing single-account tasks stay unchanged; multi-account selection does not merge old task copies. Review and explicitly pause duplicates to avoid duplicate charges.
 
-For **Run now**, inspect every returned `runs[]` entry's `run_id`, `status` and, when started, `conversation_id`, plus `triggered_count` and `skipped_count`. Compatibility fields refer only to the first actually started run; when all attempts skip, no `conversation_id` is returned. A missing conversation is not automatically a failure. In run history, `run_accounts` snapshots the accounts actually selected for that run; later binding changes do not rewrite it. Older/default-account runs may omit it. If an explicitly bound account expires, is revoked or deleted, do not substitute the connector's default account; reauthorize the intended account before resuming.
+In run history, `run_accounts` snapshots the accounts actually selected for that run; later binding changes do not rewrite it. Older/default-account runs may omit it. If an explicitly bound account expires, is revoked or deleted, do not substitute the connector's default account; reauthorize the intended account before resuming.
+
+### Manually trigger selected accounts
+
+1. Read the task's current saved bindings and confirm the exact accounts and billable scope for this invocation. In Nexior, multi-account **Run now** opens an account picker with nothing selected by default; choose one or more accounts or explicitly select all. Single-account tasks trigger directly.
+2. For an API subset, use `action="trigger_selected"`, the task `id` and required `connection_ids`. Supply a nonempty array of unique IDs from the task's saved multi-account connector only. Other connectors' fixed accounts remain attached to each run. Unknown, removed or out-of-scope IDs reject the entire request without starting any runs. Do not update saved bindings just to run a subset.
+3. Preview the request below with real saved account IDs and obtain confirmation before sending. Legacy `action="trigger"` without an account list attempts all configured accounts; use it only when that full scope is confirmed. If an older service rejects `trigger_selected`, surface the error; never fall back to `trigger` or all accounts.
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "trigger_selected",
+  "id": "TASK_ID",
+  "connection_ids": ["CONNECTED_ACCOUNT_ONE_ID"]
+}
+```
+
+Manual runs bypass `jitter_seconds` and `trigger_probability`, including a saved probability of `0`. Each selected account starts directly without waiting for the previous account to finish; unselected accounts get no run records. This also applies to single-account **Run now**, `action="trigger"` and local manual runs. Saved account bindings, trigger probability and the next scheduled execution remain unchanged; authorization checks and normal billing still apply.
+
+On successful cloud acceptance, inspect every returned `runs[]` entry's `run_id`, `status="queued"` and `conversation_id`. `triggered_count` is the number of accounts started; compatibility `skipped_count` is always `0`. Top-level compatibility fields point to the first started run. Each manual run records its effective `trigger_probability` as `1`, without rewriting task configuration or historical records. Queued acceptance is not successful completion: use run history and the returned conversation IDs to check final results before reporting success or considering another billable trigger. Nexior opens the conversation for one started account and task run history for multiple accounts.
 
 ### Search and page through scheduled tasks
 
