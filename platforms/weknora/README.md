@@ -2,6 +2,22 @@
 
 [中文指南](README.zh-CN.md) · [WeKnora's Skills guide](https://weknora.weixin.qq.com/docs/03-features/22-skills-sandbox) · [WeKnora's MCP guide](https://weknora.weixin.qq.com/docs/03-features/08-mcp)
 
+### Stable import verification (2026-11-07)
+
+The latest stable release checked on 2026-11-07 is [WeKnora v0.9.0](https://github.com/Tencent/WeKnora/releases/tag/v0.9.0), commit `f17ee8a8da901bd658a4cb25f40b5fd41adbfdd7`. An unchanged source build with a fresh SQLite database migrated normally to version 51 (`dirty=false`). A new local user imported each of the five GitHub folders below through the ordinary Skill catalog API: all returned HTTP 201, and catalog/file readback returned HTTP 200 with the exact source `SKILL.md` bytes. No model or media request was made.
+
+| Service | GitHub folder source |
+| --- | --- |
+| Suno | https://github.com/AceDataCloud/Skills/tree/main/skills/suno-music |
+| Seedance | https://github.com/AceDataCloud/Skills/tree/main/skills/seedance-video |
+| HappyHorse | https://github.com/AceDataCloud/Skills/tree/main/skills/happyhorse-video |
+| GPT Image | https://github.com/AceDataCloud/Skills/tree/main/skills/gpt-image-2-5 |
+| Nano Banana | https://github.com/AceDataCloud/Skills/tree/main/skills/nano-banana-image |
+
+[Issue #4167](https://github.com/Tencent/WeKnora/issues/4167) was completed by [#4196](https://github.com/Tencent/WeKnora/pull/4196) on 2026-10-26; v0.9.0 includes it. An unfederated skills.sh listing still returns HTTP 400, now with explicit instructions to use its GitHub folder URL. This fixes the error guidance, not federation or remote marketplace search. All five sandbox installation lists remained empty: importing a definition does not install or execute it in a sandbox.
+
+The native Ace Provider and five MCP presets remain proposed in [#4163](https://github.com/Tencent/WeKnora/pull/4163), now reconciled with current upstream; they are absent from unchanged v0.9.0. The v0.8.2 images and earlier tasks below retain their original dates. This API verification supplies no new browser screenshots or paid-generation result.
+
 The latest stable release checked on 2026-10-17 is [WeKnora **v0.8.3**](https://github.com/Tencent/WeKnora/releases/tag/v0.8.3). The UI walkthrough and dated Agent examples below were captured with v0.8.2; they have not been repeated end to end on v0.8.3. WeKnora can import public ClawHub, SkillHub, Git, and ZIP skills and connect Streamable HTTP MCP servers. The released v0.8.2 Toolbox has no remote marketplace search or service-list search field. A later development build adds filtering of items already registered in the workspace, which still does not search remote registries. For a first real call, use the hosted Suno MCP server below. A Skill supplies instructions; an MCP server supplies callable tools.
 
 **Lite version note:** v0.8.2 omits the SQLite MCP metadata migration, so adding a service can fail with `table mcp_services has no column named usage_instructions` ([upstream issue #4058](https://github.com/Tencent/WeKnora/issues/4058)). The merged fix [#4060](https://github.com/Tencent/WeKnora/pull/4060) is included in v0.8.3. Start with v0.8.3 or a later compatible release; do not hand-edit a production database. On 2026-10-15, the unmodified v0.8.3 source passed the fresh SQLite schema and v33 MCP-preserving upgrade tests, plus the complete database package suite. This verifies the migration tests, not a new UI installation or Agent run. The v0.8.2 screenshots used a separate disposable database with the upstream migration applied.
@@ -139,4 +155,4 @@ The preview uses the v0.8.2 frontend against the development backend from that P
 - **Tool exists but is never called:** Check that the Agent uses Smart Reasoning, has MCP enabled, selects Suno, and has the needed tool enabled. A disabled tool or unselected service is not callable.
 - **Task ID with no playable audio:** Continue querying until terminal `state=complete` and `success=true`; inspect the final URL and open it. Do not present the task ID as the artifact.
 - **Skill remains unavailable:** Check its sandbox install status and the Agent's selected sandbox and skill scope. Rebuilding a sandbox can temporarily change availability.
-- **skills.sh page returns `Skill not found`:** Use the GitHub skill-directory source shown in step 4. WeKnora's current skills.sh resolver only covers listings federated to ClawHub; [#4167](https://github.com/Tencent/WeKnora/issues/4167) tracks the remaining gap.
+- **skills.sh page cannot be imported:** Use the GitHub skill-directory source shown in step 4. In v0.9.0, [#4196](https://github.com/Tencent/WeKnora/pull/4196) gives explicit GitHub-folder guidance for unfederated listings; [#4167](https://github.com/Tencent/WeKnora/issues/4167) is closed. Source import and sandbox installation remain separate steps.
