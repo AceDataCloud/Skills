@@ -197,6 +197,31 @@ drafts from a canonical source and uses only explicitly selected, connected
 publishing skills. It requires human review and does not provide unattended
 bulk posting.
 
+### Chinese article publishing
+
+HTTP skills use encrypted login cookies and execute directly in the cloud sandbox;
+the ACE extension is needed to capture the login initially. Douyin, SSPAI and Huawei
+Cloud Blog still require a paired online browser device. HTTP saves below stop at
+a draft (Douban creates a private post); no public-article success is implied.
+
+| Skill | Platform | Execution / limit |
+|-------|----------|-------------------|
+| [jianshu](skills/jianshu/) | 简书 | HTTP; article draft |
+| [douyin](skills/douyin/) | 抖音 | Local browser |
+| [netease](skills/netease/) | 网易号 | HTTP; article draft |
+| [tencentcloud-community](skills/tencentcloud-community/) | 腾讯云开发者社区 | HTTP; article draft |
+| [aliyun-community](skills/aliyun-community/) | 阿里云开发者社区 | HTTP; article draft |
+| [sohu](skills/sohu/) | 搜狐号 | HTTP; article draft |
+| [sspai](skills/sspai/) | 少数派 | Local browser |
+| [infoq](skills/infoq/) | InfoQ 写作社区 | HTTP; article draft |
+| [huaweicloud-blog](skills/huaweicloud-blog/) | 华为云开发者博客 | Local browser |
+| [douban](skills/douban/) | 豆瓣日记 | HTTP; private note (not draft) |
+| [volcengine-community](skills/volcengine-community/) | 火山引擎开发者社区 | HTTP; article draft |
+| [modelscope](skills/modelscope/) | 魔搭社区 | HTTP; body-only draft, title completed in editor |
+| [baijiahao](skills/baijiahao/) | 百家号 | HTTP; HTML draft |
+
+See [coverage and source evidence](plans/publishing-connectors-20261109.md).
+
 ## Prerequisites
 
 AceDataCloud API Skills need an API key from [Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_api_key). Follow the [first-run steps](#first-run-with-clawhub-and-openclaw) for the exact UI path, key restrictions, OpenClaw environment setup, and a complete example. Local-only Skills such as `onepage-pdf` and `apple-notes` do not use an AceDataCloud API key; the `acedatacloud` account-management Skill uses a separate platform token.

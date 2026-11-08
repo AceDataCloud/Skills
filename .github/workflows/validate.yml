@@ -83,7 +83,9 @@ jobs:
 
 
       - name: Run skill script tests
-        run: python3 -m unittest discover -s tests -p 'test_*.py'
+        run: |
+          python3 -m pip install 'PyYAML>=6,<7'
+          python3 -m unittest discover -s tests -p 'test_*.py'
 
       - name: Validate marketplace.json
         run: |
