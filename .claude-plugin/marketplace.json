@@ -61,7 +61,20 @@
       "strict": false,
       "skills": [
         "./skills/xiaohongshu",
-        "./skills/content-fanout"
+        "./skills/content-fanout",
+        "./skills/jianshu",
+        "./skills/douyin",
+        "./skills/netease",
+        "./skills/tencentcloud-community",
+        "./skills/aliyun-community",
+        "./skills/sohu",
+        "./skills/sspai",
+        "./skills/infoq",
+        "./skills/huaweicloud-blog",
+        "./skills/douban",
+        "./skills/volcengine-community",
+        "./skills/modelscope",
+        "./skills/baijiahao"
       ]
     },
     {
