@@ -66,7 +66,7 @@ catalog references. This task opens PRs; it does not merge or deploy them.
 ## Local verification results
 
 - Skills root unittest suite: 245 passed.
-- AuthBackend publishing catalog tests: 14 passed; Ruff check/format passed.
+- AuthBackend publishing catalog tests plus existing seed-count check: 15 passed; Ruff check/format passed.
 - Twelve browser skills parsed and activated by the actual PlatformService parser and BrowserFacadeLoader at `84d6cf3fe760400a44e71f7485c9cc12310ceb7a`, using synthetic session state and the new connector policies; no account or browser was accessed.
 - Thirteen skills passed the skill-creator standard metadata/body validation projection; repository-specific execution metadata is covered by the browser contract tests.
 - `git diff --check` passed in both repositories. Live-account E2E is pending.

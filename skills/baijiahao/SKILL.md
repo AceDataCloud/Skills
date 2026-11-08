@@ -37,7 +37,7 @@ upload replacements there if hotlinking fails. The script does not claim
 originality, enroll the article in a campaign, or select a public cover.
 
 On expired login, CAPTCHA, WAF or rate-limit errors, inspect the account and
-reconnect at <https://auth.acedata.cloud/user/connections> if needed; an HTTP 403
+reconnect at <https://studio.acedata.cloud/console/connectors> if needed; an HTTP 403
 alone does not establish that the cookie expired. Do not retry in a loop.
 After any uncertain write, check the existing draft list before another attempt.
 
