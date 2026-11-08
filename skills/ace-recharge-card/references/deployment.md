@@ -56,7 +56,10 @@ payment. Refunds use the existing Envar order-review process.
    Set file permissions to 0600. Set the service instructions to load this
    skill and run its delivery script with no arguments, then test and publish
    the immutable revision through Envar's normal workflow.
-6. Verify two distinct paid orders, a repeated original order, original-report
+6. Before loading real keys, verify `/health` from the receiver returns
+   `delivery_protocol: buyer_only_order_v1`. This confirms the running process
+   uses the private-delivery version, including after a ConfigMap update.
+   Verify two distinct paid orders, a repeated original order, original-report
    recovery, buyer-only visibility and a real Ace redemption. Operator test
    wallet funding is not PSP payment evidence. Track credential expiry and
    remaining stock in the operator run record; replenish or unpublish before
