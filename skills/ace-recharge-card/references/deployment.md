@@ -5,8 +5,9 @@ not change Hermes, the generic hosting chart, Envar's runtime model, or any othe
 tenant. Hermes loads the skill and calls its no-argument delivery script. The
 separate tool validates the active original Envar Work, exact immutable revision,
 seller/service, $1 USD capture, and original order before allocating inventory.
-It reports the key and redemption instructions directly to that Work. Only a
-nonsecret receipt returns to Hermes.
+It submits the key and instructions to Envar's buyer-only encrypted order
+delivery. Work history, events, Connector journals and Hermes receive only a
+nonsecret receipt.
 
 ## State and recovery
 
@@ -27,7 +28,8 @@ payment. Refunds use the existing Envar order-review process.
 
 ## Deployment
 
-1. Merge/deploy Envar support for receiver claim readback. Obtain a dedicated
+1. Merge/deploy Envar support for receiver claim readback and the buyer-only
+   `agent-commerce/orders/{id}/private-delivery` API. Obtain a dedicated
    credential on the existing seller connection with `work:read`, `work:receive`
    and `work:report` only. It has no account-funding or buyer-spending permission.
 2. Save config with `envar_origin`, `agent_id`, `service_id`, `revision_id`,

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import hmac
+import hashlib
 import json
 import os
 import sqlite3
@@ -274,17 +275,42 @@ class Fulfillment:
         work = self.api.request("invocations/" + card["work_id"])
         if not self.binding(work):
             raise Rejected("original_work_changed")
+        endpoint = "agent-commerce/orders/" + card["order_id"] + "/private-delivery"
+        expected = {
+            "order_id": card["order_id"],
+            "work_id": card["work_id"],
+            "event_id": card["event_id"],
+            "sha256": hashlib.sha256(card["delivery"].encode()).hexdigest(),
+        }
         if work["status"] == "completed":
-            if work.get("result", {}).get("text") != card["delivery"]:
-                raise Rejected("original_result_conflict")
+            received = self.api.request(endpoint)
         elif work["status"] in {"working", "unknown"} and not work.get(
             "cancel_requested_at"
         ):
             order = self.api.request("agent-commerce/orders/" + card["order_id"])
             self.validate_order(work, order)
-            self.report(work, card["event_id"], card["delivery"])
+            claim = {key: work["claim"][key] for key in ("id", "fence")}
+            # Renew only the original admitted execution. Never start a replacement.
+            self.api.request(
+                "invocations/" + card["work_id"] + "/recover",
+                {
+                    "claim": claim,
+                    "execution_ref": work["execution_ref"],
+                },
+            )
+            received = self.api.request(
+                endpoint,
+                {
+                    "work_id": card["work_id"],
+                    "claim": claim,
+                    "event_id": card["event_id"],
+                    "text": card["delivery"],
+                },
+            )
         else:
             raise Rejected("original_work_not_deliverable")
+        if any(received.get(key) != value for key, value in expected.items()):
+            raise Rejected("private_delivery_receipt_mismatch")
         self.inventory.acknowledge(card["work_id"])
 
     def deliver(self):

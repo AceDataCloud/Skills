@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import importlib.util
 import json
 import tempfile
@@ -42,6 +43,9 @@ class FakeEnvar:
             "quote": {"amount": "1000000", "currency": "usd"},
         }
         self.reports = []
+        self.private_deliveries = []
+        self.private_receipt = None
+        self.work["execution_ref"] = {"key": self.work["id"]}
         self.timeout_after_report = False
 
     def request(self, path, body=None):
@@ -54,6 +58,28 @@ class FakeEnvar:
             return copy.deepcopy(self.order)
         if path == "invocations/" + self.work["id"]:
             return copy.deepcopy(self.work)
+        if path.endswith("/recover"):
+            assert body["execution_ref"] == self.work["execution_ref"]
+            assert body["claim"] == self.work["claim"]
+            return copy.deepcopy(self.work)
+        if path.endswith("/private-delivery"):
+            if body is not None:
+                self.private_deliveries.append(body)
+                self.private_receipt = {
+                    "order_id": "order",
+                    "work_id": self.work["id"],
+                    "event_id": body["event_id"],
+                    "sha256": hashlib.sha256(body["text"].encode()).hexdigest(),
+                }
+                self.work.update(
+                    status="completed",
+                    result={"text": "Private delivery is ready in the original order."},
+                )
+                if self.timeout_after_report:
+                    raise broker.Rejected("envar_readback_required")
+            if self.private_receipt is None:
+                raise broker.Rejected("envar_http_404")
+            return copy.deepcopy(self.private_receipt)
         if path.endswith("/work-events"):
             self.reports.append(body)
             self.work["status"] = body["kind"]
@@ -95,11 +121,11 @@ class FulfillmentTests(unittest.TestCase):
         with self.assertRaises(broker.Rejected):
             self.fulfillment.deliver()
         self.assertEqual(self.db.available(1), 2)
-        first = self.api.reports[0]
+        first = self.api.private_deliveries[0]
         self.assertIn("11111111-11111111-11111111-11111111", first["text"])
         self.fulfillment.recover()
         self.assertEqual(self.db.pending(), [])
-        self.assertEqual(len(self.api.reports), 1)
+        self.assertEqual(len(self.api.private_deliveries), 1)
         self.assertEqual(self.db.available(1), 2)
         with self.assertRaises(broker.Rejected):
             self.fulfillment.deliver()
@@ -112,7 +138,7 @@ class FulfillmentTests(unittest.TestCase):
         self.api.work["status"] = "unknown"
         self.fulfillment.recover()
         self.assertEqual(self.api.work["status"], "completed")
-        self.assertEqual(self.api.reports[0]["text"], card["delivery"])
+        self.assertEqual(self.api.private_deliveries[0]["text"], card["delivery"])
         self.assertEqual(self.db.available(1), 2)
         self.assertEqual(self.db.pending(), [])
 
@@ -127,7 +153,9 @@ class FulfillmentTests(unittest.TestCase):
             },
         )
         self.assertNotIn(self.cards[0]["code"], json.dumps(receipt))
-        self.assertIn("How to redeem", self.api.reports[0]["text"])
+        self.assertIn("How to redeem", self.api.private_deliveries[0]["text"])
+        self.assertNotIn("11111111", json.dumps(self.api.work))
+        self.assertEqual(self.api.reports, [])
 
     def test_same_order_concurrent_allocation_and_restart_are_idempotent(self):
         def allocate(_):
@@ -199,6 +227,20 @@ class FulfillmentTests(unittest.TestCase):
         self.assertEqual(len(self.db.pending()), 1)
         self.assertEqual(self.db.available(1), 2)
         self.assertEqual(self.api.reports, [])
+
+    def test_mismatched_private_receipt_keeps_original_allocation_pending(self):
+        card = self.db.allocate("order", self.api.work["id"], 1)
+        self.api.work["status"] = "completed"
+        self.api.private_receipt = {
+            "order_id": "order",
+            "work_id": card["work_id"],
+            "event_id": card["event_id"],
+            "sha256": "0" * 64,
+        }
+        self.fulfillment.recover()
+        self.assertEqual(len(self.db.pending()), 1)
+        self.assertEqual(self.db.available(1), 2)
+        self.assertEqual(self.api.private_deliveries, [])
 
     def test_inventory_reimport_is_safe_and_conflicts_are_rejected(self):
         self.db.import_cards(self.cards)
