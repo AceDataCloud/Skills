@@ -199,27 +199,26 @@ bulk posting.
 
 ### Chinese article publishing
 
-These browser connectors require a paired online device and the corresponding
-logged-in creator account. They support editor workflows with explicit draft,
-review and public-result reporting; authenticated publishing has not yet been
-verified for these additions. Baijiahao uses the existing encrypted cookie
-connection and saves HTML drafts only.
+HTTP skills use encrypted login cookies and execute directly in the cloud sandbox;
+the ACE extension is needed to capture the login initially. Douyin, SSPAI and Huawei
+Cloud Blog still require a paired online browser device. HTTP saves below stop at
+a draft (Douban creates a private post); no public-article success is implied.
 
-| Skill | Platform | Execution |
-|-------|----------|-----------|
-| [jianshu](skills/jianshu/) | 简书 | Local browser |
+| Skill | Platform | Execution / limit |
+|-------|----------|-------------------|
+| [jianshu](skills/jianshu/) | 简书 | HTTP; article draft |
 | [douyin](skills/douyin/) | 抖音 | Local browser |
-| [netease](skills/netease/) | 网易号 | Local browser |
-| [tencentcloud-community](skills/tencentcloud-community/) | 腾讯云开发者社区 | Local browser |
-| [aliyun-community](skills/aliyun-community/) | 阿里云开发者社区 | Local browser |
-| [sohu](skills/sohu/) | 搜狐号 | Local browser |
+| [netease](skills/netease/) | 网易号 | HTTP; article draft |
+| [tencentcloud-community](skills/tencentcloud-community/) | 腾讯云开发者社区 | HTTP; article draft |
+| [aliyun-community](skills/aliyun-community/) | 阿里云开发者社区 | HTTP; article draft |
+| [sohu](skills/sohu/) | 搜狐号 | HTTP; article draft |
 | [sspai](skills/sspai/) | 少数派 | Local browser |
-| [infoq](skills/infoq/) | InfoQ 写作社区 | Local browser |
+| [infoq](skills/infoq/) | InfoQ 写作社区 | HTTP; article draft |
 | [huaweicloud-blog](skills/huaweicloud-blog/) | 华为云开发者博客 | Local browser |
-| [douban](skills/douban/) | 豆瓣日记 | Local browser |
-| [volcengine-community](skills/volcengine-community/) | 火山引擎开发者社区 | Local browser |
-| [modelscope](skills/modelscope/) | 魔搭社区 | Local browser |
-| [baijiahao](skills/baijiahao/) | 百家号 | Cookie API; HTML drafts only |
+| [douban](skills/douban/) | 豆瓣日记 | HTTP; private note (not draft) |
+| [volcengine-community](skills/volcengine-community/) | 火山引擎开发者社区 | HTTP; article draft |
+| [modelscope](skills/modelscope/) | 魔搭社区 | HTTP; body-only draft, title completed in editor |
+| [baijiahao](skills/baijiahao/) | 百家号 | HTTP; HTML draft |
 
 See [coverage and source evidence](plans/publishing-connectors-20261109.md).
 

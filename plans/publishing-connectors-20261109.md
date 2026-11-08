@@ -1,72 +1,79 @@
-# Publishing connector expansion — 2026-11-09
+# HTTP-first publishing connector expansion — 2026-11-09
 
-## Coverage before this change
+## Scope and coverage
 
-Inventory checked against Skills `a197f72` and AuthBackend `978dfc1`.
-CSDN and Juejin already have executable cookie skills. Of the distinct platforms
-in the supplied screenshot, WeChat Official Accounts, Weibo, Zhihu, Juejin,
-CNBlogs, Xiaohongshu, Toutiao, 51CTO, SegmentFault, OSChina and Bilibili already
-have connector/skill entries. Xiaohongshu's skill includes image and long-form
-notes. Existing 51CTO/OSChina skills are draft-oriented. Baijiahao had a cookie
-connector with an empty required-skills list. Do not equate any catalog entry
-with live publication readiness.
+Existing CSDN, Juejin, WeChat Official Accounts, Weibo, Zhihu, CNBlogs,
+Xiaohongshu, Toutiao, 51CTO, SegmentFault, OSChina and Bilibili are retained.
+This release adds 12 connector entries and 13 skills, including completing the
+existing Baijiahao cookie connector.
 
-## Additions
+The implementation now favors direct HTTP execution: nine of the original
+browser additions are cookie skills. With Baijiahao, ten of the thirteen skills
+use HTTP. Login is initially captured by the ACE extension; execution does not
+require a paired online browser. Three browser workflows remain where a suitable
+HTTP write contract was not established.
 
-| Skill | Source module in cose | Mode / boundary |
+| Skill | Execution | Output boundary |
 |---|---|---|
-| `jianshu` | `jianshu.js` | Paired local browser; draft and submission result verified from UI |
-| `douyin` | `douyin.js` | Paired local browser; draft and submission result verified from UI |
-| `netease` | `wangyihao.js` | Paired local browser; draft and submission result verified from UI |
-| `tencentcloud-community` | `tencentcloud.js` | Paired local browser; draft and submission result verified from UI |
-| `aliyun-community` | `aliyun.js` | Paired local browser; draft and submission result verified from UI |
-| `sohu` | `sohu.js` | Paired local browser; draft and submission result verified from UI |
-| `sspai` | `sspai.js` | Paired local browser; draft and submission result verified from UI |
-| `infoq` | `infoq.js` | Paired local browser; draft and submission result verified from UI |
-| `huaweicloud-blog` | `huaweicloud.js` | Paired local browser; draft and submission result verified from UI |
-| `douban` | `douban.js` | Paired local browser; draft and submission result verified from UI |
-| `volcengine-community` | `volcengine.js` | Paired local browser; draft and submission result verified from UI |
-| `modelscope` | `modelscope.js` | Paired local browser; draft and submission result verified from UI |
-| `baijiahao` | Wechatsync `baijiahao.ts`; cose detection config | Stdlib cookie client; account lookup + HTML draft only |
+| `jianshu` | HTTP | Draft; public submission stays in platform editor |
+| `douyin` | Paired browser | Observed editor save/submission; needs online device |
+| `netease` | HTTP | Draft; public submission stays in platform editor |
+| `tencentcloud-community` | HTTP | Draft; public submission stays in platform editor |
+| `aliyun-community` | HTTP | Draft; public submission stays in platform editor |
+| `sohu` | HTTP | Draft; public submission stays in platform editor |
+| `sspai` | Paired browser | Observed editor save/submission; needs online device |
+| `infoq` | HTTP | Draft; public submission stays in platform editor |
+| `huaweicloud-blog` | Paired browser | Observed editor save/submission; needs online device |
+| `douban` | HTTP | Private note; not a draft/public post |
+| `volcengine-community` | HTTP | Draft; public submission stays in platform editor |
+| `modelscope` | HTTP | Body-only draft; title must be completed in editor |
+| `baijiahao` | HTTP | HTML draft only |
 
-Douyin long-article and image modes share one connector; video/TikTok is outside
-this skill. Cloud communities use separate namespaces from infrastructure
-connectors. Each browser skill is self-contained and activates only standard
-browser facades for its exact HTTPS origin. SSO credentials remain user-operated;
-login hosts and arbitrary external content origins are not added to permissions.
+## Implementation decisions
 
-## Open-source evidence and licensing
+- Self-contained stdlib Python bundles: the shared HTTP helper's canonical source
+  is `skills/_shared/publishing_http.py`; `scripts/sync_publishing_http.py` copies it
+  into each bundle. Tests prevent stale copies and execute every bundle standalone.
+- Cookies are scoped by origin, domain, hostOnly, path and expiry; redirects are
+  refused. Error responses and credentials are not echoed. No write retries or
+  browser fallbacks follow ambiguous writes.
+- Jianshu requires an explicit notebook and Sohu an explicit subaccount. A failed
+  second write preserves the original Jianshu/InfoQ draft ID for reconciliation.
+- InfoQ, ModelScope and Douban accept literal text or explicitly prepared native
+  editor JSON. They do not pretend Markdown text was rendered. Images are not
+  re-hosted or silently removed.
+- Cloud-community BYOC namespaces contain no hyphen (`tencentcloudcommunity`,
+  `aliyuncommunity`, `volcenginecommunity`) to match the deployed runtime's alias
+  parser. Their human-readable skill slugs remain hyphenated. No cloud-resource
+  credentials are reused.
+- An accepted save response reports `readback_verified=false`; it is not proof
+  that the full article can be reopened or publicly viewed.
 
-- [doocs/cose](https://github.com/doocs/cose/tree/76c30c0bed8303168dd64288ae27f6094eae27ff), Apache-2.0: inspected `packages/core/src/platforms/` and `packages/detection/src/`. Its adapter success often means editor fill, not publication. Per-skill links pin the exact inspected source. No extension JavaScript is embedded or executed by the new skills.
-- [Wechatsync](https://github.com/wechatsync/Wechatsync/tree/42f61e39e214b8d5377d09d788a716defc4abdc0), GPL-3.0: inspected Baijiahao request/response fields to implement an independent Python HTTP client. No GPL code was copied, translated or vendored. The save endpoint produces a draft; it is not represented as a public publish API.
+## Primary-source protocol research
 
-Further source candidates include 慕课手记、电子发烧友、华为开发者/鸿蒙、百度千帆、支付宝开放平台、大鱼号、一点号、雪球、什么值得买. These remain unimplemented here: a platform name or editor route alone is insufficient to promise a supported end-to-end publishing flow.
+- [MediaSync](https://github.com/yjmm10/MediaSync/tree/77ec95860fd1b0898459a6f401220e34cf80f31e), GPL-3.0: inspected HTTP request/response contracts for Jianshu, Netease, InfoQ, Tencent Cloud Community, Aliyun Developer, Volcengine and ModelScope in `packages/core/src/adapters/platforms/`.
+- [Wechatsync](https://github.com/wechatsync/Wechatsync/tree/42f61e39e214b8d5377d09d788a716defc4abdc0), GPL-3.0: Baijiahao, Sohu and the current Douban topic/private-post contract. Old Douban note-autosave is not used.
+- [cose](https://github.com/doocs/cose/tree/76c30c0bed8303168dd64288ae27f6094eae27ff), Apache-2.0: editor routes and modes for the remaining browser workflows.
 
-## Verification and release boundary
+The Python clients are independent implementations of protocol facts; no GPL
+implementation was copied, translated or vendored. Source inspection is not live
+verification. Unsupported platforms are not represented as fully published APIs.
+Further candidates include 慕课手记、电子发烧友、华为开发者/鸿蒙、百度千帆、支付宝开放平台、大鱼号、一点号、雪球、什么值得买.
 
-- Browser policy tests validate facade/command/capability coverage, exact origin,
-  provider identity, operation classification, and package discoverability.
-- Baijiahao tests use mocked responses for auth, JSON/JSONP save, redirect refusal,
-  cookie scope, dry-run, malformed responses, credential-safe failures and
-  ambiguous writes. No test creates an article on a real account.
-- AuthBackend tests exercise its real connection-method validator for every new
-  catalog item and preserve Baijiahao's existing cookie method identity.
-- Existing runtime/browser transport is reused; no protocol or digest changes.
-- Before claiming live support, pair a device, log into each target, save/reopen
-  a small authorized draft, and separately authorize a public publication to
-  verify its terminal status/link. Account permissions, WAF and editor drift
-  may still block individual platforms.
+## Validation and release
 
-Merge/sync Skills before AuthBackend's connector catalog so required skill
-identifiers resolve. No database migration or frontend build is required.
-Rollback by reverting the catalog additions first; existing accounts and
-articles are not deleted. Revert the skill addition only after removing its
-catalog references. This task opens PRs; it does not merge or deploy them.
-
-## Local verification results
-
-- Skills root unittest suite: 245 passed.
-- AuthBackend publishing catalog tests plus existing seed-count check: 15 passed; Ruff check/format passed.
-- Twelve browser skills parsed and activated by the actual PlatformService parser and BrowserFacadeLoader at `84d6cf3fe760400a44e71f7485c9cc12310ceb7a`, using synthetic session state and the new connector policies; no account or browser was accessed.
-- Thirteen skills passed the skill-creator standard metadata/body validation projection; repository-specific execution metadata is covered by the browser contract tests.
-- `git diff --check` passed in both repositories. Live-account E2E is pending.
+- Local Skills root suite: 260 tests passed, including HTTP wire-contract,
+  offline dry-run, standalone bundles, cookie boundaries, partial-write IDs,
+  no retry, private-vs-draft status and remaining browser metadata.
+- Local AuthBackend: 15 publishing/catalog tests passed; the real method
+  validator accepts all entries and the complete 138-connector/143-method seed.
+- The current user's stored connections contain none of these thirteen target
+  platforms. Account-authenticated draft/private-post E2E therefore requires
+  connecting those accounts after catalog rollout. No other user's credentials
+  may be used. Deployment, catalog/package checks, and real upstream E2E are
+  recorded separately in the release evidence.
+- Merge/sync Skills before AuthBackend. Deploy the AuthBackend image, sync the
+  connector catalog, read back every required skill and execution method, and
+  verify package contents from the deployed catalog.
+- Rollback catalog references before skills; never delete existing accounts or
+  posts. No schema migration or browser protocol/digest change is introduced.

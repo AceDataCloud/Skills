@@ -111,6 +111,7 @@ class Client:
                     raise DraftError("Upstream response exceeds the read limit.")
                 return raw.decode("utf-8")
         except urllib.error.HTTPError as error:
+            error.close()
             raise DraftError(f"Baijiahao returned HTTP {error.code}; check login, access or rate limits.") from None
         except (OSError, ValueError, UnicodeError, urllib.error.URLError, http.client.HTTPException):
             raise DraftError("Baijiahao request failed; check the connection and account.") from None
