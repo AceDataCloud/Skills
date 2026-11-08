@@ -56,7 +56,7 @@ class FakeEnvar:
             }
         if path == "agent-commerce/orders/order":
             return copy.deepcopy(self.order)
-        if path == "invocations/" + self.work["id"]:
+        if path == "invocations/" + self.work["id"] + "?include_claim=true":
             return copy.deepcopy(self.work)
         if path.endswith("/recover"):
             assert body["execution_ref"] == self.work["execution_ref"]
