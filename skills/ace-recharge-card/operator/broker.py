@@ -375,7 +375,11 @@ def serve(fulfillment, access_file, port):
 
         def do_GET(self):
             self.reply(
-                200 if self.path == "/health" else 404, {"ok": self.path == "/health"}
+                200 if self.path == "/health" else 404,
+                {
+                    "ok": self.path == "/health",
+                    "delivery_protocol": "buyer_only_order_v1",
+                },
             )
 
         def do_POST(self):

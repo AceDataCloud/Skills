@@ -288,3 +288,49 @@ class DeploymentTests(unittest.TestCase):
             policy["spec"]["ingress"][0]["from"][0]["podSelector"]["matchLabels"],
             {"app.kubernetes.io/instance": "seller-hermes"},
         )
+
+
+class NetworkTests(unittest.TestCase):
+    def test_opt_in_egress_only_allows_the_owned_tool_port(self):
+        spec = importlib.util.spec_from_file_location(
+            "network_renderer", Path(__file__).parents[1] / "operator" / "render.py"
+        )
+        renderer = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(renderer)
+        args = dict(
+            name="card-tool",
+            namespace="seller",
+            image="example/hermes@sha256:" + "1" * 64,
+            receiver_label={"app.kubernetes.io/instance": "owned-hermes"},
+            config={},
+            pull_secret="registry",
+        )
+        self.assertEqual(
+            len([d for d in renderer.render(**args) if d["kind"] == "NetworkPolicy"]), 1
+        )
+        policies = [
+            d
+            for d in renderer.render(**args, allow_client_egress=True)
+            if d["kind"] == "NetworkPolicy"
+        ]
+        client = next(d for d in policies if d["spec"]["policyTypes"] == ["Egress"])
+        self.assertEqual(
+            client["spec"]["podSelector"], {"matchLabels": args["receiver_label"]}
+        )
+        self.assertEqual(
+            client["spec"]["egress"],
+            [
+                {
+                    "to": [
+                        {
+                            "podSelector": {
+                                "matchLabels": {"app.kubernetes.io/name": "card-tool"}
+                            }
+                        }
+                    ],
+                    "ports": [{"protocol": "TCP", "port": 8031}],
+                }
+            ],
+        )
+        with self.assertRaises(ValueError):
+            renderer.render(**{**args, "receiver_label": {}}, allow_client_egress=True)

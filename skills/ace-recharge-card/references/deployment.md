@@ -39,6 +39,12 @@ payment. Refunds use the existing Envar order-review process.
 3. Run `operator/render.py` with the config, namespace, unique name, exact receiver pod
    label and a verified digest-pinned Python image. Inspect then apply the
    rendered PVC, ConfigMap, Deployment, internal Service and NetworkPolicy.
+   If the receiver already has an egress NetworkPolicy that excludes private
+   addresses, add `--allow-client-egress`. It adds only a TCP 8031 route from
+   that receiver to this tool, preserving the existing policy's other allows.
+   Do not use the flag on an unrestricted receiver: a new Egress policy would
+   otherwise isolate its other outbound traffic. Verify the receiver label
+   selects only the intended seller instance before applying.
    Pass `--pull-secret` with the namespace's existing registry Secret name. The separate inventory volume is never shared with
    the Agent, and the pod has no Kubernetes service-account token.
 4. Issue the authorized card batch using the PlatformBackend issuer. Preserve
@@ -50,7 +56,10 @@ payment. Refunds use the existing Envar order-review process.
    Set file permissions to 0600. Set the service instructions to load this
    skill and run its delivery script with no arguments, then test and publish
    the immutable revision through Envar's normal workflow.
-6. Verify two distinct paid orders, a repeated original order, original-report
+6. Before loading real keys, verify `/health` from the receiver returns
+   `delivery_protocol: buyer_only_order_v1`. This confirms the running process
+   uses the private-delivery version, including after a ConfigMap update.
+   Verify two distinct paid orders, a repeated original order, original-report
    recovery, buyer-only visibility and a real Ace redemption. Operator test
    wallet funding is not PSP payment evidence. Track credential expiry and
    remaining stock in the operator run record; replenish or unpublish before
