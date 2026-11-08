@@ -162,6 +162,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
 | [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — scoped OAuth access, balance, usage/spend, API keys, services, region-aware public catalog discovery, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST (article/video drafts and review threads) |
+| [ace-recharge-card](skills/ace-recharge-card/) | Fulfill a configured seller’s paid Envar order with one unused recharge key and redemption instructions |
 
 ### Connectors
 
