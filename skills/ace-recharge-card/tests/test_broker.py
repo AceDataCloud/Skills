@@ -157,6 +157,23 @@ class FulfillmentTests(unittest.TestCase):
         self.assertNotIn("11111111", json.dumps(self.api.work))
         self.assertEqual(self.api.reports, [])
 
+    def test_private_delivery_explains_digital_redemption_and_credit_units(self):
+        self.fulfillment.deliver()
+        text = self.api.private_deliveries[0]["text"]
+        self.assertIn("**Value:** 1 Credits", text)
+        for requirement in (
+            "**Applications**", "universal Credits card", "**Redeem card**",
+            "If the button is absent, redemption is not enabled for that site",
+            "original order's private delivery", "redemption dialog",
+            "credited amount, redemption time and new Credits balance",
+            "does not enable automatic recharge", "face value is in Credits, not USD",
+            "your Envar wallet balance or the service's sale price",
+            "redeemed once", "Never send the full key in chat or to support",
+            "last four characters or purchase order information",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
     def test_same_order_concurrent_allocation_and_restart_are_idempotent(self):
         def allocate(_):
             return self.db.allocate("order", "work", 1)
