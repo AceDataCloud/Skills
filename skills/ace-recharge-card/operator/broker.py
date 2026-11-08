@@ -234,7 +234,7 @@ class Fulfillment:
             raise Rejected("inbox_limit")
         if len(set(active)) != 1:
             raise Rejected("no_unique_active_card_order")
-        work = self.api.request("invocations/" + active[0])
+        work = self.api.request("invocations/" + active[0] + "?include_claim=true")
         if (
             not self.binding(work)
             or work["status"] != "working"
@@ -272,7 +272,7 @@ class Fulfillment:
         )
 
     def send(self, card):
-        work = self.api.request("invocations/" + card["work_id"])
+        work = self.api.request("invocations/" + card["work_id"] + "?include_claim=true")
         if not self.binding(work):
             raise Rejected("original_work_changed")
         endpoint = "agent-commerce/orders/" + card["order_id"] + "/private-delivery"
