@@ -28,7 +28,8 @@ payment. Refunds use the existing Envar order-review process.
 
 ## Deployment
 
-1. Merge/deploy Envar support for receiver claim readback and the buyer-only
+1. Merge/deploy Envar support for explicit receiver claim readback
+   (`invocations/{id}?include_claim=true`) and the buyer-only
    `agent-commerce/orders/{id}/private-delivery` API. Obtain a dedicated
    credential on the existing seller connection with `work:read`, `work:receive`
    and `work:report` only. It has no account-funding or buyer-spending permission.
