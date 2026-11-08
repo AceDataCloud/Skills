@@ -39,6 +39,12 @@ payment. Refunds use the existing Envar order-review process.
 3. Run `operator/render.py` with the config, namespace, unique name, exact receiver pod
    label and a verified digest-pinned Python image. Inspect then apply the
    rendered PVC, ConfigMap, Deployment, internal Service and NetworkPolicy.
+   If the receiver already has an egress NetworkPolicy that excludes private
+   addresses, add `--allow-client-egress`. It adds only a TCP 8031 route from
+   that receiver to this tool, preserving the existing policy's other allows.
+   Do not use the flag on an unrestricted receiver: a new Egress policy would
+   otherwise isolate its other outbound traffic. Verify the receiver label
+   selects only the intended seller instance before applying.
    Pass `--pull-secret` with the namespace's existing registry Secret name. The separate inventory volume is never shared with
    the Agent, and the pod has no Kubernetes service-account token.
 4. Issue the authorized card batch using the PlatformBackend issuer. Preserve
