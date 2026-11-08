@@ -409,6 +409,28 @@ An identical key and payload replay the original result, including failure, with
 | `/suno/custom-models` | POST | Create, generate with, query, list, or archive custom music models |
 | `/suno/projects` | POST | Create, retrieve, edit, generate candidates, and render versioned Studio projects (Beta) |
 
+## Persona management
+
+Use the same AceDataCloud service Bearer token and include `/suno/persona` in **Allowed APIs** for restricted keys. `GET /suno/persona` listing and `DELETE /suno/persona` deletion cost 0 Credits; no extra billing-exemption header is required. `POST /suno/persona` creation still follows the endpoint's current pricing rules; do not assume all persona operations are free.
+
+List with the actual authorized user's `user_id`; optional `limit` defaults to 50 and `offset` to 0:
+
+```bash
+curl --get https://api.acedata.cloud/suno/persona \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  --data-urlencode "user_id=USER_ID" --data-urlencode "limit=50" --data-urlencode "offset=0"
+```
+
+Read the returned `items` and `count`, and reuse actual `persona_id` values rather than inventing IDs. Before deleting, confirm the intended persona with the user; free billing is not authorization for deletion. Send the required `persona_id` as a query parameter; `user_id` is optional for ownership verification:
+
+```bash
+curl --request DELETE --get https://api.acedata.cloud/suno/persona \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  --data-urlencode "persona_id=PERSONA_ID"
+```
+
+Check the returned `success` before reporting deletion.
+
 ## Advanced Parameters
 
 | Parameter | Type | Description |

@@ -238,6 +238,60 @@ class SunoAvailabilityProcedureTests(unittest.TestCase):
         self.assertIn("check audio availability", (ROOT / "README.md").read_text())
 
 
+class SunoPersonaProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("suno-music").split("## Persona management\n", 1)[1]
+        cls.text = cls.text.split("## Advanced Parameters\n", 1)[0]
+
+    def test_list_and_delete_examples_keep_auth_and_query_parameters(self):
+        listing, deletion = re.findall(r"```bash\n(.*?)\n```", self.text, re.DOTALL)
+        for command in (listing, deletion):
+            self.assertIn("--get https://api.acedata.cloud/suno/persona", command)
+            self.assertIn("Authorization: Bearer $ACEDATACLOUD_API_TOKEN", command)
+            self.assertNotIn("--header", command)
+            self.assertEqual(command.count("-H "), 1)
+        self.assertNotIn("--request DELETE", listing)
+        for query in ("user_id=USER_ID", "limit=50", "offset=0"):
+            self.assertIn(f'--data-urlencode "{query}"', listing)
+        self.assertIn("--request DELETE", deletion)
+        self.assertIn('--data-urlencode "persona_id=PERSONA_ID"', deletion)
+
+    def test_method_billing_does_not_remove_delete_confirmation(self):
+        for requirement in (
+            "same AceDataCloud service Bearer token", "**Allowed APIs**",
+            "`GET /suno/persona` listing and `DELETE /suno/persona` deletion cost 0 Credits",
+            "no extra billing-exemption header is required",
+            "`POST /suno/persona` creation still follows the endpoint's current pricing rules",
+            "do not assume all persona operations are free",
+            "`limit` defaults to 50", "`offset` to 0", "returned `items` and `count`",
+            "reuse actual `persona_id`", "confirm the intended persona with the user",
+            "free billing is not authorization for deletion",
+            "`user_id` is optional for ownership verification",
+            "Check the returned `success` before reporting deletion",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertNotIn('"success":', self.text)
+
+
+class RechargeCardProcedureTests(unittest.TestCase):
+    def test_digital_redemption_preserves_private_delivery_and_credit_value(self):
+        text = " ".join(read_skill("ace-recharge-card").split())
+        for requirement in (
+            "Neither the price nor the buyer's Envar wallet balance is the card's face value",
+            "1, 100, 500, 1000 and 5000 Credits",
+            "does not promise that every denomination", "configured value",
+            "original purchase order's private delivery", "not to paste it into chat",
+            "**Applications**", "**Redeem card**", "redemption is not enabled for that site",
+            "credited amount, redemption", "new Credits balance",
+            "redeemed only once", "does not enable automatic recharge",
+            "Never request the full code for support", "last four characters",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+
 class SunoProjectsProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
