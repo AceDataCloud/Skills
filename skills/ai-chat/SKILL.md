@@ -222,11 +222,21 @@ POST /v1beta/models/gemini-3.5-flash:generateContent
       ]
     }
   ],
-  "generationConfig": {"maxOutputTokens": 1024}
+  "generationConfig": {
+    "maxOutputTokens": 1024,
+    "thinkingConfig": {"includeThoughts": false}
+  }
 }
 ```
 
 For streaming, send the same native body to `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` and consume SSE events. Audio output, built-in tools (`codeExecution`, `googleSearch`, `urlContext`) and explicit context caching (`cachedContent`) have no uniform availability guarantee: use the selected model's actual response and surface errors rather than promising support or assuming those fields always return 400.
+
+### Thinking summaries and multi-turn history
+
+1. `generationConfig.thinkingConfig.includeThoughts` defaults to `false`. Omit it or send boolean `false` to suppress `thought: true` text in both JSON and SSE responses while keeping normal answers. Set it to boolean `true` only when a thinking summary is needed; summary output is not guaranteed even then.
+2. Configure internal thinking separately with `thinkingBudget` or `thinkingLevel`; supported fields and values are model-dependent. Hiding summaries does not disable internal thinking or guarantee fewer thinking tokens. Explicit summary, budget and level settings are preserved. When the summary flag is omitted, the gateway supplies `false` for compatible generation models, but does not auto-add thinking configuration for `gemini-2.5-flash-image`; `countTokens` requests do not receive generation configuration.
+3. Preserve returned `candidates[].content.parts` in order when maintaining history. `thoughtSignature` is opaque multi-turn state, not summary text, and is unaffected by `includeThoughts`. Signatures may appear on normal answers, function calls or empty-text Parts. Keep these Parts intact, including signature-only or empty-text Parts and their other fields. Do not move signatures, merge Parts or discard them because text is empty.
+4. Read actual `usageMetadata` and `usage`. Hiding summaries does not zero `thoughtsTokenCount`; billing still follows actual usage and current pricing. Do not invent missing usage or infer that thinking was free because its summary was hidden.
 
 ## OpenAI Embeddings
 

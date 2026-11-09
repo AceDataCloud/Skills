@@ -154,7 +154,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
-| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages and compatible Messages models, native Gemini audio analysis, OpenAI-compatible chat with public `/v1` aliases, embeddings, stateful conversations and searchable, account-bound scheduled agent tasks with timing jitter, automatic trigger probability and selected-account manual runs (50+ models) |
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages and compatible Messages models, native Gemini audio analysis with opt-in thinking summaries, OpenAI-compatible chat with public `/v1` aliases, embeddings, stateful conversations and searchable, account-bound scheduled agent tasks with timing jitter, automatic trigger probability and selected-account manual runs (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
