@@ -129,9 +129,13 @@ class HTTP:
                 and re.fullmatch(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", name),
                 "Invalid cookie name; reconnect.",
             )
+            require(isinstance(value, str), "Invalid cookie value; reconnect.")
+            # Chrome retains quoted values (e.g. Douban dbcl2) and commas
+            # (ap_v). Preserve their wire representation. A comma cannot start
+            # another Cookie pair; semicolons and header controls still can.
+            inner = value[1:-1] if len(value) >= 2 and value.startswith('"') and value.endswith('"') else value
             require(
-                isinstance(value, str)
-                and all(33 <= ord(ch) <= 126 and ch not in ';,"\\' for ch in value),
+                all(33 <= ord(ch) <= 126 and ch not in ';"\\' for ch in inner),
                 "Invalid cookie value; reconnect.",
             )
             pairs.append((len(cp), name, value))

@@ -110,6 +110,33 @@ class HTTPTransportTests(unittest.TestCase):
                 ).matching("https://writer.example.com/")
             self.assertNotIn(value, str(caught.exception))
 
+    def test_quoted_cookie_is_preserved_in_request_header(self):
+        client = self.client([
+            {"name": "dbcl2", "value": '"12345:session-secret"', "domain": ".example.com"}
+        ])
+        response = io.BytesIO(b'{"ok": true}')
+        with patch.object(client.opener, "open", return_value=response) as opened:
+            self.assertEqual(client.request("https://writer.example.com/"), {"ok": True})
+        self.assertEqual(opened.call_args.args[0].get_header("Cookie"), 'dbcl2="12345:session-secret"')
+
+    def test_browser_cookie_comma_is_preserved(self):
+        client = self.client([
+            {"name": "ap_v", "value": "0,6.0", "domain": ".example.com"}
+        ])
+        with patch.object(client.opener, "open", return_value=io.BytesIO(b'{}')) as opened:
+            client.request("https://writer.example.com/")
+        self.assertEqual(opened.call_args.args[0].get_header("Cookie"), "ap_v=0,6.0")
+
+    def test_quotes_do_not_allow_header_injection_or_invalid_octets(self):
+        for value in ('"session-secret', 'session-secret"', '"session;other=1"',
+                      '"session\\secret"', '"session\r\nInjected: yes"',
+                      '"session"secret"', '"session secret"'):
+            with self.subTest(value=value), self.assertRaises(http.Error) as caught:
+                self.client([{"name": "s", "value": value, "domain": ".example.com"}]).matching(
+                    "https://writer.example.com/"
+                )
+            self.assertNotIn(value, str(caught.exception))
+
     def test_redirect_is_refused_and_http_errors_are_sanitized(self):
         client = self.client()
         self.assertIsNone(
