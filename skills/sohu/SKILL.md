@@ -22,7 +22,7 @@ python3 "$SKILL_DIR/scripts/sohu.py" draft --title "标题" --content-file /tmp/
 python3 "$SKILL_DIR/scripts/sohu.py" draft --title "标题" --content-file /tmp/article.html --account-id ACCOUNT_ID --confirm
 ```
 
-Resolve this skill's own directory if `SKILL_DIR` points to another loaded skill.
+`SKILL_DIR` belongs to the most recently loaded skill. When switching back to this platform after loading another skill, load this skill again and immediately invoke its client through `SKILL_DIR`. Do not search shared cache directories for a script: they can contain older bundles.
 Without trailing `--confirm`, writes only build a local preview: no cookies or network are accessed. Use `--confirm` only when the user's request authorizes that exact content, account and action. The script does not infer public-publication permission from a draft request.
 
 ## Platform contract
