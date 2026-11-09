@@ -13,7 +13,7 @@ metadata:
 
 # 豆瓣日记 over HTTP
 
-The connector injects `DOUBAN_COOKIES` as a JSON cookie array. Never print it.
+The connector injects `DOUBAN_COOKIES` as a JSON cookie array. Never print it or remove quoting from cookie values; the client preserves the browser-captured representation.
 Use this bundled Python standard-library client. It talks directly to the platform's web endpoints; no local browser or browser fallback runs during execution. Login cookies are initially captured by the ACE extension and encrypted in the connection vault.
 
 ```bash
