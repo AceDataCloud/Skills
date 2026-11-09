@@ -1025,6 +1025,49 @@ class GeminiAudioProcedureTests(unittest.TestCase):
                 self.assertIn(requirement, self.text)
         self.assertNotIn('"responseModalities": ["AUDIO"]', self.text)
 
+    def test_summary_default_and_opt_in_are_separate_from_internal_thinking(self):
+        example, = json_examples(self.text)
+        config = example["generationConfig"]
+        self.assertIs(config["thinkingConfig"]["includeThoughts"], False)
+        self.assertNotIn("thinkingBudget", config["thinkingConfig"])
+        self.assertIn("native Gemini audio analysis with opt-in thinking summaries", (ROOT / "README.md").read_text())
+        for requirement in (
+            "`generationConfig.thinkingConfig.includeThoughts` defaults to `false`",
+            "Omit it or send boolean `false`", "`thought: true` text",
+            "both JSON and SSE", "boolean `true`", "not guaranteed",
+            "`thinkingBudget` or `thinkingLevel`", "model-dependent",
+            "does not disable internal thinking or guarantee fewer thinking tokens",
+            "Explicit summary, budget and level settings are preserved",
+            "`gemini-2.5-flash-image`", "does not auto-add thinking configuration",
+            "`countTokens` requests do not receive generation configuration",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_summary_filtering_preserves_complete_history_and_signature_positions(self):
+        for requirement in (
+            "Preserve returned `candidates[].content.parts` in order",
+            "`thoughtSignature` is opaque multi-turn state, not summary text",
+            "normal answers, function calls or empty-text Parts",
+            "including signature-only or empty-text Parts and their other fields",
+            "Do not move signatures, merge Parts or discard them because text is empty",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertNotIn('"thoughtSignature":', self.text)
+        self.assertNotIn('"candidates":', self.text)
+
+    def test_hidden_summaries_do_not_zero_usage_or_make_thinking_free(self):
+        for requirement in (
+            "Read actual `usageMetadata` and `usage`",
+            "does not zero `thoughtsTokenCount`",
+            "actual usage and current pricing", "Do not invent missing usage",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+        self.assertNotIn('"usageMetadata":', self.text)
+        self.assertNotIn('"usage":', self.text)
+
 
 class GeminiArgonProcedureTests(unittest.TestCase):
     @classmethod
