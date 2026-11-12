@@ -88,6 +88,18 @@ Do not resubmit a pending generation merely to check it: a second submission
 can incur a second charge. See the
 [task-polling guide](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md).
 
+Before a second billable request, check the
+[trial-account concurrency procedure](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md#trial-account-concurrency).
+Accounts without a successful paid recharge or administrator-added credits share
+one active billable-request slot across all API keys and services. Rewards,
+recharge-card redemption and transferred credits do not qualify. Wait for the
+final result, not just asynchronous acceptance; free task polling remains
+available. On HTTP 429 `too_many_requests`, wait for the original request rather
+than changing keys or services. A network disconnect or proxy timeout does not
+prove it stopped; if no terminal result arrives, contact support with its
+`trace_id`, never the key. This limit does not change interface availability or
+actual-usage billing.
+
 ## 5. Troubleshoot the first run
 
 | Symptom | Check |
