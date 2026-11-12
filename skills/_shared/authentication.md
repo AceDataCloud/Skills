@@ -59,6 +59,32 @@ curl -X POST https://api.acedata.cloud/<endpoint> \
 | **General application API key** | Services enabled for the account, subject to key restrictions | Use for multiple Skills |
 | [**Platform-management token**](https://platform.acedata.cloud/console/platform-tokens?utm_source=agent_skill&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_setup_account_token) (`platform-...`) | Account-management API | Use with the `acedatacloud` management Skill, not generation/search |
 
+## Trial-account concurrency
+
+The read-only user flag `has_recharged` records a successful paid recharge or
+administrator-added credits. Rewards, recharge-card redemption and transferred
+credits do not count as paid recharge. Do not try to set this flag or infer it
+from a positive application balance.
+
+1. If the account has never completed a paid recharge or received
+   administrator-added credits, run only one billable request at a time across
+   **all API keys and services** for that account. Another request while one is
+   executing returns HTTP 429 `too_many_requests`; do not rotate keys or switch
+   services to bypass this limit.
+2. Wait for the final result before the next billable submit, even after an
+   asynchronous acceptance. Free task polling/query endpoints remain available.
+   Realtime connection authentication does not occupy this ordinary-request slot
+   and retains its existing per-turn billing flow.
+3. A network disconnect or proxy timeout does not mean the task stopped. Query
+   the original task or reconcile its usage record, not a replacement request.
+   If no terminal result arrives for an extended period, contact support with
+   the `trace_id` and task ID when available, never the key.
+
+Accounts with a successful paid recharge or administrator-added credits are
+exempt from this trial limit, not from balance checks, credential spending limits
+or other service limits. The rule does not change which interfaces can be tried
+or their pricing; charges still settle after execution using actual usage.
+
 ## Gotchas
 
 - A 401 usually means a missing, invalid, or expired key. Check that the Gateway

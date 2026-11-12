@@ -106,7 +106,7 @@ Use the audio URL from the completed result. Do not submit the generation reques
 | 401 / unauthorized | Copy the complete API key again. Confirm `ACEDATACLOUD_API_TOKEN` is available to the Gateway, and do not put `Bearer ` inside the key value. |
 | 403 / no access | Check the application has access to the service, the key has not expired, and **Allowed APIs** includes both the submit and task-query routes. A moderation rejection can also return 403; read the response before changing keys. |
 | 400 / invalid request | Use the exact model and request shape in the Skill's current Quick Start. |
-| 429 | Wait and reduce request rate or concurrency; do not automatically retry a billable submit. |
+| 429 | Trial accounts share one active billable-request slot across all keys and services until the final result; free task polling remains available. Follow [trial-account recovery](skills/_shared/authentication.md#trial-account-concurrency), and do not automatically retry a billable submit. |
 | Pending, timeout, or 5xx | Query the existing task or request history before resubmitting. Share a task or trace ID with support, never the key. |
 
 For more detail, see the [authentication guide](skills/_shared/authentication.md) and [task-polling guide](skills/_shared/async-tasks.md). Support: [dev@acedata.cloud](mailto:dev@acedata.cloud).
@@ -128,7 +128,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 | Skill | Description |
 |-------|-------------|
 | [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit GPT Image 2.5/2.6 Flare or Sunburst images, including reverse/official variants, 2.6 animated GIFs and annotation-guided static edits |
-| [midjourney-image](skills/midjourney-image/) | Generate, edit, upscale, and describe Midjourney images or videos |
+| [midjourney-image](skills/midjourney-image/) | Private integration status and legacy imagine-request troubleshooting; not currently published |
 | [flux-image](skills/flux-image/) | Generate/edit Flux images and generate FLUX 3 videos |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
@@ -350,7 +350,6 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
 | veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | qwen-image | [mcp-qwen-image](https://pypi.org/project/mcp-qwen-image/) | `pip install mcp-qwen-image` | `https://qwen-image.mcp.acedata.cloud/mcp` |
-| midjourney-image | [mcp-midjourney](https://pypi.org/project/mcp-midjourney/) | `pip install mcp-midjourney` | `https://midjourney.mcp.acedata.cloud/mcp` |
 | grok-video | [mcp-grok](https://pypi.org/project/mcp-grok/) | `pip install mcp-grok` | `https://grok.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream](https://pypi.org/project/mcp-seedream/) | `pip install mcp-seedream` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |

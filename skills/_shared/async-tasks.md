@@ -22,6 +22,14 @@ missing top-level `status` does not mean the job is still running.
 A synchronous response may already contain the media URL. Deliver it directly.
 Never treat an HTTP 200/202 or a task ID alone as completed generation.
 
+For [trial accounts](authentication.md#trial-account-concurrency), asynchronous
+acceptance does not release the account-wide billable-request slot. Wait for the
+original task's final result before submitting another generation, even to a
+different service or with another API key. Free task polling remains available
+while a new billable submit returns HTTP 429 `too_many_requests`. A disconnect or
+proxy timeout does not prove completion; if the task stays nonterminal, contact
+support with the `trace_id` rather than generating again.
+
 ## Fixed, bounded media jobs
 
 For small autonomous jobs, the standard-library Python helper

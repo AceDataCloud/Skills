@@ -554,6 +554,97 @@ class MaestroProcedureTests(unittest.TestCase):
         self.assertIn("one language per task", (ROOT / "README.md").read_text())
 
 
+class MidjourneyPrivateProcedureTests(unittest.TestCase):
+    def test_private_status_does_not_offer_generation_or_mcp_setup(self):
+        text = read_skill("midjourney-image")
+        for requirement in (
+            "service and Imagine document are currently marked private",
+            "Do not submit legacy generation examples",
+            "not a publication or access grant",
+            "let the user choose a published image service",
+            "do not silently substitute", "`mcp-midjourney`",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+        self.assertNotIn("```", text)
+        self.assertNotIn("clawhub install", text)
+        self.assertNotIn(".mcp.acedata.cloud", text)
+        readme = (ROOT / "README.md").read_text()
+        row = next(line for line in readme.splitlines() if "[midjourney-image]" in line)
+        self.assertIn("Private integration status", row)
+        self.assertIn("not currently published", row)
+        self.assertNotIn("| midjourney-image |", readme)
+
+    def test_legacy_validation_is_presence_based_before_acceptance_and_charge(self):
+        text = read_skill("midjourney-image")
+        for requirement in (
+            "`POST /midjourney/imagine`", "`version`, not `model`",
+            "Remove the `model` key entirely", "empty string or `null`",
+            "HTTP 400 `bad_request`", "before generation or asynchronous acceptance",
+            "without triggering generation or charging", '`"version": "8.2"`',
+            "omitting `version` keeps the default version",
+            "does not authorize submitting it while the capability is private",
+            "retain that exact ID", "`trace_id`", "trial-account slot",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
+
+
+class TrialAccountProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.authentication = (ROOT / "skills/_shared/authentication.md").read_text()
+        cls.account = read_skill("acedatacloud").split("#### Trial-account request availability\n", 1)[1]
+        cls.account = cls.account.split("### Usage records", 1)[0]
+        cls.onboarding = (ROOT / "clawhub/api-guide/SKILL.md").read_text()
+
+    def test_eligibility_is_user_history_not_balance_or_key(self):
+        for text in (self.authentication, self.account):
+            with self.subTest(text=text[:40]):
+                normalized = " ".join(text.split())
+                for requirement in (
+                    "read-only user flag `has_recharged`", "successful paid recharge",
+                    "administrator-added credits", "Rewards, recharge-card redemption",
+                    "transferred credits", "balance", "credential spending",
+                    "Realtime connection authentication", "per-turn billing flow",
+                    "ordinary-request slot",
+                ):
+                    self.assertIn(requirement, normalized)
+        self.assertIn("Do not try to set this flag", self.authentication)
+        self.assertIn("not an Application setting", self.account)
+        self.assertIn("Do not invent a CLI flag", self.account)
+
+    def test_request_serialization_polling_and_recovery_are_account_wide(self):
+        for name, text in (
+            ("shared", self.authentication), ("account", self.account),
+            ("onboarding", self.onboarding),
+        ):
+            with self.subTest(procedure=name):
+                normalized = " ".join(text.split()).lower().replace("**", "")
+                for requirement in (
+                    "all api keys and services", "http 429 `too_many_requests`",
+                    "final result", "free task polling", "network disconnect or proxy timeout",
+                    "terminal result", "`trace_id`",
+                ):
+                    self.assertIn(requirement, normalized)
+                self.assertNotIn('"has_recharged":', text)
+        self.assertIn("charges still settle after execution using actual usage", self.authentication)
+        self.assertIn("API availability and actual-usage settlement rules are unchanged", self.account)
+
+    def test_async_acceptance_and_timeout_do_not_release_the_slot(self):
+        text = (ROOT / "skills/_shared/async-tasks.md").read_text()
+        normalized = " ".join(text.split())
+        for requirement in (
+            "asynchronous acceptance does not release the account-wide billable-request slot",
+            "original task's final result", "different service or with another API key",
+            "Free task polling remains available", "HTTP 429 `too_many_requests`",
+            "disconnect or proxy timeout does not prove completion",
+            "`trace_id` rather than generating again",
+        ):
+            self.assertIn(requirement, normalized)
+        self.assertIn("trial-account-concurrency", (ROOT / "README.md").read_text())
+
+
 class AccountBalanceAndUsageProcedureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

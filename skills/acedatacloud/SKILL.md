@@ -170,6 +170,12 @@ Before reporting that a subscription is usable:
 3. An overdraft-enabled Usage application keeps charging its own balance even below zero; it does not switch to the global account due to insufficient balance. Otherwise, `allow_consume_global` controls fallback; any overdraft permission then belongs to the global Application actually charged, not the originating one.
 4. For proxy services, paused balance synchronization or a synchronization timeout returns the last saved balance. Check the current service status in the console before reporting availability; a successful balance query does not prove the service is currently usable. Keep using the same platform token, balance endpoint and field names.
 
+#### Trial-account request availability
+
+1. Do not equate positive balance or `allow_overdraft=true` with parallel-request eligibility. The read-only user flag `has_recharged` records a successful paid recharge or administrator-added credits; it is not an Application setting and cannot be enabled through application updates. Rewards, recharge-card redemption and transferred credits do not qualify. Do not invent a CLI flag or infer this user flag from balance output.
+2. For an account with neither qualifying event, serialize billable requests across all API keys and services. A second request while one is executing returns HTTP 429 `too_many_requests`. An asynchronous acceptance still occupies the slot until the final result; free task polling remains available. Query the original task rather than rotating keys, switching services or automatically retrying a billable submit.
+3. A network disconnect or proxy timeout does not prove the task stopped. Investigate its original task and usage record; if no terminal result arrives for an extended period, contact support with the `trace_id`, never credentials. Paid-recharged or administrator-credited accounts are exempt only from this trial limit; balance and credential spending checks still apply. Realtime connection authentication keeps its per-turn billing flow and does not occupy this ordinary-request slot. API availability and actual-usage settlement rules are unchanged.
+
 ### Usage records — `GET /usage/apis/`
 
 Per-request call records (status code, latency, credits deducted).

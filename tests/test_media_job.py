@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -37,6 +38,37 @@ class MediaJobs(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'unknown'):
                 job.run('image', 'A book', path, api=api, token='test')
         self.assertEqual(api.call_count, 1)
+
+    def test_submission_429_is_not_automatically_retried(self):
+        api = Mock(side_effect=RuntimeError('API returned HTTP 429; preserve the original state file.'))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'job.json'
+            with self.assertRaisesRegex(RuntimeError, 'HTTP 429'):
+                job.run('image', 'A book', path, api=api, token='test')
+            with self.assertRaisesRegex(RuntimeError, 'unknown'):
+                job.run('image', 'A book', path, api=api, token='test')
+            self.assertEqual(json.loads(path.read_text())['phase'], 'submitting')
+        self.assertEqual(api.call_count, 1)
+
+    def test_polling_429_resumes_the_original_task_without_resubmission(self):
+        api = Mock(side_effect=[
+            {'task_id': 'original'},
+            RuntimeError('API returned HTTP 429; preserve the original state file.'),
+            {'finished_at': 1, 'response': {'success': True, 'image_url': 'https://cdn.example/image.jpg'}},
+        ])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'job.json'
+            with self.assertRaisesRegex(RuntimeError, 'HTTP 429'):
+                job.run('image', 'A book', path, api=api, token='test')
+            self.assertEqual(json.loads(path.read_text())['task_id'], 'original')
+            result = job.run('image', 'A book', path, api=api, token='test')
+        self.assertEqual(result['status'], 'completed')
+        self.assertEqual(result['task_id'], 'original')
+        self.assertEqual([call.args[0] for call in api.call_args_list], [
+            '/seedream/images', '/seedream/tasks', '/seedream/tasks',
+        ])
+        for call in api.call_args_list[1:]:
+            self.assertEqual(call.args[1], {'id': 'original'})
 
     def test_image_recipe_is_one_watermark_free_2k_image(self):
         api = Mock(return_value={'data': [{'url': 'https://cdn.example/image.jpg'}]})
