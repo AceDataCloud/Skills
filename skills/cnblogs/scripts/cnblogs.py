@@ -98,9 +98,10 @@ class CNBlogsClient:
 
     def categories(self) -> list[dict]:
         value = self.request("GET", "/v2/blog-category-types/1/categories")
-        if not isinstance(value, list):
+        categories = value.get("categories") if isinstance(value, dict) else value
+        if not isinstance(categories, list):
             die("CNBlogs returned malformed category data.")
-        return value
+        return categories
 
     def posts(self, limit: int) -> list[dict]:
         query = urllib.parse.urlencode({"t": 1, "p": 1, "s": limit})
@@ -263,7 +264,8 @@ def main(argv: list[str] | None = None) -> None:
             die(f"--limit must be between 1 and {MAX_POSTS}.")
         output({"posts": [format_post(item) for item in client.posts(args.limit)]})
     elif args.command == "post":
-        output(format_post(client.post(args.post_id)))
+        post = client.post(args.post_id)
+        output({**format_post(post), "author": post.get("author"), "blog_id": post.get("blogId"), "body": post.get("postBody")})
     elif args.command == "create":
         result = client.save(apply_post_fields(client.template(), args, content or ""))
         output(

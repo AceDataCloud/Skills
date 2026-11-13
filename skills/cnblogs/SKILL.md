@@ -24,6 +24,12 @@ current official `cnblogs/vscode-cnb` client contract at
 python3 "$SKILL_DIR/scripts/cnblogs.py" whoami
 ```
 
+`whoami` checks access to the new-post template. Its `author` and `blog_id`
+can be `null` and `0` even for an open blog; these template defaults do not
+identify the account or mean the blog is unopened. Verify identity from the
+bound connector and an existing post when available. The `post` command
+returns the author, blog ID and full Markdown body for readback verification.
+
 If authentication fails, ask the user to create a PAT at
 `https://account.cnblogs.com/settings/tokens` and reconnect. Do not ask for
 their account password or Cookie.
