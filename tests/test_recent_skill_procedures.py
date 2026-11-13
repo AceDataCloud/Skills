@@ -57,6 +57,83 @@ class SunoAudioProcedureTests(unittest.TestCase):
                 self.assertNotIn("```", recovery.split("## Gotchas", 1)[0])
 
 
+class SunoSectionReplacementProcedureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = read_skill("suno-music").split("### Replace a song section\n", 1)[1]
+        cls.text = cls.text.split("## Custom Music Models (Beta)\n", 1)[0]
+
+    def test_request_uses_matching_local_lyrics_and_full_song_async_result(self):
+        request, = json_examples(self.text)
+        self.assertEqual(request["action"], "replace_section")
+        self.assertEqual(request["audio_id"], "YOUR_COMPLETED_AUDIO_ID")
+        self.assertEqual(request["model"], "chirp-v6")
+        self.assertEqual(request["lyric"], request["prompt"])
+        self.assertTrue(request["lyric"])
+        self.assertEqual(request["replace_section_result_mode"], "full_song")
+        self.assertGreaterEqual(request["replace_section_start"], 0)
+        self.assertGreater(request["replace_section_end"], request["replace_section_start"])
+        self.assertIs(request["async"], True)
+        self.assertNotIn("duration", request)
+        self.assertIn('POST /suno/audios\n', self.text)
+        self.assertIn('{"action":"retrieve","id":"YOUR_TASK_ID"}', self.text)
+        self.assertNotIn('"success":', self.text)
+        self.assertNotIn('"audio_url":', self.text)
+        self.assertNotIn("`lyric` contains full lyrics/context", read_skill("suno-music"))
+
+    def test_selection_completion_and_repeat_edits_require_audio_evidence(self):
+        for requirement in (
+            "not Studio Projects", "consult `/suno/timing`", "complete musical phrases",
+            "not choose by a fixed lyric-array index", "local new lyrics",
+            "not inspiration or style", "lyric-only request remains supported",
+            "does not guarantee word-for-word singing", "overlong replacement",
+            "audio clip-state rule", "`response.data`", "No further `concat`",
+            "unassembled candidate", "does not guarantee equal length",
+            "cannot lock this interval", "metadata, not an audio transcript",
+            "may be empty", "task success alone does not prove",
+            "selected complete result's `id`", "not the original timestamps",
+            "Do not feed the prior full-song `lyric` back", "other result first",
+            "Polling more cannot alter finished content",
+            "obtain authorization before another paid edit",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, self.text)
+
+    def test_auxiliary_fees_are_per_successful_request_and_action_scoped(self):
+        billing = self.text.split("## Auxiliary operation billing\n", 1)[1]
+        for row in (
+            "| `POST /suno/lyrics` | 0.08 | One request, even with multiple lyric candidates |",
+            "| `POST /suno/voices` | 0.15 | One voice creation request |",
+            "| `POST /suno/audios`, `action=stems` | 0.56 | One request for the vocal/accompaniment pair, not per output |",
+        ):
+            self.assertIn(row, billing)
+        self.assertIn("Failed requests are not charged", billing)
+        self.assertIn("applicable discounts follow the actual bill", billing)
+        self.assertIn("Do not apply these rates to `all_stems`, `extract_stem`", billing)
+        self.assertIn("`/suno/persona` creation", billing)
+
+    def test_service_variants_keep_local_lyrics_and_result_checks(self):
+        for path in (
+            "claude-plugins/suno-by-ace-data-cloud/skills/suno/SKILL.md",
+            "platforms/amp/skills/suno-by-acedatacloud/SKILL.md",
+        ):
+            text = (ROOT / path).read_text().split("## Section replacement and billing\n", 1)[1]
+            text = text.split("## Custom inputs and processing failures\n", 1)[0]
+            with self.subTest(path=path):
+                for requirement in (
+                    "inspect the connected edit schema", "local new lyrics",
+                    "not full-song lyrics", "without another `concat`",
+                    "terminal success", "audition both results",
+                    "metadata, not an audio transcript", "recheck its timing",
+                    "Do not automatically submit another paid replacement",
+                    "0.08 Credits per request", "0.15 Credits per request",
+                    "0.56 Credits per request", "count as one request, not per output",
+                    "Failed requests are not charged", "`all_stems`, `extract_stem`",
+                ):
+                    self.assertIn(requirement, text)
+                self.assertNotIn('"success":', text)
+
+
 class MusicActionInputTests(unittest.TestCase):
     def test_producer_examples_follow_action_specific_requirements(self):
         text = read_skill("producer-music")
@@ -1219,6 +1296,29 @@ class GeminiArgonProcedureTests(unittest.TestCase):
 
 
 class ChatGatewayProcedureTests(unittest.TestCase):
+    def test_fable_52_routes_controls_and_usage_do_not_infer_support_from_pricing(self):
+        text = read_skill("ai-chat")
+        fable = next(line for line in text.splitlines() if line.startswith("`claude-fable-5-2` is available"))
+        for requirement in (
+            "Claude Messages, Chat Completions, and `/aichat2/conversations`",
+            "exact public ID", "Fable 5.1 and Fable 5 remain separate models",
+            "Prefer Messages", "Adaptive thinking stays enabled",
+            "omit `temperature`, `top_p`, and `top_k`",
+            'Messages `tool_choice: {"type":"auto"}`', 'Chat `tool_choice: "auto"`',
+            "do not force `any` or a named tool", "`output_config.effort`",
+            "budget `max_tokens` for both thinking and final text",
+            "Responses and Count Tokens are not available for this model",
+            "even though shared settlement rules exist", "read final `usage`",
+            "instead of substituting another model's token count",
+            "current maximum package rate", "live pricing page for the selected package",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, fable)
+        native = text.split("## Native Claude Messages\n", 1)[1].split("## Stateful / Agentic Conversations\n", 1)[0]
+        self.assertIn("`claude-fable-5-2` is not supported on Count Tokens", native)
+        self.assertIn("not another model's count", native)
+        self.assertIn("public alias `/claude/messages`", native)
+
     def test_opus_chat_constraints_and_public_alias_are_preserved(self):
         text = read_skill("ai-chat")
         opus = next(line for line in text.splitlines() if line.startswith("`claude-opus-5-5` is available"))

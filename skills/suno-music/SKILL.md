@@ -221,13 +221,54 @@ For best results follow this multi-step workflow:
 
 - Source `audio_id` is required for extension, covers, concat, stems/all_stems, section replacement, underpainting/overpainting, remaster, samples, adding/extracting a stem, and speed adjustment. `mashup` needs at least two `mashup_audio_ids` instead.
 - `persona_id` is a voice ID, not a song ID. `artist_consistency` and `artist_consistency_vox` require it and may also take the source song's `audio_id`; `generate`, `cover`, and `upload_cover` can use it. Extra voice IDs are not used by `extend` or `upload_extend`. Voice support on `mashup` and `inspo` depends on the selected service channel; do not promise it for other actions.
-- For `replace_section`, supply `audio_id`, nonnegative `replace_section_start`, and `replace_section_end` greater than the start and no later than the source duration. `lyric` contains full lyrics/context; `prompt` contains the new interval lyrics. Optional `negative_tags` excludes styles. Default `replace_section_result_mode="full_song"` returns two assembled songs; `"candidates"` returns two unassembled segments, not finished full songs.
+- For `/suno/audios` `replace_section`, supply `audio_id`, nonnegative `replace_section_start`, and `replace_section_end` greater than the start and no later than the source duration. Use local new lyrics for the selected interval in `lyric`, preferably the same text in `prompt`; neither field needs full-song lyrics. See the section replacement procedure below. Optional `negative_tags` excludes styles. Default `replace_section_result_mode="full_song"` returns two assembled songs; `"candidates"` returns two unassembled segments, not finished full songs.
 - `samples` uses one source audio interval: `samples_start` defaults to 0 and must be nonnegative; required `samples_end` must be greater than the start and within the source duration. Both support fractional seconds. This is not Inspo.
 - `inspo` needs 1–4 publicly accessible authorized HTTP(S) `audio_urls`. Set `instrumental=true` for music without lyrics; `lyric_prompt` generates lyrics only with `custom=true` and no `lyric`. A `persona_id` is channel-dependent, not a guaranteed voice match.
 - `all_stems` waits for every stem before terminal success. A playable early URL is not completion of the full stem set.
 - `add_stem` and `extract_stem` require `stem_type` from the current API/tool schema. `sounds` needs `sound` and `sound_type` (`one-shot` or `loop`), with optional integer `bpm` (1–300) and `key`. `adjust_speed` needs source `audio_id`, `title` and `speed_multiplier` (0.25–4); `keep_pitch` defaults to false.
 
 MCP exposes these as `suno_add_stem`, `suno_extract_stem`, `suno_generate_sound`, and `suno_adjust_speed`. Inspect the connected schemas before calling; retain and poll the original task ID rather than resubmitting to check progress.
+
+### Replace a song section
+
+This procedure is for `/suno/audios`, not Studio Projects, whose fields differ.
+
+1. Audition the source song and consult `/suno/timing` to select complete musical phrases; do not choose by a fixed lyric-array index. Use the completed song's audio ID, not its task ID. Check the current source duration and select a valid interval in seconds, including fractional seconds when needed.
+2. Put only the interval's local new lyrics in `lyric`, preferably matching `prompt`. Here `prompt` means replacement lyrics, not inspiration or style; use optional `style` and `negative_tags` for that direction. A lyric-only request remains supported, but adding `prompt` does not guarantee word-for-word singing. Full-song lyrics can generate an overlong replacement; match the selected phrase's line count, syllables and rhythm where possible.
+3. Submit once with `replace_section_result_mode: "full_song"` (the default). The request below assumes the source's 30–50 second interval matches the new phrase; replace the audio ID, interval and words with the user's authorized edit.
+
+```json
+POST /suno/audios
+{
+  "action": "replace_section",
+  "audio_id": "YOUR_COMPLETED_AUDIO_ID",
+  "model": "chirp-v6",
+  "custom": false,
+  "instrumental": false,
+  "lyric": "New words for this selected phrase",
+  "prompt": "New words for this selected phrase",
+  "replace_section_start": 30.0,
+  "replace_section_end": 50.0,
+  "replace_section_result_mode": "full_song",
+  "async": true
+}
+```
+
+4. Retain `task_id` and poll `POST /suno/tasks` with `{"action":"retrieve","id":"YOUR_TASK_ID"}` until terminal success using the audio clip-state rule below. Read the two assembled songs' `id`, `audio_url` and actual `duration` from `response.data`. No further `concat` is needed for `full_song`. If explicitly choosing `candidates` instead, audition and select one unassembled candidate, use its audio `id` for `concat`, then poll that task to obtain a complete song.
+5. Audition both results for the new words, natural transitions and reasonable total duration. `full_song` does not guarantee equal length; a longer replacement shifts the later audio. `duration` applies only to ordinary generation and cannot lock this interval. Returned `lyric` is metadata, not an audio transcript: assembled full lyrics depend on source timing being available and may be empty. New text in metadata or task success alone does not prove the lyric change was sung.
+6. For another edit, use the selected complete result's `id` as the new `audio_id`; recheck its timing and duration, not the original timestamps. Do not feed the prior full-song `lyric` back as local replacement input. If words remain unchanged, are missing or the song becomes too long, check the source ID, interval, local lyrics and other result first. Polling more cannot alter finished content; preserve task/source IDs, request fields, interval and result audio for support, and obtain authorization before another paid edit.
+
+## Auxiliary operation billing
+
+Check the current price and obtain authorization before submitting. Standard successful-request fees are:
+
+| Operation | Credits per request | Billing unit |
+|-----------|---------------------|--------------|
+| `POST /suno/lyrics` | 0.08 | One request, even with multiple lyric candidates |
+| `POST /suno/voices` | 0.15 | One voice creation request |
+| `POST /suno/audios`, `action=stems` | 0.56 | One request for the vocal/accompaniment pair, not per output |
+
+Failed requests are not charged; applicable discounts follow the actual bill. Do not apply these rates to `all_stems`, `extract_stem`, other audio actions, or `/suno/persona` creation.
 
 ## Custom Music Models (Beta)
 
