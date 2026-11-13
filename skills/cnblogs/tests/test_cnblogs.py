@@ -49,6 +49,32 @@ def test_request_uses_official_pat_contract():
     assert request.get_header("Authorization-type") == "pat"
 
 
+@pytest.mark.parametrize("categories", [[], [{"id": 12, "name": "Python"}]])
+def test_categories_reads_official_response_envelope(categories):
+    client, opener = make_client({"categories": categories, "parent": None})
+    assert client.categories() == categories
+    assert opener.open.call_args.args[0].full_url.endswith("/v2/blog-category-types/1/categories")
+
+
+@pytest.mark.parametrize("payload", [{}, {"categories": None}, {"categories": "invalid"}])
+def test_categories_rejects_malformed_envelope(payload):
+    client, _ = make_client(payload)
+    with pytest.raises(SystemExit), redirect_stdout(io.StringIO()):
+        client.categories()
+
+
+def test_post_command_returns_body_for_readback():
+    post = {"id": 123, "title": "Asyncio", "postBody": "```python\nprint(1)\n```", "author": "alice", "blogId": 7}
+    client, _ = make_client({"blogPost": post})
+    stream = io.StringIO()
+    with patch.object(cnblogs.CNBlogsClient, "from_environment", return_value=client), redirect_stdout(stream):
+        cnblogs.main(["post", "123"])
+    result = json.loads(stream.getvalue())
+    assert result["body"] == post["postBody"]
+    assert result["author"] == "alice"
+    assert result["blog_id"] == 7
+
+
 def test_create_uses_server_template_and_returns_real_api_url():
     template = {"blogPost": {"id": -1, "blogId": 7, "isAllowComments": True}}
     saved = {"id": 123, "title": "Hello", "url": "https://www.cnblogs.com/alice/p/123"}
