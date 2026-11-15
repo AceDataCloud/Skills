@@ -12,7 +12,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.0.1"
 ---
 
 # bilibili — read & publish 专栏 via your own cookies
@@ -28,6 +28,10 @@ The connector injects the cookie jar as an env var:
 - `BILIBILI_COOKIES` — a JSON array of cookies. **Secret — never echo or print
   it.** It includes `SESSDATA` (auth) and `bili_jct` (the CSRF token used for
   writes).
+
+Image downloads honor standard `HTTP_PROXY` / `HTTPS_PROXY` and `NO_PROXY`.
+A configured proxy must enforce public destinations when resolving hostnames;
+without one, the script performs its existing local DNS checks.
 
 ## CLI
 

@@ -12,7 +12,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.0.1"
 ---
 
 # csdn — read & publish on CSDN via your own cookies
@@ -30,6 +30,10 @@ The connector injects the cookie jar as an env var:
 > CSDN fronts its APIs with a WAF; the CLI already sends a full browser
 > fingerprint so reads aren't 403'd. If you still get a WAF 403, the cookie
 > expired — have the user reconnect.
+
+Image downloads honor standard `HTTP_PROXY` / `HTTPS_PROXY` and `NO_PROXY`.
+A configured proxy must enforce public destinations when resolving hostnames;
+without one, the script performs its existing local DNS checks.
 
 ## CLI
 

@@ -11,7 +11,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.0.1"
 ---
 
 # medium — read & publish on Medium via your own cookies
@@ -28,6 +28,10 @@ The connector injects the cookie jar as an env var:
   `x-xsrf-token` header on writes for you. If the captured jar has no `xsrf`
   cookie (common), the CLI mints one automatically before writing, so publishes
   no longer fail with "Missing xsrf token".
+
+Image downloads honor standard `HTTP_PROXY` / `HTTPS_PROXY` and `NO_PROXY`.
+A configured proxy must enforce public destinations when resolving hostnames;
+without one, the script performs its existing local DNS checks.
 
 ## CLI
 
