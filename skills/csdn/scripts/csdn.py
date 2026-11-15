@@ -324,19 +324,34 @@ _IMG_OPENER = urllib.request.build_opener(_NoRedirect)
 
 
 def _assert_public_url(url):
-    """Block non-http(s) and private/loopback/link-local hosts (SSRF guard) —
-    article content can carry arbitrary image URLs."""
+    """Check direct destinations locally; configured proxies own remote DNS checks."""
     parts = urllib.parse.urlsplit(url)
-    if parts.scheme not in ("http", "https") or not parts.hostname:
+    if (parts.scheme not in ("http", "https") or not parts.hostname
+            or parts.username is not None or parts.password is not None):
         raise RuntimeError(f"unsupported image URL: {url[:80]}")
+    try:
+        literal = ipaddress.ip_address(parts.hostname)
+    except ValueError:
+        literal = None
+    if literal is not None:
+        if not literal.is_global or literal.is_multicast:
+            raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
+        return
+    proxies = urllib.request.getproxies()
+    if proxies.get(parts.scheme) and not urllib.request.proxy_bypass(parts.netloc):
+        # Match urllib's proxy selection, including NO_PROXY. The configured
+        # proxy must reject private destinations after resolving the hostname;
+        # isolated clients need no direct DNS or network access for this path.
+        return
     try:
         addrs = socket.getaddrinfo(parts.hostname, None)
     except OSError as e:
         raise RuntimeError(f"cannot resolve {parts.hostname}: {e}")
+    if not addrs:
+        raise RuntimeError(f"cannot resolve {parts.hostname}")
     for info in addrs:
         ip = ipaddress.ip_address(info[4][0])
-        if (ip.is_private or ip.is_loopback or ip.is_link_local
-                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+        if not ip.is_global or ip.is_multicast:
             raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
 
 
