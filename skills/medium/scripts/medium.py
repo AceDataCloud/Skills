@@ -47,6 +47,15 @@ PLATFORM = "medium"
 BASE = "https://medium.com"
 _PREFIX = re.compile(r"^\s*\]\)\}while\(1\);(?:</x>)?")
 
+# Fixed short error envelope emitted by the protected connector executor.
+RUNTIME_ERRORS = frozenset({
+    "cookie_scope_denied", "cookie_response_denied", "cookie_mirror_denied",
+    "cookie_domain_denied", "credential_slot_denied", "request_denied",
+    "request_refused", "response_refused", "redirect_denied", "lease_expired",
+    "lease_denied", "policy_changed", "upstream_unavailable",
+})
+MAX_RUNTIME_ERROR_BYTES = 256
+
 _RAW = sys.argv[1:]
 CONFIRM = bool(_RAW) and _RAW[-1] == "--confirm"
 ARGV = _RAW[:-1] if CONFIRM else list(_RAW)
@@ -56,9 +65,28 @@ def out(obj) -> None:
     print(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
 
 
-def die(msg: str, code: int = 1) -> None:
-    out({"error": msg})
+def die(msg: str, code: int = 1, *, error_code: str | None = None) -> None:
+    result = {"error": msg}
+    if error_code is not None:
+        result["error_code"] = error_code
+    out(result)
     sys.exit(code)
+
+
+def check_runtime_error(status: int, text: str) -> None:
+    if status != 403 or len(text.encode("utf-8")) > MAX_RUNTIME_ERROR_BYTES:
+        return
+    try:
+        # Preserve pairs so duplicate keys cannot match the executor envelope.
+        pairs = json.loads(text, object_pairs_hook=list)
+    except (json.JSONDecodeError, ValueError):
+        return
+    if not (isinstance(pairs, list) and len(pairs) == 1
+            and isinstance(pairs[0], tuple) and pairs[0][0] == "error"):
+        return
+    reason = pairs[0][1]
+    if isinstance(reason, str) and reason in RUNTIME_ERRORS:
+        die(f"connector runtime error ({status}): {reason}.", error_code=reason)
 
 
 # ── Cookie jar ──────────────────────────────────────────────────────
@@ -154,6 +182,7 @@ def request(method, url, jar, *, headers=None, body=None, accept="application/js
 
 def api(method, url, jar, *, body=None, _retried=False):
     status, text = request(method, url, jar, body=body)
+    check_runtime_error(status, text)
     # Medium sits behind Cloudflare, which intermittently 403s/429s an otherwise
     # valid session; one retry after a short pause clears the transient block.
     # Only retry idempotent GETs — never replay a POST (new-story/deltas/publish),
@@ -162,8 +191,7 @@ def api(method, url, jar, *, body=None, _retried=False):
         time.sleep(1.5)
         return api(method, url, jar, body=body, _retried=True)
     if status in (401, 403):
-        die(f"auth failed ({status}) on {url} — cookie likely expired. "
-            f"Reconnect at https://studio.acedata.cloud/console/connectors.")
+        die(f"Medium request rejected (HTTP {status}) on {url}.")
     clean = _PREFIX.sub("", text)
     try:
         d = json.loads(clean)
@@ -189,7 +217,10 @@ def prime_xsrf(jar) -> None:
         with urllib.request.urlopen(req, timeout=30) as resp:
             set_cookies = resp.headers.get_all("Set-Cookie") or []
     except urllib.error.HTTPError as e:
-        set_cookies = e.headers.get_all("Set-Cookie") or []
+        with e:
+            failure = e.read(MAX_RUNTIME_ERROR_BYTES + 1).decode("utf-8", "replace")
+            set_cookies = e.headers.get_all("Set-Cookie") or []
+        check_runtime_error(e.code, failure)
     except urllib.error.URLError:
         return
     for sc in set_cookies:
@@ -210,7 +241,7 @@ def md_me(jar):
     d = api("GET", f"{BASE}/_/api/users/{uid}", jar)
     val = (d.get("payload") or {}).get("value") or {}
     if not val.get("userId"):
-        die(f"could not read Medium profile (cookie expired?): {str(d)[:200]}")
+        die(f"could not read Medium profile: {str(d)[:200]}")
     return val
 
 
@@ -239,8 +270,9 @@ def gql(jar, operation, variables):
                            headers={"graphql-operation": operation},
                            body={"operationName": operation, "variables": variables,
                                  "query": _USER_POSTS_QUERY})
+    check_runtime_error(status, text)
     if status in (401, 403):
-        die(f"auth failed ({status}) on GraphQL — cookie likely expired.")
+        die(f"Medium GraphQL request rejected (HTTP {status}).")
     try:
         d = json.loads(text)
     except json.JSONDecodeError:
@@ -621,8 +653,7 @@ def cmd_publish(jar, args):
     # Captured jars often lack an xsrf cookie; mint one so writes don't 400.
     prime_xsrf(jar)
     if not cookie_value(jar, "xsrf"):
-        die("could not obtain an xsrf token from Medium (cookie may be expired) — "
-            "reconnect at https://studio.acedata.cloud/console/connectors.")
+        die("Medium did not provide the xsrf cookie required for publishing.")
 
     # 1. create empty draft
     d = api("POST", f"{BASE}/new-story", jar, body={})
