@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlsplit
 ROOT = Path(__file__).parents[1]
 PLUGIN_ROOT = ROOT / "claude-plugins"
 EXPECTED = {
+    "ace-music": "acemusic",
     "suno": "suno",
     "seedance": "seedance",
     "happyhorse": "happyhorse",

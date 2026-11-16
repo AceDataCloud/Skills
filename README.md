@@ -119,6 +119,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
+| [ace-music](skills/ace-music/) | Generate ACE Music songs from ideas or custom lyrics, write lyrics, and retrieve song groups |
 | [suno-music](skills/suno-music/) | Generate Suno music, lyrics, voice-linked covers, vocals, check audio availability before follow-up processing, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
