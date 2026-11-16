@@ -55,8 +55,9 @@ python3 "$MED" whoami
 # → {"user_id": "...", "name": "...", "username": "..."}
 ```
 
-On an auth error the cookie is expired — have the user reconnect at
-<https://studio.acedata.cloud/console/connectors>. Do **not** loop-retry.
+Report a returned `error_code` as a connector runtime refusal. Other 401/403
+responses retain their HTTP status and require their actual cause to be checked
+before requesting a new sign-in. Do **not** loop-retry.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 
@@ -97,9 +98,13 @@ to a link paragraph (never blocks the post).
   monospace code block, while a wide one (long cells / URLs, which would wrap into
   an unreadable grid) is rendered as per-row records — the first column bolded as
   a lead-in, the remaining columns as `header: value` bullets.
-- Medium sits behind Cloudflare; an occasional 403/429 is transient — the CLI
-  auto-retries once after a short pause. A *persistent* 403 means the cookie is
-  genuinely expired (reconnect).
+- A connector runtime refusal includes a fixed `error_code`; report that code.
+  The CLI does not retry these refusals. Other GET 403/429 responses retain one
+  retry; writes are never automatically replayed.
+- Other 401/403 responses retain their HTTP status. Check the actual rejection
+  before requesting a new sign-in; the status alone does not establish expiry.
+- `whoami` reads the profile named by the public `uid` cookie. Publishing
+  authorization requires its own confirmed result.
 - **Never print `MEDIUM_COOKIES`** — it is full account access.
 - **ToS**: acts only on the user's own account with their own captured cookie.
 
