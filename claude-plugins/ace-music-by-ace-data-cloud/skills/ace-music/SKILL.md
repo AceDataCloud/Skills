@@ -69,7 +69,7 @@ Query the same ID roughly every 10 seconds within a bounded wait. The persisted 
 - Processing or media delivery: continue querying the same task; on client wait timeout, keep its identity for later recovery.
 - Submission times out before a task ID arrives: the outcome is unknown. Reconcile the original request rather than automatically paying for a replacement.
 
-For batches use `{"action":"retrieve_batch","ids":["TASK_A","TASK_B"]}`. History uses `{"action":"list","page":1,"page_size":20}`. Credentials and task ownership still apply when the account balance is zero. Use `callback_url` only for an actual webhook under the user's control.
+For batches use `{"action":"retrieve_batch","ids":["TASK_A","TASK_B"]}`. History uses `{"action":"list","limit":20,"offset":0}`. Credentials and task ownership still apply when the account balance is zero. Use `callback_url` only for an actual webhook under the user's control.
 
 ## Supported boundary
 
