@@ -47,6 +47,14 @@ UA = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 PLATFORM = "csdn"
+RUNTIME_ERRORS = {
+    "cookie_response_denied": "The connector runtime rejected the response cookies.",
+    "request_denied": "The connector runtime denied this request.",
+    "response_refused": "The connector runtime refused the upstream response.",
+    "redirect_denied": "The connector runtime denied an upstream redirect.",
+    "lease_expired": "The connector execution lease expired; start a new execution.",
+    "upstream_unavailable": "The connector runtime could not reach the upstream service; retry later.",
+}
 # x-ca signing constants — hard-coded in CSDN's editor web bundle (public).
 CA_KEY = "203803574"
 CA_SECRET = b"9znpamsyl2c7cdrr9sas0le9vbc3r6ba"
@@ -60,8 +68,11 @@ def out(obj) -> None:
     print(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
 
 
-def die(msg: str, code: int = 1) -> None:
-    out({"error": msg})
+def die(msg: str, code: int = 1, *, error_code: str | None = None) -> None:
+    result = {"error": msg}
+    if error_code is not None:
+        result["error_code"] = error_code
+    out(result)
     sys.exit(code)
 
 
@@ -168,6 +179,17 @@ def request(method: str, url: str, jar: list, *, referer, origin, headers=None, 
 
 def get_json(url: str, jar: list, *, referer, origin):
     status, text = request("GET", url, jar, referer=referer, origin=origin)
+    if status == 403:
+        try:
+            failure = json.loads(text)
+        except json.JSONDecodeError:
+            failure = None
+        # The connector proxy returns exactly {"error": reason}. Do not classify
+        # arbitrary upstream auth responses or successful payloads as runtime errors.
+        reason = failure.get("error") if isinstance(failure, dict) and set(failure) == {"error"} else None
+        if isinstance(reason, str) and reason in RUNTIME_ERRORS:
+            die(f"connector runtime error ({status}): {reason}. {RUNTIME_ERRORS[reason]}",
+                error_code=reason)
     if "WAF" in text and "403" in text:
         die("CSDN WAF blocked the request (403). The cookie may be expired or "
             "the account needs to re-pass CSDN's captcha; reconnect at "
