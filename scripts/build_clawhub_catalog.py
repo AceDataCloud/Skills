@@ -178,7 +178,7 @@ def build(repo, service, output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--service", choices=["all", "suno", "seedance", "happyhorse", "gpt-image", "nano-banana"], required=True)
+    parser.add_argument("--service", choices=["all", "ace-music", "suno", "seedance", "happyhorse", "gpt-image", "nano-banana"], required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--preview", action="store_true", help="Run official read-only registry dry-runs; never upload")
     args = parser.parse_args()

@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlsplit
 ROOT = Path(__file__).parents[1]
 PLUGIN_ROOT = ROOT / "claude-plugins"
 EXPECTED = {
+    "ace-music": "acemusic",
     "suno": "suno",
     "seedance": "seedance",
     "happyhorse": "happyhorse",
@@ -33,7 +34,11 @@ class ClaudeServicePluginTests(unittest.TestCase):
             self.assertEqual(manifest["author"]["name"], "Ace Data Cloud")
             self.assertTrue(manifest["displayName"].endswith(" by Ace Data Cloud"))
             self.assertEqual(entry["displayName"], manifest["displayName"])
-            self.assertTrue((folder / manifest["icon"]).is_file())
+            if service == "ace-music":
+                self.assertEqual(manifest["icon"], "https://cdn.acedata.cloud/acemusic-icon-52deddfc87b9.png")
+                self.assertFalse((folder / "assets/ace-data-cloud-mark.png").exists())
+            else:
+                self.assertTrue((folder / manifest["icon"]).is_file())
             self.assertNotIn("skills", entry)  # Do not combine conflicting manifests.
             skills = list((folder / "skills").glob("*/SKILL.md"))
             self.assertEqual(len(skills), 1)

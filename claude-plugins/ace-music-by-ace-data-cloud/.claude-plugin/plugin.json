@@ -1,0 +1,42 @@
+{
+  "name": "ace-music-by-ace-data-cloud",
+  "version": "0.1.0",
+  "description": "ACE Music songs, custom lyrics and original-task retrieval through your Ace Data Cloud account.",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "support@acedata.cloud"
+  },
+  "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/ace-music-by-ace-data-cloud",
+  "repository": "https://github.com/AceDataCloud/Skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "ace-music",
+    "acemusic",
+    "music",
+    "ace-data-cloud"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Ace Data Cloud API Token",
+      "description": "Paste a dedicated Ace Data Cloud API key with ACE Music access. Raw token only; not a platform management token.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "ace-music": {
+      "type": "http",
+      "url": "https://acemusic.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_token}"
+      }
+    }
+  },
+  "displayName": "ACE Music by Ace Data Cloud",
+  "icon": "https://cdn.acedata.cloud/acemusic-icon-52deddfc87b9.png",
+  "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/ace-music-by-ace-data-cloud",
+  "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+  "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+  "supportUrl": "https://platform.acedata.cloud/support"
+}

@@ -11,10 +11,11 @@
   "plugins": [
     {
       "name": "acedatacloud-ai-media",
-      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (GPT Image, Midjourney, Flux, Qwen Image, Seedream, Nano Banana), video (Grok, MiniMax H3, Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
+      "description": "AI media generation: music (ACE Music, Suno, Producer, Fish Audio), images (GPT Image, Midjourney, Flux, Qwen Image, Seedream, Nano Banana), video (Grok, MiniMax H3, Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/ace-music",
         "./skills/suno-music",
         "./skills/producer-music",
         "./skills/fish-audio",
@@ -39,7 +40,7 @@
     },
     {
       "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML→single-page PDF, Apple Notes (macOS), API guide, account management",
+      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML\u2192single-page PDF, Apple Notes (macOS), API guide, account management",
       "source": "./",
       "strict": false,
       "skills": [
@@ -161,6 +162,24 @@
         "ace-data-cloud"
       ],
       "displayName": "Nano Banana by Ace Data Cloud"
+    },
+    {
+      "name": "ace-music-by-ace-data-cloud",
+      "displayName": "ACE Music by Ace Data Cloud",
+      "description": "ACE Music songs, custom lyrics and original-task retrieval through your Ace Data Cloud account.",
+      "source": "./claude-plugins/ace-music-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/ace-music-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "ace-music",
+        "acemusic",
+        "music",
+        "ace-data-cloud"
+      ]
     }
   ]
 }

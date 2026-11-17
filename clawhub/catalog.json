@@ -122,6 +122,31 @@
       "query_zh": "用 Nano Banana 技能和 nano-banana-2.1 生成一张水彩风景图。",
       "expected": "A final image result after service success; asynchronous polling uses id, not a new generation request.",
       "expected_zh": "服务明确成功后返回最终图片；异步查询使用 id，不能重新提交生成。"
+    },
+    {
+      "id": "ace-music",
+      "source": "skills/ace-music",
+      "slug": "ace-music",
+      "display_name": "ACE Music by Ace Data Cloud",
+      "description": "Create ACE Music songs from ideas or custom lyrics through Ace Data Cloud; retrieve the original task for the final song group.",
+      "categories": [
+        "creative"
+      ],
+      "topics": [
+        "ace-music",
+        "music-generation",
+        "audio"
+      ],
+      "emoji": "🎵",
+      "routes": [
+        "/acemusic/audios",
+        "/acemusic/lyrics",
+        "/acemusic/tasks"
+      ],
+      "query": "Use ACE Music to create a warm folk song about returning home.",
+      "query_zh": "用 ACE Music 创作一首回家主题的温暖民谣歌曲。",
+      "expected": "Final MP3 candidates after the original task is terminal; partial failure remains partial.",
+      "expected_zh": "原任务终态后返回 MP3 候选；部分失败保持部分失败说明。"
     }
   ]
 }

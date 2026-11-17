@@ -14,11 +14,11 @@ CATALOG = json.loads((ROOT / "clawhub/catalog.json").read_text())
 
 
 class NativeCatalogTests(unittest.TestCase):
-    def test_five_independent_services_have_unique_existing_source(self):
+    def test_independent_services_have_unique_existing_source(self):
         services = CATALOG["services"]
-        self.assertEqual({s["id"] for s in services}, {"suno", "seedance", "happyhorse", "gpt-image", "nano-banana"})
-        self.assertEqual(len({s["source"] for s in services}), 5)
-        self.assertEqual(len({s["slug"] for s in services}), 5)
+        self.assertEqual({s["id"] for s in services}, {"ace-music", "suno", "seedance", "happyhorse", "gpt-image", "nano-banana"})
+        self.assertEqual(len({s["source"] for s in services}), 6)
+        self.assertEqual(len({s["slug"] for s in services}), 6)
         for service in services:
             self.assertTrue((ROOT / service["source"] / "SKILL.md").is_file())
             self.assertTrue(service["display_name"].endswith(" by Ace Data Cloud"))
