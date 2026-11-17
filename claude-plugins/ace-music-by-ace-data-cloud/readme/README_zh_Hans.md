@@ -22,3 +22,5 @@ Ask to create a song from an idea, use supplied lyrics/style/title, or generate 
 Save the original task ID and query it roughly every 10 seconds. Only the group terminal state determines completion. Partial failure may include one downloadable song; report it as partial. On client timeout, retain the task ID for later recovery. If submission times out before a task ID arrives, reconcile the original request rather than automatically paying for a replacement.
 
 This plugin source is self-contained. Official directory submission/approval, package publication and hosted service release require separate verification.
+
+The plugin icon is the official ACE Music favicon, served from the immutable Ace Data Cloud CDN; no brand image is bundled in this source package.
