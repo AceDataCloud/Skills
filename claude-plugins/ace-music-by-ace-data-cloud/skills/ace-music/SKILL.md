@@ -52,7 +52,7 @@ Use `POST /acemusic/audios` for each explicit operation. Check current pricing b
 
 | Action | Required fields | Optional fields |
 | --- | --- | --- |
-| `upload` | `audio_url`: public HTTPS audio the user owns or may use | `name`, caller-owned `audio_id` anchor, `async`, `callback_url` |
+| `upload` | `audio_url`: public HTTPS MP3 audio the user owns or may use | `name`, caller-owned `audio_id` anchor, `async`, `callback_url` |
 | `cover` | `audio_id`, `lyric`, `style`; model `acemusic-v1.1` | `title`, `audio_influence` 1–100 (default 60), `async`, `callback_url` |
 | `mashup` | Exactly two distinct `mashup_audio_ids`, `lyric`, `style`; model `acemusic-v1.1` | Same as cover |
 
