@@ -12,7 +12,7 @@ AMP = ROOT / "platforms" / "amp"
 class AmpServiceSkillTests(unittest.TestCase):
     def test_each_installable_skill_is_self_contained_and_service_scoped(self):
         folders = sorted((AMP / "skills").iterdir())
-        self.assertEqual(len(folders), 5)
+        self.assertIn("ace-music-by-acedatacloud", [folder.name for folder in folders])
         for folder in folders:
             with self.subTest(skill=folder.name):
                 text = (folder / "SKILL.md").read_text()
@@ -50,7 +50,7 @@ class AmpServiceSkillTests(unittest.TestCase):
                 self.assertNotRegex(tool, r"chat|speech|embedding|response|realtime|voice")
         listing = json.loads((AMP / "skills/gpt-image-by-acedatacloud/listing.json").read_text())
         self.assertEqual(listing["poll_argument"], "id")
-        for other in ["suno", "seedance", "happyhorse", "nano-banana"]:
+        for other in ["ace-music", "suno", "seedance", "happyhorse", "nano-banana"]:
             listing = json.loads((AMP / "skills" / (other + "-by-acedatacloud") / "listing.json").read_text())
             self.assertEqual(listing["poll_argument"], "task_id")
 
