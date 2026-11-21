@@ -18,6 +18,7 @@ Choose the service you want, then install **that Skill only**. Each integration 
 
 | Service | Official directory entry | Skill name | First-run guide |
 |---|---|---|---|
+| ACE Music | [ACE Music on skills.sh](https://skills.sh/acedatacloud/skills/ace-music) | `ace-music` | [English](skills/ace-music/README.md) / [简体中文](skills/ace-music/readme.zh-CN.md) |
 | Suno | [Suno on skills.sh](https://skills.sh/acedatacloud/skills/suno-music) | `suno-music` | [English](skills/suno-music/README.md) / [简体中文](skills/suno-music/readme.zh-CN.md) |
 | Seedance | [Seedance on skills.sh](https://skills.sh/acedatacloud/skills/seedance-video) | `seedance-video` | [English](skills/seedance-video/README.md) / [简体中文](skills/seedance-video/readme.zh-CN.md) |
 | HappyHorse | [HappyHorse on skills.sh](https://skills.sh/acedatacloud/skills/happyhorse-video) | `happyhorse-video` | [English](skills/happyhorse-video/README.md) / [简体中文](skills/happyhorse-video/readme.zh-CN.md) |
@@ -35,7 +36,7 @@ Replace `codex` with your supported agent, such as `claude-code` or `cursor`. Fo
 
 Follow the selected service's guide: **Ace registration/sign-in → Applications / General application → check service access, balance and current price → copy or create a dedicated API key → make it available to the assistant process → submit once and query the same task ID**. The guides include real redacted Ace key-management images and service-specific request examples. A Skill cannot configure an environment variable or load `.env` automatically; follow your assistant's environment/secret settings. Never paste a key into a prompt.
 
-The optional [`acedatacloud` account Skill](skills/acedatacloud/) can read public catalog/pricing without a key. Account-resource reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`; service generation uses `ACEDATACLOUD_API_TOKEN`. Neither the account Skill nor a model-provider configuration is a prerequisite for the five service Skills.
+The optional [`acedatacloud` account Skill](skills/acedatacloud/) can read public catalog/pricing without a key. Account-resource reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`; service generation uses `ACEDATACLOUD_API_TOKEN`. Neither the account Skill nor a model-provider configuration is a prerequisite for these service Skills.
 
 ## First run with ClawHub and OpenClaw
 
@@ -119,7 +120,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 | Skill | Description |
 |-------|-------------|
-| [ace-music](skills/ace-music/) | Generate ACE Music songs from ideas or custom lyrics, write lyrics, and retrieve song groups |
+| [ace-music](skills/ace-music/) | Generate songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original ACE Music task |
 | [suno-music](skills/suno-music/) | Generate Suno music, lyrics, voice-linked covers, vocals, check audio availability before follow-up processing, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
@@ -344,6 +345,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 
 | Skill | MCP Server | Install | Hosted Endpoint |
 |-------|-----------|---------|-----------------|
+| ace-music | [mcp-acemusic](https://pypi.org/project/mcp-acemusic/) | `uvx mcp-acemusic` | `https://acemusic.mcp.acedata.cloud/mcp` |
 | suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | [mcp-flux-pro](https://pypi.org/project/mcp-flux-pro/) | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
