@@ -20,3 +20,13 @@ ClawHub generates `skill-card.md` and the CLI excludes it when computing source 
 ## Native single-service discovery
 
 See the [Top 5 single-service catalog](readme/README.md) ([中文](readme/README.zh-CN.md)). `scripts/build_clawhub_catalog.py` builds independent Suno, Seedance, HappyHorse, GPT Image and Nano Banana packages from canonical references with native credential metadata and per-service onboarding. This is the service-name discovery track; the existing `publish-clawhub.sh` remains the guarded updater for unchanged canonical source folders. The builder only previews and has no upload option.
+
+## Prepare the ACE Music listing
+
+ACE Music has a separate source and bundle. Build the owner-scoped release packet from a reviewed commit:
+
+```sh
+python3 scripts/build_clawhub_catalog.py --service ace-music --output /tmp/ace-music-clawhub
+```
+
+The output includes the standalone Skill, English and Chinese installation guides, and the exact source revision in `build.json`. The expected owner and slug are `@acedatacloud/ace-music`. Confirm that identity through the [owner-scoped registry endpoint](https://clawhub.ai/api/v1/skills/ace-music?owner=acedatacloud) before pointing users to the public listing. The [skills.sh installation](https://skills.sh/acedatacloud/skills/ace-music) works independently.

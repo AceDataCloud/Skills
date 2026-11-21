@@ -1,9 +1,10 @@
 # Independent Ace Data Cloud service Skills for Amp
 
-Five separate service-name Skills use Amp's [native Skill + MCP mechanism](https://ampcode.com/docs/customize/skills). Install only the service you need; each has its own name, discovery description, tool allowlist and illustrated README. They reuse the maintained hosted MCPs, not a new proxy. No default Ace LLM provider or official acceptance is claimed.
+Independent service Skills use Amp's [native Skill + MCP mechanism](https://ampcode.com/docs/customize/skills). Install only the service you need; each has its own name, discovery description, tool allowlist and setup guide. They reuse the maintained hosted MCPs, not a new proxy. No default Ace LLM provider or official acceptance is claimed.
 
 | Service | Installable unit | Guide |
 | --- | --- | --- |
+| ACE Music by Ace Data Cloud | `ace-music-by-acedatacloud` | [English](skills/ace-music-by-acedatacloud/README.md) · [中文](skills/ace-music-by-acedatacloud/README.zh-CN.md) |
 | Suno by Ace Data Cloud | `suno-by-acedatacloud` | [English](skills/suno-by-acedatacloud/README.md) · [中文](skills/suno-by-acedatacloud/README.zh-CN.md) |
 | Seedance by Ace Data Cloud | `seedance-by-acedatacloud` | [English](skills/seedance-by-acedatacloud/README.md) · [中文](skills/seedance-by-acedatacloud/README.zh-CN.md) |
 | HappyHorse by Ace Data Cloud | `happyhorse-by-acedatacloud` | [English](skills/happyhorse-by-acedatacloud/README.md) · [中文](skills/happyhorse-by-acedatacloud/README.zh-CN.md) |

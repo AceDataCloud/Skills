@@ -166,7 +166,7 @@
     {
       "name": "ace-music-by-ace-data-cloud",
       "displayName": "ACE Music by Ace Data Cloud",
-      "description": "ACE Music songs, custom lyrics and original-task retrieval through your Ace Data Cloud account.",
+      "description": "Generate ACE Music songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original task.",
       "source": "./claude-plugins/ace-music-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",

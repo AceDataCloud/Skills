@@ -128,7 +128,7 @@
       "source": "skills/ace-music",
       "slug": "ace-music",
       "display_name": "ACE Music by Ace Data Cloud",
-      "description": "Create ACE Music songs from ideas or custom lyrics through Ace Data Cloud; retrieve the original task for the final song group.",
+      "description": "Create ACE Music songs and lyrics, upload reference audio, cover one owned track or blend two, and retrieve the original task through Ace Data Cloud.",
       "categories": [
         "creative"
       ],
