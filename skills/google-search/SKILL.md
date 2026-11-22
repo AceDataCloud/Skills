@@ -22,7 +22,7 @@ Search the web through AceDataCloud's Google SERP API.
 
 [Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
-If you came from skills.sh, use [Applications for this first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=google_search_first_run). Check the current price before running a search.
+If you came from skills.sh, use [Applications for this first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen). Check the current price before running a search.
 
 ## Quick Start
 

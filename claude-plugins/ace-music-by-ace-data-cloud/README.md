@@ -4,7 +4,7 @@ Independently installable ACE Music song and lyrics tools, using your own Ace Da
 
 ## API key
 
-[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_signup) → [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_api_key) → create a dedicated API key with ACE Music generation, lyrics and task-query access. Confirm the application balance and [current service price](https://platform.acedata.cloud/services/024e09b4-52cf-5e98-a91a-efedf43104c4?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_pricing). Enter the raw key in the plugin's sensitive API Token setting; do not include `Bearer ` or share it in chat.
+[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen) → [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) → create a dedicated API key with ACE Music generation, lyrics and task-query access. Confirm the application balance and [current service price](https://platform.acedata.cloud/services/024e09b4-52cf-5e98-a91a-efedf43104c4?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Enter the raw key in the plugin's sensitive API Token setting; do not include `Bearer ` or share it in chat.
 
 ![Application API key](assets/get-api-key-en.png)
 ![Create a dedicated key](assets/create-api-key-en.png)

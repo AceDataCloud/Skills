@@ -37,7 +37,7 @@ ClawHub runtime metadata declares `curl`, `ACEDATACLOUD_API_TOKEN`, `primaryEnv`
 
 Native `apiKey` is injected into the host agent turn. Sandboxes need their own environment configuration; consult [OpenClaw Skills config](https://docs.openclaw.ai/tools/skills-config). Each README explains this boundary. Use a dedicated service key; never put it in a chat or a screenshot.
 
-The current Backend acquisition contract allows `agent_skill/referral`; it does not define a `clawhub` source. These generated ClawHub-specific documents use the existing source and a distinct `<service>_clawhub_<placement>` content tag with all four UTM fields. This identifies the surface without changing the shared global contract or promising measured growth.
+The current Backend acquisition contract allows `agent_skill/referral`; it does not define a `clawhub` source. Generated ClawHub links use `agent_skill / referral / evergreen`.
 
 ## Publication gates
 

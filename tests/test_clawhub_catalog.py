@@ -65,16 +65,14 @@ class NativeCatalogTests(unittest.TestCase):
                 self.assertIn("gpt-image-2.5-flare", text) if service["id"] == "gpt-image" else None
 
     def test_links_match_current_backend_contract_without_new_source(self):
-        for service in CATALOG["services"]:
-            for placement in ("signup", "api_key", "pricing"):
-                tags = parse_qs(urlparse(builder.link(service, placement)).query)
-                self.assertEqual(set(tags), {"utm_source", "utm_medium", "utm_campaign", "utm_content"})
-                self.assertEqual(tags["utm_source"], ["agent_skill"])
-                self.assertEqual(tags["utm_medium"], ["referral"])
-                self.assertEqual(tags["utm_campaign"], ["evergreen"])
-                self.assertIn("_clawhub_", tags["utm_content"][0])
-                for values in tags.values():
-                    self.assertRegex(values[0], r"^[a-z0-9][a-z0-9_.-]{0,95}$")
+        for path in ("/", "/console/applications", "/models"):
+            tags = parse_qs(urlparse(builder.link(path)).query)
+            self.assertEqual(set(tags), {"utm_source", "utm_medium", "utm_campaign"})
+            self.assertEqual(tags["utm_source"], ["agent_skill"])
+            self.assertEqual(tags["utm_medium"], ["referral"])
+            self.assertEqual(tags["utm_campaign"], ["evergreen"])
+            for values in tags.values():
+                self.assertRegex(values[0], r"^[a-z0-9][a-z0-9_.-]{0,95}$")
 
     def test_build_does_not_overwrite_reviewed_output(self):
         with tempfile.TemporaryDirectory() as temp:

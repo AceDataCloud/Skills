@@ -134,7 +134,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
                     self.assertEqual(query["utm_source"], ["github"])
                     self.assertEqual(query["utm_medium"], ["referral"])
                     self.assertEqual(query["utm_campaign"], ["evergreen"])
-                    self.assertRegex(query["utm_content"][0], r"^[a-z0-9][a-z0-9_.-]{0,95}$")
+                    self.assertEqual(set(query), {"utm_source", "utm_medium", "utm_campaign"})
 
     def test_directory_submission_is_an_explicit_unmet_gate(self):
         packet = json.loads((PLUGIN_ROOT / "submission/catalog.json").read_text())

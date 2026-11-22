@@ -25,7 +25,7 @@ Load this Skill to expose its MCP tools. Use `suno_list_models` once to inspect 
 
 ## Generation and retrieval
 
-1. Confirm the user wants this music operation and accepts its [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=suno_amp_pricing), parameters and output count. Choose a currently supported model and parameters with the user; do not silently substitute models, providers, prices, or resolution tiers.
+1. Confirm the user wants this music operation and accepts its [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), parameters and output count. Choose a currently supported model and parameters with the user; do not silently substitute models, providers, prices, or resolution tiers.
 2. Call `suno_generate_music` exactly once for that requested operation. Use an edit tool only when the user provides authorized reference media and asks to edit it.
 3. Save the returned task ID. Call `suno_get_task(task_id="<original task ID>")` to retrieve the same task after pending results, disconnects or timeouts. Never submit generation again merely to poll.
 4. Require an explicit terminal success (`state=complete` with success, or the returned finished timestamp and successful response). Failure is terminal too. A pending task or an early media URL is not completion. Do not invent IDs, output links, media availability, completion or billing. Report the final status and returned media links; preserve upstream errors (including rate limit and moderation meaning).
