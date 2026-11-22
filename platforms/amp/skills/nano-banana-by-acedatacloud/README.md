@@ -2,7 +2,7 @@
 
 An independently installable **Nano Banana** Skill with native MCP tools, supplied by Ace Data Cloud. Search terms: Nano Banana, nano-banana, image. This does not add a default LLM provider, and it is not endorsed by Nano Banana's maker or Amp.
 
-[简体中文](README.zh-CN.md) · [Current API pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_pricing) · [Source](https://github.com/AceDataCloud/Skills/tree/main/platforms/amp/skills/nano-banana-by-acedatacloud)
+[简体中文](README.zh-CN.md) · [Current API pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen) · [Source](https://github.com/AceDataCloud/Skills/tree/main/platforms/amp/skills/nano-banana-by-acedatacloud)
 
 ## 1. Install just this service
 
@@ -18,8 +18,8 @@ For a reviewed local checkout: `amp skill add ./platforms/amp/skills/nano-banana
 
 ## 2. Register/sign in to Ace and get your own key
 
-1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_api_key), register if needed, then sign in. Open **General application**; choose **Initialize General Application** if none exists.
-2. Check Nano Banana service access, your balance and [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_pricing). Copy the API key, or choose **Manage Keys → Create** for a dedicated `Amp Nano Banana` key.
+1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), register if needed, then sign in. Open **General application**; choose **Initialize General Application** if none exists.
+2. Check Nano Banana service access, your balance and [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen). Copy the API key, or choose **Manage Keys → Create** for a dedicated `Amp Nano Banana` key.
 3. Review expiration, usage limits and **Allowed APIs**. If restricted, allow the generation/edit and task-query routes you actually need: `/nano-banana/images, /nano-banana/tasks`. Service availability and any trial allowance are whatever your account currently shows.
 4. Copy only the token value, without quotes, spaces or `Bearer `. A `platform-...` management token cannot replace a service API key.
 

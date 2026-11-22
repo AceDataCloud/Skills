@@ -48,7 +48,7 @@ WeKnora 官方 [MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mc
 
 ## 1. 获取 Ace Data Cloud Key
 
-1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_api_key)，打开 **Applications → General application**；如提示尚未初始化，先初始化通用应用。复制已有 API Key，或通过 **Manage Keys → Create** 创建 WeKnora 专用 Key。先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)。如需聊天模型，还需 AI Chat 权限。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)，打开 **Applications → General application**；如提示尚未初始化，先初始化通用应用。复制已有 API Key，或通过 **Manage Keys → Create** 创建 WeKnora 专用 Key。先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)。如需聊天模型，还需 AI Chat 权限。
 2. 只复制 **Key 原值**；平台管理 Token 不是生成 API Key。待发布预设的私密 Token 栏直接粘贴原值，保存会补 Bearer；当前发行版手动配置则按下文填写 `Authorization` 和 `Bearer <key>`。
 3. Key 不放进对话、示例 JSON、截图或 Git。若限制 Allowed APIs，需同时允许所选生成接口与任务查询接口。生成会计费；首次验证可只做可用的免费模型/说明查询，或读取已有任务。
 
@@ -135,7 +135,7 @@ WeKnora 也能解析 ClawHub/SkillHub 页面和 slug，但外部条目可能晚�
 
 ### GPT Image 2.5 真实验收样例（2026-10-12）
 
-使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=weknora_readme_pricing)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
+使用具有 GPT Image 权限的凭据并先核对[图片 API 当前价格](https://platform.acedata.cloud/api/v1/apis/?path=%2Fopenai%2Fimages%2Fgenerations&utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)后，同一隔离 v0.8.2 补库实例的 Agent 选中了 **GPT Image** MCP。只启用图片生成、任务查询、模型列表三个工具，对生成实行单次审批。唯一一次 `openai_generate_image` 使用 `gpt-image-2.5-flare`、`1024x1024`、`quality=low`、`n=1`、`async=true`。Agent 用任务 ID `496c8575-2cbc-4c84-b20e-c732f4d4764c` 查询两次：第一次 pending，第二次有 `finished_at` 且 `response.success=true`。[最终图片](https://cdn.acedata2.cloud/gpt-image/a8aee29222a3b4e2c4dcb7c3ad585d00ef57359b456efc1dbf177b19da19f40e.png) 已在浏览器打开为 1024×1024，白色陶瓷杯符合提示词。账单精确匹配 1 条记录：原价 **0.19 Credits**，实际扣 **0.171 Credits**。没有再次提交图片生成。
 
 ![GPT Image 2.5 Flare 图片在真实英文 WeKnora 聊天中展示](assets/gpt-image-2-5-agent-v082.jpg)
 

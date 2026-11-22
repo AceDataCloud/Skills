@@ -21,7 +21,7 @@ python3 scripts/build_clawhub_catalog.py --service all --output /tmp/ace-clawhub
 
 五个候选包随包提供字节不变的真实 ClawHub Suno 安装页原图与 `assets/source.json`：截图日期为 2026-10-17、Skill 1.0.1，只说明目录入口，不证明新候选安装或付费生成。中文预期结果使用中文；原生 Key 配置界面仍待真实截图，不绘制替代。
 
-Backend 当前认可 `agent_skill/referral`，未定义 `clawhub` source，因此使用四项 UTM：`agent_skill / referral / evergreen / <service>_clawhub_<placement>`。不修改全局归因合同，不承诺已有注册或收入。
+Backend 当前认可 `agent_skill/referral`，未定义 `clawhub` source，因此使用三项 UTM：`agent_skill / referral / evergreen`。不修改全局归因合同，不承诺已有注册或收入。
 
 正式上传会接受 ClawHub MIT-0 条款，不能把源码 Apache-2.0 当组织授权。必须先有明确许可和现有组织发布权限；本构建器不上传、不接受协议。公开搜索、安装、真实执行、终态音视频和唯一账单需逐段验收。
 

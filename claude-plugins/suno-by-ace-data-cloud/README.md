@@ -19,8 +19,8 @@ The public `main` marketplace contains these plugins at version 0.1.0. On 2026-1
 
 ## 2. Get a dedicated Ace API Token
 
-1. [Sign in or register with Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_claude_signup). Open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_claude_api_key) and select **General application**. Initialize it if the account has none.
-2. Check **Suno** access, available balance and [current service pricing](https://platform.acedata.cloud/documents/suno?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_claude_pricing). A general application's key can access several entitled services. Prefer a separate key for this plugin.
+1. [Sign in or register with Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and select **General application**. Initialize it if the account has none.
+2. Check **Suno** access, available balance and [current service pricing](https://platform.acedata.cloud/documents/suno?utm_source=github&utm_medium=referral&utm_campaign=evergreen). A general application's key can access several entitled services. Prefer a separate key for this plugin.
 3. Copy the application's key, or choose **Manage Keys → Create**. Name it `Suno Claude Code`. Review expiration, usage limit and **Allowed APIs**; this workflow uses `/suno/audios`, `/suno/tasks`. Restrict it to the operations you need.
 
 ![Redacted Ace application API key and Manage Keys controls](assets/get-api-key-en.png)

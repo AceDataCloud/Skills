@@ -1,6 +1,6 @@
 # Amp 的 Nano Banana by Ace Data Cloud
 
-独立安装的 **Nano Banana** 品牌 Skill，工具由 Ace Data Cloud 提供；不冒充服务方官方插件，也不新增 Amp 默认模型服务商。[English](README.md) · [当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_pricing)
+独立安装的 **Nano Banana** 品牌 Skill，工具由 Ace Data Cloud 提供；不冒充服务方官方插件，也不新增 Amp 默认模型服务商。[English](README.md) · [当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)
 
 ## 1. 只安装本服务
 
@@ -14,8 +14,8 @@ amp skill add AceDataCloud/Skills/platforms/amp/skills/nano-banana-by-acedataclo
 
 ## 2. 获取专用 API Token
 
-1. [注册或登录 Ace → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_api_key)，打开 **General application**；没有时先 **Initialize General Application**。
-2. 核对 Nano Banana 权限、余额与[当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=nano-banana_amp_pricing)，复制 API Key，或 **Manage Keys → Create** 创建 `Amp Nano Banana` 专用 Key。
+1. [注册或登录 Ace → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，打开 **General application**；没有时先 **Initialize General Application**。
+2. 核对 Nano Banana 权限、余额与[当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，复制 API Key，或 **Manage Keys → Create** 创建 `Amp Nano Banana` 专用 Key。
 3. 按需设到期、用量和 Allowed APIs；限制时放行所需生成/编辑和查询：`/nano-banana/images, /nano-banana/tasks`。是否有试用额度以账户显示为准。
 4. 仅复制 Key 本体，不带引号、空格或 `Bearer `；`platform-...` 管理 Token 不可替代。
 
