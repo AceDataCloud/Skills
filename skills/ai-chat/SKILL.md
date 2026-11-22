@@ -105,11 +105,12 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `mimo`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models; they
-> do not work on the OpenAI-compatible chat, Claude Messages, or conversation
-> routes. Generate images through the dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> **Choose the endpoint from the published model contract, not the model name.**
+> `gpt-4o-image` is a published chat model; do not exclude it because its name
+> ends in `-image`. Check the current model catalog and the selected API's model
+> list for supported protocols. Image-generation models use their documented
+> endpoints, such as `POST /v1beta/models/{model}:generateContent` or
+> `/nano-banana/images`; a name suffix does not establish endpoint support.
 
 ## Token billing across compatible protocols
 
