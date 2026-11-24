@@ -1,6 +1,6 @@
 ---
 name: seedream-image
-description: Generate, edit, stream, or decompose images with Seedream 5.0 via AceDataCloud. Use for text-to-image, reference-image editing, related image sets, transparent-background edits, or editable layer extraction.
+description: Generate, edit, stream, or decompose images with Seedream 5.5 or 5.0 via AceDataCloud. Use for text-to-image, reference-image editing, related image sets, transparent-background edits, or editable layer extraction.
 license: Apache-2.0
 metadata:
   author: acedatacloud
@@ -24,18 +24,14 @@ Use `POST https://api.acedata.cloud/seedream/images`. Authenticate with `Authori
 
 ## Pick the model from the requested capability
 
-| Capability | Seedream 5.0 Pro | Seedream 5.0 Lite |
-|---|---|---|
-| Model ID | `doubao-seedream-5-0-pro-260628` | `doubao-seedream-5-0-lite-260128` |
-| Generate/edit one image | Yes | Yes |
-| Reference images | Up to 10 | Up to 14 |
-| Related image set | No | Yes; input + output ≤ 15 |
-| Streaming / web search | No | Yes |
-| Layer decomposition / transparent background | Yes | No |
-| Prompt optimization | `standard`, `fast` | `standard` |
-| Preset sizes | `1K`, `1.5K`, `2K` | `2K`, `3K`, `4K` |
+| Model | Use for |
+|---|---|
+| `doubao-seedream-5-5-261028` | Multi-turn editing, native transparent PNG, up to 99 editable layers and optional OCR |
+| `doubao-seedream-5-0-flash-260915` | Fast single-image generation and editing, up to 16 editable layers |
+| `doubao-seedream-5-0-pro-260628` | Precise editing, up to 16 editable layers, fast prompt optimization |
+| `doubao-seedream-5-0-lite-260128` | Related image sets, streaming and web search |
 
-Seedream 4.5 and 4.0 remain available for compatibility. Do not send a parameter to a model that does not support it.
+5.5, 5.0 Flash and 5.0 Pro accept up to 10 references and support `1K`, `1.5K` and `2K`. Use 5.0 Lite for grouped generation. Its supported presets are `2K`, `3K` and `4K`. Seedream 4.5 and 4.0 remain available for compatibility.
 
 ## Generate or edit
 
@@ -53,7 +49,7 @@ curl https://api.acedata.cloud/seedream/images \
   }'
 ```
 
-For editing, add `image` as one URL/Base64 string or an array. `response_format` is `url` or `b64_json`; 5.0 Pro/Lite also support `output_format` as `jpeg` or `png`. Explicit dimensions use `WIDTHxHEIGHT` and must satisfy the selected model's pixel and aspect-ratio limits.
+For editing, add `image` as one URL/Base64 string or an array. `response_format` is `url` or `b64_json`; 5.5 and 5.0 Pro/Flash/Lite support `output_format` as `jpeg` or `png`. Explicit dimensions use `WIDTHxHEIGHT` and must satisfy the selected model's pixel and aspect-ratio limits.
 
 Use Lite web search only when current information matters:
 
@@ -61,9 +57,9 @@ Use Lite web search only when current information matters:
 {"tools": [{"type": "web_search"}]}
 ```
 
-## Transparent-background Pro edit
+## Generate or edit with a transparent background
 
-Use one transparent PNG input and PNG output:
+For text-to-image with Seedream 5.5, set `background: "transparent"` and use PNG. Seedream 5.0 Pro and Flash support transparent output when editing one reference with an alpha channel:
 
 ```json
 {
@@ -80,22 +76,23 @@ Do not combine `background` with layer decomposition. `transparent` with JPEG is
 
 ## Decompose an image into editable layers
 
-`layer_decomposition` is Pro-only and requires exactly one PNG/JPEG. Omit `prompt` for automatic decomposition, describe desired elements in natural language, or use normalized `<bbox>` coordinates.
+`layer_decomposition` is supported by 5.5, 5.0 Flash and 5.0 Pro and requires one PNG/JPEG. Omit `prompt` for automatic decomposition, describe desired elements in natural language, or use normalized `<bbox>` coordinates.
 
 ```bash
 curl https://api.acedata.cloud/seedream/images \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "doubao-seedream-5-0-pro-260628",
+    "model": "doubao-seedream-5-5-261028",
     "image": "https://example.com/poster.png",
     "layer_decomposition": true,
+    "layer_decomposition_options": {"max_images": 12, "text_recognition": true},
     "size": "auto",
     "watermark": false
   }'
 ```
 
-The response contains one base image (`z_index: 0`) and up to 16 transparent PNG layers. Each layer can include `name`, `description`, and `bounding_box.absolute`/`normalized`. To recompose, scale each layer to its bounding-box width and height, place it at left/top, and draw in ascending `z_index`. Any layer failure fails the whole decomposition.
+The response contains one base image (`z_index: 0`) and the generated transparent PNG layers. 5.5 supports up to 99 layers and returns recognized styled text in `data[].text_recognition` when requested. 5.0 Pro and Flash support up to 16 layers. Each layer can include `name`, `description`, and `bounding_box.absolute`/`normalized`. To recompose, scale each layer to its bounding-box width and height, place it at left/top, and draw in ascending `z_index`. Any layer failure fails the whole decomposition.
 
 ## Async tasks
 
@@ -128,6 +125,6 @@ MCP image tools are asynchronous, so use REST or CLI for real-time streaming.
 
 - URL results expire; persist files promptly.
 - Lite `data[]` may mix successful images and per-item `error` objects. Count only successful images.
-- Pro layer items are billed individually by actual output size; the base and every successful layer count separately.
+- The base and each layer count as outputs. 5.5 charges for each reference image and each output by its pixel tier. 5.0 Flash charges a flat rate per successful output and includes reference images.
 - Preserve `z_index`, bounding boxes, item errors, `tools`, and `usage`; do not flatten the response to a URL list.
 - Never estimate final billed cost from requested size alone. Use the returned `cost`/usage and the live pricing page: https://platform.acedata.cloud/services/seedream?tab=pricing.
