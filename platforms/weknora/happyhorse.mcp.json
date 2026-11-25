@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "HappyHorse by Ace Data Cloud": {
+      "type": "http",
+      "url": "https://happyhorse.mcp.acedata.cloud/mcp",
+      "description": "HappyHorse integration provided by Ace Data Cloud. Inspect current tools, obtain user approval for billable generation, submit once and query the same task ID until successful. Never include a key in this JSON."
+    }
+  }
+}

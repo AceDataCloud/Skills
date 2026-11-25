@@ -56,6 +56,12 @@ Response (both endpoints): `{"data":[{"url":"https://...png"}]}` → download `d
 multiple of 16, each side ≤ 3840, total pixels between 655,360 and 8,294,400, and an aspect
 ratio ≤ 3:1 — otherwise 400.)
 
+## Model selection and billing
+
+`gpt-image-2` and its explicit `gpt-image-2:reverse` alias bill per successful image, with a base price of 0.19 Credits per image for generation and editing. Check current account pricing and final usage records before reporting cost; returned token statistics do not change this billing mode. `gpt-image-2:official` instead bills actual token usage.
+
+During automatic recovery, reverse models may be fulfilled using GPT Image 2.5 Flare; the requested model and per-successful-image billing remain unchanged. Do not resubmit to force recovery or silently change the user's requested model. For the Flare/Sunburst model IDs and their explicit reverse aliases, use the [GPT Image 2.5 skill](../gpt-image-2-5/SKILL.md).
+
 ## Tips
 
 - **Editing keeps things faithful** — to place a logo/QR exactly, pass it as one of the

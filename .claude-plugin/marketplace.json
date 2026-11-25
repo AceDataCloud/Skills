@@ -11,18 +11,22 @@
   "plugins": [
     {
       "name": "acedatacloud-ai-media",
-      "description": "AI media generation: music (Suno, Producer, Fish Audio), images (Flux, Seedream, NanoBanana), video (Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
+      "description": "AI media generation: music (ACE Music, Suno, Producer, Fish Audio), images (GPT Image, Midjourney, Flux, Qwen Image, Seedream, Nano Banana), video (Grok, MiniMax H3, Luma, Sora, Veo, Kling, Hailuo, Happy Horse, Seedance, Maestro)",
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/ace-music",
         "./skills/suno-music",
         "./skills/producer-music",
         "./skills/fish-audio",
         "./skills/gpt-image-2-5",
+        "./skills/midjourney-image",
         "./skills/flux-image",
         "./skills/seedream-image",
         "./skills/nano-banana-image",
         "./skills/luma-video",
+        "./skills/grok-video",
+        "./skills/minimax-video",
         "./skills/sora-video",
         "./skills/veo-video",
         "./skills/kling-video",
@@ -36,7 +40,7 @@
     },
     {
       "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML→single-page PDF, Apple Notes (macOS), API guide, account management",
+      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML\u2192single-page PDF, Apple Notes (macOS), API guide, account management",
       "source": "./",
       "strict": false,
       "skills": [
@@ -47,7 +51,8 @@
         "./skills/short-url",
         "./skills/onepage-pdf",
         "./skills/apple-notes",
-        "./skills/acedatacloud"
+        "./skills/acedatacloud",
+        "./skills/ace-recharge-card"
       ]
     },
     {
@@ -56,7 +61,124 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/xiaohongshu"
+        "./skills/xiaohongshu",
+        "./skills/content-fanout",
+        "./skills/jianshu",
+        "./skills/douyin",
+        "./skills/netease",
+        "./skills/tencentcloud-community",
+        "./skills/aliyun-community",
+        "./skills/sohu",
+        "./skills/sspai",
+        "./skills/infoq",
+        "./skills/huaweicloud-blog",
+        "./skills/douban",
+        "./skills/volcengine-community",
+        "./skills/modelscope",
+        "./skills/baijiahao"
+      ]
+    },
+    {
+      "name": "suno-by-ace-data-cloud",
+      "description": "Suno by Ace Data Cloud: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/suno-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "suno",
+        "music",
+        "ace-data-cloud"
+      ],
+      "displayName": "Suno by Ace Data Cloud"
+    },
+    {
+      "name": "seedance-by-ace-data-cloud",
+      "description": "Seedance by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/seedance-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/seedance-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "seedance",
+        "video",
+        "ace-data-cloud"
+      ],
+      "displayName": "Seedance by Ace Data Cloud"
+    },
+    {
+      "name": "happyhorse-by-ace-data-cloud",
+      "description": "HappyHorse by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/happyhorse-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/happyhorse-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "happyhorse",
+        "video",
+        "ace-data-cloud"
+      ],
+      "displayName": "HappyHorse by Ace Data Cloud"
+    },
+    {
+      "name": "gpt-image-by-ace-data-cloud",
+      "description": "GPT Image by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/gpt-image-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/gpt-image-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "gpt-image",
+        "image",
+        "ace-data-cloud"
+      ],
+      "displayName": "GPT Image by Ace Data Cloud"
+    },
+    {
+      "name": "nano-banana-by-ace-data-cloud",
+      "description": "Nano Banana by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "source": "./claude-plugins/nano-banana-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/nano-banana-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "nano-banana",
+        "image",
+        "ace-data-cloud"
+      ],
+      "displayName": "Nano Banana by Ace Data Cloud"
+    },
+    {
+      "name": "ace-music-by-ace-data-cloud",
+      "displayName": "ACE Music by Ace Data Cloud",
+      "description": "Generate ACE Music songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original task.",
+      "source": "./claude-plugins/ace-music-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/ace-music-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "ace-music",
+        "acemusic",
+        "music",
+        "ace-data-cloud"
       ]
     }
   ]

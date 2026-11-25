@@ -303,6 +303,17 @@ def cmd_pricing(args):
         "free_amount": svc.get("free_amount"),
         "cost": svc.get("cost"),
     }
+    if svc.get("type") == "Dataset":
+        metadata = svc.get("metadata") or {}
+        if "pricing_mode" in metadata:
+            out["pricing_mode"] = metadata["pricing_mode"]
+        if metadata.get("reference_quote") is not None:
+            quote = metadata["reference_quote"]
+            out["reference_quote"] = {
+                key: quote[key]
+                for key in ("currency", "min_amount", "max_amount", "unit", "status")
+                if key in quote
+            }
     _emit(args, out)
 
 
@@ -605,7 +616,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp = add("get-service", cmd_get_service, "one service's detail by alias or id")
     sp.add_argument("--service", required=True, help="service alias or UUID")
 
-    sp = add("pricing", cmd_pricing, "a service's unit, free_amount and cost")
+    sp = add("pricing", cmd_pricing, "service pricing and dataset reference quotes")
     sp.add_argument("--service", required=True, help="service alias or UUID")
 
     sp = add("apis", cmd_apis, "list API endpoints (optionally per service)")

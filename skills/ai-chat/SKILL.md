@@ -1,25 +1,40 @@
 ---
 name: ai-chat
-description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need OpenAI-compatible chat/responses calls or the newer `/aichat2/conversations` API across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
+description: Access 50+ LLM models through AceDataCloud's unified chat APIs. Use when you need native Claude Messages, native Gemini audio analysis, OpenAI-compatible chat/responses calls, text embeddings for search or RAG, or stateful conversations and scheduled agent tasks across GPT, Claude, Gemini, Grok, Kimi, GLM, and DeepSeek models. Supports streaming, multimodal input, and tool calling.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Works with OpenAI-compatible SDKs against the `/openai/*` routes.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (get an API key at https://platform.acedata.cloud/console/applications). Works with OpenAI-compatible SDKs against the `/openai/*` routes and public `/v1/*` aliases.
 ---
 
 # AI Chat — Unified LLM Gateway
 
-AceDataCloud exposes two documented chat surfaces:
+AceDataCloud exposes the following documented chat surfaces:
 
 | Endpoint | Use For |
 |----------|---------|
 | `POST /aichat2/conversations` | Recommended stateful / multimodal / agentic conversations |
 | `POST /aichat/conversations` | Legacy conversation endpoint |
-| `POST /openai/chat/completions` | OpenAI-compatible stateless chat completions |
-| `POST /openai/responses` | OpenAI-compatible responses API |
+| `POST /openai/chat/completions` (public alias `/v1/chat/completions`) | OpenAI-compatible stateless chat completions |
+| `POST /openai/responses` (public alias `/v1/responses`) | OpenAI-compatible responses API |
+| `POST /kimi/chat/completions` (public alias `/v1/chat/completions`) | Kimi Chat Completions with model-specific reasoning controls |
+| `POST /v1/chat/completions` (alias `/claude/chat/completions`) | Claude Chat Completions, including Opus 5.5 |
+| `POST /gemini/chat/completions` (public alias `/v1/chat/completions`) | Gemini Chat Completions, including Gemini 4 Argon |
+| `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages and published compatible models in Messages format |
+| `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count input tokens for the selected published Messages model without generating output |
+| `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
+| `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` | Native Gemini SSE streaming |
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## First-time setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/ai-chat`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check AI Chat access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/aichat2/conversations` for the first example; other chat routes need their own access. Advanced workflows below may call additional routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Run the **Quick Start** below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.
+
+[Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## Quick Start
 
@@ -27,7 +42,7 @@ AceDataCloud exposes two documented chat surfaces:
 
 ```bash
 curl -X POST https://api.acedata.cloud/aichat2/conversations \
-  -H "Authorization: ******ACEDATACLOUD_API_TOKEN" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-4.1","question":"Summarize the latest release notes.","stateful":true}'
 ```
@@ -35,10 +50,11 @@ curl -X POST https://api.acedata.cloud/aichat2/conversations \
 ### OpenAI-compatible SDK
 
 ```python
+import os
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="your-token-here",
+    api_key=os.environ["ACEDATACLOUD_API_TOKEN"],
     base_url="https://api.acedata.cloud/openai"
 )
 
@@ -49,6 +65,10 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+### Dify: OpenAI-API-compatible provider
+
+Set **Base URL** to `https://api.acedata.cloud/v1`, **API Key** to your AceDataCloud service token, **model** to `gpt-5.5` (or another supported chat model), and **model type** to LLM. Select **conversation type** Chat and **API type** Chat Completions. Dify appends `/chat/completions` itself; do not use `/openai/v1` or include the full endpoint in Base URL. Test the connection before selecting the model in a Workflow / Chatflow LLM node.
+
 ## Currently Documented Model Families
 
 The OpenAPI specs expose a broad, fast-moving model catalog. Representative current
@@ -56,23 +76,55 @@ models include:
 
 | Family | Current examples |
 |--------|------------------|
-| OpenAI / reasoning | `gpt-6-astra`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
+| OpenAI / reasoning | `gpt-6.2-astra`, `gpt-6.2-sol`, `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol-fast`, `gpt-5.6-sol`, `gpt-5.5`, `gpt-5.5-pro`, `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.2`, `gpt-5.1`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4o`, `gpt-4o-mini`, `o1`, `o3`, `o4-mini` |
 | OpenAI free-tier chat-completions | `gpt-5.5:free`, `gpt-5:free`, `gpt-4.1:free`, `gpt-4o:free`, `gpt-4o-mini:free`, `gpt-oss:free` |
-| Claude | `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
-| Gemini | `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
-| Grok | `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
-| DeepSeek | `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
-| Kimi | `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
-| GLM | `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
+| Claude | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-fable-5-2`, `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
+| Gemini | `gemini-4-carbon`, `gemini-4-argon`, `gemini-4-hydrogen`, `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
+| Grok | `grok-4.7`, `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
+| DeepSeek | `deepseek-v4.1-flash-1017`, `deepseek-v4.1-flash`, `deepseek-v4-flash`, `deepseek-flash`, `deepseek-v4-pro`, `deepseek-v3.2` |
+| Kimi | `kimi-k3.1-pro`, `kimi-k3`, `kimi-k2.6`, `kimi-k2.7-code` |
+| GLM | `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
+| MiMo | `mimo-v2.6-pro`, `mimo-v2.6-flash` |
+
+When the user asks for a recommended model, read the current public `GET https://platform.acedata.cloud/api/v1/models/` response and prefer suitable entries with `recommended=true`. This is an editorial preference, not an access grant or a new API capability; `recommended=false` does not retire a model. Check the selected model's supported route and current pricing before calling it, and do not silently replace a model the user explicitly selected.
+
+Catalog discovery follows the requesting visitor's IP, not the display language or a `?country=` override. Mainland-China views hide marked Claude, OpenAI, Gemini and Grok chat catalog entries. Check media visibility separately: OpenAI image generation/editing and companion guides are also hidden in mainland China. Read the service's `image_unavailable_regions` and API/document `unavailable_regions`; do not hide unrelated media or the entire mixed service based on chat-only or image-only restrictions. Raw catalog responses may retain marked rows, so presence alone is not visibility. Honor the current public visibility when recommending models; do not use a cached global list to advertise region-hidden chat or images. A missing catalog entry is not evidence of retirement or revoked API access: this presentation filtering does not change API routing or billing. Report the discovery limitation, check actual account access and pricing, and do not silently replace a user-selected model.
+
+To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completions, Responses, Messages, or either conversation endpoint above. It is listed in the public model/pricing catalog with vision capability, but has no public model introduction. Check account eligibility and current pricing before requesting it; catalog visibility does not guarantee access. Its pricing rules use a higher tier when total input exceeds 272,000 (not at exactly 272,000). For Chat Completions and Responses, input totals already include reported cache tokens; for Messages, add the separately reported cache-read and cache-creation tokens to uncached input before checking this threshold. Do not silently substitute `gpt-5.6-sol` after an access or parameter error; protocol-specific features remain model-dependent.
+
+`gpt-6.2-astra` and `gpt-6.2-sol` support `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort. Use `reasoning_effort` for Chat Completions or `reasoning.effort` for Responses, starting with `low`; do not send `none` or `minimal`. Check the current platform price and account availability before calling either model.
+
+`gpt-6.1-sol` supports `low`, `medium`, `high`, `xhigh`, and `max` reasoning effort; do not send `none` or `minimal`. During its first week, access requires verified ACE T1+ holdings or an access grant. Check the platform access response for the opening time.
+
+`gpt-6.1-terra` supports the same five reasoning effort values. Use `reasoning_effort` for Chat Completions or `reasoning.effort` for Responses, starting with `low`; do not send `none` or `minimal`. It supports text and image input, streaming, and tool calls through the corresponding API. Input above 272,000 tokens uses long-context pricing; check the current price and account access before requesting it.
+
+`claude-fable-5-2` is available on Claude Messages, Chat Completions, and `/aichat2/conversations`. Use that exact public ID; Fable 5.1 and Fable 5 remain separate models. Prefer Messages for native thinking and tool blocks. Adaptive thinking stays enabled; omit `temperature`, `top_p`, and `top_k`. Use Messages `tool_choice: {"type":"auto"}` or Chat `tool_choice: "auto"`; do not force `any` or a named tool. On Messages, adjust reasoning effort with `output_config.effort` and budget `max_tokens` for both thinking and final text. Responses and Count Tokens are not available for this model, even though shared settlement rules exist; read final `usage` from the generation response instead of substituting another model's token count. At the current maximum package rate, standard input/output costs are 40% of Anthropic standard API prices (60% lower); consult the live pricing page for the selected package.
+
+`claude-opus-5-5` is available on Claude Chat Completions (`POST /v1/chat/completions`) and native Messages (`POST /v1/messages`). Messages remains the recommended route for complete thinking blocks and native tool semantics. Ordinary and streaming Chat Completions are supported, but Chat replies do not return native thinking blocks. For Chat Completions, use `n=1`, omit non-default `temperature` and `top_p`, and use `tool_choice: "auto"` rather than forcing a tool. `claude-sonnet-5-5` remains a Messages model. Check the current public model list and account access before using another route; cross-protocol pricing rules do not establish identical feature support.
 
 `/aichat2/conversations` also accepts `model_group` values
-`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, and `deepseek`.
+`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `mimo`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models and do
-> not work on any chat surface listed above. Generate images through the
-> dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> **Choose the endpoint from the published model contract, not the model name.**
+> `gpt-4o-image` is a published chat model; do not exclude it because its name
+> ends in `-image`. Check the current model catalog and the selected API's model
+> list for supported protocols. Image-generation models use their documented
+> endpoints, such as `POST /v1beta/models/{model}:generateContent` or
+> `/nano-banana/images`; a name suffix does not establish endpoint support.
+
+## Token billing across compatible protocols
+
+1. Before submitting, check the selected route's current public model list, account access, key restrictions and current model pricing. A settlement rule is not a publication or access grant. Keep the requested public model ID; do not silently substitute another model or route after an error.
+2. For accepted compatible-model requests, billing follows the model's actual input, output and cache usage. Switching between Chat Completions, Responses and Messages does not turn token billing into a fixed per-request fee or guarantee the same price across protocols.
+3. Read the actual response `usage` using that protocol's fields:
+
+   | Protocol | Input/cache accounting |
+   |----------|------------------------|
+   | Chat Completions | `usage.prompt_tokens` includes reported cache tokens. Treat `usage.prompt_tokens_details.cached_tokens` as a subset, not extra input; the reported cache portion uses its corresponding cache price. |
+   | Responses | `usage.input_tokens` includes reported cache tokens. Treat reported cache tokens in `usage.input_tokens_details` as a subset, not extra input; the cache portion uses its corresponding cache price. |
+   | Messages | `usage.input_tokens` excludes the separately reported `usage.cache_read_input_tokens` and `usage.cache_creation_input_tokens`. Account for these dimensions separately at their corresponding prices. If `usage.cache_creation` reports 5-minute/1-hour details, these partition creation usage; do not add them again to the creation total. |
+
+4. Check the console's current model prices and the returned `usage.cost` for the actual charge. Report only returned usage/cost fields; missing cache or cost data is not evidence of a cache hit or a free request. Do not invent a charge from a reference USD price.
 
 ## OpenAI-Compatible Chat
 
@@ -106,6 +158,154 @@ Common parameters:
 | `tools` / `tool_choice` | array / string-object | Function-calling controls |
 | `service_tier` | string | Processing tier (`auto`, `default`, `flex`, `scale`, `priority`) |
 
+## MiMo
+
+Use `mimo-v2.6-pro` or `mimo-v2.6-flash` with the MiMo service. Check the live catalog, account permissions and current service status before submitting requests.
+
+Use `POST /mimo/chat/completions` (or its permitted `/v1/chat/completions` alias) with standard `model` and `messages` fields. The initial contract covers text, streaming, reasoning via `thinking.type`, and client-executed `type=function` tools with `tool_choice=auto`. Use `max_completion_tokens` to bound reasoning plus final output. Preserve assistant `reasoning_content`, tool calls and matching tool-result IDs across turns. Request stream usage with `stream_options.include_usage=true` when needed.
+
+`/aichat2/conversations` uses its own conversation payload and the `mimo` group. Do not assume Chat Completions-specific options exist on that route. Built-in web search, multimodal inputs, Responses, Messages, Batch and UltraSpeed are outside this service contract. Query current prices; reasoning output is already included in completion tokens, and cached input must not be billed twice.
+
+## Kimi Chat Completions
+
+1. Check current Kimi access, pricing and **Allowed APIs** restrictions for `/kimi/chat/completions` before submitting with the same AceDataCloud service Bearer token. `kimi-k3.1-pro` and `kimi-k3` remain available; choose recommendations from the current public model catalog's `recommended` flag, not a fixed model preference. Do not silently replace an explicitly selected model.
+2. Send `model` and `messages` to `POST /kimi/chat/completions` (public alias `/v1/chat/completions`). K3.1 Pro supports top-level `reasoning_effort` values `low`, `high` and `max`. Both K3.1 Pro and K3 always enable reasoning; do not send settings to disable it. For K3, use `max` or omit the field rather than relying on other values. K2.6 uses `thinking`, not this effort control.
+3. For K3.1 Pro image understanding, use `image_url` content blocks alongside text in `messages`. The official context specification is up to 1,048,576 tokens, not a guaranteed per-request platform limit. Check the chosen route's own model list before using Responses or Messages; shared pricing rules do not establish protocol support.
+4. Read text from `choices[].message.content`. Preserve the complete assistant message, including `reasoning_content` and `tool_calls` when returned, unchanged in subsequent turns and tool-result exchanges. Execute only authorized tools and verify their results; do not fabricate response or reasoning fields.
+5. Read actual `usage` and check current input, output and cache-hit pricing in the public model catalog. Do not assume a cache hit or convert the official model price directly into an account charge.
+
+```bash
+curl -X POST https://api.acedata.cloud/kimi/chat/completions \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model":"kimi-k3.1-pro",
+    "messages":[{"role":"user","content":"Review this code and suggest a repair plan."}],
+    "reasoning_effort":"low"
+  }'
+```
+
+`/aichat2/conversations` also lists `kimi-k3.1-pro`; use its conversation payload below rather than assuming the Kimi-specific effort field is available on that route.
+
+## Gemini 4 Argon
+
+1. Check Gemini access, current pricing and **Allowed APIs** restrictions for the chosen route. Keep the exact public ID `gemini-4-argon`. For Chat Completions, send `model` and `messages` to `POST /gemini/chat/completions` (public alias `/v1/chat/completions`); ordinary and SSE streaming text replies are supported. Set `stream: true` for streaming.
+2. For native Generate Content, put the model in `POST /v1beta/models/gemini-4-argon:generateContent` and send `contents` with `parts`, not `messages`. Use `generationConfig.maxOutputTokens` for the output budget. For native streaming, send the same body to `POST /v1beta/models/gemini-4-argon:streamGenerateContent?alt=sse`. These routes do not provide Google Interactions background long-output or server-side session features.
+3. Thinking and visible text share the output budget: set Chat `max_tokens` or native `generationConfig.maxOutputTokens` generously. Google's guidance for ordinary Argon tasks is at least 32,768 output tokens, not a required platform minimum. The official unified context is 1,048,576 tokens across input, thinking and output, with a regular synchronous output cap of 65,536; these are not guaranteed client/platform limits. Allow sufficient client timeout and inspect stop reasons if the answer is empty or incomplete. Do not rely on sampling controls (`temperature`, `top_p`, `top_k`, or native `topP`/`topK`); Argon ignores them.
+4. Argon supports implicit caching only; do not create or reference explicit cache resources or send native `cachedContent`. Check actual usage and the platform's current prices rather than assuming a cache hit or discount. Google's reference pricing is promotional through November 30, 2026 and rises from December 1, 2026; it is not the account's charge.
+5. Read Chat text from `choices[].message.content` and check `choices[].finish_reason`; streaming text arrives in `choices[].delta.content`. For native replies, read `candidates[].content.parts` and `candidates[].finishReason`, and retain actual `usageMetadata`, including `thoughtsTokenCount` and `cachedContentTokenCount` when returned. Never fabricate missing usage or response fields.
+
+```json
+POST /gemini/chat/completions
+{
+  "model": "gemini-4-argon",
+  "messages": [{"role": "user", "content": "Review this migration plan and identify missing validation steps."}],
+  "max_tokens": 32768
+}
+```
+
+`/aichat2/conversations` also lists `gemini-4-argon`; use its stateful conversation payload below, not Chat or native Gemini request fields. Do not infer Responses, Messages or legacy conversation support from shared pricing rules.
+
+## Native Gemini Generate Content
+
+Use the native Gemini routes for audio analysis with the same AceDataCloud Bearer token. Confirm Gemini API access, current pricing, the selected public model, and any **Allowed APIs** restrictions before submitting. These routes use `contents` and `parts`, not OpenAI `messages`.
+
+1. Put the prompt and audio in a user content item's `parts`. Use `inlineData` with `mimeType` and base64-encoded `data`, or `fileData` with `mimeType` and `fileUri`. Text, image and video inputs, thinking configuration and custom function declarations are also accepted on this native surface; this is not a promise of support on OpenAI-compatible or conversation routes.
+2. For `fileData.fileUri`, use a file directly accessible over HTTPS without login. A signed URL must remain valid for the entire request. Replace `HTTPS_AUDIO_URL` below with the real file URL and set the actual audio MIME type; the example assumes WAV.
+3. Set the client's total request timeout for the file size and workload. Non-streaming audio analysis returns only after model processing completes and may exceed 90 seconds; 90 seconds is not a server processing limit. If the client disconnects, the server may still be processing: do not automatically resubmit a potentially billable request.
+4. Submit the native request below. For Gemini 3.x Flash thinking models, keep `generationConfig.maxOutputTokens` at least 512 so reasoning does not consume the entire output budget.
+
+```json
+POST /v1beta/models/gemini-3.5-flash:generateContent
+{
+  "contents": [
+    {
+      "role": "user",
+      "parts": [
+        {"text": "Summarize this audio."},
+        {"fileData": {"mimeType": "audio/wav", "fileUri": "HTTPS_AUDIO_URL"}}
+      ]
+    }
+  ],
+  "generationConfig": {
+    "maxOutputTokens": 1024,
+    "thinkingConfig": {"includeThoughts": false}
+  }
+}
+```
+
+For streaming, send the same native body to `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` and consume SSE events. Audio output, built-in tools (`codeExecution`, `googleSearch`, `urlContext`) and explicit context caching (`cachedContent`) have no uniform availability guarantee: use the selected model's actual response and surface errors rather than promising support or assuming those fields always return 400.
+
+### Thinking summaries and multi-turn history
+
+1. `generationConfig.thinkingConfig.includeThoughts` defaults to `false`. Omit it or send boolean `false` to suppress `thought: true` text in both JSON and SSE responses while keeping normal answers. Set it to boolean `true` only when a thinking summary is needed; summary output is not guaranteed even then.
+2. Configure internal thinking separately with `thinkingBudget` or `thinkingLevel`; supported fields and values are model-dependent. Hiding summaries does not disable internal thinking or guarantee fewer thinking tokens. Explicit summary, budget and level settings are preserved. When the summary flag is omitted, the gateway supplies `false` for compatible generation models, but does not auto-add thinking configuration for `gemini-2.5-flash-image`; `countTokens` requests do not receive generation configuration.
+3. Preserve returned `candidates[].content.parts` in order when maintaining history. `thoughtSignature` is opaque multi-turn state, not summary text, and is unaffected by `includeThoughts`. Signatures may appear on normal answers, function calls or empty-text Parts. Keep these Parts intact, including signature-only or empty-text Parts and their other fields. Do not move signatures, merge Parts or discard them because text is empty.
+4. Read actual `usageMetadata` and `usage`. Hiding summaries does not zero `thoughtsTokenCount`; billing still follows actual usage and current pricing. Do not invent missing usage or infer that thinking was free because its summary was hidden.
+
+## OpenAI Embeddings
+
+Use `POST /openai/embeddings` (public alias `/v1/embeddings`) with the same AceDataCloud Bearer token for semantic search or RAG, not chat generation. Choose `text-embedding-3-small` or `text-embedding-3-large`; `model` and `input` are required.
+
+```json
+POST /openai/embeddings
+{
+  "model": "text-embedding-3-small",
+  "input": "Hello!"
+}
+```
+
+`text-embedding-ada-002` is retired; do not send new requests with that model. Rebuild existing indexes with the selected supported model before querying them; do not mix vectors from different models in one index or silently switch models for an existing index.
+
+## Native Claude Messages
+
+Use `POST /v1/messages` (public alias `/claude/messages`) for native Claude calls, including `claude-opus-5-5` and `claude-sonnet-5-5`, or another model published on this Messages route. Authenticate with the same AceDataCloud Bearer token. Required fields are `model`, `messages`, and `max_tokens`; use top-level `system` for system instructions.
+
+The published Messages and Count Tokens lists also include `gpt-6.2-astra`, `gpt-6.2-sol`, `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-6-astra`, `gpt-5.6-sol-fast`, `gpt-5.6-sol`, `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5-turbo`, `glm-5`, and `gemini-3.6-flash`. Check the current route list, account access and pricing before selecting one. Keep Messages fields and response handling when switching models; do not send Chat Completions or Responses payloads to this route.
+
+```bash
+curl -X POST https://api.acedata.cloud/v1/messages \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model":"claude-sonnet-5-5",
+    "messages":[{"role":"user","content":"Review this implementation plan."}],
+    "max_tokens":8192,
+    "thinking":{"type":"adaptive"},
+    "output_config":{"effort":"high"}
+  }'
+```
+
+- Use Messages `thinking`, `output_config`, effort, sampling parameters, and extension fields. Same-protocol requests pass extension fields unchanged; cross-protocol requests map their semantics. The platform does not enforce a frozen per-model enum; the selected model decides which values and combinations it accepts and its parameter errors are returned to the caller. Mapping is not a promise of identical feature support across models or protocols.
+- Common `thinking.type` values are `adaptive`, `enabled`, and `disabled`; newer modes such as `between_tools`, fixed `budget_tokens`, and whether thinking can be disabled depend on the model. Common effort values include `low`, `medium`, `high`, `xhigh`, and `max`, but are not a closed enum.
+- `thinking.display="summarized"` returns a readable summary, not raw reasoning. `omitted` hides the thinking text while retaining its opaque `signature`. Beta `updates` requests short progress updates between tool calls with hidden reasoning; send `anthropic-beta: thinking-display-updates-2026-08-18` and `thinking.display="updates"`. The value and beta header are forwarded, not rewritten to `summarized`; actual support and output depend on the selected model.
+- Thinking shares the `max_tokens` budget with final text. Display settings do not disable thinking or reduce its token billing. Increase the budget or lower supported effort if the final answer is empty or truncated.
+- In multi-turn/tool-use conversations, return complete assistant thinking blocks and signatures unchanged. Never invent or edit a signature. Cross-protocol handling of `redacted_thinking` depends on the model service; surface errors instead of dropping blocks or silently changing the request.
+
+For tools, use `tools[].input_schema`, `tool_choice`, assistant `tool_use` blocks and user `tool_result` blocks with matching IDs. Set `tool_choice.disable_parallel_tool_use=true` when parallel tool calls are not wanted. `max_tokens` is the output budget shared by thinking and text; the platform does not automatically raise it.
+
+For structured output, add `output_config.format` to the same Messages request:
+
+```json
+{
+  "output_config": {
+    "format": {
+      "type": "json_schema",
+      "schema": {
+        "type": "object",
+        "properties": {"answer": {"type": "string"}},
+        "required": ["answer"],
+        "additionalProperties": false
+      }
+    }
+  }
+}
+```
+
+Read generated text from Messages `content` text blocks, including structured JSON text; do not expect Chat `choices` or Responses `output`. These controls are passed through or mapped according to protocol; surface the selected model's specific parameter errors instead of rewriting the request silently.
+
+To estimate input size for a model supported on Count Tokens, send the input to `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) with the same model, messages, and applicable system/tools/thinking fields. `claude-fable-5-2` is not supported on Count Tokens; use its final generation `usage` instead, not another model's count. Read `input_tokens`; this endpoint generates no model output and consumes no quota. Its thinking configuration is extensible too; do not substitute a locally hard-coded model validator.
+
 ## Stateful / Agentic Conversations
 
 `POST /aichat2/conversations` generalizes the legacy conversation API with
@@ -137,17 +337,124 @@ Useful parameters:
 | `stateful` | boolean | Keep conversation history server-side |
 | `references` | array | Extra context documents |
 | `preset` | string | Preset/system prompt |
-| `max_turns` | integer | Trim retained turn history |
+| `max_turns` | integer | Agent iterations per request: 1–500, default 500; not retained history |
 | `allowed_skills` / `allowed_mcp_servers` | array | Restrict tool-use scope |
 | `unattended_policy` | object | Tool-use permission policy |
 | `tool_results` | array | Return results for previously requested tool calls |
-| `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `deepseek`) |
+| `model_group` | string | Family selector (`chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `mimo`, `deepseek`) |
 | `offset` / `limit` | integer | Pagination for retrieval actions |
 | `callback_url` / `async` | string / boolean | Async execution |
 
+Set `max_turns` deliberately for the expected tool chain. Each iteration is a model call, not a history-retention setting; `max_turns: 1` requests a single answer without tool calls. Omitting it allows up to 500 iterations, not a guarantee that all will run.
+
+## Scheduled Agent Tasks
+
+Use `POST /aichat2/scheduled-tasks` on `https://api.acedata.cloud` with the same service Bearer token and aichat API access. All operations use POST with an `action`; this is not a platform-management-token endpoint.
+
+1. Confirm the prompt, model, accounts, permitted tools, schedule, IANA timezone and spending scope before creating or enabling a task. Runs are billable and unattended: finish third-party authorization interactively first and remove ambiguities that would require a follow-up question. Use the [unattended confirmation guard](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/unattended.md) for supported write helpers; scheduling is not blanket permission to publish or send.
+2. Choose `schedule.type`: `cron` requires a five-field `cron` expression and `tz`; `interval` requires `interval_seconds` and `tz`; `once` requires a Unix-seconds `at` and `tz`. Use an IANA zone such as `UTC`, not `UTC+8`. The saved timezone governs Cron wall-clock time even if the device timezone changes.
+3. Put the conversation prompt/model in `template`. Optional `template.max_turns` is 1–500, default 500, and caps iterations **per run**, not schedule frequency. Each model call is billed by actual usage; a run can end earlier due to timeout, authorization or other execution conditions. A run lasts at most 15 minutes. Set an explicit Unix-seconds `ends_at` when needed; otherwise tasks stop three months after creation.
+4. After creation, retain the returned task `id`. List with `action="retrieve_batch"`; inspect executions with `action="retrieve_runs"` and that `id`, or `action="retrieve_runs_batch"` for all tasks (optional `status`, `offset`, `limit`). Read each run's `status`, `error_code` and `conversation_id`; retrieve the conversation through `/aichat2/conversations` for the full result. Task `state="enabled"` (shown as “running” in the list) is not evidence of a successful run.
+5. Consecutive AI execution failures **do not auto-pause** the task: the next scheduled run still attempts execution. Auto-pause occurs after **five consecutive handoff failures** to the execution service, not five failed AI runs. Insufficient balance fails a run; a request for user input/consent fails with `awaiting_user_input`. Diagnose the run history, fix balance/authorization/prompt issues, and explicitly pause recurring failures to prevent further attempts.
+6. Pause with `action="update"`, the task `id` and `state="disabled"`; resume with `state="enabled"` only after confirmation. Delete with `action="delete"` and `id` only after confirming permanent removal.
+
+### Timing jitter and trigger probability
+
+Confirm these settings before creating or updating a task; preserve explicit zero values. Send them at the request's top level, not inside `schedule` or `template`:
+
+| Field | Values and behavior |
+|-------|---------------------|
+| `jitter_seconds` | Nonnegative integer seconds, default `60`; `0` disables jitter. Automatic cloud runs independently shift before or after their planned time. For interval tasks, the actual jitter is capped at one quarter of `interval_seconds`. Local runs do not use jitter. |
+| `trigger_probability` | Number from `0` to `1`, default `1` (including older tasks without this field). `0` skips every automatic attempt; `1` starts every automatic attempt. Each account is sampled independently when due, independently of jitter; this is not a fixed quota of accounts per cycle. |
+
+Probability applies only to automatic cloud and local scheduled attempts, not **Run now** or other manual runs. Sampling happens before conversation creation, model calls and billing. A skipped automatic attempt has `status="skipped"` and `error_code="probability_skipped"`: it creates no conversation, incurs no model charge and does not pause the task. Repeated callbacks reuse the saved sampling result, not a new draw. Changing probability does not reset the next planned execution time. Manual runs bypass probability even when the saved value is `0`; confirm their accounts and spending scope before triggering.
+
+### Account-bound cloud runs
+
+After confirming each connected account, allowed Skill and per-account spending scope, save selections in top-level `unattended_policy.connection_bindings`. One connector may have multiple distinct `connection_id` values; other connectors must each use one account. The task supports at most 100 bindings total. Local execution still permits only one account per connector. Replace placeholders with actual connected account IDs and installed, authorized Skills; never guess IDs or copy credentials into the request.
+
+For an already confirmed read-only task, preview this update and obtain confirmation before sending:
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "update",
+  "id": "TASK_ID",
+  "jitter_seconds": 0,
+  "trigger_probability": 1,
+  "unattended_policy": {
+    "allowed_skills": ["github"],
+    "connection_bindings": [
+      {"connector_identifier": "github/github", "connection_id": "CONNECTED_ACCOUNT_ONE_ID"},
+      {"connector_identifier": "github/github", "connection_id": "CONNECTED_ACCOUNT_TWO_ID"}
+    ]
+  }
+}
+```
+
+Each triggered account gets an independently authorized, billed run and its own conversation; one account's failure does not block the others. Zero jitter does not guarantee simultaneous starts. The task list remains one configuration, and its next execution time is the earliest across accounts. Changing account selections reschedules runs; changing the prompt does not reset execution times. Pause, resume and delete affect all accounts, but already-started runs may finish. Existing single-account tasks stay unchanged; multi-account selection does not merge old task copies. Review and explicitly pause duplicates to avoid duplicate charges.
+
+In run history, `run_accounts` snapshots the accounts actually selected for that run; later binding changes do not rewrite it. Older/default-account runs may omit it. If an explicitly bound account expires, is revoked or deleted, do not substitute the connector's default account; reauthorize the intended account before resuming.
+
+### Manually trigger selected accounts
+
+1. Read the task's current saved bindings and confirm the exact accounts and billable scope for this invocation. In Nexior, multi-account **Run now** opens an account picker with nothing selected by default; choose one or more accounts or explicitly select all. Single-account tasks trigger directly.
+2. For an API subset, use `action="trigger_selected"`, the task `id` and required `connection_ids`. Supply a nonempty array of unique IDs from the task's saved multi-account connector only. Other connectors' fixed accounts remain attached to each run. Unknown, removed or out-of-scope IDs reject the entire request without starting any runs. Do not update saved bindings just to run a subset.
+3. Preview the request below with real saved account IDs and obtain confirmation before sending. Legacy `action="trigger"` without an account list attempts all configured accounts; use it only when that full scope is confirmed. If an older service rejects `trigger_selected`, surface the error; never fall back to `trigger` or all accounts.
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "trigger_selected",
+  "id": "TASK_ID",
+  "connection_ids": ["CONNECTED_ACCOUNT_ONE_ID"]
+}
+```
+
+Manual runs bypass `jitter_seconds` and `trigger_probability`, including a saved probability of `0`. Each selected account starts directly without waiting for the previous account to finish; unselected accounts get no run records. This also applies to single-account **Run now**, `action="trigger"` and local manual runs. Saved account bindings, trigger probability and the next scheduled execution remain unchanged; authorization checks and normal billing still apply.
+
+On successful cloud acceptance, inspect every returned `runs[]` entry's `run_id`, `status="queued"` and `conversation_id`. `triggered_count` is the number of accounts started; compatibility `skipped_count` is always `0`. Top-level compatibility fields point to the first started run. Each manual run records its effective `trigger_probability` as `1`, without rewriting task configuration or historical records. Queued acceptance is not successful completion: use run history and the returned conversation IDs to check final results before reporting success or considering another billable trigger. Nexior opens the conversation for one started account and task run history for multiple accounts.
+
+### Search and page through scheduled tasks
+
+Use `action="retrieve_batch"` with optional `search` to find task names across all tasks owned by the current user, before pagination. Matching is a case-insensitive substring search with surrounding whitespace ignored, not a regular expression. Omitted or empty `search` lists all tasks, newest-created first.
+
+```json
+POST /aichat2/scheduled-tasks
+{"action":"retrieve_batch","search":"Daily","offset":0,"limit":10}
+```
+
+Read `items` for the page and `count` for the total matching tasks. `offset` defaults to 0; `limit` defaults to 100 and must be 1–100. Keep `search` unchanged and increase `offset` by `limit` for each next page until the accumulated items reach `count`. Clearing search restores the full list; do not search only the currently loaded page.
+
+Creation payload (preview locally and obtain confirmation before sending):
+
+```json
+POST /aichat2/scheduled-tasks
+{
+  "action": "create",
+  "name": "Daily AI news summary",
+  "schedule": {"type": "cron", "cron": "0 9 * * *", "tz": "UTC"},
+  "template": {
+    "model": "gpt-4o-mini",
+    "question": "Today is {{date}}. Search and summarize the three most important AI news items. Do not publish or send messages.",
+    "max_turns": 5
+  }
+}
+```
+
+```json
+POST /aichat2/scheduled-tasks
+{"action": "retrieve_runs", "id": "TASK_ID"}
+```
+
+```json
+POST /aichat2/scheduled-tasks
+{"action": "update", "id": "TASK_ID", "state": "disabled"}
+```
+
 ## Gotchas
 
-- The documented OpenAI-compatible routes live under `/openai/*`, not `/v1/*`.
+- OpenAI-compatible routes under `/openai/*` retain public aliases `/v1/chat/completions`, `/v1/responses`, and `/v1/embeddings`. For clients that append `/chat/completions`, use Base URL `https://api.acedata.cloud/v1` (not `/openai/v1`); the SDK example above keeps the existing `/openai` base.
 - `POST /aichat2/conversations` is the recommended stateful endpoint; `POST /aichat/conversations` remains for legacy clients.
 - `message` on `/aichat2/conversations` can be multimodal (`text`, `image_url`, `file_url`); plain `question` still works for simple text prompts.
 - `action` on `/aichat2/conversations` is not chat-only — it also supports `retrieve`, `retrieve_batch`, `update`, and `delete`.

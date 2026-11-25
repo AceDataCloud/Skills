@@ -1,41 +1,62 @@
-# Async Task Polling
+# Async media tasks
 
-Most generation APIs (images, video, music) are asynchronous — they return a `task_id` immediately, and you poll for the result.
+Submit a generation once with `"async": true`, save its `task_id` immediately,
+and poll the corresponding `/tasks` endpoint with `{"id":"<original task ID>"}`.
+Use `callback_url` only for a real webhook you control. A health endpoint is not a
+webhook. Do not submit a replacement generation to check progress.
 
-## Pattern
+## Read the task envelope correctly
 
-**Step 1:** Submit with `callback_url` to force async mode and get a `task_id` immediately.
+The task endpoint can return a persisted envelope with `request`, `response`,
+`started_at` and `finished_at`. The model result is inside **`response`**; a
+missing top-level `status` does not mean the job is still running.
+
+- `response.success == false` or `response.error`: stop and report failure.
+- `response` contains the expected media URL: deliver that real URL.
+- `finished_at` is set but no deliverable exists: stop and inspect the original
+  result; do not generate again.
+- A valid task is still pending: wait and query the same ID.
+- Submission timed out before an ID was returned: outcome is unknown. Reconcile
+  the original request before any replacement generation.
+
+A synchronous response may already contain the media URL. Deliver it directly.
+Never treat an HTTP 200/202 or a task ID alone as completed generation.
+
+For [trial accounts](authentication.md#trial-account-concurrency), asynchronous
+acceptance does not release the account-wide billable-request slot. Wait for the
+original task's final result before submitting another generation, even to a
+different service or with another API key. Free task polling remains available
+while a new billable submit returns HTTP 429 `too_many_requests`. A disconnect or
+proxy timeout does not prove completion; if the task stays nonterminal, contact
+support with the `trace_id` rather than generating again.
+
+## Fixed, bounded media jobs
+
+For small autonomous jobs, the standard-library Python helper
+[`scripts/media_job.py`](scripts/media_job.py) keeps a private state file before
+submission. Repeating the command with that **same state file and brief** resumes
+the original task. A lost submission response never causes an automatic retry.
+The state file is a recovery record, not a credential store.
 
 ```bash
-curl -X POST https://api.acedata.cloud/<service>/<resource> \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "...", "callback_url": "https://api.acedata.cloud/health"}'
+# ACEDATACLOUD_API_TOKEN must already be in this process's environment.
+# Allocate one private state path per customer task, then keep it for recovery.
+python3 skills/_shared/scripts/media_job.py video \
+  --state /private/jobs/your-original-task-id.json \
+  --prompt 'Morning mist above a calm lake, a slow camera move, no text.'
 ```
 
-Using `"callback_url": "https://api.acedata.cloud/health"` as a placeholder forces async mode even without a real webhook endpoint.
+Supported fixed recipes:
 
-**Step 2:** Poll the task endpoint every 3-5 seconds until the status is terminal.
+| Kind | Output | Bound |
+|---|---|---|
+| `video` | Wan 3 video | 5 seconds, 720P, 16:9, no audio |
+| `image` | Seedream 5.0 Lite image | One 2K image, watermark disabled |
+| `audio` | Fish s2-pro MP3 | Up to 300 characters, preset public voice |
 
-```bash
-curl -X POST https://api.acedata.cloud/<service>/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"id": "<task_id from step 1>"}'
-```
-
-For batch polling, use:
-
-```bash
-curl -X POST https://api.acedata.cloud/<service>/tasks \
-  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"action": "retrieve_batch", "ids": ["<task_id_1>", "<task_id_2>"]}'
-```
-
-## Important Notes
-
-- Always use `callback_url` to avoid long-running HTTP connections that time out
-- Poll every 3-5 seconds for music, every 5 seconds for images/video
-- Terminal states vary by service (e.g., `succeeded`, `succeed`, `completed`, `failed`) — check each skill's Gotchas section
-- Task polling uses `id` (single) or `ids` (batch). `action` defaults to `retrieve`; set `action: "retrieve_batch"` for `ids`.
+`completed` includes actual URLs. `failed` is a terminal provider result.
+`pending` includes the original task ID and state path; resume it later.
+Do not create a new state file just because the original job is slow. Do not
+print credentials or use shell tracing. Quote user text as an argument; never
+execute it as shell code. The helper does not change subscription prices or
+credential spending limits. Check current API pricing before first use.

@@ -49,6 +49,15 @@ UA = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
+# Fixed short error envelope emitted by the protected connector executor.
+RUNTIME_ERRORS = frozenset({
+    "cookie_scope_denied", "cookie_response_denied", "cookie_mirror_denied",
+    "cookie_domain_denied", "credential_slot_denied", "request_denied",
+    "request_refused", "response_refused", "redirect_denied", "lease_expired",
+    "lease_denied", "policy_changed", "upstream_unavailable",
+})
+MAX_RUNTIME_ERROR_BYTES = 256
+
 # --confirm is only honored as the LAST token so a value that merely
 # contains "--confirm" can never silently confirm a write.
 _RAW = sys.argv[1:]
@@ -60,9 +69,28 @@ def out(obj) -> None:
     print(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
 
 
-def die(msg: str, code: int = 1) -> None:
-    out({"error": msg})
+def die(msg: str, code: int = 1, *, error_code: str | None = None) -> None:
+    result = {"error": msg}
+    if error_code is not None:
+        result["error_code"] = error_code
+    out(result)
     sys.exit(code)
+
+
+def check_runtime_error(status: int, text: str) -> None:
+    if status != 403 or len(text.encode("utf-8")) > MAX_RUNTIME_ERROR_BYTES:
+        return
+    try:
+        # Preserve pairs so duplicate keys cannot match the executor envelope.
+        pairs = json.loads(text, object_pairs_hook=list)
+    except (json.JSONDecodeError, ValueError):
+        return
+    if not (isinstance(pairs, list) and len(pairs) == 1
+            and isinstance(pairs[0], tuple) and pairs[0][0] == "error"):
+        return
+    reason = pairs[0][1]
+    if isinstance(reason, str) and reason in RUNTIME_ERRORS:
+        die(f"connector runtime error ({status}): {reason}.", error_code=reason)
 
 
 # ── Cookie jar (from env) ───────────────────────────────────────────
@@ -153,11 +181,9 @@ def request(method: str, url: str, jar: list[dict], *, headers=None, body=None):
 
 def get_json(url: str, jar: list[dict], **kw):
     status, text = request("GET", url, jar, **kw)
-    if status == 401 or status == 403:
-        die(
-            f"auth failed ({status}) on {url} — the cookie is likely expired. "
-            f"Reconnect at https://studio.acedata.cloud/console/connectors."
-        )
+    check_runtime_error(status, text)
+    if status in (401, 403):
+        die(f"Zhihu request rejected (HTTP {status}) on {url}.")
     try:
         return status, json.loads(text)
     except json.JSONDecodeError:
@@ -184,7 +210,7 @@ ZH_FETCH = {"x-requested-with": "fetch"}
 def zh_me(jar):
     _, data = get_json(ZH["me"], jar, headers=ZH_FETCH)
     if not data.get("id"):
-        die(f"could not read Zhihu profile (cookie expired?): {str(data)[:300]}")
+        die(f"could not read Zhihu profile: {str(data)[:300]}")
     return data
 
 

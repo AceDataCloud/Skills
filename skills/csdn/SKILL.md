@@ -12,7 +12,7 @@ allowed_tools: [Bash]
 license: Apache-2.0
 metadata:
   author: acedatacloud
-  version: "1.0"
+  version: "1.0.1"
 ---
 
 # csdn — read & publish on CSDN via your own cookies
@@ -28,8 +28,12 @@ The connector injects the cookie jar as an env var:
   The CLI reads it for you.
 
 > CSDN fronts its APIs with a WAF; the CLI already sends a full browser
-> fingerprint so reads aren't 403'd. If you still get a WAF 403, the cookie
-> expired — have the user reconnect.
+> fingerprint so reads aren't 403'd. An upstream WAF 403 can mean the cookie
+> expired or CSDN requires a captcha. Check the error classification below.
+
+Image downloads honor standard `HTTP_PROXY` / `HTTPS_PROXY` and `NO_PROXY`.
+A configured proxy must enforce public destinations when resolving hostnames;
+without one, the script performs its existing local DNS checks.
 
 ## CLI
 
@@ -56,8 +60,15 @@ python3 "$CSDN" whoami
 # → {"username": "...", "nickname": "...", "articles_total": 0}
 ```
 
-On a WAF 403 / auth error the cookie is expired — tell the user to reconnect at
+On an upstream WAF 403 / auth error, the cookie may be expired or CSDN may require
+a captcha — tell the user to reconnect at
 <https://studio.acedata.cloud/console/connectors>. Do **not** retry in a loop.
+
+For the read commands above, a connector runtime failure includes `error_code`: `cookie_response_denied`,
+`request_denied`, `response_refused`, `redirect_denied`, `lease_expired`, or
+`upstream_unavailable`. Report that code and its message; do not claim the CSDN
+cookie expired or request reconnection solely because of it. For `lease_expired`,
+start a new execution; for `upstream_unavailable`, retry later without a retry loop.
 
 ## Publishing — GATED (dry-run unless trailing `--confirm`)
 
@@ -89,7 +100,7 @@ image that fails to upload keeps its original URL (never blocks the post).
 ## Gotchas — surface before the user is surprised
 
 - **This is the user's real CSDN account.** Confirm before any publish.
-- **Cookie expiry / WAF 403**: reconnect at studio.acedata.cloud/console/connectors —
+- **Upstream auth / WAF 403**: reconnect at studio.acedata.cloud/console/connectors —
   never loop-retry a WAF block.
 - The editor save endpoint is signed with an HMAC key baked into CSDN's web
   bundle; if CSDN rotates it, publish fails loudly (reads still work).

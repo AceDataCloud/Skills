@@ -2,15 +2,117 @@
 
 <p align="center">
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
-  <a href="https://platform.acedata.cloud"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
+  <a href="https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
   <a href="https://www.npmjs.com/package/@acedatacloud/skills"><img src="https://img.shields.io/npm/v/@acedatacloud/skills.svg" alt="npm"></a>
   <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
 </p>
 
-[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud) AI services — music, image, video generation, LLM chat, web search, and more.
+[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen) AI services — music, image, video generation, LLM chat, web search, and more.
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
+
+## First run from skills.sh
+
+Choose the service you want, then install **that Skill only**. Each integration is maintained by **Ace Data Cloud** and uses your Ace API key; it is not published by the model or service vendor.
+
+| Service | Official directory entry | Skill name | First-run guide |
+|---|---|---|---|
+| ACE Music | [ACE Music on skills.sh](https://skills.sh/acedatacloud/skills/ace-music) | `ace-music` | [English](skills/ace-music/README.md) / [简体中文](skills/ace-music/readme.zh-CN.md) |
+| Suno | [Suno on skills.sh](https://skills.sh/acedatacloud/skills/suno-music) | `suno-music` | [English](skills/suno-music/README.md) / [简体中文](skills/suno-music/readme.zh-CN.md) |
+| Seedance | [Seedance on skills.sh](https://skills.sh/acedatacloud/skills/seedance-video) | `seedance-video` | [English](skills/seedance-video/README.md) / [简体中文](skills/seedance-video/readme.zh-CN.md) |
+| HappyHorse | [HappyHorse on skills.sh](https://skills.sh/acedatacloud/skills/happyhorse-video) | `happyhorse-video` | [English](skills/happyhorse-video/README.md) / [简体中文](skills/happyhorse-video/readme.zh-CN.md) |
+| GPT Image | [GPT Image on skills.sh](https://skills.sh/acedatacloud/skills/gpt-image-2-5) | `gpt-image-2-5` | [English](skills/gpt-image-2-5/README.md) / [简体中文](skills/gpt-image-2-5/readme.zh-CN.md) |
+| Nano Banana | [Nano Banana on skills.sh](https://skills.sh/acedatacloud/skills/nano-banana-image) | `nano-banana-image` | [English](skills/nano-banana-image/README.md) / [简体中文](skills/nano-banana-image/readme.zh-CN.md) |
+
+For example, install Suno into your Codex project:
+
+```bash
+npx --yes skills@1.7.2 add acedatacloud/skills --skill suno-music -a codex --yes
+npx --yes skills@1.7.2 list
+```
+
+Replace `codex` with your supported agent, such as `claude-code` or `cursor`. For Codex the files are copied to `.agents/skills/suno-music/`; start a fresh assistant session. No ClawHub account, OpenClaw installation or paired MCP server is required for this path. Installation itself does not generate media.
+
+Follow the selected service's guide: **Ace registration/sign-in → Applications / General application → check service access, balance and current price → copy or create a dedicated API key → make it available to the assistant process → submit once and query the same task ID**. The guides include real redacted Ace key-management images and service-specific request examples. A Skill cannot configure an environment variable or load `.env` automatically; follow your assistant's environment/secret settings. Never paste a key into a prompt.
+
+The optional [`acedatacloud` account Skill](skills/acedatacloud/) can read public catalog/pricing without a key. Account-resource reads such as balance use the separate `ACEDATACLOUD_PLATFORM_TOKEN`; service generation uses `ACEDATACLOUD_API_TOKEN`. Neither the account Skill nor a model-provider configuration is a prerequisite for these service Skills.
+
+## First run with ClawHub and OpenClaw
+
+This example uses Suno. The same API-key steps apply to the other AceDataCloud image, video, music, chat, search, and face Skills. A ClawHub account installs Skills; an **AceDataCloud API key** authorizes API calls. They are separate credentials.
+
+### 1. Install the Skill
+
+Open [Suno on ClawHub](https://clawhub.ai/acedatacloud/skills/suno) and check that the publisher is **@acedatacloud**. Install the [ClawHub CLI](https://github.com/openclaw/clawhub/blob/main/docs/cli.md) if needed, then run:
+
+```bash
+npm install -g clawhub
+clawhub install @acedatacloud/suno
+clawhub list
+```
+
+Start a new OpenClaw session so it loads the installed Skill. The ClawHub names are shorter than the folders in this repository: for example, `@acedatacloud/suno` corresponds to [`skills/suno-music`](skills/suno-music/), and `@acedatacloud/nano-banana` to [`skills/nano-banana-image`](skills/nano-banana-image/). For other agents, use [Quick Install](#quick-install) below.
+
+### 2. Get an AceDataCloud API key
+
+New account? Register and sign in first. If the Applications page has no General application yet, choose **Initialize General Application**, then continue with the key steps below.
+
+1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Create an account first if needed.
+2. Open **General application** (initialize it if the console prompts you). Its key can access the services enabled for your account. A service-specific application key is limited to that service. Enable the intended service if needed, then check its access, balance, and current price before running an example.
+3. Copy an existing API key, or choose **Manage Keys → Create** to make a separate key for OpenClaw. Name it, set an expiration and restrictions if needed, then copy the key from the application card or key list. If you restrict **Allowed APIs**, include both the generation endpoint and its task-query endpoint. For Suno these are `/suno/audios` and `/suno/tasks`.
+
+![Where to copy an API key or open Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+
+![Creating a separate API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
+
+Copy the **key value only**. Do not include `Bearer ` or quotation marks when pasting into a credential field. A platform-management token beginning with `platform-` is for the [account-management Skill](skills/acedatacloud/), not for generation/search requests to `api.acedata.cloud`.
+
+### 3. Make the key available to OpenClaw
+
+Put this line in `~/.openclaw/.env` on the machine running the OpenClaw Gateway, replacing the placeholder with your key:
+
+```dotenv
+ACEDATACLOUD_API_TOKEN=your_api_key_here
+```
+
+OpenClaw [loads this global `.env` file](https://docs.openclaw.ai/help/faq/env-vars#how-does-openclaw-load-environment-variables) even when its Gateway runs as a service. Restart the Gateway and start a fresh session after changing it. Keep the file private (`chmod 600 ~/.openclaw/.env`) and never commit it or paste the key into a chat. For a direct terminal-only test, use `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that terminal instead.
+
+### 4. Submit once, then check the same task
+
+Ask your agent: “Use the Suno Skill to make an instrumental piano melody for a sunrise.” Or run this example after checking the current Suno price; generation is billable:
+
+```bash
+curl -X POST https://api.acedata.cloud/suno/audios \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"chirp-v6","prompt":"A gentle instrumental piano melody for a sunrise, no vocals.","instrumental":true,"async":true}'
+```
+
+If the response gives a task ID, copy it and query **that same task** until it succeeds or fails:
+
+```bash
+curl -X POST https://api.acedata.cloud/suno/tasks \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"YOUR_TASK_ID"}'
+```
+
+Use the audio URL from the completed result. Do not submit the generation request again just because a task is pending; that creates another billable task. Other Skills have their own request examples and task endpoints in their `SKILL.md` files.
+
+### 5. If the first run fails
+
+| Symptom | Check |
+|---|---|
+| 401 / unauthorized | Copy the complete API key again. Confirm `ACEDATACLOUD_API_TOKEN` is available to the Gateway, and do not put `Bearer ` inside the key value. |
+| 403 / no access | Check the application has access to the service, the key has not expired, and **Allowed APIs** includes both the submit and task-query routes. A moderation rejection can also return 403; read the response before changing keys. |
+| 400 / invalid request | Use the exact model and request shape in the Skill's current Quick Start. |
+| 429 | Trial accounts share one active billable-request slot across all keys and services until the final result; free task polling remains available. Follow [trial-account recovery](skills/_shared/authentication.md#trial-account-concurrency), and do not automatically retry a billable submit. |
+| Pending, timeout, or 5xx | Query the existing task or request history before resubmitting. Share a task or trace ID with support, never the key. |
+
+For more detail, see the [authentication guide](skills/_shared/authentication.md) and [task-polling guide](skills/_shared/async-tasks.md). Support: [dev@acedata.cloud](mailto:dev@acedata.cloud).
+
+The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide) is the entry point for agents that have not selected a service yet.
 
 ## Available Skills
 
@@ -18,16 +120,18 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 
 | Skill | Description |
 |-------|-------------|
-| [suno-music](skills/suno-music/) | Generate AI music, lyrics, covers, and vocal extraction with Suno |
+| [ace-music](skills/ace-music/) | Generate songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original ACE Music task |
+| [suno-music](skills/suno-music/) | Generate Suno music, lyrics, voice-linked covers, vocals, check audio availability before follow-up processing, and edit/render versioned multitrack Studio projects |
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
-| [fish-audio](skills/fish-audio/) | Text-to-speech and voice synthesis with Fish Audio |
+| [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
 
 ### AI Image Generation
 
 | Skill | Description |
 |-------|-------------|
-| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit images with GPT Image 2.5 Flare or Sunburst |
-| [flux-image](skills/flux-image/) | Generate and edit images with Flux (Black Forest Labs) |
+| [gpt-image-2-5](skills/gpt-image-2-5/) | Generate and edit GPT Image 2.5/2.6 Flare or Sunburst images, including reverse/official variants, 2.6 animated GIFs and annotation-guided static edits |
+| [midjourney-image](skills/midjourney-image/) | Private integration status and legacy imagine-request troubleshooting; not currently published |
+| [flux-image](skills/flux-image/) | Generate/edit Flux images and generate FLUX 3 videos |
 | [qwen-image](skills/qwen-image/) | Generate and edit images with Qwen Image 3 |
 | [seedream-image](skills/seedream-image/) | Generate and edit images with ByteDance Seedream |
 | [nano-banana-image](skills/nano-banana-image/) | Generate and edit images with Google Gemini (NanoBanana) |
@@ -37,31 +141,34 @@ Compatible with **30+ AI coding agents** via the [agentskills.io](https://agents
 | Skill | Description |
 |-------|-------------|
 | [luma-video](skills/luma-video/) | Generate videos with Luma Dream Machine |
-| [sora-video](skills/sora-video/) | Generate videos with OpenAI Sora |
+| [sora-video](skills/sora-video/) | Retired integration guidance; not currently published |
 | [veo-video](skills/veo-video/) | Generate videos with Google Veo (native audio) |
-| [kling-video](skills/kling-video/) | Generate videos with Kuaishou Kling (motion control) |
+| [kling-video](skills/kling-video/) | Generate Kling videos, Turbo, multishot, commerce and owned asset references |
 | [hailuo-video](skills/hailuo-video/) | Generate videos with Hailuo / MiniMax |
+| [minimax-video](skills/minimax-video/) | Generate MiniMax-H3 videos (768P/2K) and poll tasks to confirmed success |
+| [grok-video](skills/grok-video/) | Generate Grok videos from text or images and query the final task |
 | [happyhorse-video](skills/happyhorse-video/) | Generate and edit videos with Happy Horse |
 | [seedance-video](skills/seedance-video/) | Generate dance/motion videos with ByteDance Seedance |
-| [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing |
+| [maestro-video](skills/maestro-video/) | Produce complete videos from a brief with script, media, voiceover, captions, and editing — one language per task |
 | [capability-spotlight-video](skills/capability-spotlight-video/) | Produce a recurring, evidence-led Ace Data Cloud capability video series with topic/demo/style/layout/voice rotation |
 
 ### AI Chat & Tools
 
 | Skill | Description |
 |-------|-------------|
-| [ai-chat](skills/ai-chat/) | Unified LLM gateway — GPT, Claude, Gemini, Kimi, Grok (50+ models) |
+| [ai-chat](skills/ai-chat/) | Unified LLM gateway — native Claude Messages and compatible Messages models, native Gemini audio analysis with opt-in thinking summaries, OpenAI-compatible chat with public `/v1` aliases, embeddings, stateful conversations and searchable, account-bound scheduled agent tasks with timing jitter, automatic trigger probability and selected-account manual runs (50+ models) |
 | [google-search](skills/google-search/) | Search the web, images, news, maps, places, and videos via Google |
 | [tgstat](skills/tgstat/) | Discover and analyze public Telegram channels/groups using a connected username as the default target |
 | [face-transform](skills/face-transform/) | Face analysis, beautification, age/gender transform, swap, cartoon |
 | [short-url](skills/short-url/) | Create and manage short URLs |
 | [onepage-pdf](skills/onepage-pdf/) | Convert an HTML page into one tall single-page PDF — no pagination breaks (local, no token) |
 | [apple-notes](skills/apple-notes/) | Manage Apple Notes on macOS — create, search, read, export, and organize notes (macOS-only, local, no token) |
-| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — balance, usage/spend, API keys, services, orders, announcements |
+| [acedatacloud](skills/acedatacloud/) | Manage your AceDataCloud account — scoped OAuth access, balance, usage/spend, API keys, services, region-aware public catalog discovery, orders, announcements, and submitted, peer-reviewed blog publishing via MCP / REST (article/video drafts and review threads) |
+| [ace-recharge-card](skills/ace-recharge-card/) | Fulfill a configured seller’s paid Envar order with one unused recharge key and redemption instructions |
 
 ### Connectors
 
-These skills drive third-party connectors users wire up at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
+These skills drive third-party connectors users wire up at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
 
 | Skill | Description | Connection |
 |-------|-------------|------------|
@@ -74,25 +181,52 @@ These skills drive third-party connectors users wire up at [studio.acedata.cloud
 | [microsoft-onedrive](skills/microsoft-onedrive/) | List and read OneDrive files via the Microsoft Graph API | `microsoft/onedrive` |
 | [microsoft-outlook](skills/microsoft-outlook/) | Read Outlook mail, calendar events, and contacts via Microsoft Graph | `microsoft/outlook` |
 | [notion](skills/notion/) | Read and search Notion pages, databases, and blocks | `notion` |
-| [slack](skills/slack/) | Read Slack channels, messages, and user info via Web API | `slack` |
+| [slack](skills/slack/) | Search public channels, read joined conversations, and send confirmed bot messages | `slack` |
 | [wechat-official-account](skills/wechat-official-account/) | Manage WeChat MP — drafts, publishing, materials, user tags | `wechat` (BYOC) |
 | [personal-wechat](skills/personal-wechat/) | Operate a personal WeChat account through a self-hosted Wisdom service | `personalwechat` (BYOC) |
 | [didi-ride](skills/didi-ride/) | Book DiDi rides, estimate fares, query/cancel orders, plan routes via the DiDi MCP | `didi` (BYOC) |
 | [wecom](skills/wecom/) | WeCom (企业微信) self-built app — contacts, app messages, WeDoc, schedules, meetings | `wecom` (BYOC) |
 | [tencent-docs](skills/tencent-docs/) | Create / read / list / search / manage Tencent Docs — docs, sheets, slides, mind maps, flowcharts | `tencentdocs` (BYOC) |
 | [tgstat](skills/tgstat/) | Public Telegram source discovery, rankings, and audience research | `tgstat` (BYOC username) |
+| [linkedin-company-page](skills/linkedin-company-page/) | Publish and verify company Page posts using approved LinkedIn organization permissions | `linkedin/company-page` (OAuth; approval gated) |
+| [yandex-webmaster](skills/yandex-webmaster/) | Read Yandex verified sites and popular search queries | `yandexwebmaster` (BYOC) |
+| [yandex-metrica](skills/yandex-metrica/) | Read Yandex traffic by country, source, and UTM | `yandexmetrica` (BYOC) |
+| [postman-publisher](skills/postman-publisher/) | Sync reviewed API collections to an owned public Postman workspace | `postmanpublisher` (BYOC) |
+| [whatsapp-business](skills/whatsapp-business/) | Inspect approved templates and send a single opted-in Cloud API message | `whatsappbusiness` (BYOC; gated) |
+
+The [content-fanout](skills/content-fanout/) playbook prepares channel-specific
+drafts from a canonical source and uses only explicitly selected, connected
+publishing skills. It requires human review and does not provide unattended
+bulk posting.
+
+### Chinese article publishing
+
+HTTP skills use encrypted login cookies and execute directly in the cloud sandbox;
+the ACE extension is needed to capture the login initially. Douyin, SSPAI and Huawei
+Cloud Blog still require a paired online browser device. HTTP saves below stop at
+a draft (Douban creates a private post); no public-article success is implied.
+
+| Skill | Platform | Execution / limit |
+|-------|----------|-------------------|
+| [jianshu](skills/jianshu/) | 简书 | HTTP; article draft |
+| [douyin](skills/douyin/) | 抖音 | Local browser |
+| [netease](skills/netease/) | 网易号 | HTTP; article draft |
+| [tencentcloud-community](skills/tencentcloud-community/) | 腾讯云开发者社区 | HTTP; article draft |
+| [aliyun-community](skills/aliyun-community/) | 阿里云开发者社区 | HTTP; article draft |
+| [sohu](skills/sohu/) | 搜狐号 | HTTP; article draft |
+| [sspai](skills/sspai/) | 少数派 | Local browser |
+| [infoq](skills/infoq/) | InfoQ 写作社区 | HTTP; article draft |
+| [huaweicloud-blog](skills/huaweicloud-blog/) | 华为云开发者博客 | Local browser |
+| [douban](skills/douban/) | 豆瓣日记 | HTTP; private note (not draft) |
+| [volcengine-community](skills/volcengine-community/) | 火山引擎开发者社区 | HTTP; article draft |
+| [modelscope](skills/modelscope/) | 魔搭社区 | HTTP; body-only draft, title completed in editor |
+| [baijiahao](skills/baijiahao/) | 百家号 | HTTP; HTML draft |
+
+See [coverage and source evidence](plans/publishing-connectors-20261109.md).
 
 ## Prerequisites
 
-Get your API token at [platform.acedata.cloud](https://platform.acedata.cloud):
-
-1. Register an account
-2. Browse and subscribe to a service (most have free quota)
-3. Create an API credential (token)
-
-```bash
-export ACEDATACLOUD_API_TOKEN="your-token-here"
-```
+AceDataCloud API Skills need an API key from [Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Follow the [first-run steps](#first-run-with-clawhub-and-openclaw) for the exact UI path, key restrictions, OpenClaw environment setup, and a complete example. Local-only Skills such as `onepage-pdf` and `apple-notes` do not use an AceDataCloud API key; the `acedatacloud` account-management Skill uses a separate platform token.
 
 ## Quick Install
 
@@ -157,11 +291,25 @@ npx skills add acedatacloud/skills --skill '*' -a github-copilot --yes
 npx skills add acedatacloud/skills --skill '*' -a gemini-cli --yes
 ```
 
+### Kimi Code
+
+Open the Ace Data Cloud plugin catalog in Kimi Code:
+
+```text
+/plugins marketplace https://raw.githubusercontent.com/AceDataCloud/Skills/main/platforms/kimi-code/marketplace.json
+```
+
+Select a service, review its source and permissions, then confirm the installation. Each plugin uses its own setup instructions. [Kimi Code plugin guide](https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/customization/plugins.md#custom-marketplace-json)
+
 ### OpenAI Codex
 
 ```bash
 npx skills add acedatacloud/skills --skill '*' -a codex --yes
 ```
+
+### WeKnora
+
+Follow the [English setup guide](platforms/weknora/README.md) or [中文指南](platforms/weknora/README.zh-CN.md) for the current stable version: import a secret-free Suno MCP example, add your Ace key privately, sync tools, build a minimal Agent conversation, and query the same task ID to its final audio URL. The guide maps 17 named services to their reusable Skills.
 
 ### Cursor
 
@@ -207,14 +355,15 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 
 | Skill | MCP Server | Install | Hosted Endpoint |
 |-------|-----------|---------|-----------------|
+| ace-music | [mcp-acemusic](https://pypi.org/project/mcp-acemusic/) | `uvx mcp-acemusic` | `https://acemusic.mcp.acedata.cloud/mcp` |
 | suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
 | flux-image | [mcp-flux-pro](https://pypi.org/project/mcp-flux-pro/) | `pip install mcp-flux-pro` | `https://flux.mcp.acedata.cloud/mcp` |
-| luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
-| sora-video | [mcp-sora](https://pypi.org/project/mcp-sora/) | `pip install mcp-sora` | `https://sora.mcp.acedata.cloud/mcp` |
-| veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | kling-video | [mcp-kling](https://pypi.org/project/mcp-kling/) | `pip install mcp-kling` | `https://kling.mcp.acedata.cloud/mcp` |
+| luma-video | [mcp-luma](https://pypi.org/project/mcp-luma/) | `pip install mcp-luma` | `https://luma.mcp.acedata.cloud/mcp` |
+| veo-video | [mcp-veo](https://pypi.org/project/mcp-veo/) | `pip install mcp-veo` | `https://veo.mcp.acedata.cloud/mcp` |
 | qwen-image | [mcp-qwen-image](https://pypi.org/project/mcp-qwen-image/) | `pip install mcp-qwen-image` | `https://qwen-image.mcp.acedata.cloud/mcp` |
+| grok-video | [mcp-grok](https://pypi.org/project/mcp-grok/) | `pip install mcp-grok` | `https://grok.mcp.acedata.cloud/mcp` |
 | seedream-image | [mcp-seedream-pro](https://pypi.org/project/mcp-seedream-pro/) | `pip install mcp-seedream-pro` | `https://seedream.mcp.acedata.cloud/mcp` |
 | seedance-video | [mcp-seedance](https://pypi.org/project/mcp-seedance/) | `pip install mcp-seedance` | `https://seedance.mcp.acedata.cloud/mcp` |
 | happyhorse-video | [mcp-happyhorse](https://pypi.org/project/mcp-happyhorse/) | `pip install mcp-happyhorse` | `https://happyhorse.mcp.acedata.cloud/mcp` |
@@ -223,16 +372,20 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 | short-url | [mcp-shorturl](https://pypi.org/project/mcp-shorturl/) | `pip install mcp-shorturl` | `https://short-url.mcp.acedata.cloud/mcp` |
 | wan-video | [mcp-wan](https://pypi.org/project/mcp-wan/) | `pip install mcp-wan` | `https://wan.mcp.acedata.cloud/mcp` |
 | acedatacloud | [mcp-acedatacloud](https://pypi.org/project/mcp-acedatacloud/) | `pip install mcp-acedatacloud` | `https://mcp.acedata.cloud/mcp` |
+| minimax-video | `mcp-minimax` | `pip install mcp-minimax` | `https://minimax.mcp.acedata.cloud/mcp` |
 
-**Using hosted MCP endpoints** (no local install needed):
+**Using hosted MCP endpoints in Claude Code** (no local install needed):
+
+Merge into the project's `.mcp.json`, preserve existing services, and start Claude Code from a terminal with `ACEDATACLOUD_API_TOKEN` set. Review the service approval prompt, then run `/mcp` to verify connection and loaded tools. See [shared MCP setup](skills/_shared/mcp-servers.md) for Amp's configuration and approval checks.
 
 ```json
 {
   "mcpServers": {
     "suno": {
+      "type": "http",
       "url": "https://suno.mcp.acedata.cloud/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_TOKEN"
+        "Authorization": "Bearer ${ACEDATACLOUD_API_TOKEN}"
       }
     }
   }
@@ -263,6 +416,18 @@ We welcome contributions! To add a new skill:
 
 **Note:** `.agents/skills/` and `.github/skills/` are symlinks to `skills/` — do not modify files via those paths.
 
+The existing ClawHub-only `@acedatacloud/api-guide` listing is maintained in [`clawhub/api-guide/SKILL.md`](clawhub/api-guide/SKILL.md). Its general onboarding instructions are kept separate from the service Skills in `skills/`.
+
+For a reviewed update to an existing listing, follow the [ClawHub maintenance guide](clawhub/README.md). The publishing helper previews one explicit listing by default and pins its source commit.
+
 ## License
 
 [Apache-2.0](LICENSE)
+
+## Daily capability updates
+
+PlatformBackend `ecosystem.py` is the only scheduled coordinator.
+One daily Kubernetes Job reviews Backend docs and API changes with Claude Code,
+updates existing files, and creates or updates one reviewable PR per repository.
+It never merges PRs or duplicates the Backend guide tree. Normal CI and review
+remain required; publication and sub-repository mirroring run after merge.

@@ -1,0 +1,32 @@
+{
+  "verified_on": "2026-10-18",
+  "images": [
+    {
+      "file": "get-api-key-en.png",
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png",
+      "kind": "redacted real Ace UI screenshot",
+      "capture_date": "unknown",
+      "limits": "not a Claude plugin configuration dialog"
+    },
+    {
+      "file": "create-api-key-en.png",
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png",
+      "kind": "redacted real Ace UI screenshot",
+      "capture_date": "unknown",
+      "limits": "original example name Dify tutorial; docs explicitly ask user to use service Claude Code"
+    },
+    {
+      "file": "claude-custom-connector-historical.png",
+      "source_url": "https://cdn.acedata.cloud/753f0a4d86.png",
+      "kind": "historical real Claude custom connector screenshot",
+      "capture_date": "unknown",
+      "limits": "Suno Add not clicked; not plugin Configure options/auth success"
+    },
+    {
+      "file": "ace-data-cloud-mark.png",
+      "source": "PlatformFrontend/src/assets/images/logos/acedata-mark.png",
+      "kind": "existing Ace brand mark",
+      "limits": "not a model vendor official icon"
+    }
+  ]
+}

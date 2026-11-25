@@ -44,3 +44,17 @@ class YouTubeSkillContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class YouTubePaginationHelperTests(unittest.TestCase):
+    def test_skill_uses_pagination_helper_and_readback(self) -> None:
+        text = body()
+        self.assertIn("scripts/list_uploads.py --max-pages 20", text)
+        self.assertIn("Do not claim a video is absent when `complete` is false", text)
+        self.assertIn('part=snippet,status,processingDetails', text)
+        self.assertIn('upload readback failed', text)
+
+    def test_helper_preserves_next_page_token(self) -> None:
+        helper = (SKILL.parent / "scripts" / "list_uploads.py").read_text()
+        self.assertIn('payload.get("nextPageToken")', helper)
+        self.assertIn('"complete": not page_token', helper)
+        self.assertIn('"next_page_token": page_token or None', helper)

@@ -20,13 +20,9 @@ curl -s -X POST https://platform.acedata.cloud/api/v1/files/ \
   -F "file=@/path/to/video.mp4"
 ```
 
-Response:
+On HTTP 200, use the returned `file_url` rather than constructing a URL. The platform generates a unique `uploads/<uuid>` path and preserves the uploaded filename's safe extension. The returned `mime` is the MIME type written to object-storage metadata. One file per request (loop for several); the default limit is 100 MB per file.
 
-```json
-{"file_url": "https://cdn.acedata.cloud/7f849b80b9.mp4"}
-```
-
-→ use `file_url`. One file per request (loop for several).
+Use a filename whose extension matches the actual content. The upload part's MIME type is stored as supplied; if omitted or `application/octet-stream`, the platform infers it from the filename using standard MIME mappings. Neither extension handling nor MIME inference converts the file's bytes.
 
 ## When to use
 
@@ -38,4 +34,4 @@ Response:
 
 - Auth uses the **platform token** (`ACEDATACLOUD_PLATFORM_TOKEN`), not the per-service API token — the files endpoint is on `platform.acedata.cloud`, not `api.acedata.cloud`.
 - If your runtime ships a bundled uploader (e.g. a worker that owns the storage creds), prefer it — it avoids handling the platform token directly.
-- The returned URL is CDN-served and stable; safe to store and re-download later.
+- The returned URL is publicly accessible without authentication; do not upload sensitive data. Retention follows the platform's current storage policy, not a permanent-archive guarantee; use your own object storage for long-term archiving.

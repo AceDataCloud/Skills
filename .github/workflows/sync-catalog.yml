@@ -5,9 +5,8 @@ name: Sync Skill Catalog
 # https://auth.acedata.cloud/user/skills without waiting up to 6h for
 # the next scheduled run.
 #
-# This mirrors the post-deploy `kubectl create job --from=cronjob/...`
-# step in AuthBackend/deploy/run.sh, but is triggered by Skills repo
-# changes rather than AuthBackend image rebuilds.
+# Clone the scheduled Job template, but sync only this repository's
+# namespace. The scheduled CronJob still refreshes the full catalog.
 
 on:
   push:
@@ -24,7 +23,7 @@ concurrency:
 jobs:
   trigger-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - name: Set Kubectl
         uses: Azure/k8s-set-context@v5
@@ -38,14 +37,22 @@ jobs:
           echo "Creating Job $JOB_NAME from cronjob/auth-backend-skill-catalog-sync"
           kubectl -n acedatacloud create job \
             "$JOB_NAME" \
-            --from=cronjob/auth-backend-skill-catalog-sync
+            --from=cronjob/auth-backend-skill-catalog-sync \
+            --dry-run=client -o json | \
+            jq '
+              .spec.template.spec.containers[0].command[2] |=
+                if contains("python manage.py sync_skills\n") then
+                  sub("python manage\\.py sync_skills\n";
+                      "python -u manage.py sync_skills --namespace acedatacloud\n")
+                else error("Unexpected skill catalog sync command") end
+            ' | kubectl -n acedatacloud create -f -
 
-          echo "Waiting for Job to complete (up to 8 minutes)…"
+          echo "Waiting for Job to complete (up to 20 minutes)…"
           kubectl -n acedatacloud wait \
             --for=condition=complete \
-            --timeout=8m \
+            --timeout=20m \
             "job/$JOB_NAME" || {
-              echo "::warning::Job did not complete within 8 minutes; logs follow"
+              echo "::warning::Job did not complete within 20 minutes; logs follow"
               kubectl -n acedatacloud logs "job/$JOB_NAME" --tail=200 || true
               exit 1
             }

@@ -72,9 +72,18 @@ class XSkillTests(unittest.TestCase):
             async def get_user_by_screen_name(self, _screen_name):
                 raise AssertionError("mismatch must stop before public profile lookup")
 
-        error = run_error(x.cmd_whoami(Client(), SimpleNamespace(expect="example_user")))["error"]
-        self.assertIn("@OtherAccount", error)
-        self.assertIn("not @example_user", error)
+        result = run_error(x.cmd_whoami(Client(), SimpleNamespace(expect="example_user")))
+        self.assertIn("@OtherAccount", result["error"])
+        self.assertIn("not @example_user", result["error"])
+        self.assertEqual(
+            result["scheduled_outcome"],
+            {
+                "version": 1,
+                "status": "skipped",
+                "code": "ACCOUNT_MISMATCH_SAFE_STOP",
+                "side_effect_performed": False,
+            },
+        )
 
     def test_whoami_without_expect_uses_authenticated_settings(self) -> None:
         class V11:

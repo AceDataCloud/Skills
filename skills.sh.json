@@ -1,0 +1,50 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Suno by Ace Data Cloud",
+      "description": "Install the Suno Skill independently; connect your own Ace API key.",
+      "skills": [
+        "suno-music"
+      ]
+    },
+    {
+      "title": "Seedance by Ace Data Cloud",
+      "description": "Install the Seedance Skill independently; connect your own Ace API key.",
+      "skills": [
+        "seedance-video"
+      ]
+    },
+    {
+      "title": "HappyHorse by Ace Data Cloud",
+      "description": "Install the HappyHorse Skill independently; connect your own Ace API key.",
+      "skills": [
+        "happyhorse-video"
+      ]
+    },
+    {
+      "title": "GPT Image by Ace Data Cloud",
+      "description": "Install the GPT Image Skill independently; connect your own Ace API key.",
+      "skills": [
+        "gpt-image-2-5"
+      ]
+    },
+    {
+      "title": "Nano Banana by Ace Data Cloud",
+      "description": "Install the Nano Banana Skill independently; connect your own Ace API key.",
+      "skills": [
+        "nano-banana-image"
+      ]
+    },
+    {
+      "title": "Supporting tools",
+      "description": "Optional voice, web search and account or public pricing tools.",
+      "skills": [
+        "fish-audio",
+        "google-search",
+        "acedatacloud"
+      ]
+    }
+  ]
+}

@@ -1,19 +1,25 @@
 ---
 name: happyhorse-video
-description: Generate and edit AI videos with Happy Horse via AceDataCloud API. Use when creating videos from text prompts, animating a first-frame image, generating scenes from up to 9 subject or style reference images, or editing an existing video with optional references. Supports 720P/1080P output, 3-15 second generation, aspect-ratio control, audio preservation, seeds, callbacks, and asynchronous task polling.
+description: HappyHorse (Happy Horse) video by Ace Data Cloud. Generate videos from text or images, use subject or style references, and edit existing videos. Use when the user asks for HappyHorse video generation or editing.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-happyhorse for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# Happy Horse Video Generation and Editing
+# HappyHorse by Ace Data Cloud
 
 Use Happy Horse through AceDataCloud for text-to-video, first-frame animation, reference-guided
 generation, and video editing.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official HappyHorse publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill happyhorse-video --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/happyhorse-video). Keep the slug `happyhorse-video` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+> **Setup:** See [authentication](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md) for token setup.
 
 ## Choose an Action
 
@@ -54,7 +60,7 @@ curl -X POST https://api.acedata.cloud/happyhorse/tasks \
   -d '{"id": "<task_id>", "action": "retrieve"}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Continue until
+> **Async:** See [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Continue until
 > `response.data[].video_url` appears or a terminal error is returned.
 
 ## Workflows
@@ -187,4 +193,4 @@ in `response`. Read the media URL from `response.data[].video_url`.
 - Failed tasks are not billed; video edits use the upstream-reported input plus output duration for billing
 
 > **MCP:** `pip install mcp-happyhorse` | Hosted:
-> `https://happyhorse.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> `https://happyhorse.mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md)

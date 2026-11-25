@@ -18,7 +18,7 @@ Generate AI videos through AceDataCloud's Grok (xAI) API.
 
 ```bash
 curl -X POST https://api.acedata.cloud/grok/videos \
-  -H "Authorization: ******" \
+  -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"prompt": "a futuristic city at night with flying cars and neon lights", "model": "grok-imagine-video-1.5-fast:reverse", "callback_url": "https://api.acedata.cloud/health"}'
 ```

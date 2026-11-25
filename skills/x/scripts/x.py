@@ -300,10 +300,21 @@ async def cmd_whoami(client, args):
     if expected:
         expected_screen_name = normalize_screen_name(expected)
         if authenticated_screen_name.casefold() != expected_screen_name.casefold():
-            die(
-                f"connected X account is @{authenticated_screen_name}, not @{expected_screen_name}; "
-                "stopped without performing any write"
+            out(
+                {
+                    "error": (
+                        f"connected X account is @{authenticated_screen_name}, not @{expected_screen_name}; "
+                        "stopped without performing any write"
+                    ),
+                    "scheduled_outcome": {
+                        "version": 1,
+                        "status": "skipped",
+                        "code": "ACCOUNT_MISMATCH_SAFE_STOP",
+                        "side_effect_performed": False,
+                    },
+                }
             )
+            raise SystemExit(1)
     u, client = await retry_flaky_not_found(
         client,
         lambda c: c.get_user_by_screen_name(authenticated_screen_name),

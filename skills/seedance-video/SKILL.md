@@ -1,18 +1,32 @@
 ---
 name: seedance-video
-description: Generate and edit AI videos with Seedance via AceDataCloud API. Use for text/image video, Seedance 2.x multimodal image/audio/video reference, Seedance 2.5 pure-audio reference, edit, extend, and up to 30-second output. Supports multiple models, up to 4k, aspect ratio, and optional audio generation.
+description: Seedance video by Ace Data Cloud. Generate text-to-video and image-to-video, use multimodal references, or edit and extend video. Use when the user asks for Seedance 2.0 or 2.5 video generation.
 license: Apache-2.0
 metadata:
   author: acedatacloud
   version: "1.0"
-compatibility: Requires ACEDATACLOUD_API_TOKEN in .env file (see _shared/authentication.md). Optionally pair with mcp-seedance for tool-use.
+compatibility: Requires ACEDATACLOUD_API_TOKEN in the agent process environment and HTTPS access to api.acedata.cloud. See README.md for installation and key setup.
 ---
 
-# Seedance Video Generation
+# Seedance by Ace Data Cloud
 
 Generate AI dance and motion videos through AceDataCloud's Seedance (ByteDance) API.
 
-> **Setup:** See [authentication](../_shared/authentication.md) for token setup.
+## Install and connect from skills.sh
+
+This integration is maintained by **Ace Data Cloud**; it is not an official Seedance publisher listing. Install only this Skill with `npx skills add acedatacloud/skills --skill seedance-video --yes`, or use the [public skills.sh page](https://skills.sh/acedatacloud/skills/seedance-video). Keep the slug `seedance-video` when selecting it.
+
+Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.md)) for registration, **Applications → General application**, API key access and price checks, and the environment variable location for your coding agent. For skills.sh installations, use this guide; any ClawHub-specific setup applies only to OpenClaw. The shared references linked here are online because focused installs do not include sibling `_shared/` folders.
+
+## ClawHub / OpenClaw setup
+
+1. Install the official Skill with `clawhub install @acedatacloud/seedance`. Check that the ClawHub publisher is **@acedatacloud**.
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Seedance access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+3. If you enable **Allowed APIs** restrictions, include `/seedance/videos` and `/seedance/tasks`. Advanced workflows below may call additional routes.
+4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
+5. Run the **Quick Start** below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.
+
+[Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
 ## Quick Start
 
@@ -20,10 +34,10 @@ Generate AI dance and motion videos through AceDataCloud's Seedance (ByteDance) 
 curl -X POST https://api.acedata.cloud/seedance/videos \
   -H "Authorization: Bearer $ACEDATACLOUD_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model": "doubao-seedance-2-0-260128", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "callback_url": "https://api.acedata.cloud/health"}'
+  -d '{"model": "doubao-seedance-2-0-260128", "content": [{"type": "text", "text": "a dancer performing contemporary ballet in a misty forest"}], "async": true}'
 ```
 
-> **Async:** See [async task polling](../_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"id": "..."}`.
+> **Async:** See [async task polling](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md). Poll via `POST /seedance/tasks` with `{"id": "..."}`.
 This returns a task ID immediately. Poll for the result:
 
 ```bash
@@ -209,4 +223,4 @@ Supported inline params: `--rs` (resolution), `--rt` (ratio), `--dur` (duration)
 - Duration is model-specific: 1.0 supports 2–12; 1.5 Pro supports 4–12/-1; 2.0 supports 4–15/-1; 2.5 supports 4–30/-1
 - Task states use `"succeeded"` (not "completed") — check for this value when polling
 
-> **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md)
+> **MCP:** `pip install mcp-seedance` | Hosted: `https://seedance.mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md)

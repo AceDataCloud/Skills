@@ -2,11 +2,13 @@
 name: acedatacloud
 description: |
   Manage your AceDataCloud account through the management API
-  (platform.acedata.cloud). Use when the user wants to check their balance /
+  (platform.acedata.cloud). Use when connecting scoped OAuth account access,
+  or when the user wants to check their balance /
   remaining credits, look up API call (usage) records and spend, list or create
   or delete API keys (credentials), list subscribed services, list/create/pay
-  recharge orders, manage platform tokens, view referral/affiliate earnings, or
-  (admins) publish an announcement. Also covers the PUBLIC catalog & docs (no
+  recharge orders, manage platform tokens, view referral/affiliate earnings,
+  manage article/video blog drafts, review threads and peer-reviewed publication via MCP / REST, or (admins) publish
+  an announcement. Also covers the PUBLIC catalog & docs (no
   token needed): service detail & pricing, API list & OpenAPI specs, datasets,
   integrations, full-text documentation search, and the model catalog with
   per-model credit pricing. This is the self-service "console" API — distinct
@@ -23,8 +25,9 @@ compatibility: Requires ACEDATACLOUD_PLATFORM_TOKEN (a platform or user token). 
 
 Programmatically manage your AceDataCloud account: balances, usage records, API
 keys, services, orders, platform tokens, models, announcements and referral
-earnings — plus browse the public catalog & docs (service pricing, API specs,
-datasets, integrations, documentation search, model catalog) without a token.
+earnings, and manage article/video drafts, review threads and peer-reviewed blog publication through MCP / REST — plus browse
+the public catalog & docs (service pricing, API specs, datasets, integrations,
+documentation search, model catalog) without a token.
 
 This is the **management / console** API at `https://platform.acedata.cloud/api/v1`
 — the same surface the web console uses. It is **different** from the
@@ -36,7 +39,7 @@ The management API is authenticated with a **platform token** (or a logged-in
 user token), **not** the per-service API token used for `api.acedata.cloud`.
 
 1. Create one at [platform.acedata.cloud/console/platform-tokens](https://platform.acedata.cloud/console/platform-tokens)
-   (or `POST /api/v1/platform-tokens/`). It starts with `platform-` and never expires.
+   (or `POST /api/v1/platform-tokens/`). It starts with `platform-` and has no scheduled expiry, but revocation or account-security changes can invalidate it.
 2. Provide it one of two ways:
    - **Connector (recommended in studio / chat):** install the **AceDataCloud**
      connector at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors)
@@ -55,6 +58,20 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 
 > A normal token only ever sees **its own** account data. A superuser token sees
 > every user's data and is required for admin operations (announcements).
+
+### OAuth account access
+
+OAuth access tokens authorize account-resource access; they are not model API Keys. OAuth consent does not create a Key, subscribe to a service, or add balance. For a third-party account connection:
+
+1. Register the app at `https://auth.acedata.cloud/user/oauth-apps`. Read `available_scopes` from the authenticated `GET https://auth.acedata.cloud/api/v1/oauth2/applications/`, not the broader Discovery `scopes_supported` list. Request only registered permissions the user has: e.g., `profile:read credentials:read`, adding `credentials:write` only for confirmed Key changes and `offline_access` only if refresh is needed. Old `profile`, `email`, `phone`, and `platform` scopes are not accepted aliases; use explicit current scopes such as `profile:read` and `email:read`. The `account` selector is reserved for the designated official account MCP, not a third-party all-permissions scope.
+2. Open `https://auth.acedata.cloud/oauth2/authorize` with `response_type=code`, `client_id`, the exact registered `redirect_uri`, space-separated `scope`, a fresh random `state`, and S256 PKCE. Public clients must use S256, not `plain`; keep the verifier in the application's own session. Verify callback state before exchanging the single-use code (valid for 10 minutes). Use `POST https://auth.acedata.cloud/oauth2/token` with form fields `grant_type=authorization_code`, `client_id`, `redirect_uri`, `code`, and `code_verifier`. Confidential clients also send server-side `client_secret` (`client_secret_post`, not HTTP Basic); never put a secret in a browser page. Read the actual granted `scope` and `expires_in`; no `id_token` is returned.
+3. With the OAuth Bearer token, read `GET https://auth.acedata.cloud/api/v1/users/me`, then use its real `id` in `GET https://platform.acedata.cloud/api/v1/credentials/?user_id=<id>&limit=100&offset=0` if granted `credentials:read`. Read `items[*].token`, page with `offset`/`limit`, and choose a valid Key for the intended application/service rather than taking the first item. `user_id=me` is invalid. An empty list is not an authorization failure. Never display or log Keys, codes, tokens, or PKCE verifiers.
+4. For a Studio website component using the current Studio account, configure the app ID and callback under Settings → Home → Website. Website and callback must share an HTTPS origin distinct from Studio; never configure a client secret. The page must implement `acedatacloud:oauth:ready`, `acedatacloud:oauth:init`, `acedatacloud:oauth:authorize`, and `acedatacloud:oauth:result`, validating the exact parent origin, parent window, and state; retain the verifier locally and exchange the returned code. This component requests `profile:read credentials:read`, not `offline_access` or blog permissions; each visitor must consent separately. It does not inject Studio's login token or a Key. Standard OAuth redirects do not require this message protocol or `embed=studio`/`embed_origin`; ordinary iframe first-login continuation has a known gap, so verify logged-out/expired sessions or use an independent page instead. On denial or `login_required`, restore a retryable connection state rather than looping authorization.
+5. Refresh only if `offline_access` was granted, using the token endpoint with `grant_type=refresh_token` and the saved refresh token; retain the latest response. Refresh does not guarantee the old refresh token immediately becomes invalid. `POST https://auth.acedata.cloud/oauth2/revoke` with form field `token` currently returns HTTP 200 without immediate invalidation of issued JWTs. Clear your own saved connection state, but do not report that all tokens are revoked. Copied API Keys must be separately revoked or rotated in credential management.
+
+Two-step verification is completed on Ace Data Cloud's authorization page using an authenticator code or one-time recovery code before the authorization code is issued. Applications must not request, save or forward authenticator secrets or recovery codes. Enabling, changing or disabling two-step verification, or recovering an account, may invalidate existing sessions, refresh tokens and related platform authorization tokens. On an invalid session or `invalid_grant`, restart user-visible authorization; do not loop with an old code or bypass verification. Ordinary model API Key authentication is unchanged; suspected compromise still requires separate Key review and revocation.
+
+The bundled CLI does not register OAuth apps or perform the browser/PKCE exchange. For `invalid_scope`, check the app's registered scopes, delegation restrictions, and user permissions rather than broadening access. Verify denial, state mismatch, expired/consumed code, missing scopes, no Keys, network failures, token expiry, and iframe account changes before relying on a connection.
 
 ## CLI (preferred)
 
@@ -80,7 +97,7 @@ python3 $ADC distributions                    # referral status + commission his
 
 # Catalog & docs (PUBLIC — work without a token)
 python3 $ADC get-service --service suno       # one service's detail
-python3 $ADC pricing --service suno           # unit, free_amount and cost
+python3 $ADC pricing --service suno           # unit, free_amount and cost (dataset reference quotes when present)
 python3 $ADC apis --service suno              # API endpoints for a service
 python3 $ADC spec --path /suno/audios         # one API's OpenAPI definition + cost
 python3 $ADC datasets                         # downloadable datasets
@@ -118,7 +135,7 @@ is **`items`**.)
 ### Balance / subscriptions — `GET /applications/`
 
 An *Application* is your subscription to one Service; its `remaining_amount` is
-your balance (in **Credits**) for that service.
+your balance in the returned `service.unit` (for example `Credit`, `Count` or `Token`), not necessarily USD.
 
 ```bash
 curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
@@ -145,6 +162,19 @@ curl -H "authorization: Bearer $ACEDATACLOUD_PLATFORM_TOKEN" \
 ```
 
 Filters: `service_id`, `scope` (`Individual`/`Global`), `user_id` (superuser only).
+
+Before reporting that a subscription is usable:
+
+1. Run `balance --json` and check `disabled` and `expired_at` alongside `remaining_amount`; a positive balance alone is not an availability check. Check for null before comparing balances, and use the returned `service.unit` for thresholds.
+2. Read `allow_overdraft` from the application list or detail. It is a read-only boolean, defaults to `false`, and requires separate administrator authorization; do not try to enable it through application create/update parameters. For `type="Usage"` with `allow_overdraft=true`, a low or negative balance alone does not block calls: normal usage charges continue. A negative balance is unsettled usage; recharge offsets it without resetting `used_amount`. Disabled applications, expiry and API credential limits still apply. A missing flag is not an overdraft grant; `Period` applications do not support overdraft.
+3. An overdraft-enabled Usage application keeps charging its own balance even below zero; it does not switch to the global account due to insufficient balance. Otherwise, `allow_consume_global` controls fallback; any overdraft permission then belongs to the global Application actually charged, not the originating one.
+4. For proxy services, paused balance synchronization or a synchronization timeout returns the last saved balance. Check the current service status in the console before reporting availability; a successful balance query does not prove the service is currently usable. Keep using the same platform token, balance endpoint and field names.
+
+#### Trial-account request availability
+
+1. Do not equate positive balance or `allow_overdraft=true` with parallel-request eligibility. The read-only user flag `has_recharged` records a successful paid recharge or administrator-added credits; it is not an Application setting and cannot be enabled through application updates. Rewards, recharge-card redemption and transferred credits do not qualify. Do not invent a CLI flag or infer this user flag from balance output.
+2. For an account with neither qualifying event, serialize billable requests across all API keys and services. A second request while one is executing returns HTTP 429 `too_many_requests`. An asynchronous acceptance still occupies the slot until the final result; free task polling remains available. Query the original task rather than rotating keys, switching services or automatically retrying a billable submit.
+3. A network disconnect or proxy timeout does not prove the task stopped. Investigate its original task and usage record; if no terminal result arrives for an extended period, contact support with the `trace_id`, never credentials. Paid-recharged or administrator-credited accounts are exempt only from this trial limit; balance and credential spending checks still apply. Realtime connection authentication keeps its per-turn billing flow and does not occupy this ordinary-request slot. API availability and actual-usage settlement rules are unchanged.
 
 ### Usage records — `GET /usage/apis/`
 
@@ -175,6 +205,13 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
   → `{ "items": [{ "date", "api_id", "amount" }], "total": <credits>, "apis": { "<id>": { "title" } } }`
 - **Status-code filter values** — `GET /usage/apis/status-codes/` → `{ "items": [200, 400, 502] }`
 - **CSV export** — `GET /usage/apis/export/?created_at_from=&created_at_to=` (downloads `usages.csv`)
+
+#### Retention-aware usage investigation
+
+1. Keep list, aggregate and CSV export queries within the most recent 60 days; call records and billing summaries share this window. For the CLI, use `usage --days 7 --json` or `usage-summary --days 30 --json`. A time boundary older than 60 days returns HTTP 400; narrow the range rather than repeatedly retrying it.
+2. Request and response bodies are retained for only 30 days. The list omits bodies even for newer records. If bodies are needed, use authenticated `GET /usage/apis/{id}` on the management host with the actual record ID; the CLI has no usage-detail command. For records 30–60 days old, detail no longer returns `metadata.request` or `metadata.response`; do not treat their absence as a failed or free call.
+3. For older records within the 60-day window, investigate using the returned trace, status, timestamps, model, usage and actual deducted amount. Body expiry does not change actual deductions, usage or aggregate statistics; model and effective-result summaries are retained before bodies expire. Do not invent missing bodies or infer the original payload from a summary.
+4. If long-term body retention is required, arrange secure storage of authorized request/response bodies at call time. CSV exports and aggregate statistics do not extend the body-retention window.
 
 ### Services — `GET /services/`
 
@@ -207,11 +244,44 @@ Filters: `api_id`, `application_id`, `status_code`, `created_at_from`,
 ```
 
 - `state` ∈ `Pending` `Paid` `Finished` `Expired` `Failed` `Refunded`
-- `pay_way` ∈ `WechatPay` `AliPay` `Stripe` `X402` `PayPal` `Reward`
+- `pay_way` includes `WechatPay`, `AliPay`, `Stripe`, `X402`, `PayPal`, `Reward`, and `BankTransfer`; availability depends on the order and payment configuration.
 - **Create** — `POST /orders/` `{ "application_id": "<app>", "package_id": "<package>" }`
 - **Pay** — `POST /orders/{id}/pay/` `{ "pay_way": "Stripe" }` → returns the order with a `pay_url` to open
 - **Refresh status** — `POST /orders/{id}/refresh/` (re-checks the PSP and updates `state`)
 - Filters: `state`, `pay_way`, `created_at_from`, `created_at_to`, `user_id` (superuser).
+
+#### Bank transfer
+
+1. Authenticate as the order owner. Personal and business accounts can use `BankTransfer` without enterprise verification; anonymous requests cannot. Domestic CNY and international USD transfers both require an order of at least USD 300, subject to payment-channel configuration and package eligibility.
+2. Read `GET /api/v1/orders/{order_id}/payment-options/` on the management host to check current transfer routes and minimum amounts. The CLI has no payment-options command; use authenticated REST rather than inventing a flag. Do not publish internal route/provider identifiers.
+3. Confirm the order ID, amount and available route with the user before `pay-order --id <order-id> --pay-way BankTransfer --yes`. Use only the payment instructions returned for that order; the displayed CNY amount is authoritative, not a locally estimated conversion. A pay response is not proof that funds arrived: reread the order and verify its final state before reporting completion.
+
+#### Invoice reversal and reapplication
+
+1. Read the current invoice with authenticated `GET /api/v1/orders/{order_id}/invoice/`. The CLI has no invoice command.
+2. An automatic red-invoice reversal submission leaves the invoice `Issued`; inspect `red_state` for progress. Submission is not completion. Do not reapply while confirmation, red-invoice issuance or archiving is pending.
+3. Reapply only after successful red-invoice issuance and archiving change the original invoice to `Voided` and release the order's invoicing restriction. Failed or uncertain reversals require finance review; do not bypass the restriction. The original invoice remains in invoice history. Manually issued invoices must first be voided or reversed in the tax/invoicing system, then confirmed by finance in the platform.
+
+#### X402 network selection
+
+1. Read the current order or API payment challenge's `accepts` before selecting a network. Arbitrum One (`arbitrum` in official TypeScript/Python X402 clients, CAIP-2 `eip155:42161` on the wire) has opt-in code support, not guaranteed production availability. If it is absent from `accepts`, do not attempt payment on that chain; a page feature flag does not enable an unconfigured server network.
+2. Arbitrum supports only `exact` payments with native USDC (6 decimals), not bridged USDC or `upto`. Use the returned asset, recipient and `accepts[].maxAmountRequired`; never hardcode an amount or invent payment parameters.
+3. Confirm the wallet supports the target chain and has USDC on that chain. The same EVM address can have different balances on different networks; a Solana address is not an EVM USDC address. Obtain confirmation before signing or paying; network support does not authorize a charge.
+
+#### X402 failure recovery
+
+1. The initial HTTP 402 without `PAYMENT-SIGNATURE` is a payment challenge, not a failed payment. For signed-payment failures, read `extensions.acedatacloud.paymentError`; do not construct wallet signatures or recipient/asset addresses from guesses.
+2. Reread the authenticated order list (`orders --json`) or `GET /api/v1/orders/{order_id}/`. `metadata.x402.last_error` and `metadata.x402.errors` retain the public `code`, `stage`, `retryable`, `charged` and `params`, with explanation in `reason` and time in `timestamp`. Preserve the specific code: `insufficient_token_balance` means insufficient USDC on the selected network; `invalid_signature` means an invalid payment signature. Do not replace either with generic `payment_failed` after rereading.
+3. Only explicit `charged=false` means a pre-settlement refusal; a missing `charged` means unknown, not uncharged. Check payment evidence before spending again. Even if `retryable=true`, a `Failed` order cannot be retried in place: resolve the wallet problem and obtain confirmation before creating and paying a new order.
+4. Share only the order ID and public error code with support. Never log or share full order metadata, `PAYMENT-SIGNATURE`, wallet signatures, authorization payloads or raw payment/RPC diagnostics.
+
+#### X402 ACE buyback and burn proof
+
+When the buyback policy is enabled, eligible Base mainnet Circle USDC and Solana mainnet USDC payments allocate 3% of the actual received amount to buy and burn ACE, with no extra wallet charge. Recharge is counted once; spending those Credits on APIs does not count again. Historical discounted orders and old-policy orders are not automatically backfilled. There is no fixed per-operation or daily USDC buyback cap; available funds, market quotes and chain confirmations can still delay completion.
+
+1. Read authenticated `GET /api/v1/orders/{order_id}/` on the management host as the order owner and inspect `ace_burn`. The CLI only lists orders, not an order-detail or burn command; the order list and anonymous pay-link response do not include `ace_burn`. If it is absent or null, do not infer eligibility or fabricate proof.
+2. Distinguish the payment receipt (`settlement_network`, `settlement_transaction`) from the asynchronous ACE execution (`execution_network`). Base payments retain their Base receipt; buying and burning ACE happens on Solana. A Base receipt is not a Solana burn transaction. Do not expose operator configuration or internal funding details.
+3. Report verified burn completion only for `ace_burn.state=Completed`, using the `swap_signature` and `burn_signature` actually returned. `Pending`, `Processing` or `Review` is not proof of a burn, and the order's `Finished` state does not prove the burn completed. Base source finality can delay the burn without affecting already credited Credits. Reread the same order to check progress; do not repay or create another order to trigger a burn.
 
 ### Platform tokens — `GET /platform-tokens/`
 
@@ -244,6 +314,30 @@ These work without auth (send the token if you have one; not required):
 - **Model catalog** — `GET /models/catalog/` → `{ rates, modalities, count, items:[{ id, name, provider,
   modality, unit, capabilities, pricing:{ input_credits, output_credits, official_* } }] }`. Filter client-side.
 
+#### Platform runtime config
+
+1. Read public `GET https://platform.acedata.cloud/api/v1/config/` for the current request's `features` and `region`. No token is required; signed-in context can affect feature flags. The CLI has no config command; use REST rather than inventing a flag.
+2. Read `region`, not `country`: it is a lowercase country/region code detected from the request IP, or `null` when unknown. The endpoint accepts no region override; do not send `country` or `region` query parameters. A frontend region selection stays local: prefer that selection for display, otherwise use the returned `region`. It does not override catalog visibility, access or server-side security.
+3. Read only needed feature keys with safe defaults for missing keys, and do not share a long-lived config cache across users. Optional `features` query or `X-Feature-Overrides` header overrides apply only to client-overridable flags or superusers; they are not an access bypass. This response is not a source for branding, CDN, currency, language, support contacts or announcements.
+
+```bash
+curl --get https://platform.acedata.cloud/api/v1/config/ \
+  -H "Accept: application/json"
+```
+
+#### Regional catalog discovery
+
+1. Read the current public catalog from the caller's environment. Use `get-service --service <alias-or-uuid> --json` to inspect `available_regions`, `unavailable_regions`, the service's chat-only `chat_unavailable_regions` and image-only `image_unavailable_regions`. Use `apis --service <alias-or-uuid> --json`, `docs-list --json` or `doc --id <document-uuid> --json` for API/document region fields. The `pricing` and `spec` summaries omit these fields. Empty region lists mean no explicit regional rule, not an access grant.
+2. Visibility follows the requesting visitor's IP, not the display language or a `?country=` override. Mainland-China catalog views hide marked Claude services and chat APIs/documents. Mixed OpenAI, Gemini and Grok services hide their chat entries, but media visibility must be checked separately: OpenAI image generation/editing and companion guides are also hidden in mainland China. Do not hide the entire service based on `chat_unavailable_regions` or `image_unavailable_regions`; unrelated media entries retain their own rules. Raw REST/CLI results may still include marked rows; apply their region metadata when presenting choices rather than treating presence as visibility.
+3. Respect the current public results when presenting catalog choices. Do not use a cached global list to advertise region-hidden chat or images, or treat a missing entry/404 as proof of retirement or revoked API access. This presentation filtering does not change API routing or billing; check actual account access, key restrictions and current pricing separately before a service call.
+
+### Dataset reference pricing
+
+1. Resolve the requested dataset's public service with `get-service --service <alias-or-uuid>` and read its current metadata. Contact-only datasets are catalog entries, not automatically downloadable purchases; a missing price does not mean free data.
+2. Run `pricing --service <alias-or-uuid> --json`. For a Dataset, the CLI includes `pricing_mode` and `reference_quote` when present. The source fields are `metadata.pricing_mode` and `metadata.reference_quote` on the Service, not the Dataset's `price` or an API's `cost`.
+3. If `pricing_mode="contact_only"` and the quote has `status="reference"`, present `min_amount`–`max_amount` with the supplied `currency` and quote `unit`. `CNY` amounts are yuan, not Credits or USD; `full_package` means the full package and `tb` means per TB. Equal bounds indicate a single reference amount. Do not apply the Credits-to-USD conversion or invent a quote when none is returned.
+4. Treat a reference quote as indicative only: it does not create a purchase Package, guarantee delivery, or grant download or usage rights. Confirm the required version, scope, format, license and final price with support before proceeding; do not call `create-order` or `pay-order` based on a reference quote.
+
 ### Announcements — `GET /announcements/`
 
 Public read: `{ "count": 20, "items": [ { "id", "title", "content",
@@ -257,10 +351,39 @@ Public read: `{ "count": 20, "items": [ { "id", "title", "content",
 - **AI polish** — `POST /announcements/admin/polish/` `{ "title", "content" }`
 - **AI translate** — `POST /announcements/admin/translate/` `{ "translation_key" }`
 
+### Blog drafts, review submission and publication (MCP / REST)
+
+Use `mcp-acedatacloud` with a platform token or the Studio OAuth connection. The bundled CLI does not implement blog commands; use the MCP tools and inspect their current input schemas rather than inventing CLI flags. Blog permissions can be delegated to non-admin accounts; check the available tools and scopes before writing.
+
+| Permissions | Operations |
+|-------------|------------|
+| `blog:read` | List drafts and read full editing-source content |
+| `blog:write` | Create, edit and delete unpublished drafts; submit or withdraw a pending review |
+| `blog:read` + `blog:publish` | Approve or reject a submitted version, or withdraw approval before publication |
+| `blog:write` + `blog:publish` | Publish or schedule an approved draft, unpublish, or delete a published post |
+
+1. Confirm the intended article and source language (`zh-cn` or `en`). Use the current editorial categories: `product-updates`, `tech-sharing`, `product-recommendations`, or `industry-insights` (default `tech-sharing`). Read the current category list if a custom category is needed; do not guess a slug.
+2. Save an unpublished draft with `acedatacloud_create_blog_draft`, or edit it with `acedatacloud_update_blog_post`. Read the full source with `acedatacloud_get_blog_draft`, including title, summary, body, category, cover, `content_type` and `video_url`, and retain its current `review_version` and `review_status`. Default `content_type="article"` requires a nonblank body and clears `video_url`. For `content_type="video"`, upload the intended video first and use its actual HTTPS `video_url`; the body may be blank, but title and summary remain required. Never fabricate a media URL. A cover requires HTTPS `cover_url` and nonblank `cover_alt`. If the discovered MCP schema lacks video fields, use `POST /api/v1/blogs/admin/` to create an unpublished draft or `PATCH /api/v1/blogs/admin/{id}/` to edit one after confirmation; do not invent MCP arguments or CLI flags.
+3. Submit a `draft` or `rejected` article for review before seeking approval. With `blog:write`, send `POST /api/v1/blogs/admin/{id}/submit/` on the management host with `{"expected_version": CURRENT_REVIEW_VERSION}`; verify `review_status="pending"`. Legacy drafts without a creator must first be saved by an editor. Pending articles cannot be edited: withdraw the review request with `DELETE` to the same `/submit/` route and the current `expected_version`, verify `draft`, then edit and resubmit. Withdrawal of a pending review is distinct from withdrawal of approval.
+4. A different authorized account must read the full pending draft (and watch the actual video for a video post) and approve that exact version with `acedatacloud_approve_blog_post`. The creator cannot approve their own draft. For REST approval, `POST /api/v1/blogs/admin/{id}/approval/` requires `expected_version` equal to the `review_version` just read. The reviewer may instead send `POST /api/v1/blogs/admin/{id}/reject/` with that `expected_version` and a nonblank `comment` (at most 2,000 characters), or omit `comment` if an unresolved root review thread already exists on the current version; verify `review_status="rejected"`. Read `review_comment`, revise and resubmit, checking the review threads below before another review. A 409 on submission, withdrawal, approval or rejection means the draft changed: refresh and reread the full draft before retrying. Do not impersonate a reviewer or switch credentials to bypass this separation.
+5. Only after `review_status="approved"`, use `acedatacloud_publish_blog_post` from an authorized account: the publisher must not be the reviewer (the creator may publish after peer approval). For scheduling, provide a timezone-aware `publish_at`; omit it to publish now. Verify the returned state and time before reporting the post as publicly live.
+6. Changes to reviewed public content (including title, body, category, tags, slug, cover, `content_type` or `video_url`) invalidate approval and advance `review_version`. Unpublish before editing a published post with `acedatacloud_unpublish_blog_post`, then submit and obtain fresh peer approval before republishing. Use `acedatacloud_withdraw_blog_approval` to revoke approval while unpublished; an approved article returns to `draft`.
+
+#### Review threads (authenticated REST)
+
+Review comments are private editorial feedback, not public blog comments. Use the management host and platform Bearer token. Listing requires `blog:read`; adding, replying and resolving require `blog:read` plus either `blog:write` or `blog:publish`.
+
+1. Read the saved draft and `GET /api/v1/blogs/admin/{id}/comments/`. The response is a root-thread array with nested `replies`, anchors, `review_version` and resolution fields. Compare each thread's version to the current draft; historical feedback does not prove a selection still matches today's text.
+2. After preview and confirmation, add a root comment with `POST /api/v1/blogs/admin/{id}/comments/`: send the current `expected_version`, a nonblank `body` of at most 2,000 characters, and `field="overall"` with no offsets or quote. For a text selection, use `field="title"`, `"summary"` or `"content"`, with `start_offset`, `end_offset` and the exact saved `quote`. Offsets count **UTF-16 code units**, not Python characters or UTF-8 bytes; start is inclusive, end exclusive, and the selection spans at most 2,000 code units. Never anchor to unsaved text. On 409, refresh the draft and recompute the selection; on a quote mismatch, reread the saved source rather than guessing offsets.
+3. Reply to a root thread with `POST /api/v1/blogs/admin/{id}/comments/{comment_id}/replies/` and `{"body":"REVIEW_REPLY"}` (1–2,000 nonblank characters). Replies keep the root's review version; replying to a resolved thread reopens it. Use the root ID, not a reply ID.
+4. Resolve or reopen a root thread with `PATCH /api/v1/blogs/admin/{id}/comments/{comment_id}/` and `{"resolved":true}` or `{"resolved":false}`. Replies and resolution do not require `expected_version`; reread the thread and confirm its ID and intended action before sending. Resolving feedback does not approve or publish the draft; retain the peer-review workflow above.
+
+All blog writes require a preview and explicit user confirmation: without `confirm=true`, MCP tools only return a dry-run preview. The REST review routes above execute immediately and have no dry-run flag: preview the method, article ID and body locally and obtain confirmation before sending them with the platform Bearer token. Prefer a matching MCP tool if its discovered schema supports the operation; do not invent submission/rejection tool names or CLI flags. Confirm the article, version and publication time before executing; a successful preview is not evidence of a saved, submitted, approved or published post. If the required operation or permission is unavailable, stop and request the appropriate authorization.
+
 ## Write-operation safety
 
 Creating/deleting keys, creating/paying orders, deleting platform tokens, and
-publishing announcements are **irreversible or money-related**. Always:
+publishing announcements or blogs are **irreversible, money-related or publicly visible**. Always:
 
 1. Confirm the exact target (`application_id`, `order_id`, `credential_id`) with
    the user before executing.
@@ -271,12 +394,12 @@ publishing announcements are **irreversible or money-related**. Always:
 
 - Use the **platform token** (`ACEDATACLOUD_PLATFORM_TOKEN`), not the
   `api.acedata.cloud` service token — the latter returns 401 here.
-- `remaining_amount` / `used_amount` / `amount` are in **Credits**, not USD.
-  Convert with a service's package: `USD = Credits × (package.price / package.amount)`.
+- Read `service.unit` before interpreting `remaining_amount` / `used_amount` / `amount`; they are not automatically USD.
+  For Credit-based services, convert with a service's USD package: `USD = Credits × (package.price / package.amount)`.
 - Newly created credential/platform tokens are returned in full **only once** —
   store them immediately.
 - Credential "rotate" is delete + recreate; there is no in-place rotate endpoint.
 - Announcement endpoints under `/admin/` require a **superuser** token; a normal
   token gets `403`.
 
-> **MCP:** `pip install mcp-acedatacloud` | Hosted: `https://mcp.acedata.cloud/mcp` | See [all MCP servers](../_shared/mcp-servers.md). The MCP exposes these as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_get_pricing`, `acedatacloud_search_docs`, `acedatacloud_get_api_spec`, `acedatacloud_create_credential`, …) with the same write-confirmation guard.
+> **MCP:** `pip install mcp-acedatacloud` | Hosted: `https://mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md). The MCP exposes these as tools (`acedatacloud_get_balance`, `acedatacloud_list_usage`, `acedatacloud_get_pricing`, `acedatacloud_search_docs`, `acedatacloud_get_api_spec`, `acedatacloud_create_credential`, …) with the same write-confirmation guard.

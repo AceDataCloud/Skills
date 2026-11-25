@@ -47,6 +47,14 @@ UA = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 PLATFORM = "csdn"
+RUNTIME_ERRORS = {
+    "cookie_response_denied": "The connector runtime rejected the response cookies.",
+    "request_denied": "The connector runtime denied this request.",
+    "response_refused": "The connector runtime refused the upstream response.",
+    "redirect_denied": "The connector runtime denied an upstream redirect.",
+    "lease_expired": "The connector execution lease expired; start a new execution.",
+    "upstream_unavailable": "The connector runtime could not reach the upstream service; retry later.",
+}
 # x-ca signing constants — hard-coded in CSDN's editor web bundle (public).
 CA_KEY = "203803574"
 CA_SECRET = b"9znpamsyl2c7cdrr9sas0le9vbc3r6ba"
@@ -60,8 +68,11 @@ def out(obj) -> None:
     print(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
 
 
-def die(msg: str, code: int = 1) -> None:
-    out({"error": msg})
+def die(msg: str, code: int = 1, *, error_code: str | None = None) -> None:
+    result = {"error": msg}
+    if error_code is not None:
+        result["error_code"] = error_code
+    out(result)
     sys.exit(code)
 
 
@@ -168,6 +179,17 @@ def request(method: str, url: str, jar: list, *, referer, origin, headers=None, 
 
 def get_json(url: str, jar: list, *, referer, origin):
     status, text = request("GET", url, jar, referer=referer, origin=origin)
+    if status == 403:
+        try:
+            failure = json.loads(text)
+        except json.JSONDecodeError:
+            failure = None
+        # The connector proxy returns exactly {"error": reason}. Do not classify
+        # arbitrary upstream auth responses or successful payloads as runtime errors.
+        reason = failure.get("error") if isinstance(failure, dict) and set(failure) == {"error"} else None
+        if isinstance(reason, str) and reason in RUNTIME_ERRORS:
+            die(f"connector runtime error ({status}): {reason}. {RUNTIME_ERRORS[reason]}",
+                error_code=reason)
     if "WAF" in text and "403" in text:
         die("CSDN WAF blocked the request (403). The cookie may be expired or "
             "the account needs to re-pass CSDN's captcha; reconnect at "
@@ -324,19 +346,34 @@ _IMG_OPENER = urllib.request.build_opener(_NoRedirect)
 
 
 def _assert_public_url(url):
-    """Block non-http(s) and private/loopback/link-local hosts (SSRF guard) —
-    article content can carry arbitrary image URLs."""
+    """Check direct destinations locally; configured proxies own remote DNS checks."""
     parts = urllib.parse.urlsplit(url)
-    if parts.scheme not in ("http", "https") or not parts.hostname:
+    if (parts.scheme not in ("http", "https") or not parts.hostname
+            or parts.username is not None or parts.password is not None):
         raise RuntimeError(f"unsupported image URL: {url[:80]}")
+    try:
+        literal = ipaddress.ip_address(parts.hostname)
+    except ValueError:
+        literal = None
+    if literal is not None:
+        if not literal.is_global or literal.is_multicast:
+            raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
+        return
+    proxies = urllib.request.getproxies()
+    if proxies.get(parts.scheme) and not urllib.request.proxy_bypass(parts.netloc):
+        # Match urllib's proxy selection, including NO_PROXY. The configured
+        # proxy must reject private destinations after resolving the hostname;
+        # isolated clients need no direct DNS or network access for this path.
+        return
     try:
         addrs = socket.getaddrinfo(parts.hostname, None)
     except OSError as e:
         raise RuntimeError(f"cannot resolve {parts.hostname}: {e}")
+    if not addrs:
+        raise RuntimeError(f"cannot resolve {parts.hostname}")
     for info in addrs:
         ip = ipaddress.ip_address(info[4][0])
-        if (ip.is_private or ip.is_loopback or ip.is_link_local
-                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+        if not ip.is_global or ip.is_multicast:
             raise RuntimeError(f"blocked non-public image host: {parts.hostname}")
 
 
