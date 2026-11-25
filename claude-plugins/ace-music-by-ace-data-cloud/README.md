@@ -1,24 +1,23 @@
 # ACE Music by Ace Data Cloud
 
-Independently installable ACE Music song and lyrics tools, using your own Ace Data Cloud API account. API/package/hosted deployment availability are separate release checks; this source package does not prove a live release.
+[简体中文](readme/README_zh_Hans.md)
 
-## API key
+Create songs from a description or custom lyrics, upload a reference, cover one track, or blend two tracks. The plugin connects Claude Code to the [ACE Music MCP server](https://platform.acedata.cloud/documents/mcp-acemusic).
 
-[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen) → [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) → create a dedicated API key with ACE Music generation, lyrics and task-query access. Confirm the application balance and [current service price](https://platform.acedata.cloud/services/024e09b4-52cf-5e98-a91a-efedf43104c4?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Enter the raw key in the plugin's sensitive API Token setting; do not include `Bearer ` or share it in chat.
+## Install in Claude Code
 
-![Application API key](assets/get-api-key-en.png)
-![Create a dedicated key](assets/create-api-key-en.png)
+```text
+/plugin marketplace add AceDataCloud/Skills
+/plugin install ace-music-by-ace-data-cloud@acedatacloud-skills
+```
 
-These are existing Ace Data Cloud credential guide images; they are not new ACE Music generation evidence.
+[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Create a general or service key with access to ACE Music. Paste the raw key into the plugin's sensitive API Token setting. Check your allowance and [current prices](https://platform.acedata.cloud/services/acemusic?utm_source=github&utm_medium=referral&utm_campaign=evergreen) before submitting a song, an upload or a lyrics request.
 
-## Use
+![Where to copy a service key](assets/get-api-key-en.png)
+![Create a dedicated service key](assets/create-api-key-en.png)
 
-Ask to create a song from an idea, use supplied lyrics/style/title, or generate lyrics separately. Models are `acemusic-v1.1` and `acemusic-v1`; a task targets two MP3 candidates. Lyrics requests are separately priced. Upload, covers, continuation, voices, stems, WAV, MIDI and video export are not supported.
+## First request
 
-## Task recovery
+Ask “Which ACE Music models and operations can I use?” The assistant can call `acemusic_list_models` and `acemusic_get_capabilities` without creating a task. To make a song, describe it or supply a title, lyrics and style. Song generation supports `acemusic-v1.1` (default) and `acemusic-v1`. A successful song task returns two MP3 candidates.
 
-Save the original task ID and query it roughly every 10 seconds. Only the group terminal state determines completion. Partial failure may include one downloadable song; report it as partial. On client timeout, retain the task ID for later recovery. If submission times out before a task ID arrives, reconcile the original request rather than automatically paying for a replacement.
-
-This plugin source is self-contained. Official directory submission/approval, package publication and hosted service release require separate verification.
-
-The plugin icon is the official ACE Music favicon, served from the immutable Ace Data Cloud CDN; no brand image is bundled in this source package.
+To cover a track or blend two tracks, supply your own platform audio IDs, lyrics and style. Both use `acemusic-v1.1`. Importing an HTTPS MP3 is a separate paid action, as is generating lyrics. For task recovery, use the original task ID. On `partial_failed`, return the available track and report the partial result. On `submission_unknown`, retain the ID for reconciliation. Authenticated task lookup is free.

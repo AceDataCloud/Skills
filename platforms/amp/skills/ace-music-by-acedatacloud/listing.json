@@ -1,0 +1,37 @@
+{
+  "name": "ace-music-by-acedatacloud",
+  "display_name": "ACE Music by Ace Data Cloud",
+  "version": "0.1.0",
+  "category": "music",
+  "keywords": [
+    "ACE Music",
+    "acemusic",
+    "Amp",
+    "music",
+    "lyrics",
+    "Ace Data Cloud"
+  ],
+  "source_repository": "https://github.com/AceDataCloud/AceMusicMCP",
+  "mcp_package": "mcp-acemusic",
+  "auth_env": "ACEDATACLOUD_API_TOKEN",
+  "tool_names": [
+    "acemusic_list_models",
+    "acemusic_get_capabilities",
+    "acemusic_generate_music",
+    "acemusic_generate_custom_music",
+    "acemusic_generate_lyrics",
+    "acemusic_upload_audio",
+    "acemusic_cover_audio",
+    "acemusic_mashup_audio",
+    "acemusic_get_task",
+    "acemusic_get_tasks_batch",
+    "acemusic_list_tasks"
+  ],
+  "generation_tool": "acemusic_generate_music",
+  "poll_tool": "acemusic_get_task",
+  "poll_argument": "task_id",
+  "read_only_tool": "acemusic_list_models",
+  "license": "Apache-2.0",
+  "listing_status": "source candidate; directory submission pending",
+  "official_submission_target": "https://github.com/ampcode/amp-contrib"
+}

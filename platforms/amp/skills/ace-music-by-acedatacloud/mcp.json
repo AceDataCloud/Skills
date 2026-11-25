@@ -1,0 +1,21 @@
+{
+  "acemusic-ace": {
+    "url": "https://acemusic.mcp.acedata.cloud/mcp",
+    "headers": {
+      "Authorization": "Bearer ${ACEDATACLOUD_API_TOKEN}"
+    },
+    "includeTools": [
+      "acemusic_list_models",
+      "acemusic_get_capabilities",
+      "acemusic_generate_music",
+      "acemusic_generate_custom_music",
+      "acemusic_generate_lyrics",
+      "acemusic_upload_audio",
+      "acemusic_cover_audio",
+      "acemusic_mashup_audio",
+      "acemusic_get_task",
+      "acemusic_get_tasks_batch",
+      "acemusic_list_tasks"
+    ]
+  }
+}

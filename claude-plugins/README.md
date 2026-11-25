@@ -9,7 +9,7 @@ The service entries install independently from the Ace-maintained `acedatacloud-
 | HappyHorse | [happyhorse-by-ace-data-cloud](happyhorse-by-ace-data-cloud/README.md) |
 | GPT Image | [gpt-image-by-ace-data-cloud](gpt-image-by-ace-data-cloud/README.md) |
 | Nano Banana | [nano-banana-by-ace-data-cloud](nano-banana-by-ace-data-cloud/README.md) |
-| ACE Music | [ace-music-by-ace-data-cloud](ace-music-by-ace-data-cloud/README.md) — new release candidate |
+| ACE Music | [ace-music-by-ace-data-cloud](ace-music-by-ace-data-cloud/README.md) |
 
 The five plugins are published on GitHub `main` at source merge `605e92ed` (2026-10-19), version 0.1.0. Normal public Git marketplace clone and five independent native installations were verified with official Claude Code 2.1.303. This is not an Anthropic official-directory listing or a native chat provider. Current Directory Policy §4.B restricts standalone AI media generation absent express written permission. An existing official listing such as Runway is evidence of that entry, not permission for Ace. [Review gates and per-service submission material](submission/README.md) remain separate from source and local-install checks.
 

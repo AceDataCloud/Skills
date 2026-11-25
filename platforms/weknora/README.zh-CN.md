@@ -38,6 +38,7 @@ GitHub `suno-music` 目录登记返回 HTTP 201，skills.sh 页面仍因联合�
 
 | 服务 | 独立 MCP 配置 | 既有 canonical Skill |
 | --- | --- | --- |
+| ACE Music by Ace Data Cloud | [acemusic.mcp.json](acemusic.mcp.json) | [ace-music](../../skills/ace-music/SKILL.md) |
 | Suno by Ace Data Cloud | [suno.mcp.json](suno.mcp.json) | [suno-music](../../skills/suno-music/SKILL.md) |
 | Seedance by Ace Data Cloud | [seedance.mcp.json](seedance.mcp.json) | [seedance-video](../../skills/seedance-video/SKILL.md) |
 | HappyHorse by Ace Data Cloud | [happyhorse.mcp.json](happyhorse.mcp.json) | [happyhorse-video](../../skills/happyhorse-video/SKILL.md) |
