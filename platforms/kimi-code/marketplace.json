@@ -1,0 +1,46 @@
+{
+  "version": "2",
+  "plugins": [
+    {
+      "id": "ace-music-by-ace",
+      "displayName": "ACE Music by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/ACEMusicKimiCode/tree/ce03881f6560beac65f6678534245d46923f20fd"
+    },
+    {
+      "id": "gpt-image-by-ace",
+      "displayName": "GPT Image by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/GPTImageKimiCode/releases/download/v0.1.0/GPTImageKimiCode-0.1.0.zip",
+      "sha256sum": "ae5252c588246ed27dbbf8d4cfc24e914bf6e48a554c2ab5b6a82e2683396347"
+    },
+    {
+      "id": "happyhorse-by-ace",
+      "displayName": "HappyHorse by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/HappyHorseKimiCode/releases/download/v0.1.0/HappyHorseKimiCode-0.1.0.zip",
+      "sha256sum": "df2b77b4fd1ba04af076997d75523a979f5919acad9a9b65bc6b73c8c429bd86"
+    },
+    {
+      "id": "nano-banana-by-ace",
+      "displayName": "Nano Banana by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/NanoBananaKimiCode/releases/download/v0.1.0/NanoBananaKimiCode-0.1.0.zip",
+      "sha256sum": "4e5fc4ef163c2876ef13d9c304e4bc891e4d564eb67cf15fd2c61f9caf079469"
+    },
+    {
+      "id": "seedance-by-ace",
+      "displayName": "Seedance by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/SeedanceKimiCode/releases/download/v0.1.0/SeedanceKimiCode-0.1.0.zip",
+      "sha256sum": "81aa29003dc4a21fe3569610f36d10a2f320757ceae6d9ff328838beb87ecf82"
+    },
+    {
+      "id": "suno-by-ace",
+      "displayName": "Suno by Ace Data Cloud",
+      "version": "0.1.0",
+      "source": "https://github.com/AceDataCloud/SunoKimiCode/releases/download/v0.1.0/SunoKimiCode-0.1.0.zip",
+      "sha256sum": "32b90b53241c3768fb7b39f273bc42268cc8f16336612351d595b3e6d3e0826d"
+    }
+  ]
+}
