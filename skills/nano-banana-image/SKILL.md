@@ -108,4 +108,4 @@ The same 2.1 model is also accepted by `POST /openai/images/generations` (public
 - Aspect ratio uses colon notation (e.g., `"16:9"`) not pixel dimensions
 - The Gemini-based model excels at understanding complex, conversational editing instructions
 
-> **MCP:** `pip install mcp-nano-banana` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md)
+> **MCP:** `pip install mcp-nanobanana-pro` | Hosted: `https://nanobanana.mcp.acedata.cloud/mcp` | See [all MCP servers](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md)

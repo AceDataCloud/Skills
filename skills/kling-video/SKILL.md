@@ -55,6 +55,8 @@ curl -X POST https://api.acedata.cloud/kling/videos \
 | `pro` (Professional) | Faster | Higher | Final output |
 | `4k` (Native 4K) | — | Premium | Native 4K output — only `kling-v3` and `kling-v3-omni`; incompatible with `camera_control` |
 
+> **MCP:** `pip install mcp-kling` | Hosted: `https://kling.mcp.acedata.cloud/mcp`
+
 ## Workflows
 
 ### 1. Text-to-Video
