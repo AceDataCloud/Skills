@@ -23,15 +23,31 @@ class Rejected(Exception):
     """A bounded public reason, never a remote response or card code."""
 
 
+CARD_KINDS = {"universal", "coding"}
+
+
 def now():
     return datetime.now(timezone.utc).isoformat()
 
 
 class Inventory:
-    def __init__(self, path):
+    def __init__(self, path, *, kind="universal"):
+        if kind not in CARD_KINDS:
+            raise Rejected("invalid_inventory_kind")
+        self.kind = kind
         self.path = str(path)
         Path(path).parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         with self.db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            db.execute("CREATE TABLE IF NOT EXISTS inventory_metadata (kind TEXT NOT NULL)")
+            recorded_kind = db.execute("SELECT kind FROM inventory_metadata").fetchone()
+            if recorded_kind and recorded_kind["kind"] != self.kind:
+                raise Rejected("invalid_inventory_kind")
+            if not recorded_kind:
+                legacy = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='cards'").fetchone()
+                if legacy and self.kind != "universal":
+                    raise Rejected("invalid_inventory_kind")
+                db.execute("INSERT INTO inventory_metadata (kind) VALUES (?)", (self.kind,))
             db.execute("""CREATE TABLE IF NOT EXISTS cards (
                 id TEXT PRIMARY KEY, code TEXT NOT NULL UNIQUE, credits INTEGER NOT NULL,
                 expires_at TEXT NOT NULL, order_id TEXT UNIQUE, work_id TEXT UNIQUE,
@@ -51,10 +67,16 @@ class Inventory:
     def import_cards(self, cards):
         with self.db() as db:
             for card in cards:
+                if card.get("kind", "universal") != self.kind:
+                    raise Rejected("invalid_inventory_kind")
                 code = card["code"].replace("-", "").replace(" ", "")
                 if len(code) != 32 or not code.isascii() or not code.isalnum():
                     raise Rejected("invalid_inventory_code")
-                if type(card["credits"]) is not int or card["credits"] <= 0:
+                if (
+                    type(card["credits"]) is not int
+                    or card["credits"] <= 0
+                    or (self.kind == "coding" and card["credits"] != 1000)
+                ):
                     raise Rejected("invalid_inventory_amount")
                 expiry = (
                     datetime.fromisoformat(card["expires_at"])
@@ -107,14 +129,27 @@ class Inventory:
                 )
             )
             code = "-".join(row["code"][i : i + 8] for i in range(0, 32, 8))
+            title = "Coding Plan recharge card" if self.kind == "coding" else "recharge card"
+            balance = "Coding Plan Credits" if self.kind == "coding" else "Credits"
+            if self.kind == "coding":
+                instructions = (
+                    "2. Open **Applications** and choose **Redeem card**.\n\n"
+                    "The code credits your Coding Plan application and adds 30 days to its validity. "
+                    "For a new or expired application, those 30 days start at redemption. "
+                    "Review the Coding Plan balance and expiry after redeeming.\n\n"
+                )
+            else:
+                instructions = (
+                    "2. Open **Applications**, find your universal Credits card, and choose **Redeem card**. "
+                    "If the button is absent, redemption is not enabled for that site.\n"
+                )
             delivery = (
-                f"# Your Ace Data Cloud recharge card\n\n"
-                f"**Value:** {credits} Credits\n\n**Redemption key:** `{code}`\n\n"
+                f"# Your Ace Data Cloud {title}\n\n"
+                f"**Value:** {credits:,} {balance}\n\n**Redemption key:** `{code}`\n\n"
                 f"**Valid until:** {row['expires_at'][:10]}\n\n"
                 "## How to redeem\n\n"
                 "1. Open https://platform.acedata.cloud and sign in to the Ace Data Cloud account you want to credit.\n"
-                "2. Open **Applications**, find your universal Credits card, and choose **Redeem card**. "
-                "If the button is absent, redemption is not enabled for that site.\n"
+                f"{instructions}"
                 "3. Copy the complete key from this original order's private delivery, paste it into the redemption dialog and confirm. "
                 "Check the credited amount, redemption time and new Credits balance.\n\n"
                 "This card adds Credits to your Ace Data Cloud balance and does not enable automatic recharge. "
@@ -426,18 +461,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--import-cards", action="store_true")
     args = parser.parse_args()
-    inventory = Inventory(os.environ.get("INVENTORY_DB", "/data/cards.sqlite3"))
+    config_path = Path(os.environ.get("FULFILLMENT_CONFIG", "/config/config.json"))
+    config = json.loads(config_path.read_text()) if config_path.is_file() or not args.import_cards else {}
+    inventory = Inventory(
+        os.environ.get("INVENTORY_DB", "/data/cards.sqlite3"),
+        kind=config.pop("card_kind", "universal"),
+    )
     if args.import_cards:
         import sys
 
         inventory.import_cards(json.load(sys.stdin))
         print(json.dumps({"imported": True}))
     else:
-        config = json.loads(
-            Path(
-                os.environ.get("FULFILLMENT_CONFIG", "/config/config.json")
-            ).read_text()
-        )
         fulfillment = Fulfillment(
             inventory,
             Envar(config.pop("envar_origin"), "/secrets/envar-token"),

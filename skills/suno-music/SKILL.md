@@ -28,7 +28,7 @@ Read the [illustrated first-run guide](README.md) ([简体中文](readme.zh-CN.m
 
 [Illustrated key setup, first run, and troubleshooting](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw) · [Token details](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/authentication.md)
 
-If you came from skills.sh, use [Applications for this first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_music_first_run). Check the current price before generating music.
+If you came from skills.sh, use [Applications for this first run](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen). Check the current price before generating music.
 
 ## Quick Start
 

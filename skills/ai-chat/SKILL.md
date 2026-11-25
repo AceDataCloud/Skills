@@ -81,8 +81,8 @@ models include:
 | Claude | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-fable-5-2`, `claude-fable-5-1`, `claude-fable-5`, `claude-opus-5`, `claude-sonnet-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-6`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-haiku-4-5-20251001`, `claude-3-7-sonnet-20250219` |
 | Gemini | `gemini-4-carbon`, `gemini-4-argon`, `gemini-4-hydrogen`, `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.1-pro`, `gemini-3.1-pro-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash-lite` |
 | Grok | `grok-4.7`, `grok-4.5`, `grok-4`, `grok-4-0709`, `grok-3`, `grok-3-fast` |
-| DeepSeek | `deepseek-v4.1-flash`, `deepseek-v4-pro`, `deepseek-v4-flash`, `deepseek-r1`, `deepseek-r1-0528`, `deepseek-v3`, `deepseek-v3-250324`, `deepseek-v3.2-exp` |
-| Kimi | `kimi-k3.1-pro`, `kimi-k3`, `kimi-k2.6`, `kimi-k2.5`, `kimi-k2-thinking-turbo`, `kimi-k2-thinking` |
+| DeepSeek | `deepseek-v4.1-flash-1017`, `deepseek-v4.1-flash`, `deepseek-v4-flash`, `deepseek-flash`, `deepseek-v4-pro`, `deepseek-v3.2` |
+| Kimi | `kimi-k3.1-pro`, `kimi-k3`, `kimi-k2.6`, `kimi-k2.7-code` |
 | GLM | `glm-5.3`, `glm-5.2`, `glm-5.1`, `glm-5`, `glm-5-turbo`, `glm-4.7`, `glm-4.6`, `glm-4.5`, `glm-4.5v`, `glm-3-turbo` |
 | MiMo | `mimo-v2.6-pro`, `mimo-v2.6-flash` |
 
@@ -105,11 +105,12 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 `/aichat2/conversations` also accepts `model_group` values
 `chatgpt`, `claude`, `gemini`, `grok`, `kimi`, `glm`, `mimo`, and `deepseek`.
 
-> **Image-generating models are not chat models.** Names ending in `-image`
-> (e.g. `gemini-*-image`, `gpt-4o-image`) are image-generation models; they
-> do not work on the OpenAI-compatible chat, Claude Messages, or conversation
-> routes. Generate images through the dedicated endpoints instead — Gemini via
-> `POST /v1beta/models/{model}:generateContent`, or `/nano-banana/images`.
+> **Choose the endpoint from the published model contract, not the model name.**
+> `gpt-4o-image` is a published chat model; do not exclude it because its name
+> ends in `-image`. Check the current model catalog and the selected API's model
+> list for supported protocols. Image-generation models use their documented
+> endpoints, such as `POST /v1beta/models/{model}:generateContent` or
+> `/nano-banana/images`; a name suffix does not establish endpoint support.
 
 ## Token billing across compatible protocols
 

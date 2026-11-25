@@ -11,7 +11,7 @@
 /plugin install ace-music-by-ace-data-cloud@acedatacloud-skills
 ```
 
-[注册或登录](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_signup)后打开[应用管理](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_api_key)，创建具有 ACE Music 权限的通用或服务 API Key。将原始 Key 填入插件的敏感 API Token 设置。生成歌曲、导入参考音轨或创作歌词前，先查看余额和[当前价格](https://platform.acedata.cloud/services/acemusic?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_pricing)。
+[注册或登录](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)后打开[应用管理](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，创建具有 ACE Music 权限的通用或服务 API Key。将原始 Key 填入插件的敏感 API Token 设置。生成歌曲、导入参考音轨或创作歌词前，先查看余额和[当前价格](https://platform.acedata.cloud/services/acemusic?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。
 
 ![复制服务 API Key 的位置](../assets/get-api-key-en.png)
 ![创建专用 Key](../assets/create-api-key-en.png)

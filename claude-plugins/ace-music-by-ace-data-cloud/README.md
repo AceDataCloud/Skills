@@ -11,7 +11,7 @@ Create songs from a description or custom lyrics, upload a reference, cover one 
 /plugin install ace-music-by-ace-data-cloud@acedatacloud-skills
 ```
 
-[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_signup) and open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_api_key). Create a general or service key with access to ACE Music. Paste the raw key into the plugin's sensitive API Token setting. Check your allowance and [current prices](https://platform.acedata.cloud/services/acemusic?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=ace_music_plugin_pricing) before submitting a song, an upload or a lyrics request.
+[Sign in or register](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Create a general or service key with access to ACE Music. Paste the raw key into the plugin's sensitive API Token setting. Check your allowance and [current prices](https://platform.acedata.cloud/services/acemusic?utm_source=github&utm_medium=referral&utm_campaign=evergreen) before submitting a song, an upload or a lyrics request.
 
 ![Where to copy a service key](assets/get-api-key-en.png)
 ![Create a dedicated service key](assets/create-api-key-en.png)

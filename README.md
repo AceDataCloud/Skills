@@ -2,13 +2,13 @@
 
 <p align="center">
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-agentskills.io-blue" alt="Agent Skills"></a>
-  <a href="https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_platform"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
+  <a href="https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen"><img src="https://img.shields.io/badge/API-platform.acedata.cloud-green" alt="Platform"></a>
   <a href="https://www.npmjs.com/package/@acedatacloud/skills"><img src="https://img.shields.io/npm/v/@acedatacloud/skills.svg" alt="npm"></a>
   <a href="https://github.com/AceDataCloud/Skills/actions"><img src="https://github.com/AceDataCloud/Skills/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-orange" alt="License"></a>
 </p>
 
-[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_platform) AI services — music, image, video generation, LLM chat, web search, and more.
+[Agent Skills](https://agentskills.io/) for [AceDataCloud](https://platform.acedata.cloud?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen) AI services — music, image, video generation, LLM chat, web search, and more.
 
 Compatible with **30+ AI coding agents** via the [agentskills.io](https://agentskills.io/) open standard: Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Cursor, Roo Code, Goose, and more.
 
@@ -58,7 +58,7 @@ Start a new OpenClaw session so it loads the installed Skill. The ClawHub names 
 
 New account? Register and sign in first. If the Applications page has no General application yet, choose **Initialize General Application**, then continue with the key steps below.
 
-1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_api_key). Create an account first if needed.
+1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Create an account first if needed.
 2. Open **General application** (initialize it if the console prompts you). Its key can access the services enabled for your account. A service-specific application key is limited to that service. Enable the intended service if needed, then check its access, balance, and current price before running an example.
 3. Copy an existing API key, or choose **Manage Keys → Create** to make a separate key for OpenClaw. Name it, set an expiration and restrictions if needed, then copy the key from the application card or key list. If you restrict **Allowed APIs**, include both the generation endpoint and its task-query endpoint. For Suno these are `/suno/audios` and `/suno/tasks`.
 
@@ -168,7 +168,7 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 
 ### Connectors
 
-These skills drive third-party connectors users wire up at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_console_connectors). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
+These skills drive third-party connectors users wire up at [studio.acedata.cloud/console/connectors](https://studio.acedata.cloud/console/connectors?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Each declares the OAuth / BYOC connection it needs in `connections:` frontmatter; the [aichat2](https://chat.acedata.cloud) runtime injects the matching access token into the sandbox before the skill's `Bash` calls run.
 
 | Skill | Description | Connection |
 |-------|-------------|------------|
@@ -226,7 +226,7 @@ See [coverage and source evidence](plans/publishing-connectors-20261109.md).
 
 ## Prerequisites
 
-AceDataCloud API Skills need an API key from [Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen&utm_content=skills_readme_api_key). Follow the [first-run steps](#first-run-with-clawhub-and-openclaw) for the exact UI path, key restrictions, OpenClaw environment setup, and a complete example. Local-only Skills such as `onepage-pdf` and `apple-notes` do not use an AceDataCloud API key; the `acedatacloud` account-management Skill uses a separate platform token.
+AceDataCloud API Skills need an API key from [Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Follow the [first-run steps](#first-run-with-clawhub-and-openclaw) for the exact UI path, key restrictions, OpenClaw environment setup, and a complete example. Local-only Skills such as `onepage-pdf` and `apple-notes` do not use an AceDataCloud API key; the `acedatacloud` account-management Skill uses a separate platform token.
 
 ## Quick Install
 
@@ -290,6 +290,16 @@ npx skills add acedatacloud/skills --skill '*' -a github-copilot --yes
 ```bash
 npx skills add acedatacloud/skills --skill '*' -a gemini-cli --yes
 ```
+
+### Kimi Code
+
+Open the Ace Data Cloud plugin catalog in Kimi Code:
+
+```text
+/plugins marketplace https://raw.githubusercontent.com/AceDataCloud/Skills/main/platforms/kimi-code/marketplace.json
+```
+
+Select a service, review its source and permissions, then confirm the installation. Each plugin uses its own setup instructions. [Kimi Code plugin guide](https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/customization/plugins.md#custom-marketplace-json)
 
 ### OpenAI Codex
 

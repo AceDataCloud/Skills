@@ -25,7 +25,7 @@ Load this Skill to expose its MCP tools. Use `openai_list_image_models` once to 
 
 ## Generation and retrieval
 
-1. Confirm the user wants this image operation and accepts its [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen&utm_content=gpt-image_amp_pricing), parameters and output count. Always choose an explicit GPT Image model from `openai_list_image_models` that the user approves; never rely on the general image tool defaults or silently select DALL·E/Nano Banana.
+1. Confirm the user wants this image operation and accepts its [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), parameters and output count. Always choose an explicit GPT Image model from `openai_list_image_models` that the user approves; never rely on the general image tool defaults or silently select DALL·E/Nano Banana.
 2. Call `openai_generate_image` exactly once for that requested operation. Use an edit tool only when the user provides authorized reference media and asks to edit it.
 3. Save the returned task ID. Call `openai_get_task(id="<original task ID>")` to retrieve the same task after pending results, disconnects or timeouts. Never submit generation again merely to poll.
 4. Treat `finished_at` as terminal, then require `response.success=true` and inspect the image result; failure is terminal too. An empty task object is not success. Do not invent IDs, output links, media availability, completion or billing. Report the final status and returned media links; preserve upstream errors (including rate limit and moderation meaning).

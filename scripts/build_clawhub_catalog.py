@@ -18,10 +18,10 @@ SCREENSHOT = "https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e
 INSTALL_IMAGE = "suno-clawhub-20261017.jpg"
 
 
-def link(service, placement, path="/console/applications"):
+def link(path="/console/applications"):
     return "https://platform.acedata.cloud" + path + "?" + urlencode({
         "utm_source": "agent_skill", "utm_medium": "referral",
-        "utm_campaign": "evergreen", "utm_content": service["id"].replace("-", "_") + "_clawhub_" + placement})
+        "utm_campaign": "evergreen"})
 
 
 def onboarding(service, zh=False):
@@ -50,7 +50,7 @@ openclaw skills install {ref}
 
 ## 2. 注册并取得服务密钥
 
-[注册或登录 Ace]({link(service,'signup','/')}) → [Applications]({link(service,'api_key')}) → **General application**（没有则先 Initialize General Application）。检查该服务的权限、余额和[当前价格]({link(service,'pricing','/models')})。
+[注册或登录 Ace]({link('/')}) → [Applications]({link()}) → **General application**（没有则先 Initialize General Application）。检查该服务的权限、余额和[当前价格]({link('/models')})。
 复制 API Key，或 **Manage Keys → Create** 创建专用密钥；按需限制有效期、额度和 Allowed APIs：{routes}。
 只复制 Key 值，不加 `Bearer `。`platform-...` 管理 token 不能代替服务密钥。不要把 Key 发到聊天、截图或 Git。
 
@@ -106,7 +106,7 @@ This historical Suno Skill 1.0.1 page shows the publisher and install entry only
 
 ## 2. Register and copy a service key
 
-[Register or sign in to Ace]({link(service,'signup','/')}) → [Applications]({link(service,'api_key')}) → **General application**. Choose **Initialize General Application** if needed. Check service access, balance and [current pricing]({link(service,'pricing','/models')}).
+[Register or sign in to Ace]({link('/')}) → [Applications]({link()}) → **General application**. Choose **Initialize General Application** if needed. Check service access, balance and [current pricing]({link('/models')}).
 Copy its API Key or choose **Manage Keys → Create** for a dedicated key. Set expiry, usage limits and **Allowed APIs** as needed: {routes}.
 Copy the raw value without `Bearer `. A `platform-...` account token is not a service key. Never put a real key in a prompt, screenshot or repository.
 
@@ -153,7 +153,7 @@ def build(repo, service, output):
     front = re.sub(r"^description:.*$", "description: " + service["description"], front, flags=re.M)
     runtime = {"requires": {"env": ["ACEDATACLOUD_API_TOKEN"], "bins": ["curl"]},
                "primaryEnv": "ACEDATACLOUD_API_TOKEN", "emoji": service["emoji"],
-               "homepage": link(service, "api_key")}
+               "homepage": link()}
     front = front.replace("metadata:\n", "metadata:\n  openclaw: " + json.dumps(runtime, ensure_ascii=False) + "\n")
     front = re.sub(r"^compatibility:.*$", "compatibility: Requires curl and an Ace service API key. OpenClaw native skills.entries apiKey is supported; sandbox credentials require separate configuration.", front, flags=re.M)
     # Preserve one canonical technical body; remove only duplicated onboarding prose.

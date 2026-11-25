@@ -2,7 +2,7 @@
 
 通过 Ace Data Cloud 的 API 在编程助手中使用 GPT Image。本集成由 **Ace Data Cloud** 维护，不冒充 GPT Image 原厂官方发布。每个技能可独立安装，不需要先安装通用账户技能或 MCP。
 
-[English](README.md) · [skills.sh 安装入口](https://skills.sh/acedatacloud/skills/gpt-image-2-5) · [当前模型与价格](https://platform.acedata.cloud/models?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=gpt_image_2_5_pricing)
+[English](README.md) · [skills.sh 安装入口](https://skills.sh/acedatacloud/skills/gpt-image-2-5) · [当前模型与价格](https://platform.acedata.cloud/models?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen)
 
 ## 1. 只安装这一个技能
 
@@ -21,7 +21,7 @@ npx --yes skills@1.7.2 list
 
 ## 2. 注册、登录和复制 Token
 
-打开 [Ace Data Cloud → 我的应用](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=gpt_image_2_5_api_key)，先注册/登录。进入 **General application（通用应用）**；没有则初始化通用应用。核对 **GPT Image** 的权限、余额和当前价。复制卡片上的 Key，或 **Manage Keys → Create** 创建单独 Key，例如 `skills.sh GPT Image`。按需设置过期时间和用量限制；启用 Allowed APIs 时至少放行 `/openai/images/generations`、`/openai/tasks`，高级动作另查 SKILL.md。
+打开 [Ace Data Cloud → 我的应用](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen)，先注册/登录。进入 **General application（通用应用）**；没有则初始化通用应用。核对 **GPT Image** 的权限、余额和当前价。复制卡片上的 Key，或 **Manage Keys → Create** 创建单独 Key，例如 `skills.sh GPT Image`。按需设置过期时间和用量限制；启用 Allowed APIs 时至少放行 `/openai/images/generations`、`/openai/tasks`，高级动作另查 SKILL.md。
 
 ![复制Key与管理密钥](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
@@ -73,7 +73,7 @@ curl -X POST https://api.acedata.cloud/openai/tasks \
 - **429 / 超时 / pending / 5xx**：降并发，先查同一任务或请求历史，不自动重试收费提交。
 - **媒体打不开**：确认终态，使用实际返回 URL；支持排障只提供 task/trace ID，不提供 Key。
 
-联系 [dev@acedata.cloud](mailto:dev@acedata.cloud)。站点安装数不代表独立用户或营收；本页四项 UTM 只标识 skills.sh 来源，不证明注册或付费。
+联系 [dev@acedata.cloud](mailto:dev@acedata.cloud)。站点安装数不代表独立用户或营收；本页三项 UTM 只标识 skills.sh 来源，不证明注册或付费。
 
 此 Skill 同时支持 GPT Image 2.6 Flare/Sunburst，以及各自的 `:reverse` 和 `:official` 变体；安装名称保持 `gpt-image-2-5`。
 

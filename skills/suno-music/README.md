@@ -2,7 +2,7 @@
 
 Use Suno through the **Ace Data Cloud** API from an Agent Skills-compatible coding assistant. This Skill is maintained by Ace Data Cloud and uses your Ace service API key; it does not claim to be published by Suno. Install it independently; the account Skill and an MCP server are optional.
 
-[简体中文](readme.zh-CN.md) · [skills.sh installation page](https://skills.sh/acedatacloud/skills/suno-music) · [current models and pricing](https://platform.acedata.cloud/models?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_music_pricing)
+[简体中文](readme.zh-CN.md) · [skills.sh installation page](https://skills.sh/acedatacloud/skills/suno-music) · [current models and pricing](https://platform.acedata.cloud/models?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen)
 
 ## 1. Install this service only
 
@@ -23,7 +23,7 @@ Actual account-Skill page captured on 2026-10-17, showing the same installation 
 
 ## 2. Register, sign in and get the correct API key
 
-1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen&utm_content=suno_music_api_key); register and sign in if needed.
+1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen); register and sign in if needed.
 2. Open **General application**. If absent, choose **Initialize General Application**. Check **Suno** access, current balance and price before submitting anything.
 3. Copy the key on the application card, or open **Manage Keys → Create** to create a separate key such as `skills.sh Suno`. Set expiry and API/usage limits as needed. If **Allowed APIs** is enabled, include `/suno/audios` and `/suno/tasks`. Other actions in SKILL.md may need extra routes.
 4. Copy only the key value. Do not include `Bearer ` or screenshot redaction characters. A `platform-...` management token is not the service key.
@@ -83,4 +83,4 @@ Use the exact task response fields and terminal states in SKILL.md. A URL in thi
 | Pending / timeout / 5xx | Read the same task or request history before considering a new submit. |
 | Media URL unavailable | Confirm terminal success and use the actual returned URL; share only task/trace ID with support. |
 
-Support: [dev@acedata.cloud](mailto:dev@acedata.cloud). Source: [AceDataCloud/Skills](https://github.com/AceDataCloud/Skills). skills.sh installation counters are not unique users or revenue. Source links use the four supported UTM fields for this skills.sh guide; they do not prove a registration or payment.
+Support: [dev@acedata.cloud](mailto:dev@acedata.cloud). Source: [AceDataCloud/Skills](https://github.com/AceDataCloud/Skills). skills.sh installation counters are not unique users or revenue. Source links use the three supported UTM fields for this skills.sh guide; they do not prove a registration or payment.

@@ -116,6 +116,22 @@ class FulfillmentTests(unittest.TestCase):
             credits=1,
         )
 
+    def test_coding_stock_is_separate_and_labels_the_private_delivery(self):
+        path = Path(self.temp.name) / "coding.sqlite3"
+        inventory = broker.Inventory(path, kind="coding")
+        card = dict(self.cards[0], credits=1000, kind="coding")
+        with self.assertRaisesRegex(broker.Rejected, "invalid_inventory_kind"):
+            self.db.import_cards([card])
+        with self.assertRaisesRegex(broker.Rejected, "invalid_inventory_kind"):
+            inventory.import_cards([dict(card, kind="universal")])
+        inventory.import_cards([card])
+        with self.assertRaisesRegex(broker.Rejected, "invalid_inventory_kind"):
+            broker.Inventory(path, kind="universal")
+        allocated = inventory.allocate("original-order", "original-work", 1000)
+        self.assertIn("1,000 Coding Plan Credits", allocated["delivery"])
+        self.assertIn("30 days", allocated["delivery"])
+        self.assertEqual(inventory.available(1000), 0)
+
     def test_delivery_is_private_and_recovery_does_not_replace_original(self):
         self.api.timeout_after_report = True
         with self.assertRaises(broker.Rejected):

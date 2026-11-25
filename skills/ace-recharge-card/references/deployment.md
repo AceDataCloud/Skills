@@ -4,7 +4,7 @@ This opt-in tool belongs beside the **existing seller's Hermes Agent**. It does
 not change Hermes, the generic hosting chart, Envar's runtime model, or any other
 tenant. Hermes loads the skill and calls its no-argument delivery script. The
 separate tool validates the active original Envar Work, exact immutable revision,
-seller/service, $1 USD capture, and original order before allocating inventory.
+seller/service, configured USD capture, and original order before allocating inventory.
 It submits the key and instructions to Envar's buyer-only encrypted order
 delivery. Work history, events, Connector journals and Hermes receive only a
 nonsecret receipt.
@@ -36,7 +36,9 @@ payment. Refunds use the existing Envar order-review process.
 2. Save config with `envar_origin`, `agent_id`, `service_id`, `revision_id`,
    `digest`, `credits` and `amount` (`"1000000"` for $1). The card denomination
    must equal the actual issued Credits value. Neither config nor prompts
-   contain keys. Keep `envar-token` and a random `tool-token` in the named Secret.
+   contain keys. For Coding Plan use "card_kind": "coding", 1,000 Credits, and
+   a separate new inventory volume. The broker binds each volume to one card type.
+   Keep `envar-token` and a random `tool-token` in the named Secret.
 3. Run `operator/render.py` with the config, namespace, unique name, exact receiver pod
    label and a verified digest-pinned Python image. Inspect then apply the
    rendered PVC, ConfigMap, Deployment, internal Service and NetworkPolicy.
@@ -50,7 +52,8 @@ payment. Refunds use the existing Envar order-review process.
    the Agent, and the pod has no Kubernetes service-account token.
 4. Issue the authorized card batch using the PlatformBackend issuer. Preserve
    its one-time CSV privately. Convert to JSON records (`id`, `code`, `credits`,
-   `expires_at`) and pipe over stdin into `broker.py --import-cards` in the tool
+   `expires_at`, and `kind: "coding"` for Coding cards) and pipe over stdin
+   into `broker.py --import-cards` in the tool
    pod. Never print keys, commit inventory, or pass them in shell arguments.
 5. Install this skill folder into this seller's native Hermes skill directory. Its private
    `scripts/client.json` contains only the internal tool URL and the narrow `tool-token`.

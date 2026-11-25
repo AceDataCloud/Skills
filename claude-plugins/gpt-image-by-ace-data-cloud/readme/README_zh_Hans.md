@@ -19,8 +19,8 @@
 
 ## 2. 登录 Ace 并获取专用 Token
 
-1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=gpt_image_claude_signup)，打开 [Applications 应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=gpt_image_claude_api_key)，选择 **General application 通用应用**；没有时先初始化。
-2. 检查 **GPT Image** 权限、余额和 [当前价格](https://platform.acedata.cloud/documents/openai?utm_source=github&utm_medium=referral&utm_campaign=evergreen&utm_content=gpt_image_claude_pricing)。在应用卡片复制 Key，或 **Manage Keys / 管理密钥 → Create / 创建**，给本插件建单独 Key，名称建议 `GPT Image Claude Code`。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开 [Applications 应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，选择 **General application 通用应用**；没有时先初始化。
+2. 检查 **GPT Image** 权限、余额和 [当前价格](https://platform.acedata.cloud/documents/openai?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。在应用卡片复制 Key，或 **Manage Keys / 管理密钥 → Create / 创建**，给本插件建单独 Key，名称建议 `GPT Image Claude Code`。
 3. 按需设置有效期、使用额度和 **Allowed APIs**，本流程需要 `/openai/images/generations`, `/openai/images/edits`, `/openai/tasks`。只开放需要的接口。
 
 ![通用应用复制 Key 与管理密钥入口，真实信息已遮盖](../assets/get-api-key-en.png)

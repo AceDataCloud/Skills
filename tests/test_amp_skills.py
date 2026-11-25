@@ -60,7 +60,7 @@ class AmpServiceSkillTests(unittest.TestCase):
             for url in re.findall(r"https://platform\.acedata\.cloud/[^)\s]+", doc.read_text()):
                 query = parse_qs(urlparse(url).query)
                 self.assertEqual(query.get("utm_source"), ["amp"])
-                for key in ["utm_medium", "utm_campaign", "utm_content"]:
+                for key in ["utm_medium", "utm_campaign"]:
                     self.assertEqual(len(query.get(key, [])), 1)
                 self.assertNotRegex(url, r"[?&](api_?key|token)=")
                 seen += 1
