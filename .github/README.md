@@ -292,6 +292,16 @@ npx skills add acedatacloud/skills --skill '*' -a github-copilot --yes
 npx skills add acedatacloud/skills --skill '*' -a gemini-cli --yes
 ```
 
+### Kimi Code
+
+Open the Ace Data Cloud plugin catalog in Kimi Code:
+
+```text
+/plugins marketplace https://raw.githubusercontent.com/AceDataCloud/Skills/main/platforms/kimi-code/marketplace.json
+```
+
+Select a service, review its source and permissions, then confirm the installation. Each plugin uses its own setup instructions. [Kimi Code plugin guide](https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/customization/plugins.md#custom-marketplace-json)
+
 ### OpenAI Codex
 
 ```bash
