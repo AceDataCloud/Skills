@@ -38,6 +38,13 @@
       ]
     },
     {
+      "title": "Tripo 3D by Ace Data Cloud",
+      "description": "Generate and process 3D models and animations with an Ace service API key.",
+      "skills": [
+        "tripo-3d"
+      ]
+    },
+    {
       "title": "Supporting tools",
       "description": "Optional voice, web search and account or public pricing tools.",
       "skills": [

@@ -15,6 +15,7 @@
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/tripo-3d",
         "./skills/ace-music",
         "./skills/suno-music",
         "./skills/producer-music",

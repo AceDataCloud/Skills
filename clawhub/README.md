@@ -23,6 +23,8 @@ See the [Top 5 single-service catalog](readme/README.md) ([中文](readme/README
 
 ## Prepare the ACE Music listing
 
+To build the Tripo 3D bundle, run `python3 scripts/build_clawhub_catalog.py --service tripo-3d --output /tmp/tripo-clawhub`. The bundle includes the four service routes and a free rig-check example.
+
 ACE Music has a separate source and bundle. Build the owner-scoped release packet from a reviewed commit:
 
 ```sh
