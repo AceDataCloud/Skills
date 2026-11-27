@@ -6,6 +6,7 @@ Each AceDataCloud service has a corresponding MCP server that provides tool-use 
 
 | Skill | Package | Hosted Endpoint |
 |-------|---------|-----------------|
+| tripo-3d | [mcp-tripo](https://pypi.org/project/mcp-tripo/) (`uvx mcp-tripo`) | — |
 | ace-music | `mcp-acemusic` (release pending) | `https://acemusic.mcp.acedata.cloud/mcp` (deployment pending) |
 | suno-music | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
 | producer-music | — | — |
