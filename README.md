@@ -125,6 +125,12 @@ The general [ClawHub API guide](https://clawhub.ai/acedatacloud/skills/api-guide
 | [producer-music](skills/producer-music/) | Generate music, covers, extend tracks, swap vocals with Producer |
 | [fish-audio](skills/fish-audio/) | Fish text-to-speech, one-shot cloning, and persistent public voice models with account-scoped listing |
 
+### 3D Modeling and Animation
+
+| Skill | Description |
+|-------|-------------|
+| [tripo-3d](skills/tripo-3d/) | Generate, import, texture and convert 3D models, rig characters, retarget animations and retrieve tasks |
+
 ### AI Image Generation
 
 | Skill | Description |

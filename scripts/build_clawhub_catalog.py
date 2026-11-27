@@ -178,11 +178,11 @@ def build(repo, service, output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--service", choices=["all", "ace-music", "suno", "seedance", "happyhorse", "gpt-image", "nano-banana"], required=True)
+    catalog = json.loads((REPO / "clawhub/catalog.json").read_text())
+    parser.add_argument("--service", choices=["all", *(service["id"] for service in catalog["services"])], required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--preview", action="store_true", help="Run official read-only registry dry-runs; never upload")
     args = parser.parse_args()
-    catalog = json.loads((REPO / "clawhub/catalog.json").read_text())
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
     inputs = ["clawhub/catalog.json", "clawhub/assets", "scripts/build_clawhub_catalog.py"] + [s["source"] for s in catalog["services"]]
     dirty = subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=all", "--", *inputs], cwd=REPO, text=True).strip()

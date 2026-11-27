@@ -147,6 +147,32 @@
       "query_zh": "用 ACE Music 创作一首回家主题的温暖民谣歌曲。",
       "expected": "Final MP3 candidates after the original task is terminal; partial failure remains partial.",
       "expected_zh": "原任务终态后返回 MP3 候选；部分失败保持部分失败说明。"
+    },
+    {
+      "id": "tripo-3d",
+      "source": "skills/tripo-3d",
+      "slug": "tripo-3d",
+      "display_name": "Tripo 3D by Ace Data Cloud",
+      "description": "Generate, import, texture and convert 3D models through Ace Data Cloud. Use for 3D generation, rigging, retargeting animations and retrieving Tripo tasks.",
+      "categories": [
+        "creative"
+      ],
+      "topics": [
+        "tripo",
+        "3d-modeling",
+        "animation"
+      ],
+      "emoji": "🧊",
+      "routes": [
+        "/tripo/generations",
+        "/tripo/models",
+        "/tripo/animations",
+        "/tripo/tasks"
+      ],
+      "query": "Use the Tripo skill to check whether the Khronos sample Box model can be rigged.",
+      "query_zh": "用 Tripo 技能检查 Khronos 的 Box 示例模型能否绑定骨骼。",
+      "expected": "The rig check succeeds with riggable false for this mesh. Retrieve the original task ID. This check is free.",
+      "expected_zh": "使用原任务 ID 查询，骨骼检查成功后该网格的 riggable 为 false。本次检查免费。"
     }
   ]
 }
