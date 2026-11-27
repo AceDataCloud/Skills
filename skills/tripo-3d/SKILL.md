@@ -39,6 +39,10 @@ Requests are synchronous by default and return the result directly at `data[0]`.
 
 [Asynchronous task reference](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/async-tasks.md) · [Ace MCP directory](https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/mcp-servers.md)
 
+## Use a local MCP client
+
+Configure the command `uvx` with the argument `mcp-tripo` and supply `ACEDATACLOUD_API_TOKEN` through your client’s environment. Use `tripo_get_task` to resume a submitted task or `tripo_get_tasks` for batches. [MCP package](https://pypi.org/project/mcp-tripo/)
+
 ## Choose the operation
 
 | User request | JSON body fields |

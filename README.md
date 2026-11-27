@@ -361,6 +361,7 @@ Skills provide **knowledge** (when to use, parameters, gotchas). MCP servers pro
 
 | Skill | MCP Server | Install | Hosted Endpoint |
 |-------|-----------|---------|-----------------|
+| tripo-3d | [mcp-tripo](https://pypi.org/project/mcp-tripo/) | `uvx mcp-tripo` | — |
 | ace-music | [mcp-acemusic](https://pypi.org/project/mcp-acemusic/) | `uvx mcp-acemusic` | `https://acemusic.mcp.acedata.cloud/mcp` |
 | suno-music | [mcp-suno](https://pypi.org/project/mcp-suno/) | `pip install mcp-suno` | `https://suno.mcp.acedata.cloud/mcp` |
 | google-search | [mcp-serp](https://pypi.org/project/mcp-serp/) | `pip install mcp-serp` | `https://serp.mcp.acedata.cloud/mcp` |
