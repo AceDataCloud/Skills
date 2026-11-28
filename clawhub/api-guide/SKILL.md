@@ -33,11 +33,17 @@ contains its exact request fields, models, and task endpoint.
 
 ## 2. Find or create your API key
 
-Sign in to [Applications](https://platform.acedata.cloud/console/applications) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Store the raw key as `ACEDATACLOUD_API_TOKEN` on the OpenClaw Gateway host.
-
-![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/NanoBananaDify/2522b2f57210597af2db866445319334a1677a23/_assets/tutorial/get-api-key-en.png)
-
-A General Application key can use the services enabled for your account. For a separate key, choose **Manage Keys → Create** and set its expiration and restrictions as needed. For asynchronous generation, allow both the submission and task-query endpoints. Check current prices and your balance before submitting a request.
+1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications).
+   Create an account if needed.
+2. Open **General application**; initialize it if prompted. Its API key can
+   access multiple services enabled for your account. A service-specific
+   application key is limited to that service. Check access, balance, and the
+   current price of the service you want to call.
+3. Copy an existing key, or select **Manage Keys → Create**. Name a new key
+   (for example, `OpenClaw`), set expiration and restrictions if needed, and
+   copy the key value from the application card or key list. If **Allowed APIs**
+   is restricted, include every route needed for your first workflow. An
+   asynchronous generation needs both the submit and task-query routes.
 
 The [illustrated repository guide](https://github.com/AceDataCloud/Skills#first-run-with-clawhub-and-openclaw)
 shows where to copy a key and how to create a separate one. Copy only the key

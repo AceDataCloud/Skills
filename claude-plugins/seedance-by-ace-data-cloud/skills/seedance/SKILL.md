@@ -10,11 +10,7 @@ This plugin supplies a service-specific workflow and connects the existing Ace M
 
 ## Setup and free check
 
-Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=claude&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Enter the raw key in the Claude Code plugin’s private **Ace Data Cloud API Token** field.
-
-![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/NanoBananaDify/2522b2f57210597af2db866445319334a1677a23/_assets/tutorial/get-api-key-en.png)
-
-If access fails, review the key’s allowed APIs and available balance. Check [service pricing](https://platform.acedata.cloud/models?utm_source=claude&utm_medium=referral&utm_campaign=evergreen) before making a billable request.
+If tools are absent or unauthorized, direct the user to `/plugin` → Installed → this plugin → Configure options. They need an Ace service API Token with the relevant allowed APIs and balance; use [Applications](https://platform.acedata.cloud/console/applications?utm_source=claude&utm_medium=referral&utm_campaign=evergreen) to configure access and check [service pricing](https://platform.acedata.cloud/models?utm_source=claude&utm_medium=referral&utm_campaign=evergreen). The [illustrated setup](../../README.md) shows where to find the key. Do not ask them to paste a token into this conversation or alter a global credential.
 
 Call `seedance_list_models` with no arguments to read local model reference information. It does not submit a paid generation or prove balance/authorization for generation.
 

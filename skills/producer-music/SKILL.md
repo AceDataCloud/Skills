@@ -15,10 +15,7 @@ Generate AI music through AceDataCloud's Producer API.
 ## First-time setup
 
 1. Install the official Skill with `clawhub install @acedatacloud/producer`. Check that the ClawHub publisher is **@acedatacloud**.
-2. Sign in to [Applications](https://platform.acedata.cloud/console/applications) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Store the raw key in the agent process’s `ACEDATACLOUD_API_TOKEN` environment variable. Check Producer access, balance, and current pricing.
-
-   ![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/NanoBananaDify/2522b2f57210597af2db866445319334a1677a23/_assets/tutorial/get-api-key-en.png)
-
+2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Producer access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
 3. If you enable **Allowed APIs** restrictions, include `/producer/audios` and `/producer/tasks`. Advanced workflows below may call additional routes.
 4. On the OpenClaw Gateway host, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env`, then restart the Gateway and start a new session. For a direct terminal test, run `export ACEDATACLOUD_API_TOKEN="your_api_key_here"` in that shell. Never put the key in a prompt or commit an `.env` file.
 5. Run the **Quick Start** below. If it returns a task ID, query that same task until it finishes; do not submit a second billable generation just to check progress.

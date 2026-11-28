@@ -23,12 +23,12 @@ Actual account-Skill page captured on 2026-10-17, showing the same installation 
 
 ## 2. Register, sign in and get the correct API key
 
-1. Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Store the raw key in the agent process’s `ACEDATACLOUD_API_TOKEN` environment variable.
-2. Check **Nano Banana** access, current balance and price before submitting anything.
-3. To create a separate key, choose **Manage Keys → Create** and give it a name such as `skills.sh Nano Banana`. Set expiry and API/usage limits as needed. If **Allowed APIs** is enabled, include `/nano-banana/images` and `/nano-banana/tasks`. Other actions in SKILL.md may need extra routes.
+1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen); register and sign in if needed.
+2. Open **General application**. If absent, choose **Initialize General Application**. Check **Nano Banana** access, current balance and price before submitting anything.
+3. Copy the key on the application card, or open **Manage Keys → Create** to create a separate key such as `skills.sh Nano Banana`. Set expiry and API/usage limits as needed. If **Allowed APIs** is enabled, include `/nano-banana/images` and `/nano-banana/tasks`. Other actions in SKILL.md may need extra routes.
 4. Copy only the key value. Do not include `Bearer ` or screenshot redaction characters. A `platform-...` management token is not the service key.
 
-![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+![Copy API key or open Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![Create an optional dedicated key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 

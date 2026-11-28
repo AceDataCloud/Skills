@@ -52,10 +52,9 @@ class NativeCatalogTests(unittest.TestCase):
                 source_blocks = re.findall(r"```(?:bash|json)\n(.*?)```", original.decode(), re.S)
                 for block in source_blocks:
                     self.assertIn(block, text)
-                self.assertEqual(text.count("get-api-key-en.png"), 1)
                 for lang in ("README.md", "README.zh-CN.md"):
                     readme = (target / lang).read_text()
-                    self.assertEqual(readme.count("get-api-key-en.png"), 1)
+                    self.assertIn("get-api-key-en.png", readme)
                     self.assertIn("create-api-key-en.png", readme)
                     self.assertIn("platform-", readme)
                     self.assertIn("General application", readme)

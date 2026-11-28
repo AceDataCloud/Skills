@@ -11,11 +11,7 @@ Convert text to speech with a selected voice and retrieve existing audio task re
 /plugin install fish-audio-by-ace-data-cloud@acedatacloud-skills
 ```
 
-Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Check that your application has Fish Audio access.
-
-![Copy button 1 beside the General Application API key](assets/get-api-key-en.png)
-
-In Claude Code, open **/plugin → Installed → fish-audio-by-ace-data-cloud → Configure options** and enter the raw token into **Ace Data Cloud API Token**. The plugin sends it as a bearer token only to `https://fish.mcp.acedata.cloud/mcp`.
+Open [Ace Data Cloud Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen), choose your General application and create a dedicated token with Fish Audio access. [Find your application](assets/get-api-key-en.png) or [see how to create a key](assets/create-api-key-en.png). In Claude Code, open **/plugin → Installed → fish-audio-by-ace-data-cloud → Configure options** and enter the raw token into **Ace Data Cloud API Token**. The plugin sends it as a bearer token only to `https://fish.mcp.acedata.cloud/mcp`.
 
 ## Use the tools
 

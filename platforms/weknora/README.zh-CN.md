@@ -49,11 +49,11 @@ WeKnora 官方 [MCP 文档](https://weknora.weixin.qq.com/docs/03-features/08-mc
 
 ## 1. 获取 Ace Data Cloud Key
 
-1. 登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，然后点击 **API KEY** 旁的复制按钮（图中标注 **1**）。将 Key 保存在 WeKnora 的私密凭据字段中，按下文所用连接方式填写。 先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)。如需聊天模型，还需 AI Chat 权限。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)，打开 **Applications → General application**；如提示尚未初始化，先初始化通用应用。复制已有 API Key，或通过 **Manage Keys → Create** 创建 WeKnora 专用 Key。先确认所选服务权限、余额、过期时间和[当前价格](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen)。如需聊天模型，还需 AI Chat 权限。
 2. 只复制 **Key 原值**；平台管理 Token 不是生成 API Key。待发布预设的私密 Token 栏直接粘贴原值，保存会补 Bearer；当前发行版手动配置则按下文填写 `Authorization` 和 `Bearer <key>`。
 3. Key 不放进对话、示例 JSON、截图或 Git。若限制 Allowed APIs，需同时允许所选生成接口与任务查询接口。生成会计费；首次验证可只做可用的免费模型/说明查询，或读取已有任务。
 
-![通用应用中的 API Key 复制按钮（标注 1）](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+![真实 Ace 控制台：复制 Key 或打开 Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![真实 Ace 控制台：创建专用 Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 

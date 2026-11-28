@@ -19,13 +19,13 @@ Or use the equivalent shell commands `claude plugin marketplace add AceDataCloud
 
 The public `main` marketplace contains these plugins at version 0.1.0. On 2026-10-19, ordinary `claude plugin marketplace add AceDataCloud/Skills` cloned the public repository, and all five independent plugins installed and exposed the required sensitive Token option schema under official Claude Code 2.1.303. This is the Ace-maintained marketplace, not Anthropic's official directory. Initial manifest/install checks used Claude Code 2.1.81. On 2026-10-19, the SHA256-verified official Claude Code 2.1.303 release also passed strict manifest checks, five independent installs, native sensitive-option configuration/redacted readback, and local-only header/env substitution tests. Those initial local and synthetic-credential checks did not prove public installation or real service authentication. The later ordinary public-main installation check described above passed; real service authentication and paid first use remain separate.
 
-## 2. Get your Ace API Token
+## 2. Get a dedicated Ace API Token
 
-1. Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Enter the raw key in the Claude Code plugin’s private **Ace Data Cloud API Token** field. New users can [register here](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen).
-2. Check **HappyHorse** access, available balance and [current service pricing](https://platform.acedata.cloud/documents/happyhorse?utm_source=github&utm_medium=referral&utm_campaign=evergreen). A general application's key can access several entitled services. A separate key lets you revoke the plugin’s access independently.
-3. For a separate key, choose **Manage Keys → Create**. Name it `HappyHorse Claude Code`. Review expiration, usage limit and **Allowed APIs**; this workflow uses `/happyhorse/videos`, `/happyhorse/tasks`. Restrict it to the operations you need.
+1. [Sign in or register with Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and select **General application**. Initialize it if the account has none.
+2. Check **HappyHorse** access, available balance and [current service pricing](https://platform.acedata.cloud/documents/happyhorse?utm_source=github&utm_medium=referral&utm_campaign=evergreen). A general application's key can access several entitled services. Prefer a separate key for this plugin.
+3. Copy the application's key, or choose **Manage Keys → Create**. Name it `HappyHorse Claude Code`. Review expiration, usage limit and **Allowed APIs**; this workflow uses `/happyhorse/videos`, `/happyhorse/tasks`. Restrict it to the operations you need.
 
-![Copy button 1 beside the General Application API key](assets/get-api-key-en.png)
+![Redacted Ace application API key and Manage Keys controls](assets/get-api-key-en.png)
 
 ![Ace Create New Credential controls; the source image uses the example name Dify tutorial](assets/create-api-key-en.png)
 

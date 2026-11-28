@@ -18,12 +18,12 @@ For a reviewed local checkout: `amp skill add ./platforms/amp/skills/gpt-image-b
 
 ## 2. Register/sign in to Ace and get your own key
 
-1. Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Save the raw key in `ACEDATACLOUD_API_TOKEN` in the environment that starts Amp.
-2. Check GPT Image service access, your balance and [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen). For a separate key, choose **Manage Keys → Create** and name it `Amp GPT Image` key.
+1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), register if needed, then sign in. Open **General application**; choose **Initialize General Application** if none exists.
+2. Check GPT Image service access, your balance and [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen). Copy the API key, or choose **Manage Keys → Create** for a dedicated `Amp GPT Image` key.
 3. Review expiration, usage limits and **Allowed APIs**. If restricted, allow the generation/edit and task-query routes you actually need: `/openai/images/generations, /openai/images/edits, /openai/tasks`. Service availability and any trial allowance are whatever your account currently shows.
 4. Copy only the token value, without quotes, spaces or `Bearer `. A `platform-...` management token cannot replace a service API key.
 
-![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+![Ace Applications: copy a redacted key or open Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![Ace Applications: create a dedicated API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 
