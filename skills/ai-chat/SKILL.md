@@ -23,8 +23,8 @@ AceDataCloud exposes the following documented chat surfaces:
 | `POST /gemini/chat/completions` (public alias `/v1/chat/completions`) | Gemini Chat Completions, including Gemini 4 Argon |
 | `POST /v1/messages` (alias `/claude/messages`) | Native Claude Messages and published compatible models in Messages format |
 | `POST /v1/messages/count_tokens` (alias `/claude/messages/count_tokens`) | Count input tokens for the selected published Messages model without generating output |
-| `POST /v1beta/models/{model}:generateContent` | Native Gemini content generation, including audio input |
-| `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` | Native Gemini SSE streaming |
+| `POST /v1/models/{model}:generateContent` | Native Gemini content generation, including audio input |
+| `POST /v1/models/{model}:streamGenerateContent?alt=sse` | Native Gemini SSE streaming |
 
 ## First-time setup
 
@@ -109,7 +109,7 @@ To select `gpt-5.6-sol-fast`, send that exact public model ID on Chat Completion
 > `gpt-4o-image` is a published chat model; do not exclude it because its name
 > ends in `-image`. Check the current model catalog and the selected API's model
 > list for supported protocols. Image-generation models use their documented
-> endpoints, such as `POST /v1beta/models/{model}:generateContent` or
+> endpoints, such as `POST /v1/models/{model}:generateContent` or
 > `/nano-banana/images`; a name suffix does not establish endpoint support.
 
 ## Token billing across compatible protocols
@@ -190,7 +190,7 @@ curl -X POST https://api.acedata.cloud/kimi/chat/completions \
 ## Gemini 4 Argon
 
 1. Check Gemini access, current pricing and **Allowed APIs** restrictions for the chosen route. Keep the exact public ID `gemini-4-argon`. For Chat Completions, send `model` and `messages` to `POST /gemini/chat/completions` (public alias `/v1/chat/completions`); ordinary and SSE streaming text replies are supported. Set `stream: true` for streaming.
-2. For native Generate Content, put the model in `POST /v1beta/models/gemini-4-argon:generateContent` and send `contents` with `parts`, not `messages`. Use `generationConfig.maxOutputTokens` for the output budget. For native streaming, send the same body to `POST /v1beta/models/gemini-4-argon:streamGenerateContent?alt=sse`. These routes do not provide Google Interactions background long-output or server-side session features.
+2. For native Generate Content, put the model in `POST /v1/models/gemini-4-argon:generateContent` and send `contents` with `parts`, not `messages`. Use `generationConfig.maxOutputTokens` for the output budget. For native streaming, send the same body to `POST /v1/models/gemini-4-argon:streamGenerateContent?alt=sse`. These routes do not provide Google Interactions background long-output or server-side session features.
 3. Thinking and visible text share the output budget: set Chat `max_tokens` or native `generationConfig.maxOutputTokens` generously. Google's guidance for ordinary Argon tasks is at least 32,768 output tokens, not a required platform minimum. The official unified context is 1,048,576 tokens across input, thinking and output, with a regular synchronous output cap of 65,536; these are not guaranteed client/platform limits. Allow sufficient client timeout and inspect stop reasons if the answer is empty or incomplete. Do not rely on sampling controls (`temperature`, `top_p`, `top_k`, or native `topP`/`topK`); Argon ignores them.
 4. Argon supports implicit caching only; do not create or reference explicit cache resources or send native `cachedContent`. Check actual usage and the platform's current prices rather than assuming a cache hit or discount. Google's reference pricing is promotional through November 30, 2026 and rises from December 1, 2026; it is not the account's charge.
 5. Read Chat text from `choices[].message.content` and check `choices[].finish_reason`; streaming text arrives in `choices[].delta.content`. For native replies, read `candidates[].content.parts` and `candidates[].finishReason`, and retain actual `usageMetadata`, including `thoughtsTokenCount` and `cachedContentTokenCount` when returned. Never fabricate missing usage or response fields.
@@ -208,6 +208,8 @@ POST /gemini/chat/completions
 
 ## Native Gemini Generate Content
 
+Use `/v1` for new integrations. Existing `/v1beta` generation and streaming URLs continue to use the same platform credential and pricing.
+
 Use the native Gemini routes for audio analysis with the same AceDataCloud Bearer token. Confirm Gemini API access, current pricing, the selected public model, and any **Allowed APIs** restrictions before submitting. These routes use `contents` and `parts`, not OpenAI `messages`.
 
 1. Put the prompt and audio in a user content item's `parts`. Use `inlineData` with `mimeType` and base64-encoded `data`, or `fileData` with `mimeType` and `fileUri`. Text, image and video inputs, thinking configuration and custom function declarations are also accepted on this native surface; this is not a promise of support on OpenAI-compatible or conversation routes.
@@ -216,7 +218,7 @@ Use the native Gemini routes for audio analysis with the same AceDataCloud Beare
 4. Submit the native request below. For Gemini 3.x Flash thinking models, keep `generationConfig.maxOutputTokens` at least 512 so reasoning does not consume the entire output budget.
 
 ```json
-POST /v1beta/models/gemini-3.5-flash:generateContent
+POST /v1/models/gemini-3.5-flash:generateContent
 {
   "contents": [
     {
@@ -234,7 +236,7 @@ POST /v1beta/models/gemini-3.5-flash:generateContent
 }
 ```
 
-For streaming, send the same native body to `POST /v1beta/models/{model}:streamGenerateContent?alt=sse` and consume SSE events. Audio output, built-in tools (`codeExecution`, `googleSearch`, `urlContext`) and explicit context caching (`cachedContent`) have no uniform availability guarantee: use the selected model's actual response and surface errors rather than promising support or assuming those fields always return 400.
+For streaming, send the same native body to `POST /v1/models/{model}:streamGenerateContent?alt=sse` and consume SSE events. Audio output, built-in tools (`codeExecution`, `googleSearch`, `urlContext`) and explicit context caching (`cachedContent`) have no uniform availability guarantee: use the selected model's actual response and surface errors rather than promising support or assuming those fields always return 400.
 
 ### Thinking summaries and multi-turn history
 
