@@ -157,7 +157,10 @@ def build(repo, service, output):
     front = front.replace("metadata:\n", "metadata:\n  openclaw: " + json.dumps(runtime, ensure_ascii=False) + "\n")
     front = re.sub(r"^compatibility:.*$", "compatibility: Requires curl and an Ace service API key. OpenClaw native skills.entries apiKey is supported; sandbox credentials require separate configuration.", front, flags=re.M)
     # Preserve one canonical technical body; remove only duplicated onboarding prose.
-    body = re.sub(r"\n## First-time setup\n.*?(?=\n## )", "\n", body, flags=re.S)
+    body = re.sub(
+        r"\n## (?:First-time setup|ClawHub / OpenClaw setup)\n.*?(?=\n## |\Z)",
+        "\n", body, flags=re.S,
+    )
     body = re.sub(r"^> \*\*Setup:\*\*.*\n", "", body, flags=re.M)
     body = body.replace("../_shared/", "https://github.com/AceDataCloud/Skills/blob/main/skills/_shared/")
     body = body.replace("Continue until\n> `response.data[].video_url` appears or a terminal error is returned.", "Continue until explicit terminal success or failure. A video URL alone does not override a pending or failed task.")
