@@ -1,0 +1,37 @@
+{
+  "schema": "skill-1.0.0",
+  "active": false,
+  "imported": true,
+  "hubId": "acedatacloud-suno",
+  "name": "Suno",
+  "version": "0.1.0",
+  "description": "Look up the status and available outputs of an existing Suno audio or lyrics task by its Ace Data Cloud task ID. Performs a single read-only lookup.",
+  "author": "Ace Data Cloud",
+  "author_url": "https://github.com/AceDataCloud",
+  "license": "Apache-2.0",
+  "setup_args": {
+    "ACEDATACLOUD_API_TOKEN": {
+      "type": "string",
+      "required": true,
+      "input": {
+        "type": "password",
+        "hint": "Use an Ace Data Cloud token with access to the existing Suno task."
+      }
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Check the status of Suno task 00000000-0000-4000-8000-000000000001.",
+      "call": "{\"task_id\":\"00000000-0000-4000-8000-000000000001\"}"
+    }
+  ],
+  "entrypoint": {
+    "file": "handler.js",
+    "params": {
+      "task_id": {
+        "type": "string",
+        "description": "Existing Ace Data Cloud Suno task ID."
+      }
+    }
+  }
+}
