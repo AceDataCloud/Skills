@@ -59,6 +59,18 @@
       "source_url": "https://cdn.acedata.cloud/859plc.jpg",
       "source_sha256": "047c3d1a8252a18ccfb65ac09f3f1e2a87ea70525db01fd54f5d70bc312d9814",
       "png_sha256": "df98e4c67d03eb9ed35e25ebdfd0eaac7908fb8e70b0a699d00898e17c4060a0"
+    },
+    {
+      "file": "kling/assets/service-icon.png",
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/KlingDify/b651ddaba92bbe36d69c4159e117844e02ddad20/_assets/icon.jpg",
+      "source_sha256": "f9c278baf15b5abb00d28c30cbf03d5ff4474798e49778b6ce2ee31bce92fe0f",
+      "png_sha256": "ecb37ff2263637f921a5016a5bd6ced8ae768ba2e62198adc98bb62d2da74205"
+    },
+    {
+      "file": "veo/assets/service-icon.png",
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/VeoDify/bba7352e46e66b3afd3b038d944003a26436743f/_assets/icon.jpg",
+      "source_sha256": "26bf44b131bf91b6e7b4ce1df82925346b7e850583d8f5fa8f449d4350fd5af8",
+      "png_sha256": "979759a9f32385645c987909628b56fb2aab658f04d0bd98c266d85b60e8b01c"
     }
   ]
 }
