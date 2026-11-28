@@ -1,5 +1,6 @@
 """Contracts for independently installed Claude service plugins."""
 
+import hashlib
 import json
 import re
 import unittest
@@ -50,6 +51,30 @@ class ClaudeServicePluginTests(unittest.TestCase):
                 self.assertTrue((folder / relative).is_file(), relative)
             # The installed plugin must not need symlinks outside its copied payload.
             self.assertFalse(any(path.is_symlink() for path in folder.rglob("*")))
+
+    def test_service_art_and_native_attribution(self):
+        provenance = json.loads((PLUGIN_ROOT / "assets-sources.json").read_text())
+        declared = {item["file"]: item for item in provenance["service_icons"]}
+        hashes = set()
+        for service in ("suno", "seedance", "happyhorse", "gpt-image", "nano-banana"):
+            folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"
+            manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text())
+            icon = folder / manifest["icon"]
+            entry = declared[icon.relative_to(PLUGIN_ROOT).as_posix()]
+            hashes.add(entry["png_sha256"])
+            self.assertEqual(hashlib.sha256(icon.read_bytes()).hexdigest(), entry["png_sha256"])
+            self.assertEqual(icon.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+            for path in (folder / "README.md", folder / "readme/README_zh_Hans.md"):
+                self.assertIn(f"{icon.name})", path.read_text())
+                self.assertIn(manifest["version"], path.read_text())
+            skill = (folder / "skills" / service / "SKILL.md").read_text()
+            destinations = [urlsplit(link) for link in re.findall(r"\]\((https://platform\.acedata\.cloud[^)]+)\)", skill)]
+            self.assertEqual({url.path for url in destinations}, {"/console/applications", "/models"})
+            for url in destinations:
+                self.assertEqual(parse_qs(url.query), {
+                    "utm_source": ["claude"], "utm_medium": ["referral"], "utm_campaign": ["evergreen"],
+                })
+        self.assertEqual(len(hashes), 5)
 
     def test_tokens_are_explicit_sensitive_options_for_the_own_service(self):
         for service, host in EXPECTED.items():

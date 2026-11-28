@@ -1,6 +1,8 @@
 # Seedance by Ace Data Cloud
 
-[English](../README.md) · 版本 0.1.0
+![Seedance 服务图标](../assets/service-icon.png)
+
+[English](../README.md) · 版本 0.1.1
 
 这是 Ace Data Cloud 提供的 **Seedance video服务独立插件**，不是 Seedance 模型厂商或 Anthropic 官方插件。仅复用现有 MCP，不改变 Claude 的聊天模型；付费请求按 Ace Credits 计费。
 

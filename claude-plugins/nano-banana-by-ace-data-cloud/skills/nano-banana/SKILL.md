@@ -10,7 +10,7 @@ This plugin supplies a service-specific workflow and connects the existing Ace M
 
 ## Setup and free check
 
-If tools are absent or unauthorized, direct the user to `/plugin` → Installed → this plugin → Configure options. They need an Ace service API Token with the relevant allowed APIs and balance; see [the illustrated setup](../../README.md). Do not ask them to paste a token into this conversation or alter a global credential.
+If tools are absent or unauthorized, direct the user to `/plugin` → Installed → this plugin → Configure options. They need an Ace service API Token with the relevant allowed APIs and balance; use [Applications](https://platform.acedata.cloud/console/applications?utm_source=claude&utm_medium=referral&utm_campaign=evergreen) to configure access and check [service pricing](https://platform.acedata.cloud/models?utm_source=claude&utm_medium=referral&utm_campaign=evergreen). The [illustrated setup](../../README.md) shows where to find the key. Do not ask them to paste a token into this conversation or alter a global credential.
 
 Explain these setup steps and supported operations without calling a remote tool. This server currently has no local model-list tool; do not create an image as an installation check.
 

@@ -1,6 +1,8 @@
 # GPT Image by Ace Data Cloud
 
-[简体中文](readme/README_zh_Hans.md) · Version 0.1.0 · [Install a Claude plugin](https://code.claude.com/docs/en/plugins/install)
+![GPT Image service icon](assets/service-icon.png)
+
+[简体中文](readme/README_zh_Hans.md) · Version 0.1.4 · [Install a Claude plugin](https://code.claude.com/docs/en/plugins/install)
 
 GPT Image by Ace Data Cloud brings image tools into Claude Code as one independently installable plugin. **Ace Data Cloud provides this integration and bills service use. It is not an official plugin from the GPT Image model vendor or Anthropic.** It starts the existing, restricted GPT Image profile from the published Ace MCP package instead of shipping another API implementation.
 
