@@ -1,6 +1,6 @@
 {
   "name": "gpt-image-by-ace-data-cloud",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "GPT Image by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
   "author": {
     "name": "Ace Data Cloud",
@@ -37,7 +37,7 @@
     }
   },
   "displayName": "GPT Image by Ace Data Cloud",
-  "icon": "./assets/ace-data-cloud-mark.png",
+  "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/gpt-image-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
   "termsOfServiceUrl": "https://platform.acedata.cloud/terms",

@@ -28,5 +28,37 @@
       "kind": "existing Ace brand mark",
       "limits": "not a model vendor official icon"
     }
+  ],
+  "service_icons": [
+    {
+      "file": "suno-by-ace-data-cloud/assets/service-icon.png",
+      "source_url": "https://cdn.acedata.cloud/l3ffw7.jpg",
+      "source_sha256": "d2ccb1c0039519a68913ad447114f8f9ecca161ffc2105cd61c414e06f8747d9",
+      "png_sha256": "f99834efc7a22af0ea6b6d3ae69ab030375a4667b9c95a9db849d43bd709c981"
+    },
+    {
+      "file": "seedance-by-ace-data-cloud/assets/service-icon.png",
+      "source_url": "https://cdn.acedata.cloud/9q90dl.png",
+      "source_sha256": "6a5b07c1d33d2910eb9fe1c8549874a004d13a0e75d9b30a7cfdc255c586a83d",
+      "png_sha256": "48d5516edadf4c380ddbde9fa6229a94f7bd8c7137ea2300304a91eb751409cf"
+    },
+    {
+      "file": "happyhorse-by-ace-data-cloud/assets/service-icon.png",
+      "source_url": "https://cdn.acedata.cloud/2841e8c719.png",
+      "source_sha256": "e8bbb025ef4096453aa403c7e7eaac9e02462a3d0864113441801017417a4cf7",
+      "png_sha256": "6e40b53a0a484f791bd72c5b3dae61fd6be28f682799b05cc5e28a07188925c7"
+    },
+    {
+      "file": "gpt-image-by-ace-data-cloud/assets/service-icon.png",
+      "source_url": "https://raw.githubusercontent.com/AceDataCloud/GPTImageDify/6916f7f1ee7fdb9531abf1c3ef1c57a34061eaf7/_assets/icon.png",
+      "source_sha256": "b525d3451af82c229d95402f91a20e74bd8b738c75b77c12a2592cb1d02b344f",
+      "png_sha256": "48245c2ab0ed94e98af6ea2f268f3f28b57854128afcd7eef639a4f4b2367b7d"
+    },
+    {
+      "file": "nano-banana-by-ace-data-cloud/assets/service-icon.png",
+      "source_url": "https://cdn.acedata.cloud/859plc.jpg",
+      "source_sha256": "047c3d1a8252a18ccfb65ac09f3f1e2a87ea70525db01fd54f5d70bc312d9814",
+      "png_sha256": "df98e4c67d03eb9ed35e25ebdfd0eaac7908fb8e70b0a699d00898e17c4060a0"
+    }
   ]
 }
