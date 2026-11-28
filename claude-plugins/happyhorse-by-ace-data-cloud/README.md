@@ -1,10 +1,10 @@
-# HappyHorse by Ace Data Cloud
+# HappyHorse
 
 ![HappyHorse service icon](assets/service-icon.png)
 
-[简体中文](readme/README_zh_Hans.md) · Version 0.1.1 · [Install a Claude plugin](https://code.claude.com/docs/en/plugins/install)
+[简体中文](readme/README_zh_Hans.md) · Version 0.1.2 · [Install a Claude plugin](https://code.claude.com/docs/en/plugins/install)
 
-HappyHorse by Ace Data Cloud brings video tools into Claude Code as one independently installable plugin. **Ace Data Cloud provides this integration and bills service use. It is not an official plugin from the HappyHorse model vendor or Anthropic.** It connects the existing Ace MCP instead of shipping another API implementation.
+HappyHorse brings video tools into Claude Code as one independently installable plugin. **Ace Data Cloud provides this integration and bills service use. It is not an official plugin from the HappyHorse model vendor or Anthropic.** It connects the existing Ace MCP instead of shipping another API implementation.
 
 ## 1. Install this service
 

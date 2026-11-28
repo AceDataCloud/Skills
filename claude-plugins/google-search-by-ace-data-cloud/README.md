@@ -1,4 +1,4 @@
-# Google Search by Ace Data Cloud
+# Google Search
 
 ![Google Search service artwork](assets/service-icon.png)
 

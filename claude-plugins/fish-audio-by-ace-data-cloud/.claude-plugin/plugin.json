@@ -1,6 +1,6 @@
 {
   "name": "fish-audio-by-ace-data-cloud",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Convert text to speech with a selected voice and retrieve existing audio task results through Ace Data Cloud.",
   "author": {
     "name": "Ace Data Cloud",
@@ -33,7 +33,7 @@
       }
     }
   },
-  "displayName": "Fish Audio by Ace Data Cloud",
+  "displayName": "Fish Audio",
   "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/fish-audio-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",

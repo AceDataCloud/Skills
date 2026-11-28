@@ -1,8 +1,8 @@
-# GPT Image by Ace Data Cloud
+# GPT Image
 
 ![GPT Image 服务图标](../assets/service-icon.png)
 
-[English](../README.md) · 版本 0.1.4
+[English](../README.md) · 版本 0.1.5
 
 这是 Ace Data Cloud 提供的 **GPT Image image服务独立插件**，不是 GPT Image 模型厂商或 Anthropic 官方插件。复用现有 MCP 的五工具 GPT Image 专用 stdio profile，不改变 Claude 的聊天模型；付费请求按 Ace Credits 计费。
 

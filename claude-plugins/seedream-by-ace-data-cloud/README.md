@@ -1,4 +1,4 @@
-# Seedream by Ace Data Cloud
+# Seedream
 
 ![Seedream service artwork](assets/service-icon.png)
 

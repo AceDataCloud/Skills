@@ -4,7 +4,7 @@ description: Use Suno music tools through an Ace Data Cloud account in Claude Co
 license: Apache-2.0
 ---
 
-# Suno by Ace Data Cloud
+# Suno
 
 This plugin supplies a service-specific workflow and connects the existing Ace MCP. Credentials come from the plugin's masked **Ace Data Cloud API Token** option, not from prompts or another vendor's environment variables.
 

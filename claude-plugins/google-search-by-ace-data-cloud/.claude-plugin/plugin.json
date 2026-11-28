@@ -1,6 +1,6 @@
 {
   "name": "google-search-by-ace-data-cloud",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Search web, news, images, places, videos and maps through your Ace Data Cloud search application.",
   "author": {
     "name": "Ace Data Cloud",
@@ -33,7 +33,7 @@
       }
     }
   },
-  "displayName": "Google Search by Ace Data Cloud",
+  "displayName": "Google Search",
   "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/google-search-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
