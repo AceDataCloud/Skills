@@ -41,7 +41,7 @@
     },
     {
       "name": "acedatacloud-ai-tools",
-      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML\u2192single-page PDF, Apple Notes (macOS), API guide, account management",
+      "description": "AI utility skills: LLM chat, web and Telegram research, face transform, short URLs, HTML→single-page PDF, Apple Notes (macOS), API guide, account management",
       "source": "./",
       "strict": false,
       "skills": [
@@ -181,6 +181,60 @@
         "music",
         "ace-data-cloud"
       ]
+    },
+    {
+      "name": "google-search-by-ace-data-cloud",
+      "description": "Search web, news, images, places, videos and maps through your Ace Data Cloud search application.",
+      "source": "./claude-plugins/google-search-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/google-search-by-ace-data-cloud",
+      "category": "productivity",
+      "keywords": [
+        "google-search",
+        "search",
+        "research",
+        "ace-data-cloud"
+      ],
+      "displayName": "Google Search by Ace Data Cloud"
+    },
+    {
+      "name": "fish-audio-by-ace-data-cloud",
+      "description": "Convert text to speech with a selected voice and retrieve existing audio task results through Ace Data Cloud.",
+      "source": "./claude-plugins/fish-audio-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/fish-audio-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "fish-audio",
+        "speech",
+        "text-to-speech",
+        "ace-data-cloud"
+      ],
+      "displayName": "Fish Audio by Ace Data Cloud"
+    },
+    {
+      "name": "seedream-by-ace-data-cloud",
+      "description": "Generate or edit Seedream images from a prompt and selected reference images through Ace Data Cloud.",
+      "source": "./claude-plugins/seedream-by-ace-data-cloud",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/seedream-by-ace-data-cloud",
+      "category": "creative",
+      "keywords": [
+        "seedream",
+        "image-generation",
+        "image-editing",
+        "ace-data-cloud"
+      ],
+      "displayName": "Seedream by Ace Data Cloud"
     }
   ]
 }

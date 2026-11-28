@@ -1,0 +1,42 @@
+{
+  "name": "google-search-by-ace-data-cloud",
+  "version": "0.1.0",
+  "description": "Search web, news, images, places, videos and maps through your Ace Data Cloud search application.",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "support@acedata.cloud"
+  },
+  "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/google-search-by-ace-data-cloud",
+  "repository": "https://github.com/AceDataCloud/Skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "google-search",
+    "search",
+    "research",
+    "ace-data-cloud"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Ace Data Cloud API Token",
+      "description": "Use a dedicated Ace Data Cloud application token with Google Search access. Enter the raw token.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "google-search": {
+      "type": "http",
+      "url": "https://serp.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_token}"
+      }
+    }
+  },
+  "displayName": "Google Search by Ace Data Cloud",
+  "icon": "./assets/service-icon.png",
+  "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/google-search-by-ace-data-cloud",
+  "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+  "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+  "supportUrl": "https://platform.acedata.cloud/support"
+}
