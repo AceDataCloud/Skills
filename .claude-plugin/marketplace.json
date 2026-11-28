@@ -235,6 +235,42 @@
         "ace-data-cloud"
       ],
       "displayName": "Seedream"
+    },
+    {
+      "name": "kling",
+      "description": "Create Kling videos from text or a reference image and retrieve results through Ace Data Cloud.",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/kling",
+      "keywords": [
+        "kling",
+        "video-generation",
+        "image-to-video",
+        "ace-data-cloud"
+      ],
+      "displayName": "Kling",
+      "source": "./claude-plugins/kling",
+      "category": "creative"
+    },
+    {
+      "name": "veo",
+      "description": "Create Veo videos from text or image frames and retrieve results through Ace Data Cloud.",
+      "author": {
+        "name": "Ace Data Cloud",
+        "email": "support@acedata.cloud"
+      },
+      "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/veo",
+      "keywords": [
+        "veo",
+        "video-generation",
+        "image-to-video",
+        "ace-data-cloud"
+      ],
+      "displayName": "Veo",
+      "source": "./claude-plugins/veo",
+      "category": "creative"
     }
   ]
 }

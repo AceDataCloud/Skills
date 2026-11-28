@@ -20,7 +20,13 @@ EXPECTED = {
     "google-search": "serp",
     "fish-audio": "fish",
     "seedream": "seedream",
+    "kling": "kling",
+    "veo": "veo",
 }
+
+def install_name(service):
+    return service if service in {"kling","veo"} else f"{service}-by-ace-data-cloud"
+
 
 
 class ClaudeServicePluginTests(unittest.TestCase):
@@ -29,7 +35,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
         entries = {entry["name"]: entry for entry in marketplace["plugins"]}
         self.assertEqual(len(entries), len(marketplace["plugins"]))
         for service in EXPECTED:
-            slug = f"{service}-by-ace-data-cloud"
+            slug = install_name(service)
             entry = entries[slug]
             folder = (ROOT / entry["source"]).resolve()
             self.assertEqual(folder, PLUGIN_ROOT / slug)
@@ -57,7 +63,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
         declared = {item["file"]: item for item in provenance["service_icons"]}
         hashes = set()
         for service in ("suno", "seedance", "happyhorse", "gpt-image", "nano-banana"):
-            folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"
+            folder = PLUGIN_ROOT / install_name(service)
             manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text())
             icon = folder / manifest["icon"]
             entry = declared[icon.relative_to(PLUGIN_ROOT).as_posix()]
@@ -78,7 +84,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
 
     def test_tokens_are_explicit_sensitive_options_for_the_own_service(self):
         for service, host in EXPECTED.items():
-            folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"
+            folder = PLUGIN_ROOT / install_name(service)
             manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text())
             self.assertEqual(set(manifest["mcpServers"]), {service})
             token = manifest["userConfig"]["api_token"]
@@ -98,6 +104,11 @@ class ClaudeServicePluginTests(unittest.TestCase):
                 )
                 self.assertNotIn("url", server)
                 self.assertNotIn("headers", server)
+            elif service in {"kling", "veo"}:
+                self.assertEqual(server["command"], "uvx")
+                self.assertEqual(server["args"], [f"mcp-{service}==2026.11.27.0"])
+                self.assertEqual(server["env"], {"ACEDATACLOUD_API_TOKEN": "${user_config.api_token}"})
+                self.assertNotIn("url", server)
             else:
                 self.assertEqual(server["type"], "http")
                 self.assertEqual(server["url"], f"https://{host}.mcp.acedata.cloud/mcp")
@@ -139,7 +150,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
 
     def test_guides_and_image_references_survive_plugin_copy(self):
         for service in EXPECTED:
-            folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"
+            folder = PLUGIN_ROOT / install_name(service)
             for doc in folder.rglob("*.md"):
                 for target in re.findall(r"\]\(([^)]+)\)", doc.read_text()):
                     if target.startswith(("https://", "http://", "mailto:", "#")):
@@ -152,7 +163,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
 
     def test_signup_key_and_price_links_use_current_supported_attribution(self):
         for service in EXPECTED:
-            folder = PLUGIN_ROOT / f"{service}-by-ace-data-cloud"
+            folder = PLUGIN_ROOT / install_name(service)
             for doc in [folder / "README.md", folder / "readme/README_zh_Hans.md"]:
                 links = re.findall(r"\]\((https://platform\.acedata\.cloud[^)]+)\)", doc.read_text())
                 tagged = [url for url in links if "utm_source=" in url]
