@@ -16,6 +16,9 @@ EXPECTED = {
     "happyhorse": "happyhorse",
     "gpt-image": "openai",
     "nano-banana": "nanobanana",
+    "google-search": "serp",
+    "fish-audio": "fish",
+    "seedream": "seedream",
 }
 
 

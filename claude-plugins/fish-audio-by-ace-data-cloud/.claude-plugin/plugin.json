@@ -1,0 +1,42 @@
+{
+  "name": "fish-audio-by-ace-data-cloud",
+  "version": "0.1.0",
+  "description": "Convert text to speech with a selected voice and retrieve existing audio task results through Ace Data Cloud.",
+  "author": {
+    "name": "Ace Data Cloud",
+    "email": "support@acedata.cloud"
+  },
+  "homepage": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/fish-audio-by-ace-data-cloud",
+  "repository": "https://github.com/AceDataCloud/Skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "fish-audio",
+    "speech",
+    "text-to-speech",
+    "ace-data-cloud"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Ace Data Cloud API Token",
+      "description": "Use a dedicated Ace Data Cloud application token with Fish Audio access. Enter the raw token.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "mcpServers": {
+    "fish-audio": {
+      "type": "http",
+      "url": "https://fish.mcp.acedata.cloud/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_token}"
+      }
+    }
+  },
+  "displayName": "Fish Audio by Ace Data Cloud",
+  "icon": "./assets/service-icon.png",
+  "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/fish-audio-by-ace-data-cloud",
+  "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
+  "termsOfServiceUrl": "https://platform.acedata.cloud/terms",
+  "supportUrl": "https://platform.acedata.cloud/support"
+}
