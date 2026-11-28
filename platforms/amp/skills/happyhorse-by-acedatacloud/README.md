@@ -18,7 +18,7 @@ For a reviewed local checkout: `amp skill add ./platforms/amp/skills/happyhorse-
 
 ## 2. Register/sign in to Ace and get your own key
 
-1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), register if needed, then sign in. Open **General application**; choose **Initialize General Application** if none exists.
+1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen), register if needed, then sign in. Open **General application**.
 2. Check HappyHorse service access, your balance and [current pricing](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen). Copy the API key, or choose **Manage Keys → Create** for a dedicated `Amp HappyHorse` key.
 3. Review expiration, usage limits and **Allowed APIs**. If restricted, allow the generation/edit and task-query routes you actually need: `/happyhorse/videos, /happyhorse/tasks`. Service availability and any trial allowance are whatever your account currently shows.
 4. Copy only the token value, without quotes, spaces or `Bearer `. A `platform-...` management token cannot replace a service API key.

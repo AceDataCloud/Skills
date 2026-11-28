@@ -21,7 +21,7 @@ The public `main` marketplace contains these plugins at version 0.1.0. On 2026-1
 
 ## 2. Get a dedicated Ace API Token
 
-1. [Sign in or register with Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and select **General application**. Initialize it if the account has none.
+1. [Sign in or register with Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Open [Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen) and select **General application**.
 2. Check **Suno** access, available balance and [current service pricing](https://platform.acedata.cloud/documents/suno?utm_source=github&utm_medium=referral&utm_campaign=evergreen). A general application's key can access several entitled services. Prefer a separate key for this plugin.
 3. Copy the application's key, or choose **Manage Keys → Create**. Name it `Suno Claude Code`. Review expiration, usage limit and **Allowed APIs**; this workflow uses `/suno/audios`, `/suno/tasks`. Restrict it to the operations you need.
 
@@ -61,7 +61,7 @@ When you explicitly choose to run a paid operation, review its model, parameters
 
 - **Plugin not found:** add the Ace marketplace first or run `claude plugin marketplace update acedatacloud-skills`, then check the exact service slug. An organization allowlist or a failed Git download may still block installation. Anthropic official-directory search is a separate, unverified channel.
 - **401:** check the raw Ace token, expiration, service/Allowed APIs and which application's key you copied. Do not send a management or Anthropic credential.
-- **Insufficient balance / 403 / 429:** inspect the service error and permissions or current balance. A reference tool does not prove generation access; respect rate limits and moderation.
+- **Insufficient balance / 403 / 429:** inspect the service error and permissions or current balance. If the balance is too low, click **Top Up**. A reference tool does not prove generation access; respect rate limits and moderation.
 - **Task still pending:** poll the original ID at the service's documented interval. Avoid automatic generation retries.
 - **Where is the official listing?** Current [Directory Policy §4.B](https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy) restricts standalone AI image/video/audio generation unless expressly permitted in writing. This plugin does not claim that permission. A separately approved vendor listing is not approval for Ace.
 
