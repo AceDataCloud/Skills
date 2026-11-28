@@ -11,7 +11,11 @@
 /plugin install google-search-by-ace-data-cloud@acedatacloud-skills
 ```
 
-打开 [Ace Data Cloud 应用](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，为通用应用创建有 Google Search 使用权限的专用令牌。[应用位置](../assets/get-api-key-en.png) · [创建密钥](../assets/create-api-key-en.png)。在 Claude Code 的 **/plugin → Installed → google-search-by-ace-data-cloud → Configure options** 中，将原始令牌填进 **Ace Data Cloud API Token**。插件会向 `https://serp.mcp.acedata.cloud/mcp` 发送 Bearer 凭据。
+登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，然后点击 **API KEY** 旁的复制按钮（图中标注 **1**）。请确认应用已开通 Google Search。
+
+![通用应用中的 API Key 复制按钮（标注 1）](../assets/get-api-key-en.png)
+
+在 Claude Code 的 **/plugin → Installed → google-search-by-ace-data-cloud → Configure options** 中，将原始令牌填进 **Ace Data Cloud API Token**。插件会向 `https://serp.mcp.acedata.cloud/mcp` 发送 Bearer 凭据。
 
 ## 使用
 

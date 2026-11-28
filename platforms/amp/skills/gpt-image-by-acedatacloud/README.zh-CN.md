@@ -14,12 +14,12 @@ amp skill add AceDataCloud/Skills/platforms/amp/skills/gpt-image-by-acedatacloud
 
 ## 2. 获取专用 API Token
 
-1. [注册或登录 Ace → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，打开 **General application**；没有时先 **Initialize General Application**。
-2. 核对 GPT Image 权限、余额与[当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，复制 API Key，或 **Manage Keys → Create** 创建 `Amp GPT Image` 专用 Key。
+1. 登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，然后点击 **API KEY** 旁的复制按钮（图中标注 **1**）。在启动 Amp 的终端把原始 Key 保存到 `ACEDATACLOUD_API_TOKEN`。
+2. 核对 GPT Image 权限、余额与[当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)。如需单独的 Key，可通过 **Manage Keys → Create** 创建 `Amp GPT Image` 专用 Key。
 3. 按需设到期、用量和 Allowed APIs；限制时放行所需生成/编辑和查询：`/openai/images/generations, /openai/images/edits, /openai/tasks`。是否有试用额度以账户显示为准。
 4. 仅复制 Key 本体，不带引号、空格或 `Bearer `；`platform-...` 管理 Token 不可替代。
 
-![真实脱敏控制台：复制Key或管理Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+![通用应用中的 API Key 复制按钮（标注 1）](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![真实脱敏控制台：创建专用Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 

@@ -49,11 +49,11 @@ WeKnora's official [MCP guide](https://weknora.weixin.qq.com/docs/03-features/08
 
 ## 1. Get an Ace Data Cloud key
 
-1. [Register or sign in to Ace Data Cloud](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). Open **Applications → General application**; initialize it if prompted. Copy an existing API key or use **Manage Keys → Create** for a separate WeKnora key. Confirm access to the selected service, balance, expiration and [current pricing](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). For a chat model, the key also needs AI Chat access.
+1. Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Keep the key in WeKnora’s private credential field using the format for your connection below. Confirm access to the selected service, balance, expiration and [current pricing](https://platform.acedata.cloud/models?utm_source=opensource&utm_medium=referral&utm_campaign=evergreen). For a chat model, the key also needs AI Chat access.
 2. Copy the **key value only**. A platform-management token is not the generation API key. In the proposed preset, paste it into the private Token field and the Bearer prefix is added on save. In the released manual API Key/Token form, set header `Authorization` and enter `Bearer <key>` as explained below.
 3. Keep the key out of chat, example JSON, screenshots and Git. For restricted keys, allow both the chosen generation endpoint and its task-query endpoint. Generation is billable; first use can be limited to free model/info listing where available or an existing task read.
 
-![Copy a key or open Manage Keys in the real Ace console](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![Create a dedicated key in the real Ace console](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 

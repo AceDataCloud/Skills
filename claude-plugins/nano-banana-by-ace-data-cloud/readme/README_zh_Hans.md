@@ -19,13 +19,13 @@
 
 初始安装验证使用 2.1.81；2026-10-19 已使用官方 Release 且 SHA256 校验的 Claude Code 2.1.303 通过严格manifest、五项安装、原生敏感配置/脱敏读取和仅本机的 header/env 替换测试。这些最初的本地及合成凭据测试不替代公开安装或真实账号认证；上段所述后续普通公开 main 安装已通过，真实服务鉴权与付费首调仍另行验收。
 
-## 2. 登录 Ace 并获取专用 Token
+## 2. 登录 Ace 并获取 API Token
 
-1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开 [Applications 应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，选择 **General application 通用应用**；没有时先初始化。
-2. 检查 **Nano Banana** 权限、余额和 [当前价格](https://platform.acedata.cloud/documents/nano-banana?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。在应用卡片复制 Key，或 **Manage Keys / 管理密钥 → Create / 创建**，给本插件建单独 Key，名称建议 `Nano Banana Claude Code`。
+1. 登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，然后点击 **API KEY** 旁的复制按钮（图中标注 **1**）。将原始 Key 填入 Claude Code 插件的私密 **Ace Data Cloud API Token** 字段。 首次登录可先[注册账号](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。
+2. 检查 **Nano Banana** 权限、余额和 [当前价格](https://platform.acedata.cloud/documents/nano-banana?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。如需单独的 Key，可通过 **Manage Keys / 管理密钥 → Create / 创建** 创建，名称建议 `Nano Banana Claude Code`。
 3. 按需设置有效期、使用额度和 **Allowed APIs**，本流程需要 `/nano-banana/images`, `/nano-banana/tasks`。只开放需要的接口。
 
-![通用应用复制 Key 与管理密钥入口，真实信息已遮盖](../assets/get-api-key-en.png)
+![通用应用中的 API Key 复制按钮（标注 1）](../assets/get-api-key-en.png)
 
 ![创建密钥的真实原图，图中旧示例名为 Dify tutorial](../assets/create-api-key-en.png)
 

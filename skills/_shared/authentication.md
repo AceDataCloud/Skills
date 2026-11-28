@@ -6,14 +6,11 @@ Skills; it is not an AceDataCloud API key.
 
 ## Get Your Token
 
-1. Register an account if needed, then sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=agent_skill&utm_medium=referral&utm_campaign=evergreen).
-2. Open **General application**; if it is missing, choose **Initialize General Application**. Its API key can access multiple services your
-   account is entitled to use. You can also use a service-specific application
-   and key for that service. Check access, balance, and current pricing first.
-3. Copy an existing key, or select **Manage Keys → Create** to make a separate
-   key for your agent. Name it, choose expiration and restrictions if needed,
-   then copy the key value. If **Allowed APIs** is restricted, include every
-   endpoint the Skill calls, including task lookup for asynchronous generation.
+Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=agent_skill&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Store the raw key in the agent process’s `ACEDATACLOUD_API_TOKEN` environment variable.
+
+![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/NanoBananaDify/2522b2f57210597af2db866445319334a1677a23/_assets/tutorial/get-api-key-en.png)
+
+A General Application key can use the services enabled for your account. For a separate key, choose **Manage Keys → Create** and set its expiration and restrictions as needed. For asynchronous generation, allow both the submission and task-query endpoints. Check current prices and your balance before submitting a request.
 
 The [repository README](../../README.md#first-run-with-clawhub-and-openclaw)
 shows the two key-management screens and a complete Suno first run.

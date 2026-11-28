@@ -50,11 +50,11 @@ openclaw skills install {ref}
 
 ## 2. 注册并取得服务密钥
 
-[注册或登录 Ace]({link('/')}) → [Applications]({link()}) → **General application**（没有则先 Initialize General Application）。检查该服务的权限、余额和[当前价格]({link('/models')})。
-复制 API Key，或 **Manage Keys → Create** 创建专用密钥；按需限制有效期、额度和 Allowed APIs：{routes}。
+[注册或登录 Ace]({link('/')}) → [Applications]({link()}) → **General application**（没有则先 Initialize General Application）。点击 **API KEY** 旁的复制按钮（图中标注 **1**）。将原始 Key 保存到 OpenClaw Skill 的私密 `apiKey` 字段或 Gateway 主机的 `ACEDATACLOUD_API_TOKEN` 环境变量中。检查该服务的权限、余额和[当前价格]({link('/models')})。
+如需专用密钥，选择 **Manage Keys → Create**，按需限制有效期、额度和 Allowed APIs：{routes}。
 只复制 Key 值，不加 `Bearer `。`platform-...` 管理 token 不能代替服务密钥。不要把 Key 发到聊天、截图或 Git。
 
-![已有真实截图：复制密钥和 Manage Keys]({SCREENSHOT}get-api-key-en.png)
+![通用应用中的 API Key 复制按钮（标注 1）]({SCREENSHOT}get-api-key-en.png)
 ![已有真实截图：创建专用密钥]({SCREENSHOT}create-api-key-en.png)
 
 配图来源：Ace SunoDify 固定提交的原始教程图，2026-10-18 复用；拍摄日期未声明，不代表当前账号实测。安装页面使用原生 ClawHub 入口；当前安装配置尚无新增界面截图。
@@ -106,11 +106,11 @@ This historical Suno Skill 1.0.1 page shows the publisher and install entry only
 
 ## 2. Register and copy a service key
 
-[Register or sign in to Ace]({link('/')}) → [Applications]({link()}) → **General application**. Choose **Initialize General Application** if needed. Check service access, balance and [current pricing]({link('/models')}).
-Copy its API Key or choose **Manage Keys → Create** for a dedicated key. Set expiry, usage limits and **Allowed APIs** as needed: {routes}.
+[Register or sign in to Ace]({link('/')}) → [Applications]({link()}) → **General application**. Choose **Initialize General Application** if needed. Click the copy button marked **1** next to **API KEY**. Store the raw key in the OpenClaw Skill’s private `apiKey` field or in `ACEDATACLOUD_API_TOKEN` on the Gateway host. Check service access, balance and [current pricing]({link('/models')}).
+For a separate key, choose **Manage Keys → Create**. Set expiry, usage limits and **Allowed APIs** as needed: {routes}.
 Copy the raw value without `Bearer `. A `platform-...` account token is not a service key. Never put a real key in a prompt, screenshot or repository.
 
-![Existing real screenshot: copy a key or open Manage Keys]({SCREENSHOT}get-api-key-en.png)
+![General Application API key copy button (1)]({SCREENSHOT}get-api-key-en.png)
 ![Existing real screenshot: create a dedicated key]({SCREENSHOT}create-api-key-en.png)
 
 Image source: original Ace SunoDify tutorial screenshots at the pinned commit, reused 2026-10-18; capture date is unspecified. They are key-location references, not a new account test. No new OpenClaw configuration screenshot is claimed.

@@ -15,7 +15,10 @@ Search the web through AceDataCloud's Google SERP API.
 ## First-time setup
 
 1. Already installed from skills.sh? Continue at step 2. For a coding agent, install with `npx skills add acedatacloud/skills --skill google-search --yes` ([installation and first run](https://github.com/AceDataCloud/Skills#first-run-from-skillssh)). For OpenClaw, use `clawhub install @acedatacloud/google-search` and check that the ClawHub publisher is **@acedatacloud**.
-2. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications), open **General application**, and check Google Search access, balance, and current pricing. Copy its API key, or select **Manage Keys → Create** for a separate key. Copy the key value without `Bearer `; a `platform-...` management token is not a service API key.
+2. Sign in to [Applications](https://platform.acedata.cloud/console/applications) and open **General Application**. If it is missing, choose **Initialize General Application**. Click the copy button marked **1** next to **API KEY**. Store the raw key in the agent process’s `ACEDATACLOUD_API_TOKEN` environment variable. Check Google Search access, balance, and current pricing.
+
+   ![Copy button 1 beside the General Application API key](https://raw.githubusercontent.com/AceDataCloud/NanoBananaDify/2522b2f57210597af2db866445319334a1677a23/_assets/tutorial/get-api-key-en.png)
+
 3. If you enable **Allowed APIs** restrictions, include `/serp/google`. Advanced workflows below may call additional routes.
 4. For a coding agent or direct command, export `ACEDATACLOUD_API_TOKEN="your_api_key_here"` in the environment of the process that runs the Skill; project `.env` loading is agent-specific. For OpenClaw, put `ACEDATACLOUD_API_TOKEN=your_api_key_here` in `~/.openclaw/.env` on the Gateway host, then restart the Gateway and start a new session. Never put the key in a prompt or commit an `.env` file.
 5. Run the **Quick Start** below. If this workflow returns a task ID, query that same task until it finishes; do not submit the same billable request again just to check progress.

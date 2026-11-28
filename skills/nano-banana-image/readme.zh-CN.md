@@ -21,9 +21,11 @@ npx --yes skills@1.7.2 list
 
 ## 2. 注册、登录和复制 Token
 
-打开 [Ace Data Cloud → 我的应用](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen)，先注册/登录。进入 **General application（通用应用）**；没有则初始化通用应用。核对 **Nano Banana** 的权限、余额和当前价。复制卡片上的 Key，或 **Manage Keys → Create** 创建单独 Key，例如 `skills.sh Nano Banana`。按需设置过期时间和用量限制；启用 Allowed APIs 时至少放行 `/nano-banana/images`、`/nano-banana/tasks`，高级动作另查 SKILL.md。
+登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，然后点击 **API KEY** 旁的复制按钮（图中标注 **1**）。把原始 Key 保存在运行助手的环境变量 `ACEDATACLOUD_API_TOKEN` 中。
 
-![复制Key与管理密钥](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
+核对 **Nano Banana** 的权限、余额和当前价。若需独立密钥，可选择 **Manage Keys → Create** 建立专用 Key，例如 `skills.sh Nano Banana`。按需设置过期时间和用量限制；启用 Allowed APIs 时至少放行 `/nano-banana/images`、`/nano-banana/tasks`，高级动作另查 SKILL.md。
+
+![通用应用中的 API Key 复制按钮（标注 1）](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)
 
 ![创建专用Key](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/create-api-key-en.png)
 
