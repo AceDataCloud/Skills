@@ -1168,8 +1168,8 @@ class GeminiAudioProcedureTests(unittest.TestCase):
         self.assertEqual(audio, {"fileData": {"mimeType": "audio/wav", "fileUri": "HTTPS_AUDIO_URL"}})
         self.assertGreaterEqual(example["generationConfig"]["maxOutputTokens"], 512)
         for requirement in (
-            "POST /v1beta/models/gemini-3.5-flash:generateContent",
-            "POST /v1beta/models/{model}:streamGenerateContent?alt=sse",
+            "POST /v1/models/gemini-3.5-flash:generateContent",
+            "POST /v1/models/{model}:streamGenerateContent?alt=sse",
             "same AceDataCloud Bearer token", "not OpenAI `messages`",
             "`inlineData` with `mimeType` and base64-encoded `data`",
             "HTTPS_AUDIO_URL", "actual audio MIME type",
@@ -1253,8 +1253,8 @@ class GeminiArgonProcedureTests(unittest.TestCase):
         self.assertTrue(message["content"])
         for requirement in (
             "POST /gemini/chat/completions", "public alias `/v1/chat/completions`",
-            "POST /v1beta/models/gemini-4-argon:generateContent",
-            "POST /v1beta/models/gemini-4-argon:streamGenerateContent?alt=sse",
+            "POST /v1/models/gemini-4-argon:generateContent",
+            "POST /v1/models/gemini-4-argon:streamGenerateContent?alt=sse",
             "`contents` with `parts`, not `messages`", "`stream: true`",
             "Gemini access, current pricing", "**Allowed APIs**",
             "`/aichat2/conversations` also lists `gemini-4-argon`",
