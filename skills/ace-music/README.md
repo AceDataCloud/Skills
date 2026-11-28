@@ -6,7 +6,7 @@ npx skills add acedatacloud/skills --skill ace-music
 
 Select your agent and start a fresh session.
 
-Sign in to [Applications](https://platform.acedata.cloud/console/applications) and open **General Application**. Select **Initialize General Application** on first use, then click the copy icon to the right of **API KEY**.
+Sign in to [Applications](https://platform.acedata.cloud/console/applications) and open **General Application**. Click the copy icon to the right of **API KEY**.
 
 ![Get your Ace Data Cloud API key](https://cdn.acedata.cloud/dvc3cg.jpg)
 

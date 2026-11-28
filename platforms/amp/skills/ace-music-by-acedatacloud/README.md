@@ -6,7 +6,7 @@ amp skill add AceDataCloud/Skills/platforms/amp/skills/ace-music-by-acedatacloud
 
 From a reviewed checkout, use `amp skill add ./platforms/amp/skills/ace-music-by-acedatacloud`.
 
-Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. Select **Initialize General Application** on first use, then click the copy icon to the right of **API KEY**.
+Sign in to [Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=referral&utm_campaign=evergreen) and open **General Application**. Click the copy icon to the right of **API KEY**.
 
 ![Get your Ace Data Cloud API key](https://cdn.acedata.cloud/dvc3cg.jpg)
 

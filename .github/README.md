@@ -57,10 +57,8 @@ Start a new OpenClaw session so it loads the installed Skill. The ClawHub names 
 
 ### 2. Get an AceDataCloud API key
 
-New account? Register and sign in first. If the Applications page has no General application yet, choose **Initialize General Application**, then continue with the key steps below.
-
 1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen). Create an account first if needed.
-2. Open **General application** (initialize it if the console prompts you). Its key can access the services enabled for your account. A service-specific application key is limited to that service. Enable the intended service if needed, then check its access, balance, and current price before running an example.
+2. Open **General application**. Its key can access the services enabled for your account. A service-specific application key is limited to that service. Enable the intended service if needed, then check its access, balance, and current price before running an example.
 3. Copy an existing API key, or choose **Manage Keys → Create** to make a separate key for OpenClaw. Name it, set an expiration and restrictions if needed, then copy the key from the application card or key list. If you restrict **Allowed APIs**, include both the generation endpoint and its task-query endpoint. For Suno these are `/suno/audios` and `/suno/tasks`.
 
 ![Where to copy an API key or open Manage Keys](https://raw.githubusercontent.com/AceDataCloud/SunoDify/8d3d03570e73324220f111f7fe343da0792a8071/_assets/tutorial/get-api-key-en.png)

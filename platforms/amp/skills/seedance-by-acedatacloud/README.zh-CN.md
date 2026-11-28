@@ -14,7 +14,7 @@ amp skill add AceDataCloud/Skills/platforms/amp/skills/seedance-by-acedatacloud
 
 ## 2. 获取专用 API Token
 
-1. [注册或登录 Ace → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，打开 **General application**；没有时先 **Initialize General Application**。
+1. [注册或登录 Ace → Applications](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，打开 **General application**。
 2. 核对 Seedance 权限、余额与[当前价格](https://platform.acedata.cloud/models?utm_source=amp&utm_medium=integration&utm_campaign=evergreen)，复制 API Key，或 **Manage Keys → Create** 创建 `Amp Seedance` 专用 Key。
 3. 按需设到期、用量和 Allowed APIs；限制时放行所需生成/编辑和查询：`/seedance/videos, /seedance/tasks`。是否有试用额度以账户显示为准。
 4. 仅复制 Key 本体，不带引号、空格或 `Bearer `；`platform-...` 管理 Token 不可替代。

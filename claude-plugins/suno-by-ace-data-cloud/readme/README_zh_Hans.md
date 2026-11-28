@@ -21,7 +21,7 @@
 
 ## 2. 登录 Ace 并获取专用 Token
 
-1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开 [Applications 应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，选择 **General application 通用应用**；没有时先初始化。
+1. [注册或登录 Ace Data Cloud](https://platform.acedata.cloud/?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，打开 [Applications 应用列表](https://platform.acedata.cloud/console/applications?utm_source=github&utm_medium=referral&utm_campaign=evergreen)，选择 **General application 通用应用**。
 2. 检查 **Suno** 权限、余额和 [当前价格](https://platform.acedata.cloud/documents/suno?utm_source=github&utm_medium=referral&utm_campaign=evergreen)。在应用卡片复制 Key，或 **Manage Keys / 管理密钥 → Create / 创建**，给本插件建单独 Key，名称建议 `Suno Claude Code`。
 3. 按需设置有效期、使用额度和 **Allowed APIs**，本流程需要 `/suno/audios`, `/suno/tasks`。只开放需要的接口。
 
@@ -55,7 +55,7 @@
 
 - 找不到插件：先添加 Ace 市场，或执行 `claude plugin marketplace update acedatacloud-skills` 后核对服务 slug；组织允许列表或 Git 下载失败也可能阻止安装。Anthropic 官方目录仍未确认。
 - 401：核对原始 Token、有效期、应用/服务/API 权限；不要填写其他厂商密钥。
-- 余额不足、403、429：查看原错误，检查权限/内容限制/余额，遵守限速，不自动重发付费请求。
+- 余额不足、403、429：查看原错误，检查权限、内容限制和余额。余额不足时点击「充值」按钮即可。遇到限流时不要自动重发付费请求。
 - 任务 pending：按服务说明轮询原 ID，不用“再生成一次”查进度。
 - 官方目录：[政策 §4.B](https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy)限制独立 AI 图/音/视频生成，除非获得书面允许；本插件不冒称获准，不绕过准入。
 

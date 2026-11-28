@@ -50,7 +50,7 @@ openclaw skills install {ref}
 
 ## 2. 注册并取得服务密钥
 
-[注册或登录 Ace]({link('/')}) → [Applications]({link()}) → **General application**（没有则先 Initialize General Application）。检查该服务的权限、余额和[当前价格]({link('/models')})。
+[注册或登录 Ace]({link('/')}) → [Applications]({link()}) → **General application**。检查该服务的权限、余额和[当前价格]({link('/models')})。
 复制 API Key，或 **Manage Keys → Create** 创建专用密钥；按需限制有效期、额度和 Allowed APIs：{routes}。
 只复制 Key 值，不加 `Bearer `。`platform-...` 管理 token 不能代替服务密钥。不要把 Key 发到聊天、截图或 Git。
 
@@ -106,7 +106,7 @@ This historical Suno Skill 1.0.1 page shows the publisher and install entry only
 
 ## 2. Register and copy a service key
 
-[Register or sign in to Ace]({link('/')}) → [Applications]({link()}) → **General application**. Choose **Initialize General Application** if needed. Check service access, balance and [current pricing]({link('/models')}).
+[Register or sign in to Ace]({link('/')}) → [Applications]({link()}) → **General application**. Check service access, balance and [current pricing]({link('/models')}).
 Copy its API Key or choose **Manage Keys → Create** for a dedicated key. Set expiry, usage limits and **Allowed APIs** as needed: {routes}.
 Copy the raw value without `Bearer `. A `platform-...` account token is not a service key. Never put a real key in a prompt, screenshot or repository.
 

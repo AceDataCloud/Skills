@@ -24,7 +24,7 @@ Actual account-Skill page captured on 2026-10-17, showing the same installation 
 ## 2. Register, sign in and get the correct API key
 
 1. Open [Ace Data Cloud → Applications](https://platform.acedata.cloud/console/applications?utm_source=skills_sh&utm_medium=referral&utm_campaign=evergreen); register and sign in if needed.
-2. Open **General application**. If absent, choose **Initialize General Application**. Check **Seedance** access, current balance and price before submitting anything.
+2. Open **General application**. Check **Seedance** access, current balance and price before submitting anything.
 3. Copy the key on the application card, or open **Manage Keys → Create** to create a separate key such as `skills.sh Seedance`. Set expiry and API/usage limits as needed. If **Allowed APIs** is enabled, include `/seedance/videos` and `/seedance/tasks`. Other actions in SKILL.md may need extra routes.
 4. Copy only the key value. Do not include `Bearer ` or screenshot redaction characters. A `platform-...` management token is not the service key.
 

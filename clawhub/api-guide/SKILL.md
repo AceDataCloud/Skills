@@ -35,7 +35,7 @@ contains its exact request fields, models, and task endpoint.
 
 1. Sign in at [AceDataCloud → Applications](https://platform.acedata.cloud/console/applications).
    Create an account if needed.
-2. Open **General application**; initialize it if prompted. Its API key can
+2. Open **General application**. Its API key can
    access multiple services enabled for your account. A service-specific
    application key is limited to that service. Check access, balance, and the
    current price of the service you want to call.

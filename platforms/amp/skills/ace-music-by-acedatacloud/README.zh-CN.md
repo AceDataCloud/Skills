@@ -6,7 +6,7 @@ amp skill add AceDataCloud/Skills/platforms/amp/skills/ace-music-by-acedatacloud
 
 也可以从已审核的源码目录运行 `amp skill add ./platforms/amp/skills/ace-music-by-acedatacloud`。
 
-登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**。首次使用时先初始化通用应用，再点击 **API KEY** 一栏右侧的复制按钮。
+登录[应用列表](https://platform.acedata.cloud/console/applications?utm_source=amp&utm_medium=referral&utm_campaign=evergreen)，打开**通用应用**，点击 **API KEY** 一栏右侧的复制按钮。
 
 ![获取 Ace Data Cloud API Key](https://cdn.acedata.cloud/dvc3cg.jpg)
 
