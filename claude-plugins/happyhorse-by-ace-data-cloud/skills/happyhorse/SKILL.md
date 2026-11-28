@@ -4,7 +4,7 @@ description: Use HappyHorse video tools through an Ace Data Cloud account in Cla
 license: Apache-2.0
 ---
 
-# HappyHorse by Ace Data Cloud
+# HappyHorse
 
 This plugin supplies a service-specific workflow and connects the existing Ace MCP. Credentials come from the plugin's masked **Ace Data Cloud API Token** option, not from prompts or another vendor's environment variables.
 

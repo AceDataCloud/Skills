@@ -1,7 +1,7 @@
 {
   "name": "happyhorse-by-ace-data-cloud",
-  "version": "0.1.1",
-  "description": "HappyHorse by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+  "version": "0.1.2",
+  "description": "HappyHorse: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
   "author": {
     "name": "Ace Data Cloud",
     "email": "support@acedata.cloud"
@@ -32,7 +32,7 @@
       }
     }
   },
-  "displayName": "HappyHorse by Ace Data Cloud",
+  "displayName": "HappyHorse",
   "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/happyhorse-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",

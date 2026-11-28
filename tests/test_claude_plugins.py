@@ -36,7 +36,7 @@ class ClaudeServicePluginTests(unittest.TestCase):
             manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text())
             self.assertEqual(manifest["name"], slug)
             self.assertEqual(manifest["author"]["name"], "Ace Data Cloud")
-            self.assertTrue(manifest["displayName"].endswith(" by Ace Data Cloud"))
+            self.assertEqual(manifest["displayName"].lower().replace(" ", ""), service.replace("-", ""))
             self.assertEqual(entry["displayName"], manifest["displayName"])
             if service == "ace-music":
                 self.assertEqual(manifest["icon"], "https://cdn.acedata.cloud/acemusic-icon-52deddfc87b9.png")

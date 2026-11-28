@@ -1,4 +1,4 @@
-# ACE Music by Ace Data Cloud
+# ACE Music
 
 [简体中文](readme/README_zh_Hans.md)
 

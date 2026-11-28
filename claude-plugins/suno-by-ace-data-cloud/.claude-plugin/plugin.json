@@ -1,7 +1,7 @@
 {
   "name": "suno-by-ace-data-cloud",
-  "version": "0.1.1",
-  "description": "Suno by Ace Data Cloud: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+  "version": "0.1.2",
+  "description": "Suno: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
   "author": {
     "name": "Ace Data Cloud",
     "email": "support@acedata.cloud"
@@ -32,7 +32,7 @@
       }
     }
   },
-  "displayName": "Suno by Ace Data Cloud",
+  "displayName": "Suno",
   "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/suno-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",

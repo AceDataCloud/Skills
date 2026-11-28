@@ -1,6 +1,6 @@
 {
   "name": "seedream-by-ace-data-cloud",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate or edit Seedream images from a prompt and selected reference images through Ace Data Cloud.",
   "author": {
     "name": "Ace Data Cloud",
@@ -33,7 +33,7 @@
       }
     }
   },
-  "displayName": "Seedream by Ace Data Cloud",
+  "displayName": "Seedream",
   "icon": "./assets/service-icon.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/seedream-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",

@@ -4,7 +4,7 @@ description: Use Nano Banana image tools through an Ace Data Cloud account in Cl
 license: Apache-2.0
 ---
 
-# Nano Banana by Ace Data Cloud
+# Nano Banana
 
 This plugin supplies a service-specific workflow and connects the existing Ace MCP. Credentials come from the plugin's masked **Ace Data Cloud API Token** option, not from prompts or another vendor's environment variables.
 

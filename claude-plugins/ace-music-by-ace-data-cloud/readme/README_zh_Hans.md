@@ -1,4 +1,4 @@
-# ACE Music by Ace Data Cloud
+# ACE Music
 
 [English](../README.md)
 

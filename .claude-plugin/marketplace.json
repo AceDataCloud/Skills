@@ -81,7 +81,7 @@
     },
     {
       "name": "suno-by-ace-data-cloud",
-      "description": "Suno by Ace Data Cloud: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "description": "Suno: music generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
       "source": "./claude-plugins/suno-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",
@@ -94,11 +94,11 @@
         "music",
         "ace-data-cloud"
       ],
-      "displayName": "Suno by Ace Data Cloud"
+      "displayName": "Suno"
     },
     {
       "name": "seedance-by-ace-data-cloud",
-      "description": "Seedance by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "description": "Seedance: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
       "source": "./claude-plugins/seedance-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",
@@ -111,11 +111,11 @@
         "video",
         "ace-data-cloud"
       ],
-      "displayName": "Seedance by Ace Data Cloud"
+      "displayName": "Seedance"
     },
     {
       "name": "happyhorse-by-ace-data-cloud",
-      "description": "HappyHorse by Ace Data Cloud: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "description": "HappyHorse: video generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
       "source": "./claude-plugins/happyhorse-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",
@@ -128,11 +128,11 @@
         "video",
         "ace-data-cloud"
       ],
-      "displayName": "HappyHorse by Ace Data Cloud"
+      "displayName": "HappyHorse"
     },
     {
       "name": "gpt-image-by-ace-data-cloud",
-      "description": "GPT Image by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "description": "GPT Image: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
       "source": "./claude-plugins/gpt-image-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",
@@ -145,11 +145,11 @@
         "image",
         "ace-data-cloud"
       ],
-      "displayName": "GPT Image by Ace Data Cloud"
+      "displayName": "GPT Image"
     },
     {
       "name": "nano-banana-by-ace-data-cloud",
-      "description": "Nano Banana by Ace Data Cloud: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
+      "description": "Nano Banana: image generation and same-task retrieval through your Ace account. Separate paid API service; not the model vendor's official plugin.",
       "source": "./claude-plugins/nano-banana-by-ace-data-cloud",
       "author": {
         "name": "Ace Data Cloud",
@@ -162,11 +162,11 @@
         "image",
         "ace-data-cloud"
       ],
-      "displayName": "Nano Banana by Ace Data Cloud"
+      "displayName": "Nano Banana"
     },
     {
       "name": "ace-music-by-ace-data-cloud",
-      "displayName": "ACE Music by Ace Data Cloud",
+      "displayName": "ACE Music",
       "description": "Generate ACE Music songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original task.",
       "source": "./claude-plugins/ace-music-by-ace-data-cloud",
       "author": {
@@ -198,7 +198,7 @@
         "research",
         "ace-data-cloud"
       ],
-      "displayName": "Google Search by Ace Data Cloud"
+      "displayName": "Google Search"
     },
     {
       "name": "fish-audio-by-ace-data-cloud",
@@ -216,7 +216,7 @@
         "text-to-speech",
         "ace-data-cloud"
       ],
-      "displayName": "Fish Audio by Ace Data Cloud"
+      "displayName": "Fish Audio"
     },
     {
       "name": "seedream-by-ace-data-cloud",
@@ -234,7 +234,7 @@
         "image-editing",
         "ace-data-cloud"
       ],
-      "displayName": "Seedream by Ace Data Cloud"
+      "displayName": "Seedream"
     }
   ]
 }

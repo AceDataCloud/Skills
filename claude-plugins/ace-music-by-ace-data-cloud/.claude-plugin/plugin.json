@@ -1,6 +1,6 @@
 {
   "name": "ace-music-by-ace-data-cloud",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate ACE Music songs and lyrics, upload reference audio, cover or blend owned tracks, and retrieve the original task.",
   "author": {
     "name": "Ace Data Cloud",
@@ -33,7 +33,7 @@
       }
     }
   },
-  "displayName": "ACE Music by Ace Data Cloud",
+  "displayName": "ACE Music",
   "icon": "https://cdn.acedata.cloud/acemusic-icon-52deddfc87b9.png",
   "documentationUrl": "https://github.com/AceDataCloud/Skills/tree/main/claude-plugins/ace-music-by-ace-data-cloud",
   "privacyPolicyUrl": "https://platform.acedata.cloud/privacy",
